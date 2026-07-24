@@ -122,6 +122,22 @@ def tool_definitions_v1(task: dict[str, Any]) -> list[dict[str, Any]]:
         {item["kind"] for item in task["inventory"]}
         | {item["kind"] for item in task["failure_snapshot"]["commitments"]}
     )
+    capabilities = sorted(
+        {
+            capability
+            for item in task["inventory"]
+            for capability in item.get("provides", {})
+        }
+    )
+    v11 = task["schema_version"] == "1.1"
+    search_properties: dict[str, Any] = {
+        kind: {"type": "string", "enum": categories},
+    }
+    if v11:
+        search_properties["required_capability"] = {
+            "type": "string",
+            "enum": capabilities,
+        }
     return [
         _schema(
             names["list"],
@@ -137,9 +153,16 @@ def tool_definitions_v1(task: dict[str, Any]) -> list[dict[str, Any]]:
         ),
         _schema(
             names["search"],
-            "Search live alternatives in one category. Prices, recurring charges, delivery facts, and functional capabilities are returned.",
-            {kind: {"type": "string", "enum": categories}},
-            [kind],
+            (
+                "Browse live alternatives. Filter by a natural domain category, "
+                "a required capability, both, or neither. Returned records expose "
+                "raw prices and operational facts but do not calculate the best "
+                "recovery."
+                if v11
+                else "Search live alternatives in one category. Prices, recurring charges, delivery facts, and functional capabilities are returned."
+            ),
+            search_properties,
+            [] if v11 else [kind],
         ),
         _schema(
             names["preview"],
@@ -181,7 +204,7 @@ def tool_definitions_v1(task: dict[str, Any]) -> list[dict[str, Any]]:
 
 
 class CommitmentRecoveryEnvironment:
-    """Executable fixed-boundary environment for schema v1.0."""
+    """Executable fixed-boundary environment for schema v1.0 and v1.1."""
 
     def __init__(self, task: dict[str, Any]):
         self.task = deepcopy({k: v for k, v in task.items() if not k.startswith("_")})
@@ -258,7 +281,10 @@ class CommitmentRecoveryEnvironment:
         if name == self.names["details"]:
             return self._details(args[self.names["id"]])
         if name == self.names["search"]:
-            return self._search(args[self.names["kind"]])
+            return self._search(
+                args.get(self.names["kind"]),
+                args.get("required_capability"),
+            )
         if name == self.names["preview"]:
             return self._preview(args[self.names["id"]])
         if name == self.names["terms"]:
@@ -286,16 +312,27 @@ class CommitmentRecoveryEnvironment:
             data["attributes"] = deepcopy(option.get("attributes", {}))
         return ActionResult(True, "Commitment retrieved.", data)
 
-    def _search(self, kind: str) -> ActionResult:
+    def _search(
+        self, kind: str | None, required_capability: str | None = None
+    ) -> ActionResult:
         results = [
             self._public_option(item)
             for item in self.inventory.values()
-            if item["kind"] == kind and item.get("available", False)
+            if (kind is None or item["kind"] == kind)
+            and (
+                required_capability is None
+                or int(item.get("provides", {}).get(required_capability, 0)) > 0
+            )
+            and item.get("available", False)
         ]
         return ActionResult(
             True,
             f"Found {len(results)} available option(s).",
-            {"category": kind, "results": results},
+            {
+                "category": kind,
+                "required_capability": required_capability,
+                "results": results,
+            },
         )
 
     def _preview(self, entity_id: str) -> ActionResult:
@@ -341,17 +378,20 @@ class CommitmentRecoveryEnvironment:
         option = self.inventory.get(identifier)
         if option is not None:
             known = True
-            terms.append(
-                {
-                    "term_id": f"{identifier}-price",
-                    "description": (
-                        f"Upfront {option['upfront_cents']} cents plus "
-                        f"{option.get('monthly_cents', 0)} cents per month for "
-                        f"{option.get('horizon_months', 0)} months."
-                    ),
-                    "total_charge_cents": self._option_charge(option),
-                }
-            )
+            price_term = {
+                "term_id": f"{identifier}-price",
+                "description": (
+                    f"Upfront {option['upfront_cents']} cents plus "
+                    f"{option.get('monthly_cents', 0)} cents per month for "
+                    f"{option.get('horizon_months', 0)} months."
+                ),
+                "upfront_cents": int(option["upfront_cents"]),
+                "monthly_cents": int(option.get("monthly_cents", 0)),
+                "horizon_months": int(option.get("horizon_months", 0)),
+            }
+            if self.task["schema_version"] != "1.1":
+                price_term["total_charge_cents"] = self._option_charge(option)
+            terms.append(price_term)
         for rule in self.task.get("compatibility_rules", []):
             linked = set(rule.get("option_ids", []))
             linked.add(rule.get("if_option_id", ""))
@@ -367,6 +407,34 @@ class CommitmentRecoveryEnvironment:
                         "required_option_ids": deepcopy(rule["all_option_ids"]),
                     }
                 )
+            if identifier in linked and rule["type"] == "requires_any":
+                terms.append(
+                    {
+                        "term_id": f"{identifier}-allowed-dependencies",
+                        "description": (
+                            "This existing or replacement component remains "
+                            "valid only with at least one listed dependency."
+                        ),
+                        "required_any_option_ids": deepcopy(
+                            rule["any_option_ids"]
+                        ),
+                    }
+                )
+            if rule["type"] == "requires_bridge" and identifier in {
+                *rule["option_ids"],
+                *rule["bridge_option_ids"],
+            }:
+                terms.append(
+                    {
+                        "term_id": f"{identifier}-bridge-rule",
+                        "description": (
+                            "The listed pair may coexist only while at least one "
+                            "approved bridge option is active."
+                        ),
+                        "option_ids": deepcopy(rule["option_ids"]),
+                        "bridge_option_ids": deepcopy(rule["bridge_option_ids"]),
+                    }
+                )
         if not known:
             return ActionResult(False, "Unknown commitment or option.")
         return ActionResult(True, "Linked terms retrieved.", {"terms": terms})
@@ -380,10 +448,25 @@ class CommitmentRecoveryEnvironment:
             for item in self.task.get("compatibility_rules", [])
             if item["type"] == "forbid_pair"
         }
+        bridge_rules = [
+            item
+            for item in self.task.get("compatibility_rules", [])
+            if item["type"] == "requires_bridge"
+            and set(item["option_ids"]) == set(pair)
+        ]
         return ActionResult(
             True,
             "Compatibility checked.",
-            {"compatible": pair not in forbidden},
+            {
+                "compatible": pair not in forbidden and not bridge_rules,
+                "bridge_option_ids": sorted(
+                    {
+                        option_id
+                        for rule in bridge_rules
+                        for option_id in rule["bridge_option_ids"]
+                    }
+                ),
+            },
         )
 
     def _cancel(self, entity_id: str) -> ActionResult:
@@ -465,19 +548,30 @@ class CommitmentRecoveryEnvironment:
             irreversible=0,
             contract_id=None,
         )
+        applied = self._apply_newly_triggered_contracts({"active_any"})
+        result_data = {
+            "entity_id": entity_id,
+            "option_id": option_id,
+            "charge_cents": charge,
+        }
+        if self.task["schema_version"] == "1.1":
+            result_data["contract_charges_applied"] = applied
         return ActionResult(
             True,
             "New commitment created.",
-            {
-                "entity_id": entity_id,
-                "option_id": option_id,
-                "charge_cents": charge,
-            },
+            result_data,
         )
 
-    def _apply_newly_triggered_contracts(self) -> list[dict[str, Any]]:
+    def _apply_newly_triggered_contracts(
+        self, allowed_trigger_types: set[str] | None = None
+    ) -> list[dict[str, Any]]:
         applied = []
         for contract in self.task["contracts"]:
+            if (
+                allowed_trigger_types is not None
+                and contract["trigger"]["type"] not in allowed_trigger_types
+            ):
+                continue
             contract_id = contract["contract_id"]
             if contract_id in self.triggered_contracts:
                 continue
@@ -485,6 +579,10 @@ class CommitmentRecoveryEnvironment:
                 contract["trigger"],
                 self.changed_boundary,
                 self.task["boundary_commitments"],
+                {
+                    item["option_id"]
+                    for item in self.active_commitments()
+                },
             ):
                 continue
             self.triggered_contracts.add(contract_id)
@@ -585,6 +683,17 @@ class CommitmentRecoveryEnvironment:
                             "if_option_id": rule["if_option_id"],
                         }
                     )
+            elif rule["type"] == "requires_bridge":
+                if set(rule["option_ids"]).issubset(active_options) and not (
+                    active_options.intersection(rule["bridge_option_ids"])
+                ):
+                    failures.append(
+                        {
+                            "type": "missing_compatibility_bridge",
+                            "option_ids": rule["option_ids"],
+                            "bridge_option_ids": rule["bridge_option_ids"],
+                        }
+                    )
         for requirement in self.task["hard_goals"].get(
             "attribute_requirements", []
         ):
@@ -667,17 +776,19 @@ class CommitmentRecoveryEnvironment:
         }
 
     def _public_option(self, option: dict[str, Any]) -> dict[str, Any]:
-        return {
+        result = {
             "option_id": option["option_id"],
             "name": option.get("name", option["option_id"]),
             "category": option["kind"],
             "upfront_cents": option["upfront_cents"],
             "monthly_cents": option.get("monthly_cents", 0),
             "horizon_months": option.get("horizon_months", 0),
-            "total_charge_cents": self._option_charge(option),
             "provides": deepcopy(option["provides"]),
             "attributes": deepcopy(option.get("attributes", {})),
         }
+        if self.task["schema_version"] != "1.1":
+            result["total_charge_cents"] = self._option_charge(option)
+        return result
 
     @staticmethod
     def _option_charge(option: dict[str, Any]) -> int:
@@ -690,6 +801,7 @@ def contract_triggered(
     trigger: dict[str, Any],
     changed_boundary: set[str],
     boundary: list[dict[str, Any]],
+    active_option_ids: set[str] | None = None,
 ) -> bool:
     entity_ids = set(trigger.get("entity_ids", []))
     kind = trigger["type"]
@@ -712,6 +824,26 @@ def contract_triggered(
             )
         )
         return retained < int(trigger["threshold_cents"])
+    if kind == "retained_quantity_below":
+        capability = trigger["capability"]
+        retained = sum(
+            int(item.get("provides", {}).get(capability, 0))
+            for item in boundary
+            if item["entity_id"] not in changed_boundary
+            and (not entity_ids or item["entity_id"] in entity_ids)
+        )
+        return retained < int(trigger["threshold_quantity"])
+    if kind == "changed_with_retained":
+        changed_ids = set(trigger.get("changed_entity_ids", []))
+        retained_ids = set(trigger.get("retained_entity_ids", []))
+        return bool(changed_ids & changed_boundary) and bool(
+            retained_ids - changed_boundary
+        )
+    if kind == "active_any":
+        return bool(
+            set(trigger.get("option_ids", []))
+            & (active_option_ids or set())
+        )
     raise ValueError(f"Unknown contract trigger type: {kind}")
 
 

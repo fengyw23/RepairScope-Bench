@@ -12,7 +12,7 @@ def evaluate_actions(
     actions: list[dict[str, Any]],
     max_actions: int | None = None,
 ) -> dict[str, Any]:
-    if task.get("schema_version") == "1.0":
+    if task.get("schema_version") in {"1.0", "1.1"}:
         from .v1_evaluator import evaluate_v1_actions
 
         return evaluate_v1_actions(task, actions)

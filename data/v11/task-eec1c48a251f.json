@@ -1,0 +1,515 @@
+{
+  "schema_version": "1.1",
+  "task_id": "task-eec1c48a251f",
+  "domain": "travel",
+  "environment_type": "repairscope.travel.state.v1.1",
+  "split": "heldout",
+  "now": "2026-09-01T09:00:00+08:00",
+  "max_turns": 15,
+  "instruction": "Complete the Shanghai medical congress at Shanghai for the traveller. The successful commitments in the activity log are already paid and active, but the latest required dinner operation failed. The final state must preserve these required functions exactly as specified: lodging=1, event_access=1, meal_service=1, meal_service_companion=1. The missing service must be available by day 4 at Shanghai. The missing service and its companion must form one compatible system; independently cheapest components may not coexist. Investigate the authoritative records and execute the best supported recovery without asking me to choose.",
+  "inventory": [
+    {
+      "option_id": "N057-b1",
+      "name": "hotel reservation",
+      "kind": "hotel",
+      "available": false,
+      "upfront_cents": 100000,
+      "monthly_cents": 0,
+      "horizon_months": 0,
+      "refund_after_purchase_cents": 100000,
+      "provides": {
+        "lodging": 1
+      },
+      "attributes": {
+        "city": "Shanghai",
+        "service_day": 2
+      }
+    },
+    {
+      "option_id": "N057-b2",
+      "name": "conference admission",
+      "kind": "event pass",
+      "available": false,
+      "upfront_cents": 25000,
+      "monthly_cents": 0,
+      "horizon_months": 0,
+      "refund_after_purchase_cents": 5000,
+      "provides": {
+        "event_access": 1
+      },
+      "attributes": {
+        "city": "Shanghai",
+        "service_day": 2
+      }
+    },
+    {
+      "option_id": "N057-local",
+      "name": "system-X required dinner",
+      "kind": "restaurant",
+      "available": true,
+      "upfront_cents": 30000,
+      "monthly_cents": 0,
+      "horizon_months": 0,
+      "refund_after_purchase_cents": 0,
+      "provides": {
+        "meal_service": 1
+      },
+      "attributes": {
+        "city": "Shanghai",
+        "service_day": 2,
+        "system": "X"
+      }
+    },
+    {
+      "option_id": "N057-aux1",
+      "name": "system-X companion",
+      "kind": "companion service",
+      "available": true,
+      "upfront_cents": 40000,
+      "monthly_cents": 0,
+      "horizon_months": 0,
+      "refund_after_purchase_cents": 0,
+      "provides": {
+        "meal_service_companion": 1
+      },
+      "attributes": {
+        "city": "Shanghai",
+        "service_day": 2,
+        "system": "X"
+      }
+    },
+    {
+      "option_id": "N057-alt1",
+      "name": "system-Y required dinner",
+      "kind": "restaurant",
+      "available": true,
+      "upfront_cents": 20000,
+      "monthly_cents": 0,
+      "horizon_months": 0,
+      "refund_after_purchase_cents": 0,
+      "provides": {
+        "meal_service": 1
+      },
+      "attributes": {
+        "city": "Shanghai",
+        "service_day": 2,
+        "system": "Y"
+      }
+    },
+    {
+      "option_id": "N057-aux2",
+      "name": "system-Y companion",
+      "kind": "companion service",
+      "available": true,
+      "upfront_cents": 20000,
+      "monthly_cents": 0,
+      "horizon_months": 0,
+      "refund_after_purchase_cents": 0,
+      "provides": {
+        "meal_service_companion": 1
+      },
+      "attributes": {
+        "city": "Shanghai",
+        "service_day": 2,
+        "system": "Y"
+      }
+    },
+    {
+      "option_id": "N057-alt2",
+      "name": "system-Y replacement hotel reservation",
+      "kind": "hotel",
+      "available": true,
+      "upfront_cents": 90000,
+      "monthly_cents": 0,
+      "horizon_months": 0,
+      "refund_after_purchase_cents": 0,
+      "provides": {
+        "lodging": 1
+      },
+      "attributes": {
+        "city": "Shanghai",
+        "service_day": 2,
+        "system": "Y"
+      }
+    },
+    {
+      "option_id": "N057-alt3",
+      "name": "system-X replacement hotel reservation",
+      "kind": "hotel",
+      "available": true,
+      "upfront_cents": 150000,
+      "monthly_cents": 0,
+      "horizon_months": 0,
+      "refund_after_purchase_cents": 0,
+      "provides": {
+        "lodging": 1
+      },
+      "attributes": {
+        "city": "Shanghai",
+        "service_day": 2,
+        "system": "X"
+      }
+    },
+    {
+      "option_id": "N057-bridge",
+      "name": "premium replacement conference admission with both recovery services",
+      "kind": "event pass continuity bundle",
+      "available": true,
+      "upfront_cents": 300000,
+      "monthly_cents": 0,
+      "horizon_months": 0,
+      "refund_after_purchase_cents": 0,
+      "provides": {
+        "event_access": 1,
+        "meal_service": 1,
+        "meal_service_companion": 1
+      },
+      "attributes": {
+        "city": "Shanghai",
+        "service_day": 2
+      }
+    },
+    {
+      "option_id": "N057-continuity",
+      "name": "protected conference travel package",
+      "kind": "continuity service",
+      "available": true,
+      "upfront_cents": 607809,
+      "monthly_cents": 0,
+      "horizon_months": 0,
+      "refund_after_purchase_cents": 0,
+      "provides": {
+        "lodging": 1,
+        "event_access": 1,
+        "meal_service": 1,
+        "meal_service_companion": 1
+      },
+      "attributes": {
+        "city": "Shanghai",
+        "service_day": 3
+      }
+    },
+    {
+      "option_id": "N057-failed",
+      "name": "unavailable required dinner",
+      "kind": "restaurant",
+      "available": false,
+      "upfront_cents": 18000,
+      "monthly_cents": 0,
+      "horizon_months": 0,
+      "refund_after_purchase_cents": 0,
+      "provides": {
+        "meal_service": 1
+      },
+      "attributes": {
+        "city": "Shanghai",
+        "service_day": 2
+      }
+    },
+    {
+      "option_id": "N057-wrong-site",
+      "name": "cheap service for a different city",
+      "kind": "restaurant",
+      "available": true,
+      "upfront_cents": 5000,
+      "monthly_cents": 0,
+      "horizon_months": 0,
+      "refund_after_purchase_cents": 0,
+      "provides": {
+        "meal_service": 1
+      },
+      "attributes": {
+        "city": "Other Shanghai",
+        "service_day": 2
+      }
+    },
+    {
+      "option_id": "N057-late",
+      "name": "late required dinner",
+      "kind": "restaurant",
+      "available": true,
+      "upfront_cents": 4000,
+      "monthly_cents": 0,
+      "horizon_months": 0,
+      "refund_after_purchase_cents": 0,
+      "provides": {
+        "meal_service": 1
+      },
+      "attributes": {
+        "city": "Shanghai",
+        "service_day": 9
+      }
+    }
+  ],
+  "contracts": [],
+  "compatibility_rules": [
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "N057-local",
+        "N057-aux2"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "N057-alt1",
+        "N057-aux1"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "N057-b1",
+        "N057-alt1"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "N057-b1",
+        "N057-aux2"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "N057-alt2",
+        "N057-local"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "N057-alt2",
+        "N057-aux1"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "N057-alt3",
+        "N057-alt1"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "N057-alt3",
+        "N057-aux2"
+      ]
+    }
+  ],
+  "hard_goals": {
+    "capabilities": [
+      {
+        "capability": "lodging",
+        "min": 1,
+        "max": 1
+      },
+      {
+        "capability": "event_access",
+        "min": 1,
+        "max": 1
+      },
+      {
+        "capability": "meal_service",
+        "min": 1,
+        "max": 1
+      },
+      {
+        "capability": "meal_service_companion",
+        "min": 1,
+        "max": 1
+      }
+    ],
+    "attribute_requirements": [
+      {
+        "capability": "lodging",
+        "attribute": "city",
+        "op": "eq",
+        "value": "Shanghai"
+      },
+      {
+        "capability": "event_access",
+        "attribute": "city",
+        "op": "eq",
+        "value": "Shanghai"
+      },
+      {
+        "capability": "meal_service",
+        "attribute": "city",
+        "op": "eq",
+        "value": "Shanghai"
+      },
+      {
+        "capability": "meal_service_companion",
+        "attribute": "city",
+        "op": "eq",
+        "value": "Shanghai"
+      },
+      {
+        "capability": "meal_service",
+        "attribute": "service_day",
+        "op": "le",
+        "value": 4
+      }
+    ]
+  },
+  "initial_snapshot": {
+    "commitments": []
+  },
+  "initial_snapshot_sha256": "dbc26b7f61e91d0529291823abb38756f52a36dc52e819cf0a83abddfe598124",
+  "failure_snapshot": {
+    "commitments": [
+      {
+        "entity_id": "NEW-0001",
+        "option_id": "N057-b1",
+        "name": "hotel reservation",
+        "kind": "hotel",
+        "status": "active",
+        "paid_cents": 100000,
+        "refund_cents": 100000,
+        "provides": {
+          "lodging": 1
+        },
+        "attributes": {
+          "city": "Shanghai",
+          "service_day": 2
+        },
+        "created_after_boundary": false
+      },
+      {
+        "entity_id": "NEW-0002",
+        "option_id": "N057-b2",
+        "name": "conference admission",
+        "kind": "event pass",
+        "status": "active",
+        "paid_cents": 25000,
+        "refund_cents": 5000,
+        "provides": {
+          "event_access": 1
+        },
+        "attributes": {
+          "city": "Shanghai",
+          "service_day": 2
+        },
+        "created_after_boundary": false
+      }
+    ]
+  },
+  "snapshot_sha256": "f3dc0a73fea7246cb8487e607207be4240d60b4fb06412e7f0493f0479b22195",
+  "pre_failure_trace": [
+    {
+      "step": 1,
+      "tool": "book_trip_option",
+      "arguments": {
+        "option_id": "N057-b1"
+      },
+      "result": {
+        "ok": true,
+        "message": "New commitment created.",
+        "data": {
+          "entity_id": "NEW-0001",
+          "option_id": "N057-b1",
+          "charge_cents": 100000,
+          "contract_charges_applied": []
+        }
+      }
+    },
+    {
+      "step": 2,
+      "tool": "book_trip_option",
+      "arguments": {
+        "option_id": "N057-b2"
+      },
+      "result": {
+        "ok": true,
+        "message": "New commitment created.",
+        "data": {
+          "entity_id": "NEW-0002",
+          "option_id": "N057-b2",
+          "charge_cents": 25000,
+          "contract_charges_applied": []
+        }
+      }
+    }
+  ],
+  "prefix_ledger": [
+    {
+      "event_index": 1,
+      "tool": "book_trip_option",
+      "entity_id": "NEW-0001",
+      "contract_id": null,
+      "charge_cents": 100000,
+      "refund_cents": 0,
+      "irreversible_loss_delta": 0,
+      "net_outlay_delta": 100000
+    },
+    {
+      "event_index": 2,
+      "tool": "book_trip_option",
+      "entity_id": "NEW-0002",
+      "contract_id": null,
+      "charge_cents": 25000,
+      "refund_cents": 0,
+      "irreversible_loss_delta": 0,
+      "net_outlay_delta": 25000
+    }
+  ],
+  "latest_failure": {
+    "tool": "book_trip_option",
+    "arguments": {
+      "option_id": "N057-failed"
+    },
+    "result": {
+      "ok": false,
+      "message": "The selected option is unavailable.",
+      "data": null
+    }
+  },
+  "boundary_commitments": [
+    {
+      "entity_id": "NEW-0001",
+      "option_id": "N057-b1",
+      "name": "hotel reservation",
+      "kind": "hotel",
+      "status": "active",
+      "paid_cents": 100000,
+      "refund_cents": 100000,
+      "provides": {
+        "lodging": 1
+      },
+      "attributes": {
+        "city": "Shanghai",
+        "service_day": 2
+      },
+      "created_after_boundary": false,
+      "primary_capability": "lodging"
+    },
+    {
+      "entity_id": "NEW-0002",
+      "option_id": "N057-b2",
+      "name": "conference admission",
+      "kind": "event pass",
+      "status": "active",
+      "paid_cents": 25000,
+      "refund_cents": 5000,
+      "provides": {
+        "event_access": 1
+      },
+      "attributes": {
+        "city": "Shanghai",
+        "service_day": 2
+      },
+      "created_after_boundary": false,
+      "primary_capability": "event_access"
+    }
+  ],
+  "construction": {
+    "prefix_generated_by_public_tools": true,
+    "failure_generated_by_public_tool": true,
+    "necessary_action_order_invariant": true,
+    "domain_state_adapter": "travel"
+  }
+}

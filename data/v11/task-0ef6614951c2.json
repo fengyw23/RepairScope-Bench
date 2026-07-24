@@ -1,0 +1,527 @@
+{
+  "schema_version": "1.1",
+  "task_id": "task-0ef6614951c2",
+  "domain": "saas",
+  "environment_type": "repairscope.saas.state.v1.1",
+  "split": "dev",
+  "now": "2026-09-01T09:00:00+08:00",
+  "max_turns": 15,
+  "instruction": "Complete the clinical reporting workspace at Health tenant for the enterprise administrator. The successful commitments in the activity log are already paid and active, but the latest required integration operation failed. The final state must preserve these required functions exactly as specified: core_subscription=1, security_coverage=1, data_connector=1, required_integration=1. The missing service must be available by day 4 at Health tenant. Services bound through the dependency chain must remain valid for the final primary commitment. Investigate the authoritative records and execute the best supported recovery without asking me to choose.",
+  "inventory": [
+    {
+      "option_id": "N015-b1",
+      "name": "core subscription",
+      "kind": "subscription",
+      "available": false,
+      "upfront_cents": 100000,
+      "monthly_cents": 0,
+      "horizon_months": 0,
+      "refund_after_purchase_cents": 100000,
+      "provides": {
+        "core_subscription": 1
+      },
+      "attributes": {
+        "tenant_region": "Health tenant",
+        "activation_day": 2
+      }
+    },
+    {
+      "option_id": "N015-b2",
+      "name": "security package",
+      "kind": "security service",
+      "available": false,
+      "upfront_cents": 30000,
+      "monthly_cents": 0,
+      "horizon_months": 0,
+      "refund_after_purchase_cents": 30000,
+      "provides": {
+        "security_coverage": 1
+      },
+      "attributes": {
+        "tenant_region": "Health tenant",
+        "activation_day": 2
+      }
+    },
+    {
+      "option_id": "N015-b3",
+      "name": "data connector",
+      "kind": "connector",
+      "available": false,
+      "upfront_cents": 30000,
+      "monthly_cents": 0,
+      "horizon_months": 0,
+      "refund_after_purchase_cents": 30000,
+      "provides": {
+        "data_connector": 1
+      },
+      "attributes": {
+        "tenant_region": "Health tenant",
+        "activation_day": 2
+      }
+    },
+    {
+      "option_id": "N015-local",
+      "name": "standalone required integration",
+      "kind": "integration",
+      "available": true,
+      "upfront_cents": 70000,
+      "monthly_cents": 0,
+      "horizon_months": 0,
+      "refund_after_purchase_cents": 0,
+      "provides": {
+        "required_integration": 1
+      },
+      "attributes": {
+        "tenant_region": "Health tenant",
+        "activation_day": 2
+      }
+    },
+    {
+      "option_id": "N015-alt1",
+      "name": "replacement core subscription with required integration",
+      "kind": "subscription bundle",
+      "available": true,
+      "upfront_cents": 20000,
+      "monthly_cents": 0,
+      "horizon_months": 0,
+      "refund_after_purchase_cents": 0,
+      "provides": {
+        "core_subscription": 1,
+        "required_integration": 1
+      },
+      "attributes": {
+        "tenant_region": "Health tenant",
+        "activation_day": 2
+      }
+    },
+    {
+      "option_id": "N015-aux1",
+      "name": "migrated security package",
+      "kind": "security service",
+      "available": true,
+      "upfront_cents": 50000,
+      "monthly_cents": 0,
+      "horizon_months": 0,
+      "refund_after_purchase_cents": 0,
+      "provides": {
+        "security_coverage": 1
+      },
+      "attributes": {
+        "tenant_region": "Health tenant",
+        "activation_day": 2
+      }
+    },
+    {
+      "option_id": "N015-aux2",
+      "name": "rebound data connector",
+      "kind": "connector",
+      "available": true,
+      "upfront_cents": 50000,
+      "monthly_cents": 0,
+      "horizon_months": 0,
+      "refund_after_purchase_cents": 0,
+      "provides": {
+        "data_connector": 1
+      },
+      "attributes": {
+        "tenant_region": "Health tenant",
+        "activation_day": 2
+      }
+    },
+    {
+      "option_id": "N015-alt2",
+      "name": "expedited required integration",
+      "kind": "integration",
+      "available": true,
+      "upfront_cents": 95000,
+      "monthly_cents": 0,
+      "horizon_months": 0,
+      "refund_after_purchase_cents": 0,
+      "provides": {
+        "required_integration": 1
+      },
+      "attributes": {
+        "tenant_region": "Health tenant",
+        "activation_day": 2
+      }
+    },
+    {
+      "option_id": "N015-continuity",
+      "name": "managed workspace migration package",
+      "kind": "continuity service",
+      "available": true,
+      "upfront_cents": 602055,
+      "monthly_cents": 0,
+      "horizon_months": 0,
+      "refund_after_purchase_cents": 0,
+      "provides": {
+        "core_subscription": 1,
+        "security_coverage": 1,
+        "data_connector": 1,
+        "required_integration": 1
+      },
+      "attributes": {
+        "tenant_region": "Health tenant",
+        "activation_day": 3
+      }
+    },
+    {
+      "option_id": "N015-failed",
+      "name": "unavailable required integration",
+      "kind": "integration",
+      "available": false,
+      "upfront_cents": 18000,
+      "monthly_cents": 0,
+      "horizon_months": 0,
+      "refund_after_purchase_cents": 0,
+      "provides": {
+        "required_integration": 1
+      },
+      "attributes": {
+        "tenant_region": "Health tenant",
+        "activation_day": 2
+      }
+    },
+    {
+      "option_id": "N015-wrong-site",
+      "name": "cheap service for a different tenant_region",
+      "kind": "integration",
+      "available": true,
+      "upfront_cents": 5000,
+      "monthly_cents": 0,
+      "horizon_months": 0,
+      "refund_after_purchase_cents": 0,
+      "provides": {
+        "required_integration": 1
+      },
+      "attributes": {
+        "tenant_region": "Other Health tenant",
+        "activation_day": 2
+      }
+    },
+    {
+      "option_id": "N015-late",
+      "name": "late required integration",
+      "kind": "integration",
+      "available": true,
+      "upfront_cents": 4000,
+      "monthly_cents": 0,
+      "horizon_months": 0,
+      "refund_after_purchase_cents": 0,
+      "provides": {
+        "required_integration": 1
+      },
+      "attributes": {
+        "tenant_region": "Health tenant",
+        "activation_day": 9
+      }
+    }
+  ],
+  "contracts": [],
+  "compatibility_rules": [
+    {
+      "type": "requires_any",
+      "if_option_id": "N015-b2",
+      "any_option_ids": [
+        "N015-b1",
+        "N015-alt1"
+      ]
+    },
+    {
+      "type": "requires_any",
+      "if_option_id": "N015-b3",
+      "any_option_ids": [
+        "N015-b2"
+      ]
+    },
+    {
+      "type": "requires_any",
+      "if_option_id": "N015-aux1",
+      "any_option_ids": [
+        "N015-b1",
+        "N015-alt1"
+      ]
+    },
+    {
+      "type": "requires_any",
+      "if_option_id": "N015-aux2",
+      "any_option_ids": [
+        "N015-aux1"
+      ]
+    }
+  ],
+  "hard_goals": {
+    "capabilities": [
+      {
+        "capability": "core_subscription",
+        "min": 1,
+        "max": 1
+      },
+      {
+        "capability": "security_coverage",
+        "min": 1,
+        "max": 1
+      },
+      {
+        "capability": "data_connector",
+        "min": 1,
+        "max": 1
+      },
+      {
+        "capability": "required_integration",
+        "min": 1,
+        "max": 1
+      }
+    ],
+    "attribute_requirements": [
+      {
+        "capability": "core_subscription",
+        "attribute": "tenant_region",
+        "op": "eq",
+        "value": "Health tenant"
+      },
+      {
+        "capability": "security_coverage",
+        "attribute": "tenant_region",
+        "op": "eq",
+        "value": "Health tenant"
+      },
+      {
+        "capability": "data_connector",
+        "attribute": "tenant_region",
+        "op": "eq",
+        "value": "Health tenant"
+      },
+      {
+        "capability": "required_integration",
+        "attribute": "tenant_region",
+        "op": "eq",
+        "value": "Health tenant"
+      },
+      {
+        "capability": "required_integration",
+        "attribute": "activation_day",
+        "op": "le",
+        "value": 4
+      }
+    ]
+  },
+  "initial_snapshot": {
+    "commitments": []
+  },
+  "initial_snapshot_sha256": "dbc26b7f61e91d0529291823abb38756f52a36dc52e819cf0a83abddfe598124",
+  "failure_snapshot": {
+    "commitments": [
+      {
+        "entity_id": "NEW-0001",
+        "option_id": "N015-b1",
+        "name": "core subscription",
+        "kind": "subscription",
+        "status": "active",
+        "paid_cents": 100000,
+        "refund_cents": 100000,
+        "provides": {
+          "core_subscription": 1
+        },
+        "attributes": {
+          "tenant_region": "Health tenant",
+          "activation_day": 2
+        },
+        "created_after_boundary": false
+      },
+      {
+        "entity_id": "NEW-0002",
+        "option_id": "N015-b2",
+        "name": "security package",
+        "kind": "security service",
+        "status": "active",
+        "paid_cents": 30000,
+        "refund_cents": 30000,
+        "provides": {
+          "security_coverage": 1
+        },
+        "attributes": {
+          "tenant_region": "Health tenant",
+          "activation_day": 2
+        },
+        "created_after_boundary": false
+      },
+      {
+        "entity_id": "NEW-0003",
+        "option_id": "N015-b3",
+        "name": "data connector",
+        "kind": "connector",
+        "status": "active",
+        "paid_cents": 30000,
+        "refund_cents": 30000,
+        "provides": {
+          "data_connector": 1
+        },
+        "attributes": {
+          "tenant_region": "Health tenant",
+          "activation_day": 2
+        },
+        "created_after_boundary": false
+      }
+    ]
+  },
+  "snapshot_sha256": "0303157e9499947bf6021e3210e11943034393b126302716d45a844433de2a07",
+  "pre_failure_trace": [
+    {
+      "step": 1,
+      "tool": "activate_service_option",
+      "arguments": {
+        "service_option_id": "N015-b1"
+      },
+      "result": {
+        "ok": true,
+        "message": "New commitment created.",
+        "data": {
+          "entity_id": "NEW-0001",
+          "option_id": "N015-b1",
+          "charge_cents": 100000,
+          "contract_charges_applied": []
+        }
+      }
+    },
+    {
+      "step": 2,
+      "tool": "activate_service_option",
+      "arguments": {
+        "service_option_id": "N015-b2"
+      },
+      "result": {
+        "ok": true,
+        "message": "New commitment created.",
+        "data": {
+          "entity_id": "NEW-0002",
+          "option_id": "N015-b2",
+          "charge_cents": 30000,
+          "contract_charges_applied": []
+        }
+      }
+    },
+    {
+      "step": 3,
+      "tool": "activate_service_option",
+      "arguments": {
+        "service_option_id": "N015-b3"
+      },
+      "result": {
+        "ok": true,
+        "message": "New commitment created.",
+        "data": {
+          "entity_id": "NEW-0003",
+          "option_id": "N015-b3",
+          "charge_cents": 30000,
+          "contract_charges_applied": []
+        }
+      }
+    }
+  ],
+  "prefix_ledger": [
+    {
+      "event_index": 1,
+      "tool": "activate_service_option",
+      "entity_id": "NEW-0001",
+      "contract_id": null,
+      "charge_cents": 100000,
+      "refund_cents": 0,
+      "irreversible_loss_delta": 0,
+      "net_outlay_delta": 100000
+    },
+    {
+      "event_index": 2,
+      "tool": "activate_service_option",
+      "entity_id": "NEW-0002",
+      "contract_id": null,
+      "charge_cents": 30000,
+      "refund_cents": 0,
+      "irreversible_loss_delta": 0,
+      "net_outlay_delta": 30000
+    },
+    {
+      "event_index": 3,
+      "tool": "activate_service_option",
+      "entity_id": "NEW-0003",
+      "contract_id": null,
+      "charge_cents": 30000,
+      "refund_cents": 0,
+      "irreversible_loss_delta": 0,
+      "net_outlay_delta": 30000
+    }
+  ],
+  "latest_failure": {
+    "tool": "activate_service_option",
+    "arguments": {
+      "service_option_id": "N015-failed"
+    },
+    "result": {
+      "ok": false,
+      "message": "The selected option is unavailable.",
+      "data": null
+    }
+  },
+  "boundary_commitments": [
+    {
+      "entity_id": "NEW-0001",
+      "option_id": "N015-b1",
+      "name": "core subscription",
+      "kind": "subscription",
+      "status": "active",
+      "paid_cents": 100000,
+      "refund_cents": 100000,
+      "provides": {
+        "core_subscription": 1
+      },
+      "attributes": {
+        "tenant_region": "Health tenant",
+        "activation_day": 2
+      },
+      "created_after_boundary": false,
+      "primary_capability": "core_subscription"
+    },
+    {
+      "entity_id": "NEW-0002",
+      "option_id": "N015-b2",
+      "name": "security package",
+      "kind": "security service",
+      "status": "active",
+      "paid_cents": 30000,
+      "refund_cents": 30000,
+      "provides": {
+        "security_coverage": 1
+      },
+      "attributes": {
+        "tenant_region": "Health tenant",
+        "activation_day": 2
+      },
+      "created_after_boundary": false,
+      "primary_capability": "security_coverage"
+    },
+    {
+      "entity_id": "NEW-0003",
+      "option_id": "N015-b3",
+      "name": "data connector",
+      "kind": "connector",
+      "status": "active",
+      "paid_cents": 30000,
+      "refund_cents": 30000,
+      "provides": {
+        "data_connector": 1
+      },
+      "attributes": {
+        "tenant_region": "Health tenant",
+        "activation_day": 2
+      },
+      "created_after_boundary": false,
+      "primary_capability": "data_connector"
+    }
+  ],
+  "construction": {
+    "prefix_generated_by_public_tools": true,
+    "failure_generated_by_public_tool": true,
+    "necessary_action_order_invariant": true,
+    "domain_state_adapter": "saas"
+  }
+}

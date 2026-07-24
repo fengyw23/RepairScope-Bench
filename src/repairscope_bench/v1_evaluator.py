@@ -11,6 +11,7 @@ def evaluate_v1_environment(
     task: dict[str, Any],
     environment: CommitmentRecoveryEnvironment,
 ) -> dict[str, Any]:
+    metadata = task.get("_benchmark_metadata", {})
     oracle = solve_task_v1(task)
     goal_pass, failures = environment.goal_status()
     observed = environment.economic_vector
@@ -28,12 +29,18 @@ def evaluate_v1_environment(
     scope_on_frontier = scope in oracle.optimal_scopes
     return {
         "task_id": task["task_id"],
-        "scenario_id": task["scenario_id"],
-        "counterfactual_pair_id": task["counterfactual_pair_id"],
-        "variant_role": task["variant_role"],
-        "reasoning_structure": task["reasoning_structure"],
+        "scenario_id": task.get("scenario_id", metadata.get("scenario_id")),
+        "counterfactual_pair_id": task.get(
+            "counterfactual_pair_id", metadata.get("pair_id")
+        ),
+        "variant_role": task.get("variant_role", metadata.get("variant_role")),
+        "reasoning_structure": task.get(
+            "reasoning_structure", metadata.get("reasoning_structure")
+        ),
         "domain": task["domain"],
-        "difficulty_level": task["difficulty_level"],
+        "difficulty_level": task.get(
+            "difficulty_level", metadata.get("difficulty_level")
+        ),
         "goal_pass": goal_pass,
         "success": goal_pass,
         "non_dominated_repair": non_dominated,

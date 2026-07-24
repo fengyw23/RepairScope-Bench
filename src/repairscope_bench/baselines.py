@@ -7,7 +7,7 @@ from .oracle import solve_task
 
 
 def make_actions(task: dict[str, Any], strategy: str) -> list[dict[str, Any]]:
-    if task.get("schema_version") == "1.0":
+    if task.get("schema_version") in {"1.0", "1.1"}:
         return _make_v1_calls(task, strategy)
     if task.get("schema_version") == "0.6":
         return _make_v06_calls(task, strategy)
@@ -81,7 +81,10 @@ def _make_v1_calls(
     elif strategy in {"sticker_price", "global_cost"}:
         selected = min(
             candidates,
-            key=lambda item: _v1_active_value(task, item["active_option_ids"]),
+            key=lambda item: (
+                _v1_new_purchase_sticker(task, item["active_option_ids"]),
+                len(item["changed_boundary_entities"]),
+            ),
         )
     elif strategy == "refund_only":
         boundary = {
@@ -125,6 +128,26 @@ def _v1_active_value(
         }
     )
     return sum(paid[item] for item in active_option_ids)
+
+
+def _v1_new_purchase_sticker(
+    task: dict[str, Any], active_option_ids: list[str]
+) -> int:
+    """Naive advertised price, deliberately ignoring refunds and contracts."""
+    boundary_options = {
+        item["option_id"] for item in task["boundary_commitments"]
+    }
+    prices = {
+        item["option_id"]: int(item["upfront_cents"])
+        + int(item.get("monthly_cents", 0))
+        * int(item.get("horizon_months", 0))
+        for item in task["inventory"]
+    }
+    return sum(
+        prices[option_id]
+        for option_id in active_option_ids
+        if option_id not in boundary_options
+    )
 
 
 def _make_v06_calls(

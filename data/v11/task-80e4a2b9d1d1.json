@@ -1,0 +1,386 @@
+{
+  "schema_version": "1.1",
+  "task_id": "task-80e4a2b9d1d1",
+  "domain": "saas",
+  "environment_type": "repairscope.saas.state.v1.1",
+  "split": "test",
+  "now": "2026-09-01T09:00:00+08:00",
+  "max_turns": 15,
+  "instruction": "Complete the clinical reporting workspace at Health tenant for the enterprise administrator. The successful commitments in the activity log are already paid and active, but the latest required integration operation failed. The final state must preserve these required functions exactly as specified: core_subscription=1, security_coverage=1, required_integration=1. The missing service must be available by day 4 at Health tenant. Any order-level credit threshold and clawback must be evaluated against the retained commitments. Investigate the authoritative records and execute the best supported recovery without asking me to choose.",
+  "inventory": [
+    {
+      "option_id": "N031-b1",
+      "name": "core subscription",
+      "kind": "subscription",
+      "available": false,
+      "upfront_cents": 400000,
+      "monthly_cents": 0,
+      "horizon_months": 0,
+      "refund_after_purchase_cents": 400000,
+      "provides": {
+        "core_subscription": 1
+      },
+      "attributes": {
+        "tenant_region": "Health tenant",
+        "activation_day": 2
+      }
+    },
+    {
+      "option_id": "N031-b2",
+      "name": "security package",
+      "kind": "security service",
+      "available": false,
+      "upfront_cents": 200000,
+      "monthly_cents": 0,
+      "horizon_months": 0,
+      "refund_after_purchase_cents": 150000,
+      "provides": {
+        "security_coverage": 1
+      },
+      "attributes": {
+        "tenant_region": "Health tenant",
+        "activation_day": 2
+      }
+    },
+    {
+      "option_id": "N031-local",
+      "name": "standalone required integration",
+      "kind": "integration",
+      "available": true,
+      "upfront_cents": 90000,
+      "monthly_cents": 0,
+      "horizon_months": 0,
+      "refund_after_purchase_cents": 0,
+      "provides": {
+        "required_integration": 1
+      },
+      "attributes": {
+        "tenant_region": "Health tenant",
+        "activation_day": 2
+      }
+    },
+    {
+      "option_id": "N031-alt1",
+      "name": "replacement core subscription with required integration",
+      "kind": "subscription bundle",
+      "available": true,
+      "upfront_cents": 440000,
+      "monthly_cents": 0,
+      "horizon_months": 0,
+      "refund_after_purchase_cents": 0,
+      "provides": {
+        "core_subscription": 1,
+        "required_integration": 1
+      },
+      "attributes": {
+        "tenant_region": "Health tenant",
+        "activation_day": 2
+      }
+    },
+    {
+      "option_id": "N031-alt2",
+      "name": "replacement security package with required integration",
+      "kind": "security service continuity bundle",
+      "available": true,
+      "upfront_cents": 100000,
+      "monthly_cents": 0,
+      "horizon_months": 0,
+      "refund_after_purchase_cents": 0,
+      "provides": {
+        "security_coverage": 1,
+        "required_integration": 1
+      },
+      "attributes": {
+        "tenant_region": "Health tenant",
+        "activation_day": 2
+      }
+    },
+    {
+      "option_id": "N031-continuity",
+      "name": "managed workspace migration package",
+      "kind": "continuity service",
+      "available": true,
+      "upfront_cents": 604247,
+      "monthly_cents": 0,
+      "horizon_months": 0,
+      "refund_after_purchase_cents": 0,
+      "provides": {
+        "core_subscription": 1,
+        "security_coverage": 1,
+        "required_integration": 1
+      },
+      "attributes": {
+        "tenant_region": "Health tenant",
+        "activation_day": 3
+      }
+    },
+    {
+      "option_id": "N031-failed",
+      "name": "unavailable required integration",
+      "kind": "integration",
+      "available": false,
+      "upfront_cents": 18000,
+      "monthly_cents": 0,
+      "horizon_months": 0,
+      "refund_after_purchase_cents": 0,
+      "provides": {
+        "required_integration": 1
+      },
+      "attributes": {
+        "tenant_region": "Health tenant",
+        "activation_day": 2
+      }
+    },
+    {
+      "option_id": "N031-wrong-site",
+      "name": "cheap service for a different tenant_region",
+      "kind": "integration",
+      "available": true,
+      "upfront_cents": 5000,
+      "monthly_cents": 0,
+      "horizon_months": 0,
+      "refund_after_purchase_cents": 0,
+      "provides": {
+        "required_integration": 1
+      },
+      "attributes": {
+        "tenant_region": "Other Health tenant",
+        "activation_day": 2
+      }
+    },
+    {
+      "option_id": "N031-late",
+      "name": "late required integration",
+      "kind": "integration",
+      "available": true,
+      "upfront_cents": 4000,
+      "monthly_cents": 0,
+      "horizon_months": 0,
+      "refund_after_purchase_cents": 0,
+      "provides": {
+        "required_integration": 1
+      },
+      "attributes": {
+        "tenant_region": "Health tenant",
+        "activation_day": 9
+      }
+    }
+  ],
+  "contracts": [
+    {
+      "contract_id": "N031-threshold",
+      "description": "An 80000-cent credit is clawed back if retained paid value across the listed commitments falls below 500000 cents.",
+      "trigger": {
+        "type": "retained_paid_below",
+        "threshold_cents": 500000,
+        "entity_ids": [
+          "NEW-0001",
+          "NEW-0002"
+        ]
+      },
+      "charge_cents": 80000
+    }
+  ],
+  "compatibility_rules": [],
+  "hard_goals": {
+    "capabilities": [
+      {
+        "capability": "core_subscription",
+        "min": 1,
+        "max": 1
+      },
+      {
+        "capability": "security_coverage",
+        "min": 1,
+        "max": 1
+      },
+      {
+        "capability": "required_integration",
+        "min": 1,
+        "max": 1
+      }
+    ],
+    "attribute_requirements": [
+      {
+        "capability": "core_subscription",
+        "attribute": "tenant_region",
+        "op": "eq",
+        "value": "Health tenant"
+      },
+      {
+        "capability": "security_coverage",
+        "attribute": "tenant_region",
+        "op": "eq",
+        "value": "Health tenant"
+      },
+      {
+        "capability": "required_integration",
+        "attribute": "tenant_region",
+        "op": "eq",
+        "value": "Health tenant"
+      },
+      {
+        "capability": "required_integration",
+        "attribute": "activation_day",
+        "op": "le",
+        "value": 4
+      }
+    ]
+  },
+  "initial_snapshot": {
+    "commitments": []
+  },
+  "initial_snapshot_sha256": "dbc26b7f61e91d0529291823abb38756f52a36dc52e819cf0a83abddfe598124",
+  "failure_snapshot": {
+    "commitments": [
+      {
+        "entity_id": "NEW-0001",
+        "option_id": "N031-b1",
+        "name": "core subscription",
+        "kind": "subscription",
+        "status": "active",
+        "paid_cents": 400000,
+        "refund_cents": 400000,
+        "provides": {
+          "core_subscription": 1
+        },
+        "attributes": {
+          "tenant_region": "Health tenant",
+          "activation_day": 2
+        },
+        "created_after_boundary": false
+      },
+      {
+        "entity_id": "NEW-0002",
+        "option_id": "N031-b2",
+        "name": "security package",
+        "kind": "security service",
+        "status": "active",
+        "paid_cents": 200000,
+        "refund_cents": 150000,
+        "provides": {
+          "security_coverage": 1
+        },
+        "attributes": {
+          "tenant_region": "Health tenant",
+          "activation_day": 2
+        },
+        "created_after_boundary": false
+      }
+    ]
+  },
+  "snapshot_sha256": "7d3eeb70e79500ef35381017883a0a75a1ca4d7bc953891374200f0246554e83",
+  "pre_failure_trace": [
+    {
+      "step": 1,
+      "tool": "activate_service_option",
+      "arguments": {
+        "service_option_id": "N031-b1"
+      },
+      "result": {
+        "ok": true,
+        "message": "New commitment created.",
+        "data": {
+          "entity_id": "NEW-0001",
+          "option_id": "N031-b1",
+          "charge_cents": 400000,
+          "contract_charges_applied": []
+        }
+      }
+    },
+    {
+      "step": 2,
+      "tool": "activate_service_option",
+      "arguments": {
+        "service_option_id": "N031-b2"
+      },
+      "result": {
+        "ok": true,
+        "message": "New commitment created.",
+        "data": {
+          "entity_id": "NEW-0002",
+          "option_id": "N031-b2",
+          "charge_cents": 200000,
+          "contract_charges_applied": []
+        }
+      }
+    }
+  ],
+  "prefix_ledger": [
+    {
+      "event_index": 1,
+      "tool": "activate_service_option",
+      "entity_id": "NEW-0001",
+      "contract_id": null,
+      "charge_cents": 400000,
+      "refund_cents": 0,
+      "irreversible_loss_delta": 0,
+      "net_outlay_delta": 400000
+    },
+    {
+      "event_index": 2,
+      "tool": "activate_service_option",
+      "entity_id": "NEW-0002",
+      "contract_id": null,
+      "charge_cents": 200000,
+      "refund_cents": 0,
+      "irreversible_loss_delta": 0,
+      "net_outlay_delta": 200000
+    }
+  ],
+  "latest_failure": {
+    "tool": "activate_service_option",
+    "arguments": {
+      "service_option_id": "N031-failed"
+    },
+    "result": {
+      "ok": false,
+      "message": "The selected option is unavailable.",
+      "data": null
+    }
+  },
+  "boundary_commitments": [
+    {
+      "entity_id": "NEW-0001",
+      "option_id": "N031-b1",
+      "name": "core subscription",
+      "kind": "subscription",
+      "status": "active",
+      "paid_cents": 400000,
+      "refund_cents": 400000,
+      "provides": {
+        "core_subscription": 1
+      },
+      "attributes": {
+        "tenant_region": "Health tenant",
+        "activation_day": 2
+      },
+      "created_after_boundary": false,
+      "primary_capability": "core_subscription"
+    },
+    {
+      "entity_id": "NEW-0002",
+      "option_id": "N031-b2",
+      "name": "security package",
+      "kind": "security service",
+      "status": "active",
+      "paid_cents": 200000,
+      "refund_cents": 150000,
+      "provides": {
+        "security_coverage": 1
+      },
+      "attributes": {
+        "tenant_region": "Health tenant",
+        "activation_day": 2
+      },
+      "created_after_boundary": false,
+      "primary_capability": "security_coverage"
+    }
+  ],
+  "construction": {
+    "prefix_generated_by_public_tools": true,
+    "failure_generated_by_public_tool": true,
+    "necessary_action_order_invariant": true,
+    "domain_state_adapter": "saas"
+  }
+}

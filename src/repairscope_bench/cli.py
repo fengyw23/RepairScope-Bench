@@ -20,7 +20,7 @@ def main(argv: list[str] | None = None) -> int:
     subparsers = parser.add_subparsers(dest="command", required=True)
 
     validate_parser = subparsers.add_parser("validate")
-    validate_parser.add_argument("data", nargs="?", default="data/v1")
+    validate_parser.add_argument("data", nargs="?", default="data/v11")
     validate_parser.add_argument("--gold")
 
     oracle_parser = subparsers.add_parser("oracle")
@@ -34,7 +34,7 @@ def main(argv: list[str] | None = None) -> int:
     evaluate_parser.add_argument("actions")
 
     baselines_parser = subparsers.add_parser("run-baselines")
-    baselines_parser.add_argument("data", nargs="?", default="data/v1")
+    baselines_parser.add_argument("data", nargs="?", default="data/v11")
 
     model_parser = subparsers.add_parser("run-model")
     model_parser.add_argument("task")
@@ -43,7 +43,7 @@ def main(argv: list[str] | None = None) -> int:
     model_parser.add_argument("--overwrite", action="store_true")
 
     suite_parser = subparsers.add_parser("run-suite")
-    suite_parser.add_argument("data", nargs="?", default="data/v1")
+    suite_parser.add_argument("data", nargs="?", default="data/v11")
     _add_provider_arguments(suite_parser)
     suite_parser.add_argument("--output-dir", required=True)
     suite_parser.add_argument(
@@ -64,7 +64,7 @@ def main(argv: list[str] | None = None) -> int:
         return _print_result(solve_task(load_task(args.task)).as_dict())
     if args.command == "inspect":
         task = load_task(args.task)
-        if task["schema_version"] in {"0.6", "1.0"}:
+        if task["schema_version"] in {"0.6", "1.0", "1.1"}:
             return _print_result(
                 {
                     "task_id": task["task_id"],
@@ -109,7 +109,7 @@ def main(argv: list[str] | None = None) -> int:
                 "outlay_only",
                 "pareto_oracle",
             ]
-            if tasks and tasks[0]["schema_version"] == "1.0"
+            if tasks and tasks[0]["schema_version"] in {"1.0", "1.1"}
             else
             [
                 "no_repair",

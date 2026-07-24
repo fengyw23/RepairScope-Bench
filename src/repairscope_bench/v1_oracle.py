@@ -246,6 +246,11 @@ def _assignment_goal_pass(
                 and not set(rule["all_option_ids"]).issubset(active_options)
             ):
                 return False
+        elif rule["type"] == "requires_bridge":
+            if set(rule["option_ids"]).issubset(active_options) and not (
+                active_options.intersection(rule["bridge_option_ids"])
+            ):
+                return False
     for requirement in task["hard_goals"].get("attribute_requirements", []):
         providers = [
             item
@@ -288,7 +293,17 @@ def _assignment_economics(
     for item in bought:
         outlay += int(item["paid_cents"])
     for contract in task["contracts"]:
-        if contract_triggered(contract["trigger"], changed, task["boundary_commitments"]):
+        if contract_triggered(
+            contract["trigger"],
+            changed,
+            task["boundary_commitments"],
+            {item["option_id"] for item in bought}
+            | {
+                item["option_id"]
+                for entity_id, item in boundary.items()
+                if entity_id not in changed
+            },
+        ):
             charge = int(contract["charge_cents"])
             loss += charge
             outlay += charge

@@ -1,0 +1,515 @@
+{
+  "schema_version": "1.1",
+  "task_id": "task-c475a6e12479",
+  "domain": "after_sales",
+  "environment_type": "repairscope.after_sales.state.v1.1",
+  "split": "heldout",
+  "now": "2026-09-01T09:00:00+08:00",
+  "max_turns": 15,
+  "instruction": "Complete the clinic cold-chain console at Clinic North for the procurement team. The successful commitments in the activity log are already paid and active, but the latest required compatible accessory operation failed. The final state must preserve these required functions exactly as specified: core_device=1, licensed_software=1, required_accessory=1, required_accessory_companion=1. The missing service must be available by day 4 at Clinic North. The missing service and its companion must form one compatible system; independently cheapest components may not coexist. Investigate the authoritative records and execute the best supported recovery without asking me to choose.",
+  "inventory": [
+    {
+      "option_id": "N058-b1",
+      "name": "approved core device",
+      "kind": "core device",
+      "available": false,
+      "upfront_cents": 100000,
+      "monthly_cents": 0,
+      "horizon_months": 0,
+      "refund_after_purchase_cents": 100000,
+      "provides": {
+        "core_device": 1
+      },
+      "attributes": {
+        "delivery_site": "Clinic North",
+        "delivery_day": 2
+      }
+    },
+    {
+      "option_id": "N058-b2",
+      "name": "bound software licence",
+      "kind": "software",
+      "available": false,
+      "upfront_cents": 25000,
+      "monthly_cents": 0,
+      "horizon_months": 0,
+      "refund_after_purchase_cents": 5000,
+      "provides": {
+        "licensed_software": 1
+      },
+      "attributes": {
+        "delivery_site": "Clinic North",
+        "delivery_day": 2
+      }
+    },
+    {
+      "option_id": "N058-local",
+      "name": "system-X required compatible accessory",
+      "kind": "accessory",
+      "available": true,
+      "upfront_cents": 30000,
+      "monthly_cents": 0,
+      "horizon_months": 0,
+      "refund_after_purchase_cents": 0,
+      "provides": {
+        "required_accessory": 1
+      },
+      "attributes": {
+        "delivery_site": "Clinic North",
+        "delivery_day": 2,
+        "system": "X"
+      }
+    },
+    {
+      "option_id": "N058-aux1",
+      "name": "system-X companion",
+      "kind": "companion service",
+      "available": true,
+      "upfront_cents": 40000,
+      "monthly_cents": 0,
+      "horizon_months": 0,
+      "refund_after_purchase_cents": 0,
+      "provides": {
+        "required_accessory_companion": 1
+      },
+      "attributes": {
+        "delivery_site": "Clinic North",
+        "delivery_day": 2,
+        "system": "X"
+      }
+    },
+    {
+      "option_id": "N058-alt1",
+      "name": "system-Y required compatible accessory",
+      "kind": "accessory",
+      "available": true,
+      "upfront_cents": 20000,
+      "monthly_cents": 0,
+      "horizon_months": 0,
+      "refund_after_purchase_cents": 0,
+      "provides": {
+        "required_accessory": 1
+      },
+      "attributes": {
+        "delivery_site": "Clinic North",
+        "delivery_day": 2,
+        "system": "Y"
+      }
+    },
+    {
+      "option_id": "N058-aux2",
+      "name": "system-Y companion",
+      "kind": "companion service",
+      "available": true,
+      "upfront_cents": 70000,
+      "monthly_cents": 0,
+      "horizon_months": 0,
+      "refund_after_purchase_cents": 0,
+      "provides": {
+        "required_accessory_companion": 1
+      },
+      "attributes": {
+        "delivery_site": "Clinic North",
+        "delivery_day": 2,
+        "system": "Y"
+      }
+    },
+    {
+      "option_id": "N058-alt2",
+      "name": "system-Y replacement approved core device",
+      "kind": "core device",
+      "available": true,
+      "upfront_cents": 90000,
+      "monthly_cents": 0,
+      "horizon_months": 0,
+      "refund_after_purchase_cents": 0,
+      "provides": {
+        "core_device": 1
+      },
+      "attributes": {
+        "delivery_site": "Clinic North",
+        "delivery_day": 2,
+        "system": "Y"
+      }
+    },
+    {
+      "option_id": "N058-alt3",
+      "name": "system-X replacement approved core device",
+      "kind": "core device",
+      "available": true,
+      "upfront_cents": 150000,
+      "monthly_cents": 0,
+      "horizon_months": 0,
+      "refund_after_purchase_cents": 0,
+      "provides": {
+        "core_device": 1
+      },
+      "attributes": {
+        "delivery_site": "Clinic North",
+        "delivery_day": 2,
+        "system": "X"
+      }
+    },
+    {
+      "option_id": "N058-bridge",
+      "name": "premium replacement bound software licence with both recovery services",
+      "kind": "software continuity bundle",
+      "available": true,
+      "upfront_cents": 300000,
+      "monthly_cents": 0,
+      "horizon_months": 0,
+      "refund_after_purchase_cents": 0,
+      "provides": {
+        "licensed_software": 1,
+        "required_accessory": 1,
+        "required_accessory_companion": 1
+      },
+      "attributes": {
+        "delivery_site": "Clinic North",
+        "delivery_day": 2
+      }
+    },
+    {
+      "option_id": "N058-continuity",
+      "name": "certified replacement equipment bundle",
+      "kind": "continuity service",
+      "available": true,
+      "upfront_cents": 607946,
+      "monthly_cents": 0,
+      "horizon_months": 0,
+      "refund_after_purchase_cents": 0,
+      "provides": {
+        "core_device": 1,
+        "licensed_software": 1,
+        "required_accessory": 1,
+        "required_accessory_companion": 1
+      },
+      "attributes": {
+        "delivery_site": "Clinic North",
+        "delivery_day": 3
+      }
+    },
+    {
+      "option_id": "N058-failed",
+      "name": "unavailable required compatible accessory",
+      "kind": "accessory",
+      "available": false,
+      "upfront_cents": 18000,
+      "monthly_cents": 0,
+      "horizon_months": 0,
+      "refund_after_purchase_cents": 0,
+      "provides": {
+        "required_accessory": 1
+      },
+      "attributes": {
+        "delivery_site": "Clinic North",
+        "delivery_day": 2
+      }
+    },
+    {
+      "option_id": "N058-wrong-site",
+      "name": "cheap service for a different delivery_site",
+      "kind": "accessory",
+      "available": true,
+      "upfront_cents": 5000,
+      "monthly_cents": 0,
+      "horizon_months": 0,
+      "refund_after_purchase_cents": 0,
+      "provides": {
+        "required_accessory": 1
+      },
+      "attributes": {
+        "delivery_site": "Other Clinic North",
+        "delivery_day": 2
+      }
+    },
+    {
+      "option_id": "N058-late",
+      "name": "late required compatible accessory",
+      "kind": "accessory",
+      "available": true,
+      "upfront_cents": 4000,
+      "monthly_cents": 0,
+      "horizon_months": 0,
+      "refund_after_purchase_cents": 0,
+      "provides": {
+        "required_accessory": 1
+      },
+      "attributes": {
+        "delivery_site": "Clinic North",
+        "delivery_day": 9
+      }
+    }
+  ],
+  "contracts": [],
+  "compatibility_rules": [
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "N058-local",
+        "N058-aux2"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "N058-alt1",
+        "N058-aux1"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "N058-b1",
+        "N058-alt1"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "N058-b1",
+        "N058-aux2"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "N058-alt2",
+        "N058-local"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "N058-alt2",
+        "N058-aux1"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "N058-alt3",
+        "N058-alt1"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "N058-alt3",
+        "N058-aux2"
+      ]
+    }
+  ],
+  "hard_goals": {
+    "capabilities": [
+      {
+        "capability": "core_device",
+        "min": 1,
+        "max": 1
+      },
+      {
+        "capability": "licensed_software",
+        "min": 1,
+        "max": 1
+      },
+      {
+        "capability": "required_accessory",
+        "min": 1,
+        "max": 1
+      },
+      {
+        "capability": "required_accessory_companion",
+        "min": 1,
+        "max": 1
+      }
+    ],
+    "attribute_requirements": [
+      {
+        "capability": "core_device",
+        "attribute": "delivery_site",
+        "op": "eq",
+        "value": "Clinic North"
+      },
+      {
+        "capability": "licensed_software",
+        "attribute": "delivery_site",
+        "op": "eq",
+        "value": "Clinic North"
+      },
+      {
+        "capability": "required_accessory",
+        "attribute": "delivery_site",
+        "op": "eq",
+        "value": "Clinic North"
+      },
+      {
+        "capability": "required_accessory_companion",
+        "attribute": "delivery_site",
+        "op": "eq",
+        "value": "Clinic North"
+      },
+      {
+        "capability": "required_accessory",
+        "attribute": "delivery_day",
+        "op": "le",
+        "value": 4
+      }
+    ]
+  },
+  "initial_snapshot": {
+    "commitments": []
+  },
+  "initial_snapshot_sha256": "dbc26b7f61e91d0529291823abb38756f52a36dc52e819cf0a83abddfe598124",
+  "failure_snapshot": {
+    "commitments": [
+      {
+        "entity_id": "NEW-0001",
+        "option_id": "N058-b1",
+        "name": "approved core device",
+        "kind": "core device",
+        "status": "active",
+        "paid_cents": 100000,
+        "refund_cents": 100000,
+        "provides": {
+          "core_device": 1
+        },
+        "attributes": {
+          "delivery_site": "Clinic North",
+          "delivery_day": 2
+        },
+        "created_after_boundary": false
+      },
+      {
+        "entity_id": "NEW-0002",
+        "option_id": "N058-b2",
+        "name": "bound software licence",
+        "kind": "software",
+        "status": "active",
+        "paid_cents": 25000,
+        "refund_cents": 5000,
+        "provides": {
+          "licensed_software": 1
+        },
+        "attributes": {
+          "delivery_site": "Clinic North",
+          "delivery_day": 2
+        },
+        "created_after_boundary": false
+      }
+    ]
+  },
+  "snapshot_sha256": "03807f61a599413e62ef086bec2571b16cd36beab07e89b62368057a78ddd46c",
+  "pre_failure_trace": [
+    {
+      "step": 1,
+      "tool": "purchase_product",
+      "arguments": {
+        "product_id": "N058-b1"
+      },
+      "result": {
+        "ok": true,
+        "message": "New commitment created.",
+        "data": {
+          "entity_id": "NEW-0001",
+          "option_id": "N058-b1",
+          "charge_cents": 100000,
+          "contract_charges_applied": []
+        }
+      }
+    },
+    {
+      "step": 2,
+      "tool": "purchase_product",
+      "arguments": {
+        "product_id": "N058-b2"
+      },
+      "result": {
+        "ok": true,
+        "message": "New commitment created.",
+        "data": {
+          "entity_id": "NEW-0002",
+          "option_id": "N058-b2",
+          "charge_cents": 25000,
+          "contract_charges_applied": []
+        }
+      }
+    }
+  ],
+  "prefix_ledger": [
+    {
+      "event_index": 1,
+      "tool": "purchase_product",
+      "entity_id": "NEW-0001",
+      "contract_id": null,
+      "charge_cents": 100000,
+      "refund_cents": 0,
+      "irreversible_loss_delta": 0,
+      "net_outlay_delta": 100000
+    },
+    {
+      "event_index": 2,
+      "tool": "purchase_product",
+      "entity_id": "NEW-0002",
+      "contract_id": null,
+      "charge_cents": 25000,
+      "refund_cents": 0,
+      "irreversible_loss_delta": 0,
+      "net_outlay_delta": 25000
+    }
+  ],
+  "latest_failure": {
+    "tool": "purchase_product",
+    "arguments": {
+      "product_id": "N058-failed"
+    },
+    "result": {
+      "ok": false,
+      "message": "The selected option is unavailable.",
+      "data": null
+    }
+  },
+  "boundary_commitments": [
+    {
+      "entity_id": "NEW-0001",
+      "option_id": "N058-b1",
+      "name": "approved core device",
+      "kind": "core device",
+      "status": "active",
+      "paid_cents": 100000,
+      "refund_cents": 100000,
+      "provides": {
+        "core_device": 1
+      },
+      "attributes": {
+        "delivery_site": "Clinic North",
+        "delivery_day": 2
+      },
+      "created_after_boundary": false,
+      "primary_capability": "core_device"
+    },
+    {
+      "entity_id": "NEW-0002",
+      "option_id": "N058-b2",
+      "name": "bound software licence",
+      "kind": "software",
+      "status": "active",
+      "paid_cents": 25000,
+      "refund_cents": 5000,
+      "provides": {
+        "licensed_software": 1
+      },
+      "attributes": {
+        "delivery_site": "Clinic North",
+        "delivery_day": 2
+      },
+      "created_after_boundary": false,
+      "primary_capability": "licensed_software"
+    }
+  ],
+  "construction": {
+    "prefix_generated_by_public_tools": true,
+    "failure_generated_by_public_tool": true,
+    "necessary_action_order_invariant": true,
+    "domain_state_adapter": "after_sales"
+  }
+}

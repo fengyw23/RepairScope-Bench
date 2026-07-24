@@ -1,0 +1,494 @@
+{
+  "schema_version": "1.1",
+  "task_id": "task-f831d3b5e220",
+  "domain": "after_sales",
+  "environment_type": "repairscope.after_sales.state.v1.1",
+  "split": "test",
+  "now": "2026-09-01T09:00:00+08:00",
+  "max_turns": 15,
+  "instruction": "Complete the clinic cold-chain console at Clinic North for the procurement team. The successful commitments in the activity log are already paid and active, but the latest required compatible accessory operation failed. The final state must preserve these required functions exactly as specified: core_device=1, service_cover=1, licensed_software=1, required_accessory=1. The missing service must be available by day 4 at Clinic North. Apply the contract's exact Boolean cancellation condition; do not treat 'any' and 'all' as interchangeable. Investigate the authoritative records and execute the best supported recovery without asking me to choose.",
+  "inventory": [
+    {
+      "option_id": "N034-b1",
+      "name": "approved core device",
+      "kind": "core device",
+      "available": false,
+      "upfront_cents": 80000,
+      "monthly_cents": 0,
+      "horizon_months": 0,
+      "refund_after_purchase_cents": 80000,
+      "provides": {
+        "core_device": 1
+      },
+      "attributes": {
+        "delivery_site": "Clinic North",
+        "delivery_day": 2
+      }
+    },
+    {
+      "option_id": "N034-b2",
+      "name": "service warranty",
+      "kind": "warranty",
+      "available": false,
+      "upfront_cents": 40000,
+      "monthly_cents": 0,
+      "horizon_months": 0,
+      "refund_after_purchase_cents": 40000,
+      "provides": {
+        "service_cover": 1
+      },
+      "attributes": {
+        "delivery_site": "Clinic North",
+        "delivery_day": 2
+      }
+    },
+    {
+      "option_id": "N034-b3",
+      "name": "bound software licence",
+      "kind": "software",
+      "available": false,
+      "upfront_cents": 100000,
+      "monthly_cents": 0,
+      "horizon_months": 0,
+      "refund_after_purchase_cents": 80000,
+      "provides": {
+        "licensed_software": 1
+      },
+      "attributes": {
+        "delivery_site": "Clinic North",
+        "delivery_day": 2
+      }
+    },
+    {
+      "option_id": "N034-local",
+      "name": "standalone required compatible accessory",
+      "kind": "accessory",
+      "available": true,
+      "upfront_cents": 70000,
+      "monthly_cents": 0,
+      "horizon_months": 0,
+      "refund_after_purchase_cents": 0,
+      "provides": {
+        "required_accessory": 1
+      },
+      "attributes": {
+        "delivery_site": "Clinic North",
+        "delivery_day": 2
+      }
+    },
+    {
+      "option_id": "N034-alt1",
+      "name": "new approved core device with required compatible accessory",
+      "kind": "core device package",
+      "available": true,
+      "upfront_cents": 50000,
+      "monthly_cents": 0,
+      "horizon_months": 0,
+      "refund_after_purchase_cents": 0,
+      "provides": {
+        "core_device": 1,
+        "required_accessory": 1
+      },
+      "attributes": {
+        "delivery_site": "Clinic North",
+        "delivery_day": 2
+      }
+    },
+    {
+      "option_id": "N034-alt2",
+      "name": "new service warranty with required compatible accessory",
+      "kind": "warranty package",
+      "available": true,
+      "upfront_cents": 65000,
+      "monthly_cents": 0,
+      "horizon_months": 0,
+      "refund_after_purchase_cents": 0,
+      "provides": {
+        "service_cover": 1,
+        "required_accessory": 1
+      },
+      "attributes": {
+        "delivery_site": "Clinic North",
+        "delivery_day": 2
+      }
+    },
+    {
+      "option_id": "N034-alt3",
+      "name": "replacement bound software licence with required compatible accessory",
+      "kind": "software continuity bundle",
+      "available": true,
+      "upfront_cents": 60000,
+      "monthly_cents": 0,
+      "horizon_months": 0,
+      "refund_after_purchase_cents": 0,
+      "provides": {
+        "licensed_software": 1,
+        "required_accessory": 1
+      },
+      "attributes": {
+        "delivery_site": "Clinic North",
+        "delivery_day": 2
+      }
+    },
+    {
+      "option_id": "N034-continuity",
+      "name": "certified replacement equipment bundle",
+      "kind": "continuity service",
+      "available": true,
+      "upfront_cents": 604658,
+      "monthly_cents": 0,
+      "horizon_months": 0,
+      "refund_after_purchase_cents": 0,
+      "provides": {
+        "core_device": 1,
+        "service_cover": 1,
+        "licensed_software": 1,
+        "required_accessory": 1
+      },
+      "attributes": {
+        "delivery_site": "Clinic North",
+        "delivery_day": 3
+      }
+    },
+    {
+      "option_id": "N034-failed",
+      "name": "unavailable required compatible accessory",
+      "kind": "accessory",
+      "available": false,
+      "upfront_cents": 18000,
+      "monthly_cents": 0,
+      "horizon_months": 0,
+      "refund_after_purchase_cents": 0,
+      "provides": {
+        "required_accessory": 1
+      },
+      "attributes": {
+        "delivery_site": "Clinic North",
+        "delivery_day": 2
+      }
+    },
+    {
+      "option_id": "N034-wrong-site",
+      "name": "cheap service for a different delivery_site",
+      "kind": "accessory",
+      "available": true,
+      "upfront_cents": 5000,
+      "monthly_cents": 0,
+      "horizon_months": 0,
+      "refund_after_purchase_cents": 0,
+      "provides": {
+        "required_accessory": 1
+      },
+      "attributes": {
+        "delivery_site": "Other Clinic North",
+        "delivery_day": 2
+      }
+    },
+    {
+      "option_id": "N034-late",
+      "name": "late required compatible accessory",
+      "kind": "accessory",
+      "available": true,
+      "upfront_cents": 4000,
+      "monthly_cents": 0,
+      "horizon_months": 0,
+      "refund_after_purchase_cents": 0,
+      "provides": {
+        "required_accessory": 1
+      },
+      "attributes": {
+        "delivery_site": "Clinic North",
+        "delivery_day": 9
+      }
+    }
+  ],
+  "contracts": [
+    {
+      "contract_id": "N034-conditional",
+      "description": "A 120000-cent settlement uses the published all_changed cancellation condition for the first two commitments.",
+      "trigger": {
+        "type": "all_changed",
+        "entity_ids": [
+          "NEW-0001",
+          "NEW-0002"
+        ]
+      },
+      "charge_cents": 120000
+    }
+  ],
+  "compatibility_rules": [],
+  "hard_goals": {
+    "capabilities": [
+      {
+        "capability": "core_device",
+        "min": 1,
+        "max": 1
+      },
+      {
+        "capability": "service_cover",
+        "min": 1,
+        "max": 1
+      },
+      {
+        "capability": "licensed_software",
+        "min": 1,
+        "max": 1
+      },
+      {
+        "capability": "required_accessory",
+        "min": 1,
+        "max": 1
+      }
+    ],
+    "attribute_requirements": [
+      {
+        "capability": "core_device",
+        "attribute": "delivery_site",
+        "op": "eq",
+        "value": "Clinic North"
+      },
+      {
+        "capability": "service_cover",
+        "attribute": "delivery_site",
+        "op": "eq",
+        "value": "Clinic North"
+      },
+      {
+        "capability": "licensed_software",
+        "attribute": "delivery_site",
+        "op": "eq",
+        "value": "Clinic North"
+      },
+      {
+        "capability": "required_accessory",
+        "attribute": "delivery_site",
+        "op": "eq",
+        "value": "Clinic North"
+      },
+      {
+        "capability": "required_accessory",
+        "attribute": "delivery_day",
+        "op": "le",
+        "value": 4
+      }
+    ]
+  },
+  "initial_snapshot": {
+    "commitments": []
+  },
+  "initial_snapshot_sha256": "dbc26b7f61e91d0529291823abb38756f52a36dc52e819cf0a83abddfe598124",
+  "failure_snapshot": {
+    "commitments": [
+      {
+        "entity_id": "NEW-0001",
+        "option_id": "N034-b1",
+        "name": "approved core device",
+        "kind": "core device",
+        "status": "active",
+        "paid_cents": 80000,
+        "refund_cents": 80000,
+        "provides": {
+          "core_device": 1
+        },
+        "attributes": {
+          "delivery_site": "Clinic North",
+          "delivery_day": 2
+        },
+        "created_after_boundary": false
+      },
+      {
+        "entity_id": "NEW-0002",
+        "option_id": "N034-b2",
+        "name": "service warranty",
+        "kind": "warranty",
+        "status": "active",
+        "paid_cents": 40000,
+        "refund_cents": 40000,
+        "provides": {
+          "service_cover": 1
+        },
+        "attributes": {
+          "delivery_site": "Clinic North",
+          "delivery_day": 2
+        },
+        "created_after_boundary": false
+      },
+      {
+        "entity_id": "NEW-0003",
+        "option_id": "N034-b3",
+        "name": "bound software licence",
+        "kind": "software",
+        "status": "active",
+        "paid_cents": 100000,
+        "refund_cents": 80000,
+        "provides": {
+          "licensed_software": 1
+        },
+        "attributes": {
+          "delivery_site": "Clinic North",
+          "delivery_day": 2
+        },
+        "created_after_boundary": false
+      }
+    ]
+  },
+  "snapshot_sha256": "4bdbdf04df2fd351986666af1632ecbb18f2267216f2f5f1a9d4a2289d503e0f",
+  "pre_failure_trace": [
+    {
+      "step": 1,
+      "tool": "purchase_product",
+      "arguments": {
+        "product_id": "N034-b1"
+      },
+      "result": {
+        "ok": true,
+        "message": "New commitment created.",
+        "data": {
+          "entity_id": "NEW-0001",
+          "option_id": "N034-b1",
+          "charge_cents": 80000,
+          "contract_charges_applied": []
+        }
+      }
+    },
+    {
+      "step": 2,
+      "tool": "purchase_product",
+      "arguments": {
+        "product_id": "N034-b2"
+      },
+      "result": {
+        "ok": true,
+        "message": "New commitment created.",
+        "data": {
+          "entity_id": "NEW-0002",
+          "option_id": "N034-b2",
+          "charge_cents": 40000,
+          "contract_charges_applied": []
+        }
+      }
+    },
+    {
+      "step": 3,
+      "tool": "purchase_product",
+      "arguments": {
+        "product_id": "N034-b3"
+      },
+      "result": {
+        "ok": true,
+        "message": "New commitment created.",
+        "data": {
+          "entity_id": "NEW-0003",
+          "option_id": "N034-b3",
+          "charge_cents": 100000,
+          "contract_charges_applied": []
+        }
+      }
+    }
+  ],
+  "prefix_ledger": [
+    {
+      "event_index": 1,
+      "tool": "purchase_product",
+      "entity_id": "NEW-0001",
+      "contract_id": null,
+      "charge_cents": 80000,
+      "refund_cents": 0,
+      "irreversible_loss_delta": 0,
+      "net_outlay_delta": 80000
+    },
+    {
+      "event_index": 2,
+      "tool": "purchase_product",
+      "entity_id": "NEW-0002",
+      "contract_id": null,
+      "charge_cents": 40000,
+      "refund_cents": 0,
+      "irreversible_loss_delta": 0,
+      "net_outlay_delta": 40000
+    },
+    {
+      "event_index": 3,
+      "tool": "purchase_product",
+      "entity_id": "NEW-0003",
+      "contract_id": null,
+      "charge_cents": 100000,
+      "refund_cents": 0,
+      "irreversible_loss_delta": 0,
+      "net_outlay_delta": 100000
+    }
+  ],
+  "latest_failure": {
+    "tool": "purchase_product",
+    "arguments": {
+      "product_id": "N034-failed"
+    },
+    "result": {
+      "ok": false,
+      "message": "The selected option is unavailable.",
+      "data": null
+    }
+  },
+  "boundary_commitments": [
+    {
+      "entity_id": "NEW-0001",
+      "option_id": "N034-b1",
+      "name": "approved core device",
+      "kind": "core device",
+      "status": "active",
+      "paid_cents": 80000,
+      "refund_cents": 80000,
+      "provides": {
+        "core_device": 1
+      },
+      "attributes": {
+        "delivery_site": "Clinic North",
+        "delivery_day": 2
+      },
+      "created_after_boundary": false,
+      "primary_capability": "core_device"
+    },
+    {
+      "entity_id": "NEW-0002",
+      "option_id": "N034-b2",
+      "name": "service warranty",
+      "kind": "warranty",
+      "status": "active",
+      "paid_cents": 40000,
+      "refund_cents": 40000,
+      "provides": {
+        "service_cover": 1
+      },
+      "attributes": {
+        "delivery_site": "Clinic North",
+        "delivery_day": 2
+      },
+      "created_after_boundary": false,
+      "primary_capability": "service_cover"
+    },
+    {
+      "entity_id": "NEW-0003",
+      "option_id": "N034-b3",
+      "name": "bound software licence",
+      "kind": "software",
+      "status": "active",
+      "paid_cents": 100000,
+      "refund_cents": 80000,
+      "provides": {
+        "licensed_software": 1
+      },
+      "attributes": {
+        "delivery_site": "Clinic North",
+        "delivery_day": 2
+      },
+      "created_after_boundary": false,
+      "primary_capability": "licensed_software"
+    }
+  ],
+  "construction": {
+    "prefix_generated_by_public_tools": true,
+    "failure_generated_by_public_tool": true,
+    "necessary_action_order_invariant": true,
+    "domain_state_adapter": "after_sales"
+  }
+}

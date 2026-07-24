@@ -1,0 +1,417 @@
+{
+  "schema_version": "1.1",
+  "task_id": "task-9ce07364e920",
+  "domain": "event_logistics",
+  "environment_type": "repairscope.event_logistics.state.v1.1",
+  "split": "test",
+  "now": "2026-09-01T09:00:00+08:00",
+  "max_turns": 15,
+  "instruction": "Complete the public science festival at University Quarter for the event coordinator. The successful commitments in the activity log are already paid and active, but the latest required final-mile vendor service operation failed. The final state must preserve these required functions exactly as specified: venue_capacity=1, venue_capacity_secondary_use=1, transport_capacity=1, vendor_service=1. The missing service must be available by day 4 at University Quarter. The shared confirmed venue currently supports both venue_capacity and venue_capacity_secondary_use; both functions remain mandatory. Investigate the authoritative records and execute the best supported recovery without asking me to choose.",
+  "inventory": [
+    {
+      "option_id": "N020-b1",
+      "name": "shared confirmed venue",
+      "kind": "venue",
+      "available": false,
+      "upfront_cents": 80000,
+      "monthly_cents": 0,
+      "horizon_months": 0,
+      "refund_after_purchase_cents": 80000,
+      "provides": {
+        "venue_capacity": 1,
+        "venue_capacity_secondary_use": 1
+      },
+      "attributes": {
+        "service_area": "University Quarter",
+        "service_day": 2
+      }
+    },
+    {
+      "option_id": "N020-b2",
+      "name": "transport contract",
+      "kind": "transport",
+      "available": false,
+      "upfront_cents": 100000,
+      "monthly_cents": 0,
+      "horizon_months": 0,
+      "refund_after_purchase_cents": 80000,
+      "provides": {
+        "transport_capacity": 1
+      },
+      "attributes": {
+        "service_area": "University Quarter",
+        "service_day": 2
+      }
+    },
+    {
+      "option_id": "N020-local",
+      "name": "standalone required final-mile vendor service",
+      "kind": "vendor service",
+      "available": true,
+      "upfront_cents": 60000,
+      "monthly_cents": 0,
+      "horizon_months": 0,
+      "refund_after_purchase_cents": 0,
+      "provides": {
+        "vendor_service": 1
+      },
+      "attributes": {
+        "service_area": "University Quarter",
+        "service_day": 2
+      }
+    },
+    {
+      "option_id": "N020-alt1",
+      "name": "combined confirmed venue and required final-mile vendor service",
+      "kind": "venue package",
+      "available": true,
+      "upfront_cents": 30000,
+      "monthly_cents": 0,
+      "horizon_months": 0,
+      "refund_after_purchase_cents": 0,
+      "provides": {
+        "venue_capacity": 1,
+        "vendor_service": 1,
+        "venue_capacity_secondary_use": 1
+      },
+      "attributes": {
+        "service_area": "University Quarter",
+        "service_day": 2
+      }
+    },
+    {
+      "option_id": "N020-aux1",
+      "name": "replacement secondary use for confirmed venue",
+      "kind": "secondary service",
+      "available": true,
+      "upfront_cents": 10000,
+      "monthly_cents": 0,
+      "horizon_months": 0,
+      "refund_after_purchase_cents": 0,
+      "provides": {
+        "venue_capacity_secondary_use": 1
+      },
+      "attributes": {
+        "service_area": "University Quarter",
+        "service_day": 2
+      }
+    },
+    {
+      "option_id": "N020-alt2",
+      "name": "replacement transport contract with required final-mile vendor service",
+      "kind": "transport continuity bundle",
+      "available": true,
+      "upfront_cents": 60000,
+      "monthly_cents": 0,
+      "horizon_months": 0,
+      "refund_after_purchase_cents": 0,
+      "provides": {
+        "transport_capacity": 1,
+        "vendor_service": 1
+      },
+      "attributes": {
+        "service_area": "University Quarter",
+        "service_day": 2
+      }
+    },
+    {
+      "option_id": "N020-continuity",
+      "name": "insured event continuity package",
+      "kind": "continuity service",
+      "available": true,
+      "upfront_cents": 602740,
+      "monthly_cents": 0,
+      "horizon_months": 0,
+      "refund_after_purchase_cents": 0,
+      "provides": {
+        "venue_capacity": 1,
+        "venue_capacity_secondary_use": 1,
+        "transport_capacity": 1,
+        "vendor_service": 1
+      },
+      "attributes": {
+        "service_area": "University Quarter",
+        "service_day": 3
+      }
+    },
+    {
+      "option_id": "N020-failed",
+      "name": "unavailable required final-mile vendor service",
+      "kind": "vendor service",
+      "available": false,
+      "upfront_cents": 18000,
+      "monthly_cents": 0,
+      "horizon_months": 0,
+      "refund_after_purchase_cents": 0,
+      "provides": {
+        "vendor_service": 1
+      },
+      "attributes": {
+        "service_area": "University Quarter",
+        "service_day": 2
+      }
+    },
+    {
+      "option_id": "N020-wrong-site",
+      "name": "cheap service for a different service_area",
+      "kind": "vendor service",
+      "available": true,
+      "upfront_cents": 5000,
+      "monthly_cents": 0,
+      "horizon_months": 0,
+      "refund_after_purchase_cents": 0,
+      "provides": {
+        "vendor_service": 1
+      },
+      "attributes": {
+        "service_area": "Other University Quarter",
+        "service_day": 2
+      }
+    },
+    {
+      "option_id": "N020-late",
+      "name": "late required final-mile vendor service",
+      "kind": "vendor service",
+      "available": true,
+      "upfront_cents": 4000,
+      "monthly_cents": 0,
+      "horizon_months": 0,
+      "refund_after_purchase_cents": 0,
+      "provides": {
+        "vendor_service": 1
+      },
+      "attributes": {
+        "service_area": "University Quarter",
+        "service_day": 9
+      }
+    }
+  ],
+  "contracts": [
+    {
+      "contract_id": "N020-shared-migration",
+      "description": "A 100000-cent migration charge applies only when the separate replacement secondary-use service is activated.",
+      "trigger": {
+        "type": "active_any",
+        "option_ids": [
+          "N020-aux1"
+        ]
+      },
+      "charge_cents": 100000
+    }
+  ],
+  "compatibility_rules": [],
+  "hard_goals": {
+    "capabilities": [
+      {
+        "capability": "venue_capacity",
+        "min": 1,
+        "max": 1
+      },
+      {
+        "capability": "venue_capacity_secondary_use",
+        "min": 1,
+        "max": 1
+      },
+      {
+        "capability": "transport_capacity",
+        "min": 1,
+        "max": 1
+      },
+      {
+        "capability": "vendor_service",
+        "min": 1,
+        "max": 1
+      }
+    ],
+    "attribute_requirements": [
+      {
+        "capability": "venue_capacity",
+        "attribute": "service_area",
+        "op": "eq",
+        "value": "University Quarter"
+      },
+      {
+        "capability": "venue_capacity_secondary_use",
+        "attribute": "service_area",
+        "op": "eq",
+        "value": "University Quarter"
+      },
+      {
+        "capability": "transport_capacity",
+        "attribute": "service_area",
+        "op": "eq",
+        "value": "University Quarter"
+      },
+      {
+        "capability": "vendor_service",
+        "attribute": "service_area",
+        "op": "eq",
+        "value": "University Quarter"
+      },
+      {
+        "capability": "vendor_service",
+        "attribute": "service_day",
+        "op": "le",
+        "value": 4
+      }
+    ]
+  },
+  "initial_snapshot": {
+    "commitments": []
+  },
+  "initial_snapshot_sha256": "dbc26b7f61e91d0529291823abb38756f52a36dc52e819cf0a83abddfe598124",
+  "failure_snapshot": {
+    "commitments": [
+      {
+        "entity_id": "NEW-0001",
+        "option_id": "N020-b1",
+        "name": "shared confirmed venue",
+        "kind": "venue",
+        "status": "active",
+        "paid_cents": 80000,
+        "refund_cents": 80000,
+        "provides": {
+          "venue_capacity": 1,
+          "venue_capacity_secondary_use": 1
+        },
+        "attributes": {
+          "service_area": "University Quarter",
+          "service_day": 2
+        },
+        "created_after_boundary": false
+      },
+      {
+        "entity_id": "NEW-0002",
+        "option_id": "N020-b2",
+        "name": "transport contract",
+        "kind": "transport",
+        "status": "active",
+        "paid_cents": 100000,
+        "refund_cents": 80000,
+        "provides": {
+          "transport_capacity": 1
+        },
+        "attributes": {
+          "service_area": "University Quarter",
+          "service_day": 2
+        },
+        "created_after_boundary": false
+      }
+    ]
+  },
+  "snapshot_sha256": "a65573c6d97d0638a0f5724cb008dceed0f680ccd16af5c9eb7de0ec785ddb82",
+  "pre_failure_trace": [
+    {
+      "step": 1,
+      "tool": "book_vendor_option",
+      "arguments": {
+        "vendor_option_id": "N020-b1"
+      },
+      "result": {
+        "ok": true,
+        "message": "New commitment created.",
+        "data": {
+          "entity_id": "NEW-0001",
+          "option_id": "N020-b1",
+          "charge_cents": 80000,
+          "contract_charges_applied": []
+        }
+      }
+    },
+    {
+      "step": 2,
+      "tool": "book_vendor_option",
+      "arguments": {
+        "vendor_option_id": "N020-b2"
+      },
+      "result": {
+        "ok": true,
+        "message": "New commitment created.",
+        "data": {
+          "entity_id": "NEW-0002",
+          "option_id": "N020-b2",
+          "charge_cents": 100000,
+          "contract_charges_applied": []
+        }
+      }
+    }
+  ],
+  "prefix_ledger": [
+    {
+      "event_index": 1,
+      "tool": "book_vendor_option",
+      "entity_id": "NEW-0001",
+      "contract_id": null,
+      "charge_cents": 80000,
+      "refund_cents": 0,
+      "irreversible_loss_delta": 0,
+      "net_outlay_delta": 80000
+    },
+    {
+      "event_index": 2,
+      "tool": "book_vendor_option",
+      "entity_id": "NEW-0002",
+      "contract_id": null,
+      "charge_cents": 100000,
+      "refund_cents": 0,
+      "irreversible_loss_delta": 0,
+      "net_outlay_delta": 100000
+    }
+  ],
+  "latest_failure": {
+    "tool": "book_vendor_option",
+    "arguments": {
+      "vendor_option_id": "N020-failed"
+    },
+    "result": {
+      "ok": false,
+      "message": "The selected option is unavailable.",
+      "data": null
+    }
+  },
+  "boundary_commitments": [
+    {
+      "entity_id": "NEW-0001",
+      "option_id": "N020-b1",
+      "name": "shared confirmed venue",
+      "kind": "venue",
+      "status": "active",
+      "paid_cents": 80000,
+      "refund_cents": 80000,
+      "provides": {
+        "venue_capacity": 1,
+        "venue_capacity_secondary_use": 1
+      },
+      "attributes": {
+        "service_area": "University Quarter",
+        "service_day": 2
+      },
+      "created_after_boundary": false,
+      "primary_capability": "venue_capacity"
+    },
+    {
+      "entity_id": "NEW-0002",
+      "option_id": "N020-b2",
+      "name": "transport contract",
+      "kind": "transport",
+      "status": "active",
+      "paid_cents": 100000,
+      "refund_cents": 80000,
+      "provides": {
+        "transport_capacity": 1
+      },
+      "attributes": {
+        "service_area": "University Quarter",
+        "service_day": 2
+      },
+      "created_after_boundary": false,
+      "primary_capability": "transport_capacity"
+    }
+  ],
+  "construction": {
+    "prefix_generated_by_public_tools": true,
+    "failure_generated_by_public_tool": true,
+    "necessary_action_order_invariant": true,
+    "domain_state_adapter": "event_logistics"
+  }
+}

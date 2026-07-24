@@ -81,12 +81,39 @@ V1_REQUIRED_FIELDS = {
     "max_turns",
 }
 
+V11_REQUIRED_FIELDS = {
+    "schema_version",
+    "task_id",
+    "domain",
+    "environment_type",
+    "split",
+    "now",
+    "instruction",
+    "initial_snapshot",
+    "initial_snapshot_sha256",
+    "failure_snapshot",
+    "snapshot_sha256",
+    "pre_failure_trace",
+    "prefix_ledger",
+    "latest_failure",
+    "boundary_commitments",
+    "inventory",
+    "contracts",
+    "compatibility_rules",
+    "hard_goals",
+    "construction",
+    "max_turns",
+}
+
 
 class TaskValidationError(ValueError):
     """Raised when a benchmark task violates the public schema."""
 
 
 def validate_task(task: dict[str, Any]) -> None:
+    if task.get("schema_version") == "1.1":
+        _validate_v11_task(task)
+        return
     if task.get("schema_version") == "1.0":
         _validate_v1_task(task)
         return
@@ -534,12 +561,162 @@ def _validate_v1_task(task: dict[str, Any]) -> None:
             )
 
 
+def _validate_v11_task(task: dict[str, Any]) -> None:
+    from .v1_environment import DOMAIN_TOOL_NAMES, snapshot_hash
+
+    missing = V11_REQUIRED_FIELDS - task.keys()
+    if missing:
+        raise TaskValidationError(
+            f"{task.get('task_id', '<unknown>')}: missing v1.1 fields "
+            f"{sorted(missing)}"
+        )
+    forbidden_public_metadata = {
+        "variant_role",
+        "changed_fact",
+        "frontier_profile",
+        "reasoning_structure",
+        "counterfactual_pair_id",
+        "pair_id",
+    }
+    leaked = forbidden_public_metadata.intersection(task)
+    if leaked:
+        raise TaskValidationError(
+            f"{task['task_id']}: private benchmark metadata leaked into public "
+            f"task: {sorted(leaked)}"
+        )
+    if task["domain"] not in DOMAIN_TOOL_NAMES:
+        raise TaskValidationError(
+            f"{task['task_id']}: unsupported v1.1 domain {task['domain']!r}"
+        )
+    if task["max_turns"] != 15:
+        raise TaskValidationError(
+            f"{task['task_id']}: v1.1 requires exactly 15 turns"
+        )
+    if snapshot_hash(task["failure_snapshot"]) != task["snapshot_sha256"]:
+        raise TaskValidationError(
+            f"{task['task_id']}: failure snapshot hash mismatch"
+        )
+    if snapshot_hash(task["initial_snapshot"]) != task["initial_snapshot_sha256"]:
+        raise TaskValidationError(
+            f"{task['task_id']}: initial snapshot hash mismatch"
+        )
+    if not 2 <= len(task["boundary_commitments"]) <= 8:
+        raise TaskValidationError(
+            f"{task['task_id']}: expected 2-8 persistent commitments"
+        )
+    if len(task["pre_failure_trace"]) != len(task["boundary_commitments"]):
+        raise TaskValidationError(
+            f"{task['task_id']}: prefix writes do not match commitments"
+        )
+    if any(
+        not step.get("result", {}).get("ok", False)
+        for step in task["pre_failure_trace"]
+    ):
+        raise TaskValidationError(
+            f"{task['task_id']}: prefix contains a failed write"
+        )
+    if task["latest_failure"].get("result", {}).get("ok", True):
+        raise TaskValidationError(
+            f"{task['task_id']}: latest operation is not a real failure"
+        )
+    construction = task["construction"]
+    required_construction = {
+        "prefix_generated_by_public_tools",
+        "failure_generated_by_public_tool",
+        "necessary_action_order_invariant",
+    }
+    if not all(construction.get(key, False) for key in required_construction):
+        raise TaskValidationError(
+            f"{task['task_id']}: v1.1 construction proof is incomplete"
+        )
+    if "oracle_actions" in task or "candidate_scopes" in task:
+        raise TaskValidationError(
+            f"{task['task_id']}: author-specified Oracle macros are forbidden"
+        )
+    option_ids = [item["option_id"] for item in task["inventory"]]
+    if len(option_ids) != len(set(option_ids)):
+        raise TaskValidationError(f"{task['task_id']}: duplicate option ID")
+    boundary_ids = [item["entity_id"] for item in task["boundary_commitments"]]
+    if len(boundary_ids) != len(set(boundary_ids)):
+        raise TaskValidationError(f"{task['task_id']}: duplicate boundary ID")
+    for item in task["inventory"]:
+        amounts = [
+            item["upfront_cents"],
+            item.get("monthly_cents", 0),
+            item.get("horizon_months", 0),
+            item.get("refund_after_purchase_cents", 0),
+        ]
+        if any(not isinstance(value, int) or value < 0 for value in amounts):
+            raise TaskValidationError(
+                f"{task['task_id']}: prices must be non-negative integer cents"
+            )
+        if not item.get("provides"):
+            raise TaskValidationError(
+                f"{task['task_id']}: option provides no capability"
+            )
+    supported_rules = {
+        "forbid_pair",
+        "requires_all",
+        "requires_any",
+        "requires_bridge",
+    }
+    for rule in task["compatibility_rules"]:
+        if rule.get("type") not in supported_rules:
+            raise TaskValidationError(
+                f"{task['task_id']}: unsupported compatibility rule "
+                f"{rule.get('type')!r}"
+            )
+    supported_triggers = {
+        "any_changed",
+        "all_changed",
+        "changed_count_at_least",
+        "retained_paid_below",
+        "retained_quantity_below",
+        "changed_with_retained",
+        "active_any",
+    }
+    known_boundary = set(boundary_ids)
+    contract_ids: set[str] = set()
+    for contract in task["contracts"]:
+        if contract["contract_id"] in contract_ids:
+            raise TaskValidationError(
+                f"{task['task_id']}: duplicate contract ID"
+            )
+        contract_ids.add(contract["contract_id"])
+        trigger = contract["trigger"]
+        referenced = set(trigger.get("entity_ids", []))
+        referenced.update(trigger.get("changed_entity_ids", []))
+        referenced.update(trigger.get("retained_entity_ids", []))
+        if not referenced.issubset(known_boundary):
+            raise TaskValidationError(
+                f"{task['task_id']}: contract references unknown commitment"
+            )
+        if trigger.get("type") not in supported_triggers:
+            raise TaskValidationError(
+                f"{task['task_id']}: unsupported contract trigger"
+            )
+        referenced_options = set(trigger.get("option_ids", []))
+        known_options = {
+            item["option_id"] for item in task["inventory"]
+        }
+        if not referenced_options.issubset(known_options):
+            raise TaskValidationError(
+                f"{task['task_id']}: contract references unknown option"
+            )
+        if not isinstance(contract["charge_cents"], int) or contract["charge_cents"] < 0:
+            raise TaskValidationError(
+                f"{task['task_id']}: invalid contract charge"
+            )
+
+
 def load_task(path: str | Path) -> dict[str, Any]:
     task_path = Path(path)
     with task_path.open("r", encoding="utf-8") as handle:
         task = json.load(handle)
     validate_task(task)
     task["_path"] = str(task_path.resolve())
+    if task.get("schema_version") == "1.1":
+        _attach_v11_metadata(task, task_path)
     return task
 
 
@@ -547,3 +724,24 @@ def load_tasks(path: str | Path) -> list[dict[str, Any]]:
     root = Path(path)
     paths = [root] if root.is_file() else sorted(root.glob("*.json"))
     return [load_task(item) for item in paths]
+
+
+_V11_GOLD_CACHE: dict[Path, dict[str, Any]] = {}
+
+
+def _attach_v11_metadata(task: dict[str, Any], task_path: Path) -> None:
+    candidates = [
+        task_path.parent.parent / "gold" / "v11.json",
+        task_path.parent / "v11.gold.json",
+    ]
+    for candidate in candidates:
+        if not candidate.exists():
+            continue
+        resolved = candidate.resolve()
+        if resolved not in _V11_GOLD_CACHE:
+            with resolved.open("r", encoding="utf-8") as handle:
+                _V11_GOLD_CACHE[resolved] = json.load(handle)
+        record = _V11_GOLD_CACHE[resolved].get(task["task_id"])
+        if record is not None:
+            task["_benchmark_metadata"] = record.get("metadata", {})
+        return

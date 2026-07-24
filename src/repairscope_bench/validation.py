@@ -15,6 +15,8 @@ def validate_dataset(
     path: str | Path, gold_path: str | Path | None = None
 ) -> dict[str, Any]:
     tasks = load_tasks(path)
+    if tasks and tasks[0]["schema_version"] == "1.1":
+        return _validate_v11_dataset(tasks, path, gold_path)
     if tasks and tasks[0]["schema_version"] == "1.0":
         return _validate_v1_dataset(tasks, path, gold_path)
     if tasks and tasks[0]["schema_version"] == "0.6":
@@ -172,6 +174,324 @@ def _infer_gold_path(path: str | Path) -> Path:
     else:
         data_root = parent
     return data_root / "gold" / f"{dataset_name}.json"
+
+
+def _validate_v11_dataset(
+    tasks: list[dict[str, Any]],
+    path: str | Path,
+    gold_path: str | Path | None,
+) -> dict[str, Any]:
+    from .v1_oracle import frontier_signature, solve_task_v1
+
+    gold_file = (
+        Path(gold_path) if gold_path is not None else _infer_gold_path(path)
+    )
+    with gold_file.open("r", encoding="utf-8") as handle:
+        gold: dict[str, dict[str, Any]] = json.load(handle)
+    errors: list[str] = []
+    pairs: dict[str, list[dict[str, Any]]] = defaultdict(list)
+    frontier_sizes: list[int] = []
+    positive_gold = 0
+    gold_changes_existing = 0
+    gold_three_mutations = 0
+    single_addition_infeasible = 0
+
+    for task in tasks:
+        record = gold.get(task["task_id"])
+        if record is None:
+            errors.append(f"{task['task_id']}: missing v1.1 private gold")
+            continue
+        metadata = record.get("metadata", {})
+        pair_id = metadata.get("pair_id")
+        if not pair_id:
+            errors.append(f"{task['task_id']}: missing private pair metadata")
+            continue
+        pairs[pair_id].append(task)
+        leaked = {
+            "variant_role",
+            "changed_fact",
+            "frontier_profile",
+            "reasoning_structure",
+            "counterfactual_pair_id",
+            "pair_id",
+        }.intersection(key for key in task if not key.startswith("_"))
+        if leaked:
+            errors.append(
+                f"{task['task_id']}: public metadata leak {sorted(leaked)}"
+            )
+        oracle = solve_task_v1(task)
+        expected = record.get("oracle", {})
+        certificate = record.get("validity_certificate", {})
+        if not oracle.feasible or oracle.feasible_scope_count < 3:
+            errors.append(f"{task['task_id']}: insufficient feasible scopes")
+        if oracle.feasible_terminal_count <= len(oracle.frontier):
+            errors.append(f"{task['task_id']}: no dominated feasible repair")
+        if frontier_signature(oracle.frontier) != frontier_signature(
+            oracle.independent_frontier
+        ):
+            errors.append(f"{task['task_id']}: independent Oracles disagree")
+        if frontier_signature(oracle.frontier) != frontier_signature(
+            expected.get("frontier", [])
+        ):
+            errors.append(f"{task['task_id']}: checked-in gold is stale")
+        if not all(
+            certificate.get(key, False)
+            for key in [
+                "public_metadata_absent",
+                "prefix_generated_by_public_tools",
+                "failure_generated_by_public_tool",
+                "snapshot_hash_verified",
+                "dual_oracle_agreement",
+                "irrelevant_wording_invariant",
+                "dominated_terminal_exists",
+                "gold_replay_within_15_turns",
+                "candidate_discoverable_by_capability_search",
+                "domain_semantics_linted",
+                "counterfactual_frontier_changed",
+                "single_logical_fact_intervention",
+            ]
+        ):
+            errors.append(f"{task['task_id']}: invalid validity certificate")
+        if not _replay_v1_boundary(task):
+            errors.append(f"{task['task_id']}: failure boundary replay failed")
+        frontier_sizes.append(len(oracle.frontier))
+        if any(
+            item["economic_vector"]["irreversible_loss"] > 0
+            for item in oracle.frontier
+        ):
+            positive_gold += 1
+        if any(
+            any(value != "KEEP" for value in item["scope"].values())
+            for item in oracle.frontier
+        ):
+            gold_changes_existing += 1
+        if min(len(item["tool_calls"]) for item in oracle.frontier) >= 3:
+            gold_three_mutations += 1
+        if not _single_addition_repair_feasible(task):
+            single_addition_infeasible += 1
+
+    if len(tasks) != 160:
+        errors.append(f"expected 160 v1.1 tasks, found {len(tasks)}")
+    if len(pairs) != 80:
+        errors.append(f"expected 80 v1.1 pairs, found {len(pairs)}")
+    structure_counts = Counter(
+        gold[task["task_id"]]["metadata"]["reasoning_structure"]
+        for task in tasks
+        if task["task_id"] in gold
+    )
+    domain_counts = Counter(task["domain"] for task in tasks)
+    structure_domain_counts = Counter(
+        (
+            gold[task["task_id"]]["metadata"]["reasoning_structure"],
+            task["domain"],
+        )
+        for task in tasks
+        if task["task_id"] in gold
+    )
+    if set(structure_counts.values()) != {16} or len(structure_counts) != 10:
+        errors.append(f"reasoning structures are unbalanced: {structure_counts}")
+    if len(domain_counts) != 4 or min(domain_counts.values(), default=0) < 20:
+        errors.append(f"domains lack meaningful coverage: {domain_counts}")
+    if (
+        len(structure_domain_counts) != 40
+        or set(structure_domain_counts.values()) != {4}
+    ):
+        errors.append(
+            "reasoning-structure/domain cells are not a balanced 10x4 grid"
+        )
+
+    for pair_id, members in pairs.items():
+        if len(members) != 2:
+            errors.append(f"{pair_id}: expected exactly two variants")
+            continue
+        first, second = sorted(members, key=lambda item: item["task_id"])
+        first_record = gold[first["task_id"]]
+        second_record = gold[second["task_id"]]
+        if (
+            first_record["intervention"]["logical_fact"]
+            != second_record["intervention"]["logical_fact"]
+        ):
+            errors.append(f"{pair_id}: pair changes different logical facts")
+        if (
+            first_record["intervention"]["value"]
+            == second_record["intervention"]["value"]
+        ):
+            errors.append(f"{pair_id}: intervention values are identical")
+        if _normalized_v11_pair_task(first, first_record) != _normalized_v11_pair_task(
+            second, second_record
+        ):
+            errors.append(f"{pair_id}: more than one logical fact changed")
+        first_scopes = {
+            tuple(sorted(item["scope"].items()))
+            for item in first_record["oracle"]["frontier"]
+        }
+        second_scopes = {
+            tuple(sorted(item["scope"].items()))
+            for item in second_record["oracle"]["frontier"]
+        }
+        if first_scopes == second_scopes:
+            errors.append(f"{pair_id}: Pareto recovery scope did not change")
+
+    multi_frontier_rate = (
+        sum(size >= 2 for size in frontier_sizes) / len(frontier_sizes)
+        if frontier_sizes
+        else 0
+    )
+    positive_loss_rate = positive_gold / len(tasks) if tasks else 0
+    existing_change_rate = gold_changes_existing / len(tasks) if tasks else 0
+    three_mutation_rate = gold_three_mutations / len(tasks) if tasks else 0
+    local_infeasible_rate = single_addition_infeasible / len(tasks) if tasks else 0
+    pareto_task_ids = [
+        task["task_id"]
+        for task in tasks
+        if gold[task["task_id"]]["metadata"]["reasoning_structure"]
+        == "pareto_tradeoff"
+    ]
+    if any(
+        len(gold[task_id]["oracle"]["frontier"]) < 2
+        for task_id in pareto_task_ids
+    ):
+        errors.append("not every Pareto task has a multi-point frontier")
+    if existing_change_rate < 0.50:
+        errors.append("fewer than 50% of tasks have gold that changes commitments")
+    if three_mutation_rate < 0.30:
+        errors.append("fewer than 30% of tasks require at least three mutations")
+    if local_infeasible_rate < 0.30:
+        errors.append("fewer than 30% of tasks reject a one-step local addition")
+
+    strategies = [
+        "no_repair",
+        "local_repair",
+        "dependency_repair",
+        "full_rollback",
+        "sticker_price",
+        "refund_only",
+        "min_changes",
+        "loss_only",
+        "outlay_only",
+        "pareto_oracle",
+    ]
+    baseline_summary: dict[str, dict[str, int | float]] = {}
+    for strategy in strategies:
+        results = [
+            evaluate_actions(task, make_actions(task, strategy)) for task in tasks
+        ]
+        non_dominated = sum(
+            result["non_dominated_repair"] for result in results
+        )
+        baseline_summary[strategy] = {
+            "goal_pass": sum(result["goal_pass"] for result in results),
+            "non_dominated_pass": non_dominated,
+            "non_dominated_rate": non_dominated / len(tasks),
+        }
+    if baseline_summary["pareto_oracle"]["non_dominated_pass"] != len(tasks):
+        errors.append("Pareto Oracle does not pass every task")
+    for strategy in [
+        "local_repair",
+        "full_rollback",
+        "sticker_price",
+        "refund_only",
+        "min_changes",
+    ]:
+        if baseline_summary[strategy]["non_dominated_rate"] >= 0.65:
+            errors.append(f"{strategy}: heuristic exceeds the 65% ceiling")
+
+    return {
+        "valid": not errors,
+        "schema_version": "1.1",
+        "task_count": len(tasks),
+        "scenario_count": len(pairs),
+        "counterfactual_pair_count": len(pairs),
+        "domain_counts": dict(domain_counts),
+        "reasoning_structure_counts": dict(structure_counts),
+        "difficulty_counts": dict(
+            Counter(
+                gold[task["task_id"]]["metadata"]["difficulty_level"]
+                for task in tasks
+            )
+        ),
+        "split_counts": dict(Counter(task["split"] for task in tasks)),
+        "multi_frontier_rate": multi_frontier_rate,
+        "positive_loss_gold_rate": positive_loss_rate,
+        "gold_changes_existing_rate": existing_change_rate,
+        "three_mutation_gold_rate": three_mutation_rate,
+        "single_addition_infeasible_rate": local_infeasible_rate,
+        "errors": errors,
+        "gold_path": str(gold_file.resolve()),
+        "baselines": baseline_summary,
+    }
+
+
+def _single_addition_repair_feasible(task: dict[str, Any]) -> bool:
+    from .v1_environment import CommitmentRecoveryEnvironment
+
+    names = CommitmentRecoveryEnvironment(task).names
+    for option in task["inventory"]:
+        if not option.get("available", False):
+            continue
+        environment = CommitmentRecoveryEnvironment(task)
+        result = environment.execute_tool(
+            names["book"], {names["option"]: option["option_id"]}
+        )
+        passed, _ = environment.goal_status()
+        if result.ok and passed:
+            return True
+    return False
+
+
+def _normalized_v11_pair_task(
+    task: dict[str, Any], record: dict[str, Any]
+) -> dict[str, Any]:
+    from copy import deepcopy
+
+    normalized = deepcopy({k: v for k, v in task.items() if not k.startswith("_")})
+    normalized["task_id"] = "<OPAQUE>"
+    normalized["snapshot_sha256"] = "<DERIVED>"
+    structure = record["metadata"]["reasoning_structure"]
+
+    if structure in {"sunk_vs_marginal", "pareto_tradeoff"}:
+        option_id = normalized["boundary_commitments"][0]["option_id"]
+        for item in normalized["inventory"]:
+            if item["option_id"] == option_id:
+                item["refund_after_purchase_cents"] = "<INTERVENTION>"
+        for field in ["failure_snapshot", "boundary_commitments"]:
+            values = (
+                normalized[field]["commitments"]
+                if field == "failure_snapshot"
+                else normalized[field]
+            )
+            for item in values:
+                if item["option_id"] == option_id:
+                    item["refund_cents"] = "<INTERVENTION>"
+    elif structure == "multi_hop_propagation":
+        normalized["compatibility_rules"][0]["any_option_ids"] = [
+            "<INTERVENTION>"
+        ]
+    elif structure == "shared_commitment":
+        combined = normalized["inventory"][3]
+        shared = next(
+            capability
+            for capability in normalized["hard_goals"]["capabilities"]
+            if capability["capability"].endswith("_secondary_use")
+        )["capability"]
+        combined["provides"][shared] = "<INTERVENTION>"
+    elif structure == "nonlinear_threshold":
+        contract = normalized["contracts"][0]
+        contract["trigger"]["threshold_cents"] = "<INTERVENTION>"
+        contract["description"] = "<INTERVENTION>"
+    elif structure == "conditional_contract":
+        contract = normalized["contracts"][0]
+        contract["trigger"]["type"] = "<INTERVENTION>"
+        contract["description"] = "<INTERVENTION>"
+    elif structure == "partial_quantity":
+        normalized["inventory"][4]["upfront_cents"] = "<INTERVENTION>"
+    elif structure == "bridge_vs_replacement":
+        normalized["inventory"][3]["upfront_cents"] = "<INTERVENTION>"
+    elif structure == "joint_bundle_selection":
+        normalized["inventory"][5]["upfront_cents"] = "<INTERVENTION>"
+    elif structure == "explicit_horizon":
+        normalized["inventory"][3]["monthly_cents"] = "<INTERVENTION>"
+    return normalized
 
 
 def _validate_v1_dataset(

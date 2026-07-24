@@ -100,7 +100,7 @@ choose. Verify the resulting event plan and stop when complete.""",
 
 def build_user_prompt(task: dict[str, Any]) -> str:
     """Build the model-visible context without evaluator constraints or gold."""
-    if task["schema_version"] in {"0.6", "1.0"}:
+    if task["schema_version"] in {"0.6", "1.0", "1.1"}:
         public = {
             "customer_request": task["instruction"],
             "earlier_successful_tool_activity": task["pre_failure_trace"],
@@ -129,7 +129,7 @@ def run_episode(
     run_id: str | None = None,
 ) -> dict[str, Any]:
     is_v06 = task["schema_version"] == "0.6"
-    is_v1 = task["schema_version"] == "1.0"
+    is_v1 = task["schema_version"] in {"1.0", "1.1"}
     is_stateful = is_v06 or is_v1
     effective_max_turns = (
         min(max_turns, int(task["max_turns"])) if is_stateful else max_turns
@@ -242,11 +242,22 @@ def run_episode(
         "task_id": task["task_id"],
         "family_id": task.get("family_id"),
         "variant_id": task.get("variant_id"),
-        "pair_id": task.get("pair_id", task.get("counterfactual_pair_id")),
-        "scenario_id": task.get("scenario_id"),
-        "reasoning_structure": task.get("reasoning_structure"),
+        "pair_id": task.get(
+            "pair_id",
+            task.get("counterfactual_pair_id", task.get("_benchmark_metadata", {}).get("pair_id")),
+        ),
+        "scenario_id": task.get(
+            "scenario_id", task.get("_benchmark_metadata", {}).get("scenario_id")
+        ),
+        "reasoning_structure": task.get(
+            "reasoning_structure",
+            task.get("_benchmark_metadata", {}).get("reasoning_structure"),
+        ),
         "domain": task.get("domain"),
-        "difficulty_level": task.get("difficulty_level"),
+        "difficulty_level": task.get(
+            "difficulty_level",
+            task.get("_benchmark_metadata", {}).get("difficulty_level"),
+        ),
         "evaluation_track": task.get("evaluation_track"),
         "mechanism": task.get("mechanism"),
         "split": task.get("split"),
@@ -312,6 +323,7 @@ def run_suite(
                         task, adapter, max_turns=max_turns, run_id=run_id
                     )
                 except Exception as error:
+                    metadata = task.get("_benchmark_metadata", {})
                     record = {
                         "run_id": run_id,
                         "created_at": datetime.now(timezone.utc).isoformat(),
@@ -321,12 +333,24 @@ def run_suite(
                         "family_id": task.get("family_id"),
                         "variant_id": task.get("variant_id"),
                         "pair_id": task.get(
-                            "pair_id", task.get("counterfactual_pair_id")
+                            "pair_id",
+                            task.get(
+                                "counterfactual_pair_id",
+                                metadata.get("pair_id"),
+                            ),
                         ),
-                        "scenario_id": task.get("scenario_id"),
-                        "reasoning_structure": task.get("reasoning_structure"),
+                        "scenario_id": task.get(
+                            "scenario_id", metadata.get("scenario_id")
+                        ),
+                        "reasoning_structure": task.get(
+                            "reasoning_structure",
+                            metadata.get("reasoning_structure"),
+                        ),
                         "domain": task.get("domain"),
-                        "difficulty_level": task.get("difficulty_level"),
+                        "difficulty_level": task.get(
+                            "difficulty_level",
+                            metadata.get("difficulty_level"),
+                        ),
                         "evaluation_track": task.get("evaluation_track"),
                         "mechanism": task.get("mechanism"),
                         "split": task.get("split"),
@@ -418,12 +442,14 @@ def summarize_runs(
         ),
         "optimal_pass@1_stddev": _population_stddev(optimal_repeat_rates),
         "optimal_pass^k": optimal_pass_at_k,
+        "non_dominated_repair_pass^k": optimal_pass_at_k,
         "scope_optimization_gap^k": (
             goal_pass_at_k - optimal_pass_at_k
             if goal_pass_at_k is not None and optimal_pass_at_k is not None
             else None
         ),
         f"optimal_pass^{repeats}": optimal_pass_at_k,
+        f"non_dominated_repair_pass^{repeats}": optimal_pass_at_k,
         # Backward-compatible aliases. Unlike the pre-v0.3.2 implementation,
         # provider errors are now failures in these primary rates rather than
         # silently disappearing from the denominator.
@@ -476,17 +502,33 @@ def summarize_runs(
             (str(record["pair_id"]), record.get("repeat_index")), []
         ).append(record)
     if pair_repeat_groups:
-        pair_successes = [
-            len(group) == 2
-            and all(
-                item.get("score", {}).get("non_dominated_repair", False)
-                for item in group
+        pair_success_by_repeat = {
+            key: (
+                len(group) == 2
+                and all(
+                    item.get("score", {}).get(
+                        "non_dominated_repair", False
+                    )
+                    for item in group
+                )
             )
-            for group in pair_repeat_groups.values()
-        ]
+            for key, group in pair_repeat_groups.items()
+        }
+        pair_successes = list(pair_success_by_repeat.values())
         summary["counterfactual_pair_success@1"] = (
             sum(pair_successes) / len(pair_successes)
         )
+        pair_outcomes: dict[str, list[bool]] = {}
+        for (pair_id, _repeat_index), passed in pair_success_by_repeat.items():
+            pair_outcomes.setdefault(pair_id, []).append(passed)
+        strict_pair_success = sum(
+            len(outcomes) == repeats and all(outcomes)
+            for outcomes in pair_outcomes.values()
+        ) / len(pair_outcomes)
+        summary["counterfactual_pair_success^k"] = strict_pair_success
+        summary[
+            f"counterfactual_pair_success^{repeats}"
+        ] = strict_pair_success
     for field in ["domain", "reasoning_structure", "difficulty_level"]:
         groups = _group_records(records, field)
         if groups:
