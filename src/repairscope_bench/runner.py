@@ -12,14 +12,10 @@ from .evaluator import evaluate_environment
 from .providers.base import ModelAdapter, ToolResult
 
 
-SYSTEM_PROMPT = """You are operating a transactional recovery environment.
-An earlier sequence has already created persistent commitments and the latest
-operation failed. Satisfy the user's hard requirements while avoiding
-unnecessary irreversible recovery loss. Read authoritative state and option
-data with tools; do not invent prices, refunds, availability, or identifiers.
-Use finish only after the final state is valid. If and only if no valid repair
-exists, preserve the failure-boundary state and call report_infeasible.
-Tool calls change real benchmark state, so order them carefully."""
+SYSTEM_PROMPT = """You can interact with a transactional environment through tools.
+Continue the task described by the user. Tool calls may read or change the
+environment. Base decisions on tool results. Among successful continuations,
+prefer the one that causes the least additional irreversible financial loss."""
 
 
 def build_user_prompt(task: dict[str, Any]) -> str:
@@ -31,7 +27,7 @@ def build_user_prompt(task: dict[str, Any]) -> str:
         "pre_failure_tool_trace": task["pre_failure_trace"],
     }
     return (
-        "Recover the task below using the available tools.\n\n"
+        "Continue the task below using the available tools.\n\n"
         + json.dumps(public, ensure_ascii=False, indent=2)
     )
 

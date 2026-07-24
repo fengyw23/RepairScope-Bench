@@ -58,7 +58,7 @@ allowed in-place modification, and booking into an empty slot. It replays the
 Cartesian product in fresh environments and rejects tool errors and hard-goal
 violations.
 
-The task declares a lexicographic objective. Pilot v0.2 uses:
+The task declares a lexicographic objective. Pilot v0.3 uses:
 
 ```text
 (recovery_loss,
@@ -105,6 +105,13 @@ Public task JSON contains no `expected_oracle`, optimal plan, or optimal scope.
 `data/gold/pilot.json` is evaluator-only. `build_user_prompt` uses an explicit
 allowlist and never serializes the full task. `repairscope validate` recomputes
 the gold from public mechanics and checks the checked-in file for drift.
+
+The raw failure observation identifies what call failed, but not how to repair
+it. The agent must separately inspect commitments, request cancellation or
+modification quotes, search alternatives, check relevant compatibility, and
+read the current cash total. Read calls do not mutate state. This separation
+prevents a single state dump from revealing the solution while keeping every
+fact deterministic and objectively auditable.
 
 ## Provider fairness
 

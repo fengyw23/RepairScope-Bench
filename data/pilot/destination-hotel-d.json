@@ -1,5 +1,5 @@
 {
-  "schema_version": "0.2",
+  "schema_version": "0.3",
   "task_id": "destination-hotel-d",
   "family_id": "destination-change-hotel-failure",
   "variant_id": "D",
@@ -10,8 +10,8 @@
     "url": "https://github.com/microsoft/STATE-Bench/blob/main/state_bench/domains/travel/tasks/121-change_flight_cascade_replace_hotel.json",
     "transformation": "Newly authored post-failure counterfactual. It preserves the source task's coordination structure but uses a fixed failure snapshot, explicit financial policies, new text, and a solver-derived repair oracle."
   },
-  "instruction": "Keep the changed San Francisco trip coherent. Lodging must be within 30 minutes of the meeting. Preserve confirmed arrangements when they still satisfy every hard constraint.",
-  "failure_observation": "The requested SFO hotel sold out. No available hotel is within the user's 30-minute hard commute limit.",
+  "instruction": "Complete the San Francisco meeting trip with one flight arriving in SFO and one hotel for August 10-13. The hotel commute to the meeting must be at most 30 minutes.",
+  "failure_observation": "book_hotel(option_id=HOTEL-SFO-183) failed: sold_out",
   "pre_failure_trace": [
     {
       "step": 1,

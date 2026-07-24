@@ -68,6 +68,35 @@ class PilotDatasetTest(unittest.TestCase):
             self.assertNotIn("expected_oracle", task)
             self.assertNotIn("optimal_plans", task)
 
+    def test_family_variants_share_raw_failure_observation(self) -> None:
+        by_family: dict[str, set[str]] = {}
+        for task in self.tasks:
+            by_family.setdefault(task["family_id"], set()).add(
+                task["failure_observation"]
+            )
+        self.assertTrue(
+            all(len(observations) == 1 for observations in by_family.values())
+        )
+
+    def test_model_visible_text_does_not_narrate_repair_facts(self) -> None:
+        forbidden = {
+            "fully refundable",
+            "non-refundable",
+            "is available for",
+            "no available hotel",
+            "every other car is sold out",
+            "supervisor modification",
+            "preserve confirmed",
+            "report the blocker",
+            "keep already confirmed",
+        }
+        for task in self.tasks:
+            visible = (
+                task["instruction"] + "\n" + task["failure_observation"]
+            ).lower()
+            with self.subTest(task=task["task_id"]):
+                self.assertTrue(forbidden.isdisjoint(visible))
+
     def test_fixed_snapshot_isolation(self) -> None:
         task = self.tasks[0]
         first = task["failure_snapshot"]["commitments"][0]["commitment_id"]

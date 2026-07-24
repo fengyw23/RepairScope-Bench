@@ -11,7 +11,7 @@ Every model receives the same instruction, public pre-failure tool trace,
 failure observation, and executable tools. It is not a static classifier: the
 agent must query and mutate persistent state.
 
-> Status: **research pilot, v0.2**. The release contains 16 counterfactual
+> Status: **research pilot, v0.3**. The release contains 16 counterfactual
 > tasks in two domains. It establishes the protocol and executable harness; it
 > is not yet large enough for a leaderboard claim.
 
@@ -34,6 +34,9 @@ The protocol has four defining properties:
    on the declared lexicographic objective.
 4. **Counterfactual families.** Small changes to refunds, compatibility,
    deadlines, or availability change the optimal repair scope.
+5. **Tool-mediated discovery.** The initial failure message is the raw failed
+   call, not a prose diagnosis. Refunds, alternatives, modification quotes,
+   compatibility, and current cost must be discovered through targeted tools.
 
 This is a conditional recovery track. It intentionally does not score planning
 and execution before the failure boundary; a later end-to-end track can add
@@ -166,8 +169,13 @@ It excludes evaluator constraints, catalog internals, gold scopes, and oracle
 plans. Options and authoritative state must be obtained through tools.
 
 ```text
-query_state()
-list_options(slot)
+list_commitments()
+get_commitment_details(commitment_id)
+get_cancellation_quote(commitment_id)
+search_options(slot)
+get_modification_quote(commitment_id, to_option_id)
+check_compatibility(left_option_id, right_option_id)
+get_cost_summary()
 cancel(commitment_id)
 book(option_id)
 modify(commitment_id, to_option_id)
@@ -177,6 +185,12 @@ report_infeasible(reason)
 
 Every run uses a fresh deep copy. Side-effecting calls are serialized, actions
 after termination are rejected, and action/turn budgets are enforced.
+
+The read tools are intentionally separated. `list_commitments` does not expose
+refund policies or modification rules, `search_options` returns only currently
+available alternatives for the requested slot, and quotes are revealed only
+for the requested commitment or target. The evaluator's constraints, oracle,
+and loss calculations remain inaccessible to the model.
 
 ## Repository layout
 

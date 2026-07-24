@@ -81,22 +81,45 @@ class AccountingAndSafetyTest(unittest.TestCase):
         self.assertFalse(result.ok)
         self.assertTrue(environment.state_matches_failure_boundary())
 
-    def test_state_query_exposes_policies_without_internal_fields(self) -> None:
+    def test_policies_require_targeted_queries(self) -> None:
         task = load_task(DATA / "travel-package-c-modify-flight.json")
         environment = RepairEnvironment(task)
-        data = environment.query_state().data
-        assert isinstance(data, dict)
-        self.assertTrue(data["available_modifications"])
+        commitments = environment.list_commitments().data
+        assert isinstance(commitments, list)
         self.assertEqual(
-            data["available_modifications"][0]["net_cash_delta"], -80
+            set(commitments[0]),
+            {"commitment_id", "slot", "option_id", "status"},
         )
-        self.assertTrue(
-            all(
-                not key.startswith("_")
-                for item in data["commitments"]
-                for key in item
-            )
+        quote = environment.get_modification_quote(
+            "C-FLIGHT-OUT", "UA-DEN-OUT-SAVER"
         )
+        assert isinstance(quote.data, dict)
+        self.assertTrue(quote.data["available"])
+        self.assertEqual(quote.data["net_cash_delta"], -80)
+
+    def test_search_hides_unavailable_options(self) -> None:
+        task = load_task(DATA / "workstation-b.json")
+        environment = RepairEnvironment(task)
+        options = environment.search_options("dock").data
+        assert isinstance(options, list)
+        self.assertEqual(
+            [item["option_id"] for item in options],
+            ["PROBOOK-DOCK-V2"],
+        )
+
+    def test_compatibility_must_be_checked_for_specific_options(self) -> None:
+        task = load_task(DATA / "workstation-b.json")
+        environment = RepairEnvironment(task)
+        incompatible = environment.check_compatibility(
+            "CREATORBOOK-15", "PROBOOK-DOCK-V2"
+        )
+        compatible = environment.check_compatibility(
+            "PROBOOK-14", "PROBOOK-DOCK-V2"
+        )
+        assert isinstance(incompatible.data, dict)
+        assert isinstance(compatible.data, dict)
+        self.assertFalse(incompatible.data["compatible"])
+        self.assertTrue(compatible.data["compatible"])
 
     def test_full_lexicographic_objective_is_checked(self) -> None:
         task = load_task(DATA / "destination-hotel-b.json")
@@ -136,7 +159,9 @@ class AccountingAndSafetyTest(unittest.TestCase):
 
     def test_action_budget_cannot_be_bypassed_with_late_finish(self) -> None:
         task = load_task(DATA / "short-trip-a-keep-extra-day.json")
-        actions = [{"action": "query_state", "args": {}}] * task["max_actions"]
+        actions = [
+            {"action": "list_commitments", "args": {}}
+        ] * task["max_actions"]
         actions.append({"action": "finish", "args": {}})
         score = evaluate_actions(task, actions)
         self.assertTrue(score["action_budget_exceeded"])

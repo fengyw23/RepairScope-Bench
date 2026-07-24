@@ -105,35 +105,153 @@ class RepairEnvironment:
             active = [item for item in active if item["slot"] == slot]
         return active
 
-    def query_state(self) -> ActionResult:
+    def list_commitments(self) -> ActionResult:
         return ActionResult(
             True,
-            "Authoritative post-failure state.",
+            "Current persistent commitments.",
+            [
+                {
+                    "commitment_id": item["commitment_id"],
+                    "slot": item["slot"],
+                    "option_id": item["option_id"],
+                    "status": item["status"],
+                }
+                for item in self._public_commitments(self.commitments)
+            ],
+        )
+
+    def get_commitment_details(self, commitment_id: str) -> ActionResult:
+        commitment = self._get_any(commitment_id)
+        return ActionResult(
+            True,
+            f"Details for {commitment_id}.",
             {
-                "commitments": self._public_commitments(self.commitments),
-                "available_modifications": [
-                    deepcopy(rule)
-                    for rule in self.modification_rules
-                    if rule.get("available", True)
-                ],
-                "pre_failure_spend": self.pre_failure_spend,
-                "financial_delta": self.financial_delta,
-                "lifecycle_cost": self.lifecycle_cost,
-                "cancellation_loss": self.cancellation_loss,
-                "post_failure_waste": self.post_failure_waste,
-                "recovery_loss": self.recovery_loss,
-                "rollback_damage": self.rollback_damage,
-                "failure_observation": self.task["failure_observation"],
+                "commitment_id": commitment["commitment_id"],
+                "slot": commitment["slot"],
+                "option_id": commitment["option_id"],
+                "status": commitment["status"],
+                "price_paid": commitment["price_paid"],
+                "attributes": deepcopy(commitment.get("attributes", {})),
             },
         )
 
-    def list_options(self, slot: str) -> ActionResult:
+    def get_cancellation_quote(self, commitment_id: str) -> ActionResult:
+        commitment = self._get_active(commitment_id)
+        refund = commitment.get("refund_if_cancelled", 0)
+        return ActionResult(
+            True,
+            f"Cancellation quote for {commitment_id}. No state was changed.",
+            {
+                "commitment_id": commitment_id,
+                "price_paid": commitment["price_paid"],
+                "refund": refund,
+                "irrecoverable_loss": commitment["price_paid"] - refund,
+            },
+        )
+
+    def search_options(self, slot: str) -> ActionResult:
         options = [
-            deepcopy(option)
+            {
+                "option_id": option["option_id"],
+                "slot": option["slot"],
+                "price": option["price"],
+                "attributes": deepcopy(option.get("attributes", {})),
+                "refund_if_cancelled_after_booking": option.get(
+                    "refund_if_cancelled_after_booking", 0
+                ),
+            }
             for option in self.catalog.values()
-            if option["slot"] == slot
+            if option["slot"] == slot and option.get("available", False)
         ]
-        return ActionResult(True, f"{len(options)} option(s) for slot {slot}.", options)
+        return ActionResult(
+            True,
+            f"Found {len(options)} currently available option(s) for {slot}.",
+            options,
+        )
+
+    def get_modification_quote(
+        self, commitment_id: str, to_option_id: str
+    ) -> ActionResult:
+        commitment = self._get_active(commitment_id)
+        rules = [
+            rule
+            for rule in self.modification_rules
+            if rule["commitment_id"] == commitment_id
+            and rule["to_option_id"] == to_option_id
+            and rule.get("from_option_id", commitment["option_id"])
+            == commitment["option_id"]
+            and rule.get("available", True)
+        ]
+        if not rules:
+            return ActionResult(
+                True,
+                f"No in-place modification is offered from {commitment_id} "
+                f"to {to_option_id}.",
+                {
+                    "commitment_id": commitment_id,
+                    "to_option_id": to_option_id,
+                    "available": False,
+                },
+            )
+        rule = rules[0]
+        return ActionResult(
+            True,
+            f"Modification quote for {commitment_id}. No state was changed.",
+            {
+                "commitment_id": commitment_id,
+                "from_option_id": commitment["option_id"],
+                "to_option_id": to_option_id,
+                "available": True,
+                "fee": rule.get("fee", 0),
+                "net_cash_delta": rule.get("net_cash_delta", 0),
+                "cash_components": deepcopy(rule.get("cash_components", {})),
+            },
+        )
+
+    def check_compatibility(
+        self, left_option_id: str, right_option_id: str
+    ) -> ActionResult:
+        left = self._find_option_or_commitment(left_option_id)
+        right = self._find_option_or_commitment(right_option_id)
+        applicable = False
+        compatible = True
+        for constraint in self.task["constraints"]:
+            if constraint["type"] != "allowed_pairs":
+                continue
+            expected_slots = {
+                constraint["left_slot"],
+                constraint["right_slot"],
+            }
+            if {left["slot"], right["slot"]} != expected_slots:
+                continue
+            applicable = True
+            pair = (
+                [left_option_id, right_option_id]
+                if left["slot"] == constraint["left_slot"]
+                else [right_option_id, left_option_id]
+            )
+            compatible = compatible and pair in constraint["pairs"]
+        return ActionResult(
+            True,
+            "Compatibility check completed.",
+            {
+                "left_option_id": left_option_id,
+                "right_option_id": right_option_id,
+                "applicable": applicable,
+                "compatible": compatible if applicable else None,
+            },
+        )
+
+    def get_cost_summary(self) -> ActionResult:
+        return ActionResult(
+            True,
+            "Current cash summary.",
+            {
+                "pre_failure_spend": self.pre_failure_spend,
+                "post_failure_net_cash": self.financial_delta,
+                "current_lifecycle_cost": self.lifecycle_cost,
+            },
+        )
 
     def cancel(self, commitment_id: str) -> ActionResult:
         commitment = self._get_active(commitment_id)
@@ -239,10 +357,24 @@ class RepairEnvironment:
                     f"Episode already terminated via {self.terminal_mode}; "
                     "no further actions are allowed"
                 )
-            if name == "query_state":
-                result = self.query_state()
-            elif name == "list_options":
-                result = self.list_options(args["slot"])
+            if name == "list_commitments":
+                result = self.list_commitments()
+            elif name == "get_commitment_details":
+                result = self.get_commitment_details(args["commitment_id"])
+            elif name == "get_cancellation_quote":
+                result = self.get_cancellation_quote(args["commitment_id"])
+            elif name == "search_options":
+                result = self.search_options(args["slot"])
+            elif name == "get_modification_quote":
+                result = self.get_modification_quote(
+                    args["commitment_id"], args["to_option_id"]
+                )
+            elif name == "check_compatibility":
+                result = self.check_compatibility(
+                    args["left_option_id"], args["right_option_id"]
+                )
+            elif name == "get_cost_summary":
+                result = self.get_cost_summary()
             elif name == "cancel":
                 result = self.cancel(args["commitment_id"])
             elif name == "book":
@@ -341,6 +473,20 @@ class RepairEnvironment:
             ):
                 return item
         raise ToolError(f"No active commitment: {commitment_id}")
+
+    def _get_any(self, commitment_id: str) -> dict[str, Any]:
+        for item in self.commitments:
+            if item["commitment_id"] == commitment_id:
+                return item
+        raise ToolError(f"Unknown commitment: {commitment_id}")
+
+    def _find_option_or_commitment(self, option_id: str) -> dict[str, Any]:
+        if option_id in self.catalog:
+            return self.catalog[option_id]
+        for item in self.commitments:
+            if item["option_id"] == option_id:
+                return item
+        raise ToolError(f"Unknown option: {option_id}")
 
     @staticmethod
     def _public_commitments(

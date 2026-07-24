@@ -57,7 +57,7 @@ class ProviderProtocolTest(unittest.TestCase):
                             "type": "function_call",
                             "id": "fc_1",
                             "call_id": "call_1",
-                            "name": "query_state",
+                            "name": "list_commitments",
                             "arguments": "{}",
                         },
                     ],
@@ -82,9 +82,9 @@ class ProviderProtocolTest(unittest.TestCase):
         )
         session = adapter.start_session("system", "user")
         first = session.advance()
-        self.assertEqual(first.tool_calls[0].name, "query_state")
+        self.assertEqual(first.tool_calls[0].name, "list_commitments")
         second = session.advance(
-            [ToolResult("call_1", "query_state", {"ok": True})]
+            [ToolResult("call_1", "list_commitments", {"ok": True})]
         )
         self.assertEqual(second.text, "done")
         second_input = transport.requests[1]["payload"]["input"]
@@ -153,7 +153,7 @@ class ProviderProtocolTest(unittest.TestCase):
                         {
                             "type": "tool_use",
                             "id": "toolu_1",
-                            "name": "query_state",
+                            "name": "list_commitments",
                             "input": {},
                         }
                     ],
@@ -173,7 +173,7 @@ class ProviderProtocolTest(unittest.TestCase):
         first = session.advance()
         self.assertEqual(first.tool_calls[0].call_id, "toolu_1")
         second = session.advance(
-            [ToolResult("toolu_1", "query_state", {"ok": True})]
+            [ToolResult("toolu_1", "list_commitments", {"ok": True})]
         )
         self.assertEqual(second.text, "done")
         last_message = transport.requests[1]["payload"]["messages"][-1]

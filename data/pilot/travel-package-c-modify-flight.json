@@ -1,5 +1,5 @@
 {
-  "schema_version": "0.2",
+  "schema_version": "0.3",
   "task_id": "travel-package-c-modify-flight",
   "family_id": "travel-package-car-failure",
   "variant_id": "C",
@@ -10,8 +10,8 @@
     "url": "https://github.com/microsoft/STATE-Bench/blob/main/state_bench/domains/travel/tasks/124-cross_plan_trip_budget_with_preference_floor.json",
     "transformation": "Newly authored post-failure counterfactual. It preserves the source task's coordination structure but uses a fixed failure snapshot, explicit financial policies, new text, and a solver-derived repair oracle."
   },
-  "instruction": "Complete the confirmed Denver package under the hard $900 total. The original car failed; preserve confirmed reservations unless a change is required to satisfy the stated constraints.",
-  "failure_observation": "The only replacement car costs $210. The hotel is non-refundable. The outbound carrier offers a same-date saver change with a $20 fee and a $100 fare credit (net cash change: -$80).",
+  "instruction": "Complete the Denver trip with one outbound flight, one return flight, one hotel, and one car for June 23-26. Every arrangement must be in Denver, and total trip spending must not exceed $900.",
+  "failure_observation": "book_car(option_id=CAR-DEN-ORIGINAL) failed: inventory_changed",
   "pre_failure_trace": [
     {
       "step": 1,

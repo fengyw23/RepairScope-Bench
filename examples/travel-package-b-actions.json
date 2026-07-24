@@ -1,10 +1,26 @@
 [
   {
-    "action": "query_state",
+    "action": "list_commitments",
     "args": {}
   },
   {
-    "action": "list_options",
+    "action": "get_cost_summary",
+    "args": {}
+  },
+  {
+    "action": "search_options",
+    "args": {
+      "slot": "car"
+    }
+  },
+  {
+    "action": "get_cancellation_quote",
+    "args": {
+      "commitment_id": "C-HOTEL-UNION"
+    }
+  },
+  {
+    "action": "search_options",
     "args": {
       "slot": "hotel"
     }
@@ -32,4 +48,3 @@
     "args": {}
   }
 ]
-

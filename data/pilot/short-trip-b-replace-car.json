@@ -1,5 +1,5 @@
 {
-  "schema_version": "0.2",
+  "schema_version": "0.3",
   "task_id": "short-trip-b-replace-car",
   "family_id": "shortened-trip-car-change-failure",
   "variant_id": "B",
@@ -10,8 +10,8 @@
     "url": "https://github.com/microsoft/STATE-Bench/blob/main/state_bench/domains/travel/tasks/122-shortened_trip_cancel_hotel_replace_car_dates.json",
     "transformation": "Newly authored post-failure counterfactual. It preserves the source task's coordination structure but uses a fixed failure snapshot, explicit financial policies, new text, and a solver-derived repair oracle."
   },
-  "instruction": "The Seattle trip ends September 12, and the car must also end by that date. Preserve the flights and remaining hotel nights.",
-  "failure_observation": "The original vendor cannot change the car dates. The long rental is fully refundable, and another two-day car is available for $140.",
+  "instruction": "Complete the Seattle trip with one flight, one hotel checking out September 12, and one car that must be returned by September 12.",
+  "failure_observation": "change_car_dates(rental_id=CR-184, dropoff=2026-09-12) failed: rate_plan_not_changeable",
   "pre_failure_trace": [
     {
       "step": 1,

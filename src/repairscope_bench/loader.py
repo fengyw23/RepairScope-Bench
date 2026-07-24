@@ -34,7 +34,7 @@ def validate_task(task: dict[str, Any]) -> None:
         raise TaskValidationError(
             f"{task.get('task_id', '<unknown>')}: missing fields {sorted(missing)}"
         )
-    if task["schema_version"] != "0.2":
+    if task["schema_version"] != "0.3":
         raise TaskValidationError(
             f"{task['task_id']}: unsupported schema_version {task['schema_version']!r}"
         )

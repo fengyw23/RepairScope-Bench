@@ -89,7 +89,7 @@ def base_task(
         )
         known_option_ids.add(item["option_id"])
     return {
-        "schema_version": "0.2",
+        "schema_version": "0.3",
         "task_id": task_id,
         "family_id": family_id,
         "variant_id": variant_id,
@@ -253,13 +253,12 @@ def trip_package_family() -> list[dict[str, Any]]:
         source_case="124",
         source_url=source,
         instruction=(
-            "Complete the confirmed Denver package under the hard $900 total. "
-            "The original car failed; preserve confirmed reservations unless a "
-            "change is required to satisfy the stated constraints."
+            "Complete the Denver trip with one outbound flight, one return flight, "
+            "one hotel, and one car for June 23-26. Every arrangement must be in "
+            "Denver, and total trip spending must not exceed $900."
         ),
         failure_observation=(
-            "The $126 original car disappeared from inventory during booking. "
-            "A comparable $131 Denver car is now available."
+            "book_car(option_id=CAR-DEN-ORIGINAL) failed: inventory_changed"
         ),
         trace=trace,
         commitments=deepcopy(common_commitments),
@@ -288,13 +287,12 @@ def trip_package_family() -> list[dict[str, Any]]:
         source_case="124",
         source_url=source,
         instruction=(
-            "Complete the confirmed Denver package under the hard $900 total. "
-            "The original car failed; preserve confirmed reservations unless a "
-            "change is required to satisfy the stated constraints."
+            "Complete the Denver trip with one outbound flight, one return flight, "
+            "one hotel, and one car for June 23-26. Every arrangement must be in "
+            "Denver, and total trip spending must not exceed $900."
         ),
         failure_observation=(
-            "The original car disappeared. The only car is $210. The confirmed "
-            "hotel is fully refundable, and a $180 Denver hotel is available."
+            "book_car(option_id=CAR-DEN-ORIGINAL) failed: inventory_changed"
         ),
         trace=trace,
         commitments=deepcopy(common_commitments),
@@ -334,14 +332,12 @@ def trip_package_family() -> list[dict[str, Any]]:
         source_case="124",
         source_url=source,
         instruction=(
-            "Complete the confirmed Denver package under the hard $900 total. "
-            "The original car failed; preserve confirmed reservations unless a "
-            "change is required to satisfy the stated constraints."
+            "Complete the Denver trip with one outbound flight, one return flight, "
+            "one hotel, and one car for June 23-26. Every arrangement must be in "
+            "Denver, and total trip spending must not exceed $900."
         ),
         failure_observation=(
-            "The only replacement car costs $210. The hotel is non-refundable. "
-            "The outbound carrier offers a same-date saver change with a $20 "
-            "fee and a $100 fare credit (net cash change: -$80)."
+            "book_car(option_id=CAR-DEN-ORIGINAL) failed: inventory_changed"
         ),
         trace=trace,
         commitments=commitments_c,
@@ -391,14 +387,12 @@ def trip_package_family() -> list[dict[str, Any]]:
         source_case="124",
         source_url=source,
         instruction=(
-            "Complete the confirmed Denver package under the hard $900 total. "
-            "Do not cancel confirmed reservations if no package can meet the cap; "
-            "report the blocker instead."
+            "Complete the Denver trip with one outbound flight, one return flight, "
+            "one hotel, and one car for June 23-26. Every arrangement must be in "
+            "Denver, and total trip spending must not exceed $900."
         ),
         failure_observation=(
-            "The only replacement car costs $210. The hotel is non-refundable, "
-            "and the confirmed flights cannot be changed or refunded enough to "
-            "bring the package under $900."
+            "book_car(option_id=CAR-DEN-ORIGINAL) failed: inventory_changed"
         ),
         trace=trace,
         commitments=commitments_c,
@@ -478,24 +472,9 @@ def destination_family() -> list[dict[str, Any]]:
         oak_available: bool,
         sfo_available: bool,
     ) -> dict[str, Any]:
-        observation = {
-            "A": (
-                "The requested SFO hotel sold out. An Oakland hotel with a "
-                "45-minute meeting commute is available for $420."
-            ),
-            "B": (
-                "The requested SFO hotel sold out. The user explicitly permits "
-                "up to a 360-minute commute; the old LAX hotel remains valid."
-            ),
-            "C": (
-                "The requested SFO hotel sold out. A second SFO hotel with a "
-                "15-minute commute is available for $600."
-            ),
-            "D": (
-                "The requested SFO hotel sold out. No available hotel is within "
-                "the user's 30-minute hard commute limit."
-            ),
-        }[variant]
+        observation = (
+            "book_hotel(option_id=HOTEL-SFO-183) failed: sold_out"
+        )
         catalog = [
             option(
                 "HOTEL-OAK-ALT",
@@ -533,9 +512,9 @@ def destination_family() -> list[dict[str, Any]]:
             source_case="121",
             source_url=source,
             instruction=(
-                "Keep the changed San Francisco trip coherent. Lodging must be "
-                f"within {max_commute} minutes of the meeting. Preserve confirmed "
-                "arrangements when they still satisfy every hard constraint."
+                "Complete the San Francisco meeting trip with one flight arriving "
+                "in SFO and one hotel for August 10-13. The hotel commute to the "
+                f"meeting must be at most {max_commute} minutes."
             ),
             failure_observation=observation,
             trace=trace,
@@ -644,13 +623,13 @@ def shortened_trip_family() -> list[dict[str, Any]]:
         source_case="122",
         source_url=source,
         instruction=(
-            "The Seattle trip ends September 12. It is acceptable to keep the "
-            "already-paid car reservation through September 13 if shortening it "
-            "fails; do not disturb the flights or remaining hotel nights."
+            "Complete the Seattle trip with one flight, one hotel checking out "
+            "September 12, and one car. The car may be returned as late as "
+            "September 13."
         ),
         failure_observation=(
-            "The attempt to shorten the existing car reservation failed. The "
-            "existing car remains confirmed through September 13."
+            "change_car_dates(rental_id=CR-184, dropoff=2026-09-12) failed: "
+            "rate_plan_not_changeable"
         ),
         trace=trace,
         commitments=deepcopy(commitments),
@@ -669,12 +648,12 @@ def shortened_trip_family() -> list[dict[str, Any]]:
         source_case="122",
         source_url=source,
         instruction=(
-            "The Seattle trip ends September 12, and the car must also end by "
-            "that date. Preserve the flights and remaining hotel nights."
+            "Complete the Seattle trip with one flight, one hotel checking out "
+            "September 12, and one car that must be returned by September 12."
         ),
         failure_observation=(
-            "The original vendor cannot change the car dates. The long rental is "
-            "fully refundable, and another two-day car is available for $140."
+            "change_car_dates(rental_id=CR-184, dropoff=2026-09-12) failed: "
+            "rate_plan_not_changeable"
         ),
         trace=trace,
         commitments=deepcopy(commitments),
@@ -703,12 +682,12 @@ def shortened_trip_family() -> list[dict[str, Any]]:
         source_case="122",
         source_url=source,
         instruction=(
-            "The Seattle trip ends September 12, and the car must also end by "
-            "that date. Preserve the flights and remaining hotel nights."
+            "Complete the Seattle trip with one flight, one hotel checking out "
+            "September 12, and one car that must be returned by September 12."
         ),
         failure_observation=(
-            "The first date-change API failed. The rental is non-refundable, but "
-            "a supervisor modification to September 12 is available for a $30 fee."
+            "change_car_dates(rental_id=CR-184, dropoff=2026-09-12) failed: "
+            "rate_plan_not_changeable"
         ),
         trace=trace,
         commitments=commitments_c,
@@ -748,13 +727,12 @@ def shortened_trip_family() -> list[dict[str, Any]]:
         source_case="122",
         source_url=source,
         instruction=(
-            "The Seattle trip ends September 12, and the car must also end by "
-            "that date. If no compliant car action exists, preserve current "
-            "commitments and report the blocker."
+            "Complete the Seattle trip with one flight, one hotel checking out "
+            "September 12, and one car that must be returned by September 12."
         ),
         failure_observation=(
-            "The original car cannot be changed or cancelled, and every other "
-            "car is sold out through September 12."
+            "change_car_dates(rental_id=CR-184, dropoff=2026-09-12) failed: "
+            "rate_plan_not_changeable"
         ),
         trace=trace,
         commitments=commitments_c,
@@ -855,25 +833,6 @@ def workstation_family() -> list[dict[str, Any]]:
     ) -> dict[str, Any]:
         state = deepcopy(commitments)
         state[0]["refund_if_cancelled"] = laptop_refund
-        observations = {
-            "A": (
-                "The selected ProBook dock was voided as incompatible. A "
-                "CreatorBook-compatible dock can arrive by day 2 for $180."
-            ),
-            "B": (
-                "No CreatorBook-compatible dock can arrive by day 3. The laptop "
-                "is fully refundable; a $900 ProBook and $100 compatible dock "
-                "can both arrive by day 2."
-            ),
-            "C": (
-                "The laptop is non-refundable. A $250 universal adapter-dock "
-                "compatible with the CreatorBook can arrive by day 2."
-            ),
-            "D": (
-                "No dock compatible with the confirmed laptop can arrive by day "
-                "3, and no complete replacement laptop-dock pair can arrive."
-            ),
-        }
         catalog = [
             option(
                 "CREATOR-DOCK",
@@ -913,10 +872,12 @@ def workstation_family() -> list[dict[str, Any]]:
             source_url=source,
             instruction=(
                 "Complete a laptop, 4K monitor, and compatible dock workstation "
-                "that arrives by day 3. Keep already confirmed compatible items "
-                "unless changing them is necessary."
+                "with every item arriving by day 3."
             ),
-            failure_observation=observations[variant],
+            failure_observation=(
+                "place_order(option_id=PROBOOK-DOCK) returned voided: "
+                "compatibility_check_failed"
+            ),
             trace=trace,
             commitments=state,
             catalog=catalog,

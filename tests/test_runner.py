@@ -36,7 +36,7 @@ class ScriptedSession:
         if self.index == 1:
             return ModelTurn(
                 "",
-                [ToolCall("c1", "query_state", {})],
+                [ToolCall("c1", "list_commitments", {})],
                 {"input_tokens": 10, "output_tokens": 2},
             )
         return ModelTurn(
@@ -63,6 +63,26 @@ class RunnerTest(unittest.TestCase):
         self.assertNotIn('"constraints"', prompt)
         self.assertNotIn('"catalog"', prompt)
         self.assertIn("failure_observation", prompt)
+        self.assertNotIn("fully refundable", prompt)
+        self.assertNotIn("available for", prompt)
+
+    def test_counterfactual_family_does_not_narrate_hidden_solution(self) -> None:
+        prompts = [
+            build_user_prompt(
+                load_task(DATA / f"travel-package-{suffix}.json")
+            )
+            for suffix in [
+                "a-local-car",
+                "b-replace-hotel",
+                "c-modify-flight",
+                "d-infeasible",
+            ]
+        ]
+        for prompt in prompts:
+            self.assertIn("inventory_changed", prompt)
+            self.assertNotIn("refundable", prompt)
+            self.assertNotIn("replacement car", prompt)
+            self.assertNotIn("saver change", prompt)
 
     def test_suite_writes_jsonl_summary_and_refuses_silent_mix(self) -> None:
         task = load_task(DATA / "short-trip-a-keep-extra-day.json")

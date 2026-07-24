@@ -1,5 +1,5 @@
 {
-  "schema_version": "0.2",
+  "schema_version": "0.3",
   "task_id": "workstation-a",
   "family_id": "workstation-dock-compatibility-failure",
   "variant_id": "A",
@@ -10,8 +10,8 @@
     "url": "https://github.com/microsoft/STATE-Bench/blob/main/state_bench/domains/shopping_assistant/tasks/105-hard_compat_dock_wrong_laptop.json",
     "transformation": "Newly authored post-failure counterfactual. It preserves the source task's coordination structure but uses a fixed failure snapshot, explicit financial policies, new text, and a solver-derived repair oracle."
   },
-  "instruction": "Complete a laptop, 4K monitor, and compatible dock workstation that arrives by day 3. Keep already confirmed compatible items unless changing them is necessary.",
-  "failure_observation": "The selected ProBook dock was voided as incompatible. A CreatorBook-compatible dock can arrive by day 2 for $180.",
+  "instruction": "Complete a laptop, 4K monitor, and compatible dock workstation with every item arriving by day 3.",
+  "failure_observation": "place_order(option_id=PROBOOK-DOCK) returned voided: compatibility_check_failed",
   "pre_failure_trace": [
     {
       "step": 1,

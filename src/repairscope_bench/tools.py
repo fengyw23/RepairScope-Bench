@@ -6,11 +6,8 @@ from typing import Any
 
 TOOL_DEFINITIONS: list[dict[str, Any]] = [
     {
-        "name": "query_state",
-        "description": (
-            "Read the authoritative post-failure commitments and financial ledger. "
-            "Use this before making irreversible changes."
-        ),
+        "name": "list_commitments",
+        "description": "List the persistent commitments that currently exist.",
         "parameters": {
             "type": "object",
             "properties": {},
@@ -19,8 +16,31 @@ TOOL_DEFINITIONS: list[dict[str, Any]] = [
         },
     },
     {
-        "name": "list_options",
-        "description": "List current options and prices for one required slot.",
+        "name": "get_commitment_details",
+        "description": "Read the service or product details of one commitment.",
+        "parameters": {
+            "type": "object",
+            "properties": {"commitment_id": {"type": "string"}},
+            "required": ["commitment_id"],
+            "additionalProperties": False,
+        },
+    },
+    {
+        "name": "get_cancellation_quote",
+        "description": (
+            "Get the current refund and irrecoverable loss for cancelling one "
+            "active commitment. This does not change state."
+        ),
+        "parameters": {
+            "type": "object",
+            "properties": {"commitment_id": {"type": "string"}},
+            "required": ["commitment_id"],
+            "additionalProperties": False,
+        },
+    },
+    {
+        "name": "search_options",
+        "description": "Search currently available options for one service or product slot.",
         "parameters": {
             "type": "object",
             "properties": {"slot": {"type": "string"}},
@@ -29,10 +49,47 @@ TOOL_DEFINITIONS: list[dict[str, Any]] = [
         },
     },
     {
-        "name": "cancel",
+        "name": "get_modification_quote",
         "description": (
-            "Cancel one active commitment. The stated refund is applied immediately."
+            "Check whether one commitment can be changed in place to a specific "
+            "option and obtain the current quote. This does not change state."
         ),
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "commitment_id": {"type": "string"},
+                "to_option_id": {"type": "string"},
+            },
+            "required": ["commitment_id", "to_option_id"],
+            "additionalProperties": False,
+        },
+    },
+    {
+        "name": "check_compatibility",
+        "description": "Check whether two specific product or service options are compatible.",
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "left_option_id": {"type": "string"},
+                "right_option_id": {"type": "string"},
+            },
+            "required": ["left_option_id", "right_option_id"],
+            "additionalProperties": False,
+        },
+    },
+    {
+        "name": "get_cost_summary",
+        "description": "Read the current task-level cash total without changing state.",
+        "parameters": {
+            "type": "object",
+            "properties": {},
+            "required": [],
+            "additionalProperties": False,
+        },
+    },
+    {
+        "name": "cancel",
+        "description": "Cancel one active commitment and apply its current refund.",
         "parameters": {
             "type": "object",
             "properties": {"commitment_id": {"type": "string"}},
@@ -67,10 +124,7 @@ TOOL_DEFINITIONS: list[dict[str, Any]] = [
     },
     {
         "name": "finish",
-        "description": (
-            "Declare recovery complete. Call only after the final state satisfies "
-            "the instruction."
-        ),
+        "description": "Declare that the requested task is complete.",
         "parameters": {
             "type": "object",
             "properties": {},
@@ -80,10 +134,7 @@ TOOL_DEFINITIONS: list[dict[str, Any]] = [
     },
     {
         "name": "report_infeasible",
-        "description": (
-            "Declare that no safe constraint-satisfying repair exists. Do not destroy "
-            "existing commitments before making this declaration."
-        ),
+        "description": "Declare that the requested task cannot be completed.",
         "parameters": {
             "type": "object",
             "properties": {"reason": {"type": "string"}},

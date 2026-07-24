@@ -2,7 +2,7 @@
 
 ## Summary
 
-RepairScope-Bench v0.2 contains 16 executable post-failure recovery tasks:
+RepairScope-Bench v0.3 contains 16 executable post-failure recovery tasks:
 four counterfactual families, two domains, 12 feasible cases, and four
 infeasible cases. It is a protocol pilot rather than a statistically broad
 leaderboard dataset.
@@ -42,14 +42,18 @@ the public mechanics and detects drift.
 | `instruction` | User goal and stated constraints | yes |
 | `failure_observation` | Latest failed operation | yes |
 | `pre_failure_trace` | Auditable successful/failed prefix | yes |
-| `failure_snapshot` | Initial executable state | through `query_state` |
-| `catalog` | Options, availability, prices | through `list_options` |
-| `modification_rules` | Allowed in-place changes and cash effects | through tools |
+| `failure_snapshot` | Initial executable state | one commitment at a time through read tools |
+| `catalog` | Options, availability, prices | only available entries through `search_options` |
+| `modification_rules` | Allowed in-place changes and cash effects | only for a requested commitment-target quote |
 | `constraints` | Executable evaluator checks | no |
 | `objective` | Scoring declaration | no |
 | `max_actions` | Action budget | enforced by harness |
 
 The prompt is generated from a field allowlist, never by dumping the task JSON.
+`failure_observation` contains only the raw failed call and error. It must not
+summarize refunds, alternatives, compatibility, the required repair scope, or
+whether the task is feasible. Counterfactual variants in one family therefore
+share the same failure text even when their hidden environment facts differ.
 
 ## Quality checks
 
@@ -61,6 +65,10 @@ The test suite verifies:
 - an infeasibility report cannot hide earlier successful damage;
 - positive and negative modification cash changes are accounted exactly;
 - the complete lexicographic objective is checked;
+- the prompt does not narrate counterfactual policies or solutions;
+- commitment listing does not expose refunds or modification rules;
+- unavailable options remain hidden from search;
+- compatibility and modification facts require targeted queries;
 - OpenAI, Anthropic, Qwen/DeepSeek protocol loops preserve tool-call state;
 - a scripted model can complete the full model → tool → model loop.
 
