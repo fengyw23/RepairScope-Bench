@@ -1,0 +1,186 @@
+{
+  "schema_version": "0.1",
+  "task_id": "workstation-c",
+  "family_id": "workstation-dock-compatibility-failure",
+  "variant_id": "C",
+  "domain": "shopping",
+  "source_inspiration": {
+    "benchmark": "STATE-Bench",
+    "case_id": "105",
+    "url": "https://github.com/microsoft/STATE-Bench/blob/main/state_bench/domains/shopping_assistant/tasks/105-hard_compat_dock_wrong_laptop.json",
+    "transformation": "Newly authored post-failure counterfactual. It preserves the source task's coordination structure but uses a fixed failure snapshot, explicit financial policies, new text, and a solver-derived repair oracle."
+  },
+  "instruction": "Complete a laptop, 4K monitor, and compatible dock workstation that arrives by day 3. Keep already confirmed compatible items unless changing them is necessary.",
+  "failure_observation": "The laptop is non-refundable. A $250 universal adapter-dock compatible with the CreatorBook can arrive by day 2.",
+  "pre_failure_trace": [
+    {
+      "step": 1,
+      "tool": "place_order",
+      "arguments": {
+        "option_id": "CREATORBOOK-15"
+      },
+      "result": {
+        "status": "confirmed",
+        "commitment_id": "C-LAPTOP"
+      }
+    },
+    {
+      "step": 2,
+      "tool": "place_order",
+      "arguments": {
+        "option_id": "MONITOR-4K"
+      },
+      "result": {
+        "status": "confirmed",
+        "commitment_id": "C-MONITOR"
+      }
+    },
+    {
+      "step": 3,
+      "tool": "place_order",
+      "arguments": {
+        "option_id": "PROBOOK-DOCK"
+      },
+      "result": {
+        "status": "voided",
+        "error": "compatibility_check_failed"
+      }
+    }
+  ],
+  "failure_snapshot": {
+    "commitments": [
+      {
+        "commitment_id": "C-LAPTOP",
+        "slot": "laptop",
+        "option_id": "CREATORBOOK-15",
+        "status": "confirmed",
+        "price_paid": 1200,
+        "refund_if_cancelled": 0,
+        "attributes": {
+          "arrival_day": 2
+        }
+      },
+      {
+        "commitment_id": "C-MONITOR",
+        "slot": "monitor",
+        "option_id": "MONITOR-4K",
+        "status": "confirmed",
+        "price_paid": 400,
+        "refund_if_cancelled": 300,
+        "attributes": {
+          "arrival_day": 1
+        }
+      }
+    ],
+    "note": "Every evaluated model starts from this authoritative state. The trace is evidence of how the state was produced, not a model-generated chain of thought."
+  },
+  "failure": {
+    "affected_slots": [
+      "dock"
+    ],
+    "side_effect_on_failed_call": "none"
+  },
+  "catalog": [
+    {
+      "option_id": "CREATOR-DOCK",
+      "slot": "dock",
+      "price": 180,
+      "available": false,
+      "attributes": {
+        "arrival_day": 2
+      }
+    },
+    {
+      "option_id": "UNIVERSAL-ADAPTER-DOCK",
+      "slot": "dock",
+      "price": 250,
+      "available": true,
+      "attributes": {
+        "arrival_day": 2
+      }
+    },
+    {
+      "option_id": "PROBOOK-14",
+      "slot": "laptop",
+      "price": 900,
+      "available": true,
+      "attributes": {
+        "arrival_day": 2
+      }
+    },
+    {
+      "option_id": "PROBOOK-DOCK-V2",
+      "slot": "dock",
+      "price": 100,
+      "available": true,
+      "attributes": {
+        "arrival_day": 2
+      }
+    }
+  ],
+  "modification_rules": [],
+  "required_slots": [
+    "laptop",
+    "monitor",
+    "dock"
+  ],
+  "constraints": [
+    {
+      "type": "slot_attribute",
+      "slot": "laptop",
+      "attribute": "arrival_day",
+      "op": "le",
+      "value": 3
+    },
+    {
+      "type": "slot_attribute",
+      "slot": "monitor",
+      "attribute": "arrival_day",
+      "op": "le",
+      "value": 3
+    },
+    {
+      "type": "slot_attribute",
+      "slot": "dock",
+      "attribute": "arrival_day",
+      "op": "le",
+      "value": 3
+    },
+    {
+      "type": "allowed_pairs",
+      "left_slot": "laptop",
+      "right_slot": "dock",
+      "pairs": [
+        [
+          "CREATORBOOK-15",
+          "CREATOR-DOCK"
+        ],
+        [
+          "CREATORBOOK-15",
+          "UNIVERSAL-ADAPTER-DOCK"
+        ],
+        [
+          "PROBOOK-14",
+          "PROBOOK-DOCK-V2"
+        ]
+      ]
+    }
+  ],
+  "objective": {
+    "mode": "lexicographic",
+    "terms": [
+      "repair_loss",
+      "mutated_prior_commitments",
+      "state_changing_actions"
+    ],
+    "repair_loss_definition": "irrecoverable value of cancelled pre-failure commitments + net cost of post-failure purchases + explicit modification fees"
+  },
+  "expected_oracle": {
+    "feasible": true,
+    "repair_loss": 250,
+    "scope": {
+      "C-LAPTOP": "KEEP",
+      "C-MONITOR": "KEEP"
+    }
+  }
+}

@@ -1,0 +1,35 @@
+[
+  {
+    "action": "query_state",
+    "args": {}
+  },
+  {
+    "action": "list_options",
+    "args": {
+      "slot": "hotel"
+    }
+  },
+  {
+    "action": "cancel",
+    "args": {
+      "commitment_id": "C-HOTEL-UNION"
+    }
+  },
+  {
+    "action": "book",
+    "args": {
+      "option_id": "HOTEL-DEN-BUDGET"
+    }
+  },
+  {
+    "action": "book",
+    "args": {
+      "option_id": "CAR-DEN-ALT"
+    }
+  },
+  {
+    "action": "finish",
+    "args": {}
+  }
+]
+

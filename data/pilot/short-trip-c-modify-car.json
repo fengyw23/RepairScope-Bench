@@ -1,0 +1,151 @@
+{
+  "schema_version": "0.1",
+  "task_id": "short-trip-c-modify-car",
+  "family_id": "shortened-trip-car-change-failure",
+  "variant_id": "C",
+  "domain": "travel",
+  "source_inspiration": {
+    "benchmark": "STATE-Bench",
+    "case_id": "122",
+    "url": "https://github.com/microsoft/STATE-Bench/blob/main/state_bench/domains/travel/tasks/122-shortened_trip_cancel_hotel_replace_car_dates.json",
+    "transformation": "Newly authored post-failure counterfactual. It preserves the source task's coordination structure but uses a fixed failure snapshot, explicit financial policies, new text, and a solver-derived repair oracle."
+  },
+  "instruction": "The Seattle trip ends September 12, and the car must also end by that date. Preserve the flights and remaining hotel nights.",
+  "failure_observation": "The first date-change API failed. The rental is non-refundable, but a supervisor modification to September 12 is available for a $30 fee.",
+  "pre_failure_trace": [
+    {
+      "step": 1,
+      "tool": "cancel_hotel_night",
+      "arguments": {
+        "reservation_id": "HR-184",
+        "night": "2026-09-12"
+      },
+      "result": {
+        "status": "cancelled",
+        "refund": 190
+      }
+    },
+    {
+      "step": 2,
+      "tool": "change_car_dates",
+      "arguments": {
+        "rental_id": "CR-184",
+        "dropoff": "2026-09-12"
+      },
+      "result": {
+        "status": "failed",
+        "error": "rate_plan_not_changeable"
+      }
+    }
+  ],
+  "failure_snapshot": {
+    "commitments": [
+      {
+        "commitment_id": "C-FLIGHT-SEA",
+        "slot": "flight",
+        "option_id": "FLIGHT-SEA-BUNDLE",
+        "status": "confirmed",
+        "price_paid": 500,
+        "refund_if_cancelled": 0,
+        "attributes": {
+          "trip_end": "2026-09-12"
+        }
+      },
+      {
+        "commitment_id": "C-HOTEL-SEA",
+        "slot": "hotel",
+        "option_id": "HOTEL-SEA-2N",
+        "status": "confirmed",
+        "price_paid": 380,
+        "refund_if_cancelled": 190,
+        "attributes": {
+          "check_out": "2026-09-12"
+        }
+      },
+      {
+        "commitment_id": "C-CAR-LONG",
+        "slot": "car",
+        "option_id": "CAR-SEA-LONG",
+        "status": "confirmed",
+        "price_paid": 210,
+        "refund_if_cancelled": 0,
+        "attributes": {
+          "dropoff": "2026-09-13"
+        }
+      }
+    ],
+    "note": "Every evaluated model starts from this authoritative state. The trace is evidence of how the state was produced, not a model-generated chain of thought."
+  },
+  "failure": {
+    "affected_slots": [
+      "car"
+    ],
+    "side_effect_on_failed_call": "none"
+  },
+  "catalog": [
+    {
+      "option_id": "CAR-SEA-SHORT",
+      "slot": "car",
+      "price": 140,
+      "available": true,
+      "attributes": {
+        "dropoff": "2026-09-12"
+      }
+    }
+  ],
+  "modification_rules": [
+    {
+      "commitment_id": "C-CAR-LONG",
+      "to_option_id": "CAR-SEA-SHORT",
+      "fee": 30,
+      "net_cash_delta": 30,
+      "available": true
+    }
+  ],
+  "required_slots": [
+    "flight",
+    "hotel",
+    "car"
+  ],
+  "constraints": [
+    {
+      "type": "slot_attribute",
+      "slot": "flight",
+      "attribute": "trip_end",
+      "op": "eq",
+      "value": "2026-09-12"
+    },
+    {
+      "type": "slot_attribute",
+      "slot": "hotel",
+      "attribute": "check_out",
+      "op": "eq",
+      "value": "2026-09-12"
+    },
+    {
+      "type": "slot_attribute",
+      "slot": "car",
+      "attribute": "dropoff",
+      "op": "le",
+      "value": "2026-09-12"
+    }
+  ],
+  "objective": {
+    "mode": "lexicographic",
+    "terms": [
+      "repair_loss",
+      "mutated_prior_commitments",
+      "state_changing_actions"
+    ],
+    "repair_loss_definition": "irrecoverable value of cancelled pre-failure commitments + net cost of post-failure purchases + explicit modification fees"
+  },
+  "expected_oracle": {
+    "feasible": true,
+    "repair_loss": 30,
+    "scope": {
+      "C-FLIGHT-SEA": "KEEP",
+      "C-HOTEL-SEA": "KEEP",
+      "C-CAR-LONG": "MODIFY"
+    }
+  }
+}

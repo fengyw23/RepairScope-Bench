@@ -1,0 +1,149 @@
+{
+  "schema_version": "0.1",
+  "task_id": "destination-hotel-c",
+  "family_id": "destination-change-hotel-failure",
+  "variant_id": "C",
+  "domain": "travel",
+  "source_inspiration": {
+    "benchmark": "STATE-Bench",
+    "case_id": "121",
+    "url": "https://github.com/microsoft/STATE-Bench/blob/main/state_bench/domains/travel/tasks/121-change_flight_cascade_replace_hotel.json",
+    "transformation": "Newly authored post-failure counterfactual. It preserves the source task's coordination structure but uses a fixed failure snapshot, explicit financial policies, new text, and a solver-derived repair oracle."
+  },
+  "instruction": "Keep the changed San Francisco trip coherent. Lodging must be within 30 minutes of the meeting. Preserve confirmed arrangements when they still satisfy every hard constraint.",
+  "failure_observation": "The requested SFO hotel sold out. A second SFO hotel with a 15-minute commute is available for $600.",
+  "pre_failure_trace": [
+    {
+      "step": 1,
+      "tool": "change_flight",
+      "arguments": {
+        "booking_id": "BK-183",
+        "to": "UA183SFO"
+      },
+      "result": {
+        "status": "confirmed",
+        "commitment_id": "C-FLIGHT-SFO"
+      }
+    },
+    {
+      "step": 2,
+      "tool": "book_hotel",
+      "arguments": {
+        "option_id": "HOTEL-SFO-183"
+      },
+      "result": {
+        "status": "failed",
+        "error": "sold_out"
+      }
+    }
+  ],
+  "failure_snapshot": {
+    "commitments": [
+      {
+        "commitment_id": "C-FLIGHT-SFO",
+        "slot": "flight",
+        "option_id": "UA183SFO",
+        "status": "confirmed",
+        "price_paid": 435,
+        "refund_if_cancelled": 335,
+        "attributes": {
+          "arrival_city": "SFO",
+          "date": "2026-08-10"
+        }
+      },
+      {
+        "commitment_id": "C-HOTEL-LAX",
+        "slot": "hotel",
+        "option_id": "HOTEL-LAX-OLD",
+        "status": "confirmed",
+        "price_paid": 525,
+        "refund_if_cancelled": 525,
+        "attributes": {
+          "commute_to_meeting_minutes": 330,
+          "check_in": "2026-08-10",
+          "check_out": "2026-08-13"
+        }
+      }
+    ],
+    "note": "Every evaluated model starts from this authoritative state. The trace is evidence of how the state was produced, not a model-generated chain of thought."
+  },
+  "failure": {
+    "affected_slots": [
+      "hotel"
+    ],
+    "side_effect_on_failed_call": "none"
+  },
+  "catalog": [
+    {
+      "option_id": "HOTEL-OAK-ALT",
+      "slot": "hotel",
+      "price": 420,
+      "available": false,
+      "attributes": {
+        "commute_to_meeting_minutes": 45,
+        "check_in": "2026-08-10",
+        "check_out": "2026-08-13"
+      }
+    },
+    {
+      "option_id": "HOTEL-SFO-ALT",
+      "slot": "hotel",
+      "price": 600,
+      "available": true,
+      "attributes": {
+        "commute_to_meeting_minutes": 15,
+        "check_in": "2026-08-10",
+        "check_out": "2026-08-13"
+      }
+    },
+    {
+      "option_id": "HOTEL-SFO-183",
+      "slot": "hotel",
+      "price": 555,
+      "available": false,
+      "attributes": {
+        "commute_to_meeting_minutes": 10,
+        "check_in": "2026-08-10",
+        "check_out": "2026-08-13"
+      }
+    }
+  ],
+  "modification_rules": [],
+  "required_slots": [
+    "flight",
+    "hotel"
+  ],
+  "constraints": [
+    {
+      "type": "slot_attribute",
+      "slot": "flight",
+      "attribute": "arrival_city",
+      "op": "eq",
+      "value": "SFO"
+    },
+    {
+      "type": "slot_attribute",
+      "slot": "hotel",
+      "attribute": "commute_to_meeting_minutes",
+      "op": "le",
+      "value": 30
+    }
+  ],
+  "objective": {
+    "mode": "lexicographic",
+    "terms": [
+      "repair_loss",
+      "mutated_prior_commitments",
+      "state_changing_actions"
+    ],
+    "repair_loss_definition": "irrecoverable value of cancelled pre-failure commitments + net cost of post-failure purchases + explicit modification fees"
+  },
+  "expected_oracle": {
+    "feasible": true,
+    "repair_loss": 600,
+    "scope": {
+      "C-FLIGHT-SFO": "KEEP",
+      "C-HOTEL-LAX": "REPLACE"
+    }
+  }
+}
