@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from collections import Counter, defaultdict
+import json
 from pathlib import Path
 from typing import Any
 
@@ -10,8 +11,13 @@ from .loader import load_tasks
 from .oracle import solve_task
 
 
-def validate_dataset(path: str | Path) -> dict[str, Any]:
+def validate_dataset(
+    path: str | Path, gold_path: str | Path | None = None
+) -> dict[str, Any]:
     tasks = load_tasks(path)
+    gold_file = Path(gold_path) if gold_path is not None else _infer_gold_path(path)
+    with gold_file.open("r", encoding="utf-8") as handle:
+        gold: dict[str, dict[str, Any]] = json.load(handle)
     errors: list[str] = []
     families: dict[str, list[dict[str, Any]]] = defaultdict(list)
     feasible_count = 0
@@ -19,21 +25,28 @@ def validate_dataset(path: str | Path) -> dict[str, Any]:
     for task in tasks:
         families[task["family_id"]].append(task)
         oracle = solve_task(task)
-        expected = task["expected_oracle"]
+        expected = gold.get(task["task_id"])
+        if expected is None:
+            errors.append(f"{task['task_id']}: missing evaluator gold")
+            continue
         if oracle.feasible:
             feasible_count += 1
         if oracle.feasible != expected["feasible"]:
             errors.append(f"{task['task_id']}: feasible mismatch")
-        if oracle.optimal_repair_loss != expected.get("repair_loss"):
+        expected_objective = (
+            tuple(expected["optimal_objective"])
+            if expected["optimal_objective"] is not None
+            else None
+        )
+        if oracle.optimal_objective != expected_objective:
             errors.append(
-                f"{task['task_id']}: repair_loss {oracle.optimal_repair_loss} "
-                f"!= {expected.get('repair_loss')}"
+                f"{task['task_id']}: objective {oracle.optimal_objective} "
+                f"!= {expected.get('optimal_objective')}"
             )
         if oracle.feasible:
-            expected_scope = expected["scope"]
-            if expected_scope not in oracle.optimal_scopes:
+            if expected["optimal_scopes"] != oracle.optimal_scopes:
                 errors.append(
-                    f"{task['task_id']}: expected scope is not oracle-optimal"
+                    f"{task['task_id']}: optimal scopes differ from gold"
                 )
             score = evaluate_actions(task, make_actions(task, "oracle"))
             if not score["optimal_repair"]:
@@ -49,10 +62,11 @@ def validate_dataset(path: str | Path) -> dict[str, Any]:
         if len(members) < 2:
             errors.append(f"{family_id}: counterfactual family has <2 variants")
         scopes = {
-            tuple(sorted(task["expected_oracle"]["scope"].items()))
+            tuple(sorted(gold[task["task_id"]]["optimal_scopes"][0].items()))
             for task in members
+            if gold[task["task_id"]]["optimal_scopes"]
         }
-        feasible_values = {task["expected_oracle"]["feasible"] for task in members}
+        feasible_values = {gold[task["task_id"]]["feasible"] for task in members}
         if len(scopes) < 2:
             errors.append(f"{family_id}: expected scope never changes")
         if len(feasible_values) < 2:
@@ -82,6 +96,19 @@ def validate_dataset(path: str | Path) -> dict[str, Any]:
         "feasible_count": feasible_count,
         "infeasible_count": len(tasks) - feasible_count,
         "errors": errors,
+        "gold_path": str(gold_file.resolve()),
         "baselines": baseline_summary,
     }
 
+
+def _infer_gold_path(path: str | Path) -> Path:
+    source = Path(path)
+    dataset_name = source.stem if source.is_file() else source.name
+    parent = source.parent
+    if parent.name == "data":
+        data_root = parent
+    elif parent.parent.name == "data":
+        data_root = parent.parent
+    else:
+        data_root = parent
+    return data_root / "gold" / f"{dataset_name}.json"

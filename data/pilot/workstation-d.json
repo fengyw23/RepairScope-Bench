@@ -1,5 +1,5 @@
 {
-  "schema_version": "0.1",
+  "schema_version": "0.2",
   "task_id": "workstation-d",
   "family_id": "workstation-dock-compatibility-failure",
   "variant_id": "D",
@@ -116,6 +116,28 @@
       "attributes": {
         "arrival_day": 2
       }
+    },
+    {
+      "option_id": "CREATORBOOK-15",
+      "slot": "laptop",
+      "price": 1200,
+      "available": true,
+      "refund_if_cancelled_after_booking": 0,
+      "attributes": {
+        "arrival_day": 2
+      },
+      "provenance": "failure_snapshot_rebook_option"
+    },
+    {
+      "option_id": "MONITOR-4K",
+      "slot": "monitor",
+      "price": 400,
+      "available": true,
+      "refund_if_cancelled_after_booking": 0,
+      "attributes": {
+        "arrival_day": 1
+      },
+      "provenance": "failure_snapshot_rebook_option"
     }
   ],
   "modification_rules": [],
@@ -169,18 +191,13 @@
   "objective": {
     "mode": "lexicographic",
     "terms": [
-      "repair_loss",
+      "recovery_loss",
       "mutated_prior_commitments",
+      "financial_cost",
       "state_changing_actions"
     ],
-    "repair_loss_definition": "irrecoverable value of cancelled pre-failure commitments + net cost of post-failure purchases + explicit modification fees"
+    "recovery_loss_definition": "unrefunded value of cancelled prior commitments + non-refunded post-failure purchases that are later cancelled + positive net cash paid for in-place modifications",
+    "financial_cost_definition": "pre-failure spend + post-failure charges and modification cash deltas - refunds; all amounts are deterministic ledger values"
   },
-  "expected_oracle": {
-    "feasible": false,
-    "repair_loss": null,
-    "scope": {
-      "C-LAPTOP": "KEEP",
-      "C-MONITOR": "KEEP"
-    }
-  }
+  "max_actions": 30
 }

@@ -8,25 +8,44 @@ from .oracle import solve_task
 
 
 def evaluate_actions(
-    task: dict[str, Any], actions: list[dict[str, Any]]
+    task: dict[str, Any],
+    actions: list[dict[str, Any]],
+    max_actions: int | None = None,
 ) -> dict[str, Any]:
     environment = RepairEnvironment(task)
-    for action in actions:
+    action_limit = max_actions or task.get("max_actions", 30)
+    for action in actions[:action_limit]:
         environment.execute(action)
+    action_budget_exceeded = len(actions) > action_limit
 
+    return evaluate_environment(
+        task, environment, action_budget_exceeded, action_limit
+    )
+
+
+def evaluate_environment(
+    task: dict[str, Any],
+    environment: RepairEnvironment,
+    action_budget_exceeded: bool = False,
+    action_limit: int | None = None,
+) -> dict[str, Any]:
     oracle = solve_task(task)
     goal_pass, constraint_failures = check_constraints(task, environment)
     dispositions = environment.dispositions()
+    observed_objective = environment.objective_tuple()
 
     if oracle.feasible:
         terminal_correct = environment.terminal_mode == "finish"
-        success = bool(goal_pass and terminal_correct)
-        optimal = bool(
-            success and environment.repair_loss == oracle.optimal_repair_loss
+        success = bool(goal_pass and terminal_correct and not action_budget_exceeded)
+        optimal = bool(success and observed_objective == oracle.optimal_objective)
+        extra_loss = (
+            environment.recovery_loss - oracle.optimal_recovery_loss
+            if success and oracle.optimal_recovery_loss is not None
+            else None
         )
-        repair_regret = (
-            environment.repair_loss - oracle.optimal_repair_loss
-            if success and oracle.optimal_repair_loss is not None
+        financial_regret = (
+            environment.lifecycle_cost - oracle.minimum_feasible_financial_cost
+            if success and oracle.minimum_feasible_financial_cost is not None
             else None
         )
         scope_distance = _scope_distance(dispositions, oracle.optimal_scopes)
@@ -34,11 +53,18 @@ def evaluate_actions(
             dispositions, oracle.optimal_scopes
         )
     else:
-        preserved = all(value == "KEEP" for value in dispositions.values())
+        pristine = (
+            environment.state_matches_failure_boundary()
+            and environment.financial_delta == 0
+            and environment.state_changing_actions() == 0
+        )
         terminal_correct = environment.terminal_mode == "infeasible"
-        success = bool(terminal_correct and preserved)
+        success = bool(
+            terminal_correct and pristine and not action_budget_exceeded
+        )
         optimal = success
-        repair_regret = 0 if success else None
+        extra_loss = 0 if success else None
+        financial_regret = 0 if success else None
         preserve_scope = [
             {
                 item["commitment_id"]: "KEEP"
@@ -58,16 +84,31 @@ def evaluate_actions(
         "terminal_correct": terminal_correct,
         "success": success,
         "optimal_repair": optimal,
-        "repair_loss": environment.repair_loss,
-        "optimal_repair_loss": oracle.optimal_repair_loss,
-        "repair_regret": repair_regret,
+        "observed_objective": list(observed_objective),
+        "optimal_objective": list(oracle.optimal_objective)
+        if oracle.optimal_objective is not None
+        else None,
+        "pre_failure_spend": environment.pre_failure_spend,
+        "financial_delta": environment.financial_delta,
         "lifecycle_cost": environment.lifecycle_cost,
+        "optimal_financial_cost": oracle.optimal_financial_cost,
+        "minimum_feasible_financial_cost": oracle.minimum_feasible_financial_cost,
+        "financial_regret": financial_regret,
+        "recovery_loss": environment.recovery_loss,
+        "optimal_recovery_loss": oracle.optimal_recovery_loss,
+        "extra_loss": extra_loss,
+        "cancellation_loss": environment.cancellation_loss,
+        "post_failure_waste": environment.post_failure_waste,
+        "rollback_damage": environment.rollback_damage,
         "scope": dispositions,
         "optimal_scopes": oracle.optimal_scopes,
         "scope_distance": scope_distance,
         "over_repair": over_repair,
         "under_repair": under_repair,
         "constraint_failures": constraint_failures,
+        "action_count": len(environment.event_log),
+        "action_limit": action_limit or task.get("max_actions", 30),
+        "action_budget_exceeded": action_budget_exceeded,
         "tool_errors": [
             event for event in environment.event_log if not event["result"]["ok"]
         ],
@@ -104,4 +145,3 @@ def _scope_errors(
     over = sorted(key for key in must_keep if observed.get(key) != "KEEP")
     under = sorted(key for key in must_change if observed.get(key) == "KEEP")
     return over, under
-

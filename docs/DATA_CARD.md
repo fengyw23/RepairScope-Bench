@@ -1,116 +1,79 @@
 # Data Card
 
-## Dataset summary
+## Summary
 
-RepairScope-Bench v0.1 contains 16 executable post-failure recovery tasks:
-
-- 4 independent causal families;
-- 4 counterfactual variants per family;
-- 12 feasible tasks and 4 infeasible tasks;
-- 12 travel tasks and 4 shopping tasks.
-
-Every task starts at a standardized failure boundary. It contains an original
-instruction, a public canonical tool trace, an authoritative failure snapshot,
-a structured catalog, modification policies, hard constraints, and
-evaluator-only oracle regression fields.
+RepairScope-Bench v0.2 contains 16 executable post-failure recovery tasks:
+four counterfactual families, two domains, 12 feasible cases, and four
+infeasible cases. It is a protocol pilot rather than a statistically broad
+leaderboard dataset.
 
 ## Unit of evaluation
 
-The statistical unit is a **counterfactual family**, not an individual JSON
-file. Variants within a family share the same causal skeleton. Future train,
-development, and test splits must keep an entire family in one split.
+Each public task contains:
+
+- original user instruction;
+- public pre-failure tool trace;
+- authoritative failure snapshot with persistent commitments;
+- failure observation;
+- available catalog and modification rules;
+- required slots and executable hard constraints;
+- an unweighted lexicographic objective;
+- a maximum action budget;
+- source inspiration and transformation disclosure.
+
+Public tasks intentionally omit expected feasibility, optimal actions, scopes,
+and costs. Evaluator-only solver output is stored in `data/gold/pilot.json`.
 
 ## Construction
 
-The pilot generator is checked in at `scripts/build_pilot.py`. It creates four
-families:
+The four coordination structures were inspired by STATE-Bench travel and
+shopping cases. Wording, failure boundaries, prices, refund policies,
+counterfactual variants, executable state, and oracle are newly authored.
+Provenance appears in every task and `THIRD_PARTY_NOTICES.md`.
 
-1. a trip package whose final car booking fails;
-2. a destination change whose replacement hotel sells out;
-3. a shortened trip whose car date change fails;
-4. a workstation whose dock order is voided by a compatibility check.
+`scripts/build_pilot.py` deterministically regenerates public tasks, solves
+them, and writes evaluator gold. `repairscope validate` independently solves
+the public mechanics and detects drift.
 
-Each family changes refundability, availability, price, a hard constraint, or
-an explicit modification policy so that the correct scope changes.
+## Fields
 
-The task-level `expected_oracle` is not used to score an agent. It is a public
-regression assertion. Dataset validation recomputes feasibility, minimum loss,
-and optimal scopes from the executable state.
+| Field | Purpose | Model visible directly |
+|---|---|---:|
+| `instruction` | User goal and stated constraints | yes |
+| `failure_observation` | Latest failed operation | yes |
+| `pre_failure_trace` | Auditable successful/failed prefix | yes |
+| `failure_snapshot` | Initial executable state | through `query_state` |
+| `catalog` | Options, availability, prices | through `list_options` |
+| `modification_rules` | Allowed in-place changes and cash effects | through tools |
+| `constraints` | Executable evaluator checks | no |
+| `objective` | Scoring declaration | no |
+| `max_actions` | Action budget | enforced by harness |
 
-## Public model context vs evaluator-only fields
+The prompt is generated from a field allowlist, never by dumping the task JSON.
 
-Recommended model context:
+## Quality checks
 
-- `instruction`;
-- `failure_observation`;
-- `pre_failure_trace`;
-- tool schemas and tool responses.
+The test suite verifies:
 
-Evaluator only:
+- every gold plan executes and the oracle passes all 16 tasks;
+- public tasks contain no gold fields;
+- failed and terminal calls do not silently mutate state;
+- an infeasibility report cannot hide earlier successful damage;
+- positive and negative modification cash changes are accounted exactly;
+- the complete lexicographic objective is checked;
+- OpenAI, Anthropic, Qwen/DeepSeek protocol loops preserve tool-call state;
+- a scripted model can complete the full model → tool → model loop.
 
-- `expected_oracle`;
-- enumerated oracle plans;
-- aggregate validation results.
+## Limitations
 
-The `failure_snapshot` is authoritative environment state. It can be supplied
-as a compact initial observation or accessed only through `query_state`,
-depending on the experiment; the choice must be reported.
+- only 16 cases and two domains;
+- finite, enumerated options and at most one active commitment per slot;
+- deterministic monetary units, with no taxes or exchange-rate changes;
+- no clarification/user-simulation tasks;
+- no pre-failure end-to-end execution track;
+- source-inspired structures are not evidence of coverage of the source
+  benchmark.
 
-## Field guide
-
-| Field | Meaning |
-|---|---|
-| `task_id` | Globally unique task identifier |
-| `family_id` | Counterfactual grouping key |
-| `variant_id` | Variant within a family |
-| `source_inspiration` | Source case and transformation disclosure |
-| `instruction` | User's persistent goal and hard constraints |
-| `failure_observation` | Structured natural-language tool failure |
-| `pre_failure_trace` | Canonical externally visible tool calls/results |
-| `failure_snapshot.commitments` | Active persistent side effects at the boundary |
-| `catalog` | Post-failure options, prices, availability, and attributes |
-| `modification_rules` | Allowed in-place changes and explicit costs |
-| `required_slots` | Components that the final solution must fill |
-| `constraints` | Deterministically checked terminal conditions |
-| `objective` | Lexicographic optimization semantics |
-| `expected_oracle` | Generator regression assertion |
-
-## Intended use
-
-- diagnose post-commit repair-scope selection;
-- compare recovery prompting or planning methods;
-- test whether a policy reacts correctly to minimal counterfactual changes;
-- develop state, ledger, and solver-based evaluators.
-
-## Out-of-scope use
-
-- claiming end-to-end agent reliability;
-- evaluating failure detection before the supplied boundary;
-- treating the 16-task pilot as a statistically meaningful leaderboard;
-- training on the public pilot and reporting it as held-out evaluation;
-- interpreting simulated vendor prices or policies as real-world facts.
-
-## Known limitations
-
-- limited domains and causal templates;
-- synthetic, compact transactional APIs;
-- no concurrent external actors after the failure boundary;
-- no user clarification tasks in v0.1;
-- an exhaustive solver that does not yet scale to large catalogs;
-- no released model runs or human agreement study.
-
-## Expansion requirements
-
-A paper-scale release should add:
-
-- at least 30–50 independent causal templates;
-- procurement, event planning, customer support, and enterprise workflows;
-- compatibility, temporal, budget, refund, partial-success, and permission
-  mechanisms;
-- required clarification and approval cases;
-- template-disjoint splits and adversarial paraphrases;
-- a second independent oracle implementation;
-- human verification that natural-language facts faithfully express the
-  structured state;
-- end-to-end twins as a separate track.
-
+The next defensible release should expand independent domain templates,
+separate development/test mechanics, add adversarial accounting cases, and
+report human verification of scenario clarity without human voting on gold.

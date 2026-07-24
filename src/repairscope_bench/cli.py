@@ -9,6 +9,8 @@ from .baselines import make_actions
 from .evaluator import evaluate_actions
 from .loader import load_task, load_tasks
 from .oracle import solve_task
+from .providers import ProviderError, create_adapter
+from .runner import run_episode, run_suite, write_run
 from .validation import validate_dataset
 
 
@@ -18,6 +20,7 @@ def main(argv: list[str] | None = None) -> int:
 
     validate_parser = subparsers.add_parser("validate")
     validate_parser.add_argument("data")
+    validate_parser.add_argument("--gold")
 
     oracle_parser = subparsers.add_parser("oracle")
     oracle_parser.add_argument("task")
@@ -32,9 +35,22 @@ def main(argv: list[str] | None = None) -> int:
     baselines_parser = subparsers.add_parser("run-baselines")
     baselines_parser.add_argument("data")
 
+    model_parser = subparsers.add_parser("run-model")
+    model_parser.add_argument("task")
+    _add_provider_arguments(model_parser)
+    model_parser.add_argument("--output", required=True)
+    model_parser.add_argument("--overwrite", action="store_true")
+
+    suite_parser = subparsers.add_parser("run-suite")
+    suite_parser.add_argument("data")
+    _add_provider_arguments(suite_parser)
+    suite_parser.add_argument("--output-dir", required=True)
+    suite_parser.add_argument("--repeats", type=int, default=1)
+    suite_parser.add_argument("--overwrite", action="store_true")
+
     args = parser.parse_args(argv)
     if args.command == "validate":
-        return _print_result(validate_dataset(args.data))
+        return _print_result(validate_dataset(args.data, args.gold))
     if args.command == "oracle":
         return _print_result(solve_task(load_task(args.task)).as_dict())
     if args.command == "inspect":
@@ -86,6 +102,55 @@ def main(argv: list[str] | None = None) -> int:
                 / len(scores),
             }
         return _print_result(results)
+    if args.command in {"run-model", "run-suite"}:
+        try:
+            if args.timeout <= 0:
+                parser.error("--timeout must be positive")
+            if args.max_retries < 0:
+                parser.error("--max-retries cannot be negative")
+            if args.max_turns <= 0:
+                parser.error("--max-turns must be positive")
+            if args.max_output_tokens <= 0:
+                parser.error("--max-output-tokens must be positive")
+            adapter = create_adapter(
+                args.provider,
+                args.model,
+                base_url=args.base_url,
+                timeout=args.timeout,
+                max_retries=args.max_retries,
+                max_output_tokens=args.max_output_tokens,
+                reasoning_effort=args.reasoning_effort,
+                qwen_enable_thinking=args.qwen_enable_thinking,
+            )
+            if args.command == "run-model":
+                record = run_episode(
+                    load_task(args.task),
+                    adapter,
+                    max_turns=args.max_turns,
+                )
+                output = write_run(
+                    record, args.output, overwrite=args.overwrite
+                )
+                return _print_result(
+                    {
+                        "output": str(output.resolve()),
+                        "status": record["status"],
+                        "score": record["score"],
+                    }
+                )
+            if args.repeats <= 0:
+                parser.error("--repeats must be positive")
+            summary = run_suite(
+                load_tasks(args.data),
+                adapter,
+                args.output_dir,
+                repeats=args.repeats,
+                max_turns=args.max_turns,
+                overwrite=args.overwrite,
+            )
+            return _print_result(summary)
+        except (ProviderError, FileExistsError) as error:
+            parser.error(str(error))
     return 2
 
 
@@ -99,6 +164,28 @@ def _print_result(value: Any) -> int:
     return 0
 
 
+def _add_provider_arguments(parser: argparse.ArgumentParser) -> None:
+    parser.add_argument(
+        "--provider",
+        required=True,
+        choices=["openai", "anthropic", "qwen", "deepseek"],
+    )
+    parser.add_argument("--model", required=True)
+    parser.add_argument("--base-url")
+    parser.add_argument("--timeout", type=float, default=120)
+    parser.add_argument("--max-retries", type=int, default=3)
+    parser.add_argument("--max-turns", type=int, default=30)
+    parser.add_argument("--max-output-tokens", type=int, default=4096)
+    parser.add_argument(
+        "--reasoning-effort",
+        choices=["none", "low", "medium", "high", "xhigh"],
+    )
+    parser.add_argument(
+        "--qwen-enable-thinking",
+        action=argparse.BooleanOptionalAction,
+        default=None,
+    )
+
+
 if __name__ == "__main__":
     raise SystemExit(main())
-

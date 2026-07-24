@@ -1,5 +1,5 @@
 {
-  "schema_version": "0.1",
+  "schema_version": "0.2",
   "task_id": "destination-hotel-c",
   "family_id": "destination-change-hotel-failure",
   "variant_id": "C",
@@ -106,6 +106,31 @@
         "check_in": "2026-08-10",
         "check_out": "2026-08-13"
       }
+    },
+    {
+      "option_id": "UA183SFO",
+      "slot": "flight",
+      "price": 435,
+      "available": true,
+      "refund_if_cancelled_after_booking": 0,
+      "attributes": {
+        "arrival_city": "SFO",
+        "date": "2026-08-10"
+      },
+      "provenance": "failure_snapshot_rebook_option"
+    },
+    {
+      "option_id": "HOTEL-LAX-OLD",
+      "slot": "hotel",
+      "price": 525,
+      "available": true,
+      "refund_if_cancelled_after_booking": 0,
+      "attributes": {
+        "commute_to_meeting_minutes": 330,
+        "check_in": "2026-08-10",
+        "check_out": "2026-08-13"
+      },
+      "provenance": "failure_snapshot_rebook_option"
     }
   ],
   "modification_rules": [],
@@ -132,18 +157,13 @@
   "objective": {
     "mode": "lexicographic",
     "terms": [
-      "repair_loss",
+      "recovery_loss",
       "mutated_prior_commitments",
+      "financial_cost",
       "state_changing_actions"
     ],
-    "repair_loss_definition": "irrecoverable value of cancelled pre-failure commitments + net cost of post-failure purchases + explicit modification fees"
+    "recovery_loss_definition": "unrefunded value of cancelled prior commitments + non-refunded post-failure purchases that are later cancelled + positive net cash paid for in-place modifications",
+    "financial_cost_definition": "pre-failure spend + post-failure charges and modification cash deltas - refunds; all amounts are deterministic ledger values"
   },
-  "expected_oracle": {
-    "feasible": true,
-    "repair_loss": 600,
-    "scope": {
-      "C-FLIGHT-SFO": "KEEP",
-      "C-HOTEL-LAX": "REPLACE"
-    }
-  }
+  "max_actions": 30
 }

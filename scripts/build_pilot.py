@@ -10,6 +10,7 @@ from typing import Any
 
 ROOT = Path(__file__).resolve().parents[1]
 OUTPUT = ROOT / "data" / "pilot"
+GOLD_OUTPUT = ROOT / "data" / "gold" / "pilot.json"
 
 
 def commitment(
@@ -64,12 +65,31 @@ def base_task(
     required_slots: list[str],
     constraints: list[dict[str, Any]],
     affected_slots: list[str],
-    feasible: bool,
-    repair_loss: int | None,
-    scope: dict[str, str],
 ) -> dict[str, Any]:
+    public_catalog = deepcopy(catalog)
+    known_option_ids = {item["option_id"] for item in public_catalog}
+    for item in commitments:
+        if (
+            item["status"] != "confirmed"
+            or item["option_id"] in known_option_ids
+        ):
+            continue
+        public_catalog.append(
+            {
+                "option_id": item["option_id"],
+                "slot": item["slot"],
+                "price": item.get("rebook_price", item["price_paid"]),
+                "available": item.get("rebook_available", True),
+                "refund_if_cancelled_after_booking": item.get(
+                    "refund_if_cancelled_after_rebooking", 0
+                ),
+                "attributes": deepcopy(item.get("attributes", {})),
+                "provenance": "failure_snapshot_rebook_option",
+            }
+        )
+        known_option_ids.add(item["option_id"])
     return {
-        "schema_version": "0.1",
+        "schema_version": "0.2",
         "task_id": task_id,
         "family_id": family_id,
         "variant_id": variant_id,
@@ -100,27 +120,29 @@ def base_task(
             "affected_slots": affected_slots,
             "side_effect_on_failed_call": "none",
         },
-        "catalog": catalog,
+        "catalog": public_catalog,
         "modification_rules": modification_rules,
         "required_slots": required_slots,
         "constraints": constraints,
         "objective": {
             "mode": "lexicographic",
             "terms": [
-                "repair_loss",
+                "recovery_loss",
                 "mutated_prior_commitments",
+                "financial_cost",
                 "state_changing_actions",
             ],
-            "repair_loss_definition": (
-                "irrecoverable value of cancelled pre-failure commitments + "
-                "net cost of post-failure purchases + explicit modification fees"
+            "recovery_loss_definition": (
+                "unrefunded value of cancelled prior commitments + non-refunded "
+                "post-failure purchases that are later cancelled + positive net "
+                "cash paid for in-place modifications"
+            ),
+            "financial_cost_definition": (
+                "pre-failure spend + post-failure charges and modification cash "
+                "deltas - refunds; all amounts are deterministic ledger values"
             ),
         },
-        "expected_oracle": {
-            "feasible": feasible,
-            "repair_loss": repair_loss,
-            "scope": scope,
-        },
+        "max_actions": 30,
     }
 
 
@@ -222,11 +244,6 @@ def trip_package_family() -> list[dict[str, Any]]:
         {"type": "max_lifecycle_cost", "value": 900},
     ]
     required = ["outbound", "return", "hotel", "car"]
-    keep_scope = {
-        "C-FLIGHT-OUT": "KEEP",
-        "C-FLIGHT-RETURN": "KEEP",
-        "C-HOTEL-UNION": "KEEP",
-    }
 
     task_a = base_task(
         task_id="travel-package-a-local-car",
@@ -261,9 +278,6 @@ def trip_package_family() -> list[dict[str, Any]]:
         required_slots=required,
         constraints=constraints,
         affected_slots=["car"],
-        feasible=True,
-        repair_loss=131,
-        scope=keep_scope,
     )
 
     task_b = base_task(
@@ -308,13 +322,6 @@ def trip_package_family() -> list[dict[str, Any]]:
         required_slots=required,
         constraints=constraints,
         affected_slots=["car"],
-        feasible=True,
-        repair_loss=390,
-        scope={
-            "C-FLIGHT-OUT": "KEEP",
-            "C-FLIGHT-RETURN": "KEEP",
-            "C-HOTEL-UNION": "REPLACE",
-        },
     )
 
     commitments_c = deepcopy(common_commitments)
@@ -360,22 +367,20 @@ def trip_package_family() -> list[dict[str, Any]]:
         modification_rules=[
             {
                 "commitment_id": "C-FLIGHT-OUT",
+                "from_option_id": "UA-DEN-OUT",
                 "to_option_id": "UA-DEN-OUT-SAVER",
                 "fee": 20,
                 "net_cash_delta": -80,
+                "cash_components": {
+                    "change_fee": 20,
+                    "fare_credit": -100
+                },
                 "available": True,
             }
         ],
         required_slots=required,
         constraints=constraints,
         affected_slots=["car"],
-        feasible=True,
-        repair_loss=230,
-        scope={
-            "C-FLIGHT-OUT": "MODIFY",
-            "C-FLIGHT-RETURN": "KEEP",
-            "C-HOTEL-UNION": "KEEP",
-        },
     )
 
     task_d = base_task(
@@ -412,9 +417,6 @@ def trip_package_family() -> list[dict[str, Any]]:
         required_slots=required,
         constraints=constraints,
         affected_slots=["car"],
-        feasible=False,
-        repair_loss=None,
-        scope=keep_scope,
     )
     return [task_a, task_b, task_c, task_d]
 
@@ -470,16 +472,11 @@ def destination_family() -> list[dict[str, Any]]:
             "value": "SFO",
         }
     ]
-    scope_keep = {"C-FLIGHT-SFO": "KEEP", "C-HOTEL-LAX": "KEEP"}
-
     def make(
         variant: str,
         max_commute: int,
         oak_available: bool,
         sfo_available: bool,
-        feasible: bool,
-        loss: int | None,
-        scope: dict[str, str],
     ) -> dict[str, Any]:
         observation = {
             "A": (
@@ -557,32 +554,13 @@ def destination_family() -> list[dict[str, Any]]:
                 }
             ],
             affected_slots=["hotel"],
-            feasible=feasible,
-            repair_loss=loss,
-            scope=scope,
         )
 
     return [
-        make(
-            "A",
-            60,
-            True,
-            False,
-            True,
-            420,
-            {"C-FLIGHT-SFO": "KEEP", "C-HOTEL-LAX": "REPLACE"},
-        ),
-        make("B", 360, True, False, True, 0, scope_keep),
-        make(
-            "C",
-            30,
-            False,
-            True,
-            True,
-            600,
-            {"C-FLIGHT-SFO": "KEEP", "C-HOTEL-LAX": "REPLACE"},
-        ),
-        make("D", 30, False, False, False, None, scope_keep),
+        make("A", 60, True, False),
+        make("B", 360, True, False),
+        make("C", 30, False, True),
+        make("D", 30, False, False),
     ]
 
 
@@ -633,12 +611,6 @@ def shortened_trip_family() -> list[dict[str, Any]]:
             dropoff="2026-09-13",
         ),
     ]
-    scope_keep = {
-        "C-FLIGHT-SEA": "KEEP",
-        "C-HOTEL-SEA": "KEEP",
-        "C-CAR-LONG": "KEEP",
-    }
-
     def constraints(max_dropoff: str) -> list[dict[str, Any]]:
         return [
             {
@@ -687,9 +659,6 @@ def shortened_trip_family() -> list[dict[str, Any]]:
         required_slots=["flight", "hotel", "car"],
         constraints=constraints("2026-09-13"),
         affected_slots=["car"],
-        feasible=True,
-        repair_loss=0,
-        scope=scope_keep,
     )
 
     task_b = base_task(
@@ -722,13 +691,6 @@ def shortened_trip_family() -> list[dict[str, Any]]:
         required_slots=["flight", "hotel", "car"],
         constraints=constraints("2026-09-12"),
         affected_slots=["car"],
-        feasible=True,
-        repair_loss=140,
-        scope={
-            "C-FLIGHT-SEA": "KEEP",
-            "C-HOTEL-SEA": "KEEP",
-            "C-CAR-LONG": "REPLACE",
-        },
     )
 
     commitments_c = deepcopy(commitments)
@@ -762,22 +724,20 @@ def shortened_trip_family() -> list[dict[str, Any]]:
         modification_rules=[
             {
                 "commitment_id": "C-CAR-LONG",
+                "from_option_id": "CAR-SEA-LONG",
                 "to_option_id": "CAR-SEA-SHORT",
                 "fee": 30,
                 "net_cash_delta": 30,
+                "cash_components": {
+                    "change_fee": 30,
+                    "fare_difference": 0
+                },
                 "available": True,
             }
         ],
         required_slots=["flight", "hotel", "car"],
         constraints=constraints("2026-09-12"),
         affected_slots=["car"],
-        feasible=True,
-        repair_loss=30,
-        scope={
-            "C-FLIGHT-SEA": "KEEP",
-            "C-HOTEL-SEA": "KEEP",
-            "C-CAR-LONG": "MODIFY",
-        },
     )
 
     task_d = base_task(
@@ -803,9 +763,6 @@ def shortened_trip_family() -> list[dict[str, Any]]:
         required_slots=["flight", "hotel", "car"],
         constraints=constraints("2026-09-12"),
         affected_slots=["car"],
-        feasible=False,
-        repair_loss=None,
-        scope=scope_keep,
     )
     return [task_a, task_b, task_c, task_d]
 
@@ -889,17 +846,12 @@ def workstation_family() -> list[dict[str, Any]]:
             ],
         },
     ]
-    keep_scope = {"C-LAPTOP": "KEEP", "C-MONITOR": "KEEP"}
-
     def make(
         variant: str,
         laptop_refund: int,
         creator_dock: bool,
         adapter_dock: bool,
         replacement_pair: bool,
-        feasible: bool,
-        loss: int | None,
-        scope: dict[str, str],
     ) -> dict[str, Any]:
         state = deepcopy(commitments)
         state[0]["refund_if_cancelled"] = laptop_refund
@@ -972,25 +924,13 @@ def workstation_family() -> list[dict[str, Any]]:
             required_slots=required,
             constraints=constraints,
             affected_slots=["dock"],
-            feasible=feasible,
-            repair_loss=loss,
-            scope=scope,
         )
 
     return [
-        make("A", 1200, True, False, False, True, 180, keep_scope),
-        make(
-            "B",
-            1200,
-            False,
-            False,
-            True,
-            True,
-            1000,
-            {"C-LAPTOP": "REPLACE", "C-MONITOR": "KEEP"},
-        ),
-        make("C", 0, False, True, True, True, 250, keep_scope),
-        make("D", 0, False, False, False, False, None, keep_scope),
+        make("A", 1200, True, False, False),
+        make("B", 1200, False, False, True),
+        make("C", 0, False, True, True),
+        make("D", 0, False, False, False),
     ]
 
 
@@ -1002,6 +942,7 @@ def main() -> None:
         + workstation_family()
     )
     OUTPUT.mkdir(parents=True, exist_ok=True)
+    GOLD_OUTPUT.parent.mkdir(parents=True, exist_ok=True)
     for old in OUTPUT.glob("*.json"):
         old.unlink()
     for task in tasks:
@@ -1010,7 +951,18 @@ def main() -> None:
             json.dumps(task, ensure_ascii=False, indent=2) + "\n",
             encoding="utf-8",
         )
+    import sys
+
+    sys.path.insert(0, str(ROOT / "src"))
+    from repairscope_bench.oracle import solve_task
+
+    gold = {task["task_id"]: solve_task(task).as_dict() for task in tasks}
+    GOLD_OUTPUT.write_text(
+        json.dumps(gold, ensure_ascii=False, indent=2) + "\n",
+        encoding="utf-8",
+    )
     print(f"Wrote {len(tasks)} tasks to {OUTPUT}")
+    print(f"Wrote solver-derived gold to {GOLD_OUTPUT}")
 
 
 if __name__ == "__main__":

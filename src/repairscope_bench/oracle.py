@@ -12,7 +12,9 @@ from .environment import RepairEnvironment
 @dataclass
 class OracleResult:
     feasible: bool
-    optimal_repair_loss: int | float | None
+    optimal_recovery_loss: int | float | None
+    optimal_financial_cost: int | float | None
+    minimum_feasible_financial_cost: int | float | None
     optimal_objective: tuple[int | float, ...] | None
     optimal_plans: list[list[dict[str, Any]]]
     optimal_scopes: list[dict[str, str]]
@@ -21,7 +23,9 @@ class OracleResult:
     def as_dict(self) -> dict[str, Any]:
         return {
             "feasible": self.feasible,
-            "optimal_repair_loss": self.optimal_repair_loss,
+            "optimal_recovery_loss": self.optimal_recovery_loss,
+            "optimal_financial_cost": self.optimal_financial_cost,
+            "minimum_feasible_financial_cost": self.minimum_feasible_financial_cost,
             "optimal_objective": list(self.optimal_objective)
             if self.optimal_objective is not None
             else None,
@@ -34,7 +38,13 @@ class OracleResult:
 def solve_task(task: dict[str, Any]) -> OracleResult:
     slot_choices = [_choices_for_slot(task, slot) for slot in task["required_slots"]]
     feasible: list[
-        tuple[tuple[int | float, ...], list[dict[str, Any]], dict[str, str]]
+        tuple[
+            tuple[int | float, ...],
+            list[dict[str, Any]],
+            dict[str, str],
+            int | float,
+            int | float,
+        ]
     ] = []
 
     for combination in product(*slot_choices):
@@ -45,15 +55,19 @@ def solve_task(task: dict[str, Any]) -> OracleResult:
         passed, _ = check_constraints(task, environment)
         if not passed:
             continue
-        objective = (
-            environment.repair_loss,
-            environment.mutated_prior_commitments(),
-            environment.state_changing_actions(),
+        objective = environment.objective_tuple()
+        feasible.append(
+            (
+                objective,
+                actions,
+                environment.dispositions(),
+                environment.recovery_loss,
+                environment.lifecycle_cost,
+            )
         )
-        feasible.append((objective, actions, environment.dispositions()))
 
     if not feasible:
-        return OracleResult(False, None, None, [], [], 0)
+        return OracleResult(False, None, None, None, None, [], [], 0)
 
     feasible.sort(key=lambda item: item[0])
     best = feasible[0][0]
@@ -62,7 +76,9 @@ def solve_task(task: dict[str, Any]) -> OracleResult:
     unique_scopes = _deduplicate([item[2] for item in optimal])
     return OracleResult(
         True,
-        best[0],
+        optimal[0][3],
+        optimal[0][4],
+        min(item[4] for item in feasible),
         best,
         unique_plans,
         unique_scopes,
@@ -102,10 +118,12 @@ def _choices_for_slot(
                 {"action": "book", "args": {"option_id": option["option_id"]}},
             ]
         )
+    if existing is not None:
         for rule in task["modification_rules"]:
             if (
                 rule["commitment_id"] == existing["commitment_id"]
-                and rule["to_option_id"] == option["option_id"]
+                and rule.get("from_option_id", existing["option_id"])
+                == existing["option_id"]
                 and rule.get("available", True)
             ):
                 choices.append(
@@ -114,7 +132,7 @@ def _choices_for_slot(
                             "action": "modify",
                             "args": {
                                 "commitment_id": existing["commitment_id"],
-                                "to_option_id": option["option_id"],
+                                "to_option_id": rule["to_option_id"],
                             },
                         }
                     ]
@@ -146,4 +164,3 @@ def _deduplicate(items: list[Any]) -> list[Any]:
         if item not in result:
             result.append(item)
     return result
-

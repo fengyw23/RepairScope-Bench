@@ -1,5 +1,5 @@
 {
-  "schema_version": "0.1",
+  "schema_version": "0.2",
   "task_id": "travel-package-a-local-car",
   "family_id": "travel-package-car-failure",
   "variant_id": "A",
@@ -117,6 +117,43 @@
         "pickup": "2026-06-23",
         "dropoff": "2026-06-26"
       }
+    },
+    {
+      "option_id": "UA-DEN-OUT",
+      "slot": "outbound",
+      "price": 240,
+      "available": true,
+      "refund_if_cancelled_after_booking": 0,
+      "attributes": {
+        "trip_city": "DEN",
+        "date": "2026-06-23"
+      },
+      "provenance": "failure_snapshot_rebook_option"
+    },
+    {
+      "option_id": "UA-DEN-RETURN",
+      "slot": "return",
+      "price": 250,
+      "available": true,
+      "refund_if_cancelled_after_booking": 0,
+      "attributes": {
+        "trip_city": "DEN",
+        "date": "2026-06-26"
+      },
+      "provenance": "failure_snapshot_rebook_option"
+    },
+    {
+      "option_id": "HOTEL-UNION",
+      "slot": "hotel",
+      "price": 279,
+      "available": true,
+      "refund_if_cancelled_after_booking": 0,
+      "attributes": {
+        "trip_city": "DEN",
+        "check_in": "2026-06-23",
+        "check_out": "2026-06-26"
+      },
+      "provenance": "failure_snapshot_rebook_option"
     }
   ],
   "modification_rules": [],
@@ -163,19 +200,13 @@
   "objective": {
     "mode": "lexicographic",
     "terms": [
-      "repair_loss",
+      "recovery_loss",
       "mutated_prior_commitments",
+      "financial_cost",
       "state_changing_actions"
     ],
-    "repair_loss_definition": "irrecoverable value of cancelled pre-failure commitments + net cost of post-failure purchases + explicit modification fees"
+    "recovery_loss_definition": "unrefunded value of cancelled prior commitments + non-refunded post-failure purchases that are later cancelled + positive net cash paid for in-place modifications",
+    "financial_cost_definition": "pre-failure spend + post-failure charges and modification cash deltas - refunds; all amounts are deterministic ledger values"
   },
-  "expected_oracle": {
-    "feasible": true,
-    "repair_loss": 131,
-    "scope": {
-      "C-FLIGHT-OUT": "KEEP",
-      "C-FLIGHT-RETURN": "KEEP",
-      "C-HOTEL-UNION": "KEEP"
-    }
-  }
+  "max_actions": 30
 }

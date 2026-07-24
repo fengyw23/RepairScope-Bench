@@ -70,7 +70,7 @@ release should publish a deterministic prefix generator plus snapshot hashes.
 
 ## What would make the idea top-conference ready
 
-The v0.1 repository is a protocol demonstration, not the final empirical
+The v0.2 repository is a protocol demonstration, not the final empirical
 contribution. A strong submission needs:
 
 - substantially more independent causal structures rather than numeric
@@ -85,4 +85,3 @@ contribution. A strong submission needs:
   model reasoning;
 - an end-to-end auxiliary track or no-failure twins to establish external
   relevance without weakening the controlled main track.
-

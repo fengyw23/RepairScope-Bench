@@ -30,6 +30,10 @@ class RepairEnvironment:
         for item in self.commitments:
             item["_origin"] = "pre_failure"
             item["_original_option_id"] = item["option_id"]
+        self._initial_commitments = self._public_commitments(self.commitments)
+        self._pre_failure_spend = sum(
+            item["price_paid"] for item in self.commitments
+        )
         self.catalog = {
             item["option_id"]: deepcopy(item) for item in task.get("catalog", [])
         }
@@ -46,34 +50,53 @@ class RepairEnvironment:
 
     @property
     def pre_failure_spend(self) -> int | float:
-        return sum(
-            item["price_paid"]
-            for item in self.commitments
-            if item["_origin"] == "pre_failure"
-        )
+        return self._pre_failure_spend
 
     @property
-    def lifecycle_cost(self) -> int | float:
+    def financial_delta(self) -> int | float:
+        """Net cash paid after the standardized failure boundary."""
         return (
-            self.pre_failure_spend
-            + self.new_charges
+            self.new_charges
             + self.modification_net_cash
             - self.original_refunds
             - self.new_refunds
         )
 
     @property
-    def repair_loss(self) -> int | float:
-        original_irrecoverable = sum(
+    def lifecycle_cost(self) -> int | float:
+        """Total cash retained by providers across the complete task lifecycle."""
+        return self.pre_failure_spend + self.financial_delta
+
+    @property
+    def cancellation_loss(self) -> int | float:
+        """Irrecoverable value caused by cancelling pre-failure commitments."""
+        return sum(
             item["price_paid"] - item.get("_refund_received", 0)
             for item in self.commitments
             if item["_origin"] == "pre_failure" and item["status"] == "cancelled"
         )
+
+    @property
+    def post_failure_waste(self) -> int | float:
+        """Non-refunded spend on bookings created and cancelled during recovery."""
+        return sum(
+            item["price_paid"] - item.get("_refund_received", 0)
+            for item in self.commitments
+            if item["_origin"] == "post_failure" and item["status"] == "cancelled"
+        )
+
+    @property
+    def rollback_damage(self) -> int | float:
+        """Backward-compatible name for objectively auditable recovery loss."""
+        return self.recovery_loss
+
+    @property
+    def recovery_loss(self) -> int | float:
+        """Irrecoverable recovery damage; useful retained purchases are not waste."""
         return (
-            original_irrecoverable
-            + self.new_charges
-            - self.new_refunds
-            + self.modification_fees
+            self.cancellation_loss
+            + self.post_failure_waste
+            + max(0, self.modification_net_cash)
         )
 
     def active_commitments(self, slot: str | None = None) -> list[dict[str, Any]]:
@@ -87,9 +110,19 @@ class RepairEnvironment:
             True,
             "Authoritative post-failure state.",
             {
-                "commitments": deepcopy(self.commitments),
+                "commitments": self._public_commitments(self.commitments),
+                "available_modifications": [
+                    deepcopy(rule)
+                    for rule in self.modification_rules
+                    if rule.get("available", True)
+                ],
+                "pre_failure_spend": self.pre_failure_spend,
+                "financial_delta": self.financial_delta,
                 "lifecycle_cost": self.lifecycle_cost,
-                "repair_loss": self.repair_loss,
+                "cancellation_loss": self.cancellation_loss,
+                "post_failure_waste": self.post_failure_waste,
+                "recovery_loss": self.recovery_loss,
+                "rollback_damage": self.rollback_damage,
                 "failure_observation": self.task["failure_observation"],
             },
         )
@@ -124,6 +157,11 @@ class RepairEnvironment:
         option = self.catalog[option_id]
         if not option.get("available", False):
             raise ToolError(f"Option {option_id} is unavailable")
+        if self.active_commitments(option["slot"]):
+            raise ToolError(
+                f"Slot {option['slot']} already has an active commitment; "
+                "cancel or modify it first"
+            )
         commitment = {
             "commitment_id": f"NEW-{self._next_id:04d}",
             "slot": option["slot"],
@@ -146,11 +184,15 @@ class RepairEnvironment:
 
     def modify(self, commitment_id: str, to_option_id: str) -> ActionResult:
         commitment = self._get_active(commitment_id)
+        if commitment["option_id"] == to_option_id:
+            raise ToolError(f"{commitment_id} already uses {to_option_id}")
         rules = [
             rule
             for rule in self.modification_rules
             if rule["commitment_id"] == commitment_id
             and rule["to_option_id"] == to_option_id
+            and rule.get("from_option_id", commitment["option_id"])
+            == commitment["option_id"]
             and rule.get("available", True)
         ]
         if not rules:
@@ -166,6 +208,7 @@ class RepairEnvironment:
         commitment["_modified"] = True
         commitment["_modification_fee"] = rule.get("fee", 0)
         commitment["_modification_net_cash"] = rule.get("net_cash_delta", 0)
+        commitment["_modification_rule_used"] = deepcopy(rule)
         self.modification_fees += rule.get("fee", 0)
         self.modification_net_cash += rule.get("net_cash_delta", 0)
         return ActionResult(
@@ -191,6 +234,11 @@ class RepairEnvironment:
         name = action.get("action")
         args = action.get("args", {})
         try:
+            if self.terminal_mode is not None:
+                raise ToolError(
+                    f"Episode already terminated via {self.terminal_mode}; "
+                    "no further actions are allowed"
+                )
             if name == "query_state":
                 result = self.query_state()
             elif name == "list_options":
@@ -214,9 +262,14 @@ class RepairEnvironment:
 
     def snapshot(self) -> dict[str, Any]:
         return {
-            "commitments": deepcopy(self.commitments),
+            "commitments": self._public_commitments(self.commitments),
+            "pre_failure_spend": self.pre_failure_spend,
+            "financial_delta": self.financial_delta,
             "lifecycle_cost": self.lifecycle_cost,
-            "repair_loss": self.repair_loss,
+            "cancellation_loss": self.cancellation_loss,
+            "post_failure_waste": self.post_failure_waste,
+            "recovery_loss": self.recovery_loss,
+            "rollback_damage": self.rollback_damage,
             "terminal_mode": self.terminal_mode,
             "terminal_message": self.terminal_message,
             "event_log": deepcopy(self.event_log),
@@ -253,6 +306,33 @@ class RepairEnvironment:
             for event in self.event_log
         )
 
+    def state_matches_failure_boundary(self) -> bool:
+        return self._public_commitments(self.commitments) == self._initial_commitments
+
+    def objective_tuple(self) -> tuple[int | float, ...]:
+        """Return the declared lexicographic objective without subjective weights."""
+        values: dict[str, int | float] = {
+            "financial_cost": self.lifecycle_cost,
+            "financial_delta": self.financial_delta,
+            "recovery_loss": self.recovery_loss,
+            "rollback_damage": self.rollback_damage,
+            "mutated_prior_commitments": self.mutated_prior_commitments(),
+            "state_changing_actions": self.state_changing_actions(),
+        }
+        terms = self.task.get("objective", {}).get(
+            "terms",
+            [
+                "recovery_loss",
+                "mutated_prior_commitments",
+                "financial_cost",
+                "state_changing_actions",
+            ],
+        )
+        unknown = [term for term in terms if term not in values]
+        if unknown:
+            raise ValueError(f"Unknown objective term(s): {unknown}")
+        return tuple(values[term] for term in terms)
+
     def _get_active(self, commitment_id: str) -> dict[str, Any]:
         for item in self.commitments:
             if (
@@ -262,3 +342,15 @@ class RepairEnvironment:
                 return item
         raise ToolError(f"No active commitment: {commitment_id}")
 
+    @staticmethod
+    def _public_commitments(
+        commitments: list[dict[str, Any]],
+    ) -> list[dict[str, Any]]:
+        public = [
+            {key: deepcopy(value) for key, value in item.items() if not key.startswith("_")}
+            for item in commitments
+        ]
+        return sorted(
+            public,
+            key=lambda item: (item["commitment_id"], item["slot"], item["option_id"]),
+        )

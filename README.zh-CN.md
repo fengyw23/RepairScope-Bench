@@ -1,78 +1,53 @@
 # RepairScope-Bench
 
-**一个用于评测 Agent 在固定失败状态下选择恢复范围的可执行原型。**
+这是一个评测 Agent 在“前序操作已经产生真实影响、后续操作失败”之后，能否选择合理恢复范围的可执行原型。
 
-假设 Agent 已经成功订好机票和酒店，随后租车失败。接下来它不只需要
-“重试租车”，还可能需要判断：
+例如，Agent 已经订好机票和酒店，随后租车失败。它既不能机械地取消所有订单，也不能默认只重试租车：预算、退款规则、时间兼容性和替代资源可能要求它保留、修改或替换不同的已有承诺。
 
-- 机票是否仍应保留；
-- 酒店是否必须更换才能满足总预算；
-- 能否通过修改某一班机票解决预算冲突；
-- 如果不存在可行方案，是否应先保留已有订单并向用户报告。
+当前版本是 **v0.2 研究原型**，包含 4 个反事实家族、16 个任务。所有模型从同一个失败状态开始，但仍须实际调用查询、取消、预订、修改、完成或报告不可行等工具。
 
-失败发生在哪一步，只说明哪里出现了问题，不能直接决定此前哪些成功
-操作应该撤销。
+## 当前评测什么
 
-当前版本是 **v0.1 研究原型**，包含 4 个反事实家族、16 个任务：
+> 在已有有效承诺的统一失败状态下，Agent 能否完成目标，同时避免不必要地破坏已有承诺和制造可客观核算的额外损失？
 
-| 家族 | 固定失败状态 | 四个版本的最优结果 |
-|---|---|---|
-| 丹佛整套行程 | 机票和酒店已确认，租车失败 | 只补租车；换酒店；改一班机票；报告不可行 |
-| 改目的地 | 航班已改到 SFO，新酒店售罄 | 换酒店；允许时保留旧酒店；订另一家 SFO 酒店；报告不可行 |
-| 缩短行程 | 最后一晚已取消，租车改期失败 | 保留多一天租车；换车；原订单内改期；报告不可行 |
-| 办公设备兼容性 | 电脑和显示器已下单，扩展坞订单因不兼容失效 | 只补扩展坞；换电脑和扩展坞；买转接扩展坞；报告不可行 |
+四个任务家族分别来自旅行套餐、目的地变更、行程缩短和办公设备兼容性。每个家族只改变少量事实，使最优恢复范围在“保留、修改、替换、不可行”之间发生变化。
 
-这些结构分别受 STATE-Bench Case 124、121、122 和 105 启发，但任务
-文本、失败快照、费用政策、反事实版本和恢复 oracle 都是重新构造的。
+本版本不评测失败前的规划与执行质量；它是一条条件式恢复赛道。以后可以在其上增加端到端赛道。
 
-## 为什么先采用固定失败状态
+## “额外损失”怎样客观计算
 
-所有模型都从同一个失败快照开始，因此差异可以更干净地解释为
-“失败后的恢复能力”，而不是前序规划不同造成的状态差异。这个设定
-没有把任务降成静态选择题：Agent 仍需查询当前状态，并真实执行取消、
-预订、修改、完成或报告不可行等操作。
+评测器不把不同经济概念用人工权重混成一个分数，而是分别记三本账：
 
-该版本只主张评测：
+1. `lifecycle_cost`：任务全生命周期中，服务商最终保留的净现金；
+2. `recovery_loss`：恢复动作造成的不可回收损失，包括取消旧承诺后无法退回的金额、恢复期间买入又取消且无法退款的金额，以及原地修改产生的正向净现金支出；
+3. `financial_regret`：Agent 的全生命周期成本与同一失败状态下最低可行成本之差。
 
-> 在已经存在有效承诺的统一失败状态下，Agent 能否完成目标，同时避免
-> 不必要地破坏已有承诺和制造额外损失。
+主指标 `extra_loss` 等于 Agent 的 `recovery_loss` 减去可行方案中的最小值。它来自确定的价格、退款和修改现金流，不需要人工打分。
 
-它不评测失败前的规划、执行和故障检测。以后可以另建端到端赛道。
+满足硬约束后，当前任务按下列字典序选择 gold：
 
-## gold 为什么是客观的
+```text
+(recovery_loss,
+ mutated_prior_commitments,
+ lifecycle_cost,
+ state_changing_actions)
+```
 
-任务把以下事实结构化并公开：
-
-- 当前仍生效的订单；
-- 取消能够退回多少钱；
-- 新订单价格；
-- 修改费用和返还差价；
-- 日期、地点、预算、兼容性和到货期限等硬约束。
-
-评测器会穷举所有合法的最终安排。先排除不满足硬约束的方案，再最小化：
-
-1. 取消旧订单后无法退回的金额；
-2. 故障后新下单的净支出；
-3. 明确写入政策的修改费。
-
-若损失相同，再依次选择改动旧承诺更少、状态操作更少的方案。并列最优
-方案全部接受，不要求模型复现唯一轨迹。
+这表示：先避免不可回收的恢复损失；损失相同时少动已有承诺；范围相同时选择成本更低的方案；最后减少有副作用的操作数。这里没有可调权重。公开任务 JSON 不含 gold；评测专用结果单独存放在 `data/gold/pilot.json`，模型提示由字段白名单生成，不会看到答案。
 
 ## 主要指标
 
-- `Goal Pass`：最终硬约束是否全部满足；
-- `Optimal Repair`：是否达到最小恢复损失；
-- `Repair Regret`：模型损失与 oracle 最优损失之差；
-- `Scope Distance`：模型对旧承诺的保留、修改、替换、取消结果，与最近
-  最优恢复范围之间的距离；
-- `Over-repair`：错误破坏了所有最优方案都会保留的承诺；
-- `Under-repair`：保留了所有最优方案都必须处理的承诺；
-- `Correct Infeasibility`：确实无解时，是否在不先破坏已有承诺的情况下
-  报告不可行。
+- `Goal Pass@1`：最终硬约束和终止方式是否正确；
+- `Optimal Repair Rate`：是否达到完整字典序最优；
+- `Extra Loss`：相对最小恢复损失多损失了多少；
+- `Financial Regret`：相对最低可行全生命周期成本多花了多少；
+- `Scope Distance`：对旧承诺的保留、修改、替换、取消结果与最近 gold 的距离；
+- `Over-repair / Under-repair`：是否多改了应保留的承诺，或漏改了必须处理的承诺；
+- `Correct Infeasibility`：确实无解时，能否在不先破坏失败状态的前提下报告不可行。
 
-## 快速运行
+## 安装与校验
 
-```bash
+```powershell
 python -m pip install -e .
 python scripts/build_pilot.py
 repairscope validate data/pilot
@@ -80,18 +55,32 @@ python -m unittest discover -s tests -v
 repairscope run-baselines data/pilot
 ```
 
-当前校验结果：
+当前回归结果为：oracle 16/16 成功且最优；其他规则基线故意不能覆盖全部反事实。这些数字是实现校验，不是语言模型实验结果。
 
-| 策略 | 成功数 | 最优恢复数 |
-|---|---:|---:|
-| 不处理，直接结束 | 2 / 16 | 2 / 16 |
-| 只补失败/缺失的部分 | 4 / 16 | 4 / 16 |
-| 处理声明为受影响的部分 | 7 / 16 | 5 / 16 |
-| 全部取消后贪心重订 | 0 / 16 | 0 / 16 |
-| 穷举 oracle | 16 / 16 | 16 / 16 |
+## 直接接入四类模型
 
-上述结果只用于验证数据和评测器，不是语言模型实验结果。
+```powershell
+# GPT：OpenAI Responses API
+$env:OPENAI_API_KEY="..."
+repairscope run-suite data/pilot --provider openai --model gpt-5.6-sol `
+  --output-dir results/gpt
 
-更多细节见英文 [README](README.md)、[数据卡](docs/DATA_CARD.md) 与
-[评测协议](docs/EVALUATION.md)。
+# Claude：Anthropic Messages API
+$env:ANTHROPIC_API_KEY="..."
+repairscope run-suite data/pilot --provider anthropic --model YOUR_CLAUDE_MODEL `
+  --output-dir results/claude
 
+# Qwen：DashScope OpenAI-compatible API
+$env:DASHSCOPE_API_KEY="..."
+repairscope run-suite data/pilot --provider qwen --model qwen3.7-plus `
+  --output-dir results/qwen
+
+# DeepSeek：OpenAI-compatible API
+$env:DEEPSEEK_API_KEY="..."
+repairscope run-suite data/pilot --provider deepseek --model deepseek-chat `
+  --output-dir results/deepseek
+```
+
+模型名必须显式填写，避免供应商更新默认别名后实验无法复现。每个任务的完整轨迹写入 `runs.jsonl`，聚合结果写入 `summary.json`。密钥只从环境变量读取，不进入日志。
+
+更多细节见 [英文 README](README.md)、[数据卡](docs/DATA_CARD.md) 和 [评测协议](docs/EVALUATION.md)。

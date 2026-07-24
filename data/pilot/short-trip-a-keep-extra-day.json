@@ -1,5 +1,5 @@
 {
-  "schema_version": "0.1",
+  "schema_version": "0.2",
   "task_id": "short-trip-a-keep-extra-day",
   "family_id": "shortened-trip-car-change-failure",
   "variant_id": "A",
@@ -82,7 +82,41 @@
     ],
     "side_effect_on_failed_call": "none"
   },
-  "catalog": [],
+  "catalog": [
+    {
+      "option_id": "FLIGHT-SEA-BUNDLE",
+      "slot": "flight",
+      "price": 500,
+      "available": true,
+      "refund_if_cancelled_after_booking": 0,
+      "attributes": {
+        "trip_end": "2026-09-12"
+      },
+      "provenance": "failure_snapshot_rebook_option"
+    },
+    {
+      "option_id": "HOTEL-SEA-2N",
+      "slot": "hotel",
+      "price": 380,
+      "available": true,
+      "refund_if_cancelled_after_booking": 0,
+      "attributes": {
+        "check_out": "2026-09-12"
+      },
+      "provenance": "failure_snapshot_rebook_option"
+    },
+    {
+      "option_id": "CAR-SEA-LONG",
+      "slot": "car",
+      "price": 210,
+      "available": true,
+      "refund_if_cancelled_after_booking": 0,
+      "attributes": {
+        "dropoff": "2026-09-13"
+      },
+      "provenance": "failure_snapshot_rebook_option"
+    }
+  ],
   "modification_rules": [],
   "required_slots": [
     "flight",
@@ -115,19 +149,13 @@
   "objective": {
     "mode": "lexicographic",
     "terms": [
-      "repair_loss",
+      "recovery_loss",
       "mutated_prior_commitments",
+      "financial_cost",
       "state_changing_actions"
     ],
-    "repair_loss_definition": "irrecoverable value of cancelled pre-failure commitments + net cost of post-failure purchases + explicit modification fees"
+    "recovery_loss_definition": "unrefunded value of cancelled prior commitments + non-refunded post-failure purchases that are later cancelled + positive net cash paid for in-place modifications",
+    "financial_cost_definition": "pre-failure spend + post-failure charges and modification cash deltas - refunds; all amounts are deterministic ledger values"
   },
-  "expected_oracle": {
-    "feasible": true,
-    "repair_loss": 0,
-    "scope": {
-      "C-FLIGHT-SEA": "KEEP",
-      "C-HOTEL-SEA": "KEEP",
-      "C-CAR-LONG": "KEEP"
-    }
-  }
+  "max_actions": 30
 }

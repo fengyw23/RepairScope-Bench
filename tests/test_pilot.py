@@ -6,6 +6,7 @@ from pathlib import Path
 from repairscope_bench.baselines import make_actions
 from repairscope_bench.evaluator import evaluate_actions
 from repairscope_bench.loader import load_tasks
+from repairscope_bench.oracle import solve_task
 from repairscope_bench.validation import validate_dataset
 
 
@@ -38,7 +39,7 @@ class PilotDatasetTest(unittest.TestCase):
 
     def test_infeasible_tasks_require_preservation(self) -> None:
         infeasible = [
-            task for task in self.tasks if not task["expected_oracle"]["feasible"]
+            task for task in self.tasks if not solve_task(task).feasible
         ]
         self.assertEqual(len(infeasible), 4)
         for task in infeasible:
@@ -58,9 +59,14 @@ class PilotDatasetTest(unittest.TestCase):
         by_family: dict[str, set[tuple[tuple[str, str], ...]]] = {}
         for task in self.tasks:
             by_family.setdefault(task["family_id"], set()).add(
-                tuple(sorted(task["expected_oracle"]["scope"].items()))
+                tuple(sorted((solve_task(task).optimal_scopes or [{}])[0].items()))
             )
         self.assertTrue(all(len(scopes) >= 2 for scopes in by_family.values()))
+
+    def test_public_tasks_do_not_contain_gold(self) -> None:
+        for task in self.tasks:
+            self.assertNotIn("expected_oracle", task)
+            self.assertNotIn("optimal_plans", task)
 
     def test_fixed_snapshot_isolation(self) -> None:
         task = self.tasks[0]
