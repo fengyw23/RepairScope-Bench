@@ -1,0 +1,638 @@
+{
+  "schema_version": "1.0",
+  "task_id": "rsb-0069-b",
+  "scenario_id": "scenario-0069",
+  "counterfactual_pair_id": "pair-0069",
+  "variant_role": "beta",
+  "domain": "saas",
+  "environment_type": "repairscope.commitment_graph.v1",
+  "reasoning_structure": "explicit_horizon",
+  "reasoning_structure_label": "explicit-horizon recurring cost",
+  "secondary_structures": [
+    "sunk_vs_marginal"
+  ],
+  "economic_carriers": [
+    "subscription termination",
+    "replacement purchase"
+  ],
+  "difficulty_level": 2,
+  "frontier_profile": "singleton",
+  "split": "heldout",
+  "now": "2026-09-01T09:00:00+08:00",
+  "max_turns": 15,
+  "instruction": "Complete the regulated analytics workspace for the enterprise administrator. Four paid commitments are already active, but the required integration just failed. Preserve every required function, use options deliverable by day 4, and make the best supported recovery decision without asking me to choose. Evaluate charges over the explicitly required 12-month service horizon.",
+  "inventory": [
+    {
+      "option_id": "0069-b1",
+      "name": "core annual subscription",
+      "kind": "core_subscription",
+      "available": false,
+      "upfront_cents": 100000,
+      "monthly_cents": 0,
+      "horizon_months": 0,
+      "refund_after_purchase_cents": 100000,
+      "provides": {
+        "core_subscription": 1
+      },
+      "attributes": {
+        "delivery_day": 1
+      }
+    },
+    {
+      "option_id": "0069-b2",
+      "name": "security package",
+      "kind": "security_coverage",
+      "available": false,
+      "upfront_cents": 40000,
+      "monthly_cents": 0,
+      "horizon_months": 0,
+      "refund_after_purchase_cents": 10000,
+      "provides": {
+        "security_coverage": 1
+      },
+      "attributes": {
+        "delivery_day": 1
+      }
+    },
+    {
+      "option_id": "0069-b3",
+      "name": "data connector",
+      "kind": "data_connector",
+      "available": false,
+      "upfront_cents": 30000,
+      "monthly_cents": 0,
+      "horizon_months": 0,
+      "refund_after_purchase_cents": 30000,
+      "provides": {
+        "data_connector": 1
+      },
+      "attributes": {
+        "delivery_day": 1
+      }
+    },
+    {
+      "option_id": "0069-b4",
+      "name": "premium support plan",
+      "kind": "support_entitlement",
+      "available": false,
+      "upfront_cents": 50000,
+      "monthly_cents": 0,
+      "horizon_months": 0,
+      "refund_after_purchase_cents": 10000,
+      "provides": {
+        "support_entitlement": 1
+      },
+      "attributes": {
+        "delivery_day": 1
+      }
+    },
+    {
+      "option_id": "0069-rl1",
+      "name": "customer-support platform L recovery component 1",
+      "kind": "required_integration",
+      "available": true,
+      "upfront_cents": 8,
+      "monthly_cents": 4166,
+      "horizon_months": 12,
+      "refund_after_purchase_cents": 0,
+      "provides": {
+        "required_integration": 1
+      },
+      "attributes": {
+        "delivery_day": 3,
+        "system_code": "system-l"
+      }
+    },
+    {
+      "option_id": "0069-ra1",
+      "name": "customer-support platform A recovery component 1",
+      "kind": "recovery_package",
+      "available": true,
+      "upfront_cents": 0,
+      "monthly_cents": 7500,
+      "horizon_months": 12,
+      "refund_after_purchase_cents": 0,
+      "provides": {
+        "core_subscription": 1,
+        "data_connector": 1,
+        "required_integration": 1
+      },
+      "attributes": {
+        "delivery_day": 3,
+        "system_code": "system-a"
+      }
+    },
+    {
+      "option_id": "0069-rb1",
+      "name": "customer-support platform B recovery component 1",
+      "kind": "recovery_package",
+      "available": true,
+      "upfront_cents": 4,
+      "monthly_cents": 8333,
+      "horizon_months": 12,
+      "refund_after_purchase_cents": 0,
+      "provides": {
+        "core_subscription": 1,
+        "security_coverage": 1,
+        "required_integration": 1
+      },
+      "attributes": {
+        "delivery_day": 3,
+        "system_code": "system-b"
+      }
+    },
+    {
+      "option_id": "0069-rc1",
+      "name": "customer-support platform C recovery component 1",
+      "kind": "recovery_package",
+      "available": true,
+      "upfront_cents": 0,
+      "monthly_cents": 10000,
+      "horizon_months": 12,
+      "refund_after_purchase_cents": 0,
+      "provides": {
+        "core_subscription": 1,
+        "support_entitlement": 1,
+        "required_integration": 1
+      },
+      "attributes": {
+        "delivery_day": 3,
+        "system_code": "system-c"
+      }
+    },
+    {
+      "option_id": "0069-rd1",
+      "name": "customer-support platform D recovery component 1",
+      "kind": "recovery_package",
+      "available": true,
+      "upfront_cents": 0,
+      "monthly_cents": 25000,
+      "horizon_months": 12,
+      "refund_after_purchase_cents": 0,
+      "provides": {
+        "core_subscription": 1,
+        "security_coverage": 1,
+        "data_connector": 1,
+        "support_entitlement": 1,
+        "required_integration": 1
+      },
+      "attributes": {
+        "delivery_day": 3,
+        "system_code": "system-d"
+      }
+    },
+    {
+      "option_id": "0069-failed",
+      "name": "unavailable required integration",
+      "kind": "required_integration",
+      "available": false,
+      "upfront_cents": 18000,
+      "monthly_cents": 0,
+      "horizon_months": 0,
+      "refund_after_purchase_cents": 0,
+      "provides": {
+        "required_integration": 1
+      },
+      "attributes": {
+        "delivery_day": 2
+      }
+    },
+    {
+      "option_id": "0069-decoy",
+      "name": "late required integration",
+      "kind": "required_integration",
+      "available": true,
+      "upfront_cents": 5000,
+      "monthly_cents": 0,
+      "horizon_months": 0,
+      "refund_after_purchase_cents": 0,
+      "provides": {
+        "required_integration": 1
+      },
+      "attributes": {
+        "delivery_day": 9
+      }
+    }
+  ],
+  "contracts": [],
+  "compatibility_rules": [
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0069-rl1",
+        "0069-ra1"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0069-rl1",
+        "0069-rb1"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0069-rl1",
+        "0069-rc1"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0069-rl1",
+        "0069-rd1"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0069-rl1",
+        "0069-decoy"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0069-ra1",
+        "0069-rb1"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0069-ra1",
+        "0069-rc1"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0069-ra1",
+        "0069-rd1"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0069-ra1",
+        "0069-decoy"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0069-rb1",
+        "0069-rc1"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0069-rb1",
+        "0069-rd1"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0069-rb1",
+        "0069-decoy"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0069-rc1",
+        "0069-rd1"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0069-rc1",
+        "0069-decoy"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0069-rd1",
+        "0069-decoy"
+      ]
+    }
+  ],
+  "hard_goals": {
+    "capabilities": [
+      {
+        "capability": "core_subscription",
+        "min": 1,
+        "max": 1
+      },
+      {
+        "capability": "security_coverage",
+        "min": 1,
+        "max": 1
+      },
+      {
+        "capability": "data_connector",
+        "min": 1,
+        "max": 1
+      },
+      {
+        "capability": "support_entitlement",
+        "min": 1,
+        "max": 1
+      },
+      {
+        "capability": "required_integration",
+        "min": 1,
+        "max": 1
+      }
+    ],
+    "attribute_requirements": [
+      {
+        "capability": "required_integration",
+        "attribute": "delivery_day",
+        "op": "le",
+        "value": 4
+      }
+    ],
+    "max_active_value_cents": 500000
+  },
+  "initial_snapshot": {
+    "commitments": []
+  },
+  "initial_snapshot_sha256": "dbc26b7f61e91d0529291823abb38756f52a36dc52e819cf0a83abddfe598124",
+  "failure_snapshot": {
+    "commitments": [
+      {
+        "entity_id": "NEW-0001",
+        "option_id": "0069-b1",
+        "name": "core annual subscription",
+        "kind": "core_subscription",
+        "status": "active",
+        "paid_cents": 100000,
+        "refund_cents": 100000,
+        "provides": {
+          "core_subscription": 1
+        },
+        "attributes": {
+          "delivery_day": 1
+        },
+        "created_after_boundary": false
+      },
+      {
+        "entity_id": "NEW-0002",
+        "option_id": "0069-b2",
+        "name": "security package",
+        "kind": "security_coverage",
+        "status": "active",
+        "paid_cents": 40000,
+        "refund_cents": 10000,
+        "provides": {
+          "security_coverage": 1
+        },
+        "attributes": {
+          "delivery_day": 1
+        },
+        "created_after_boundary": false
+      },
+      {
+        "entity_id": "NEW-0003",
+        "option_id": "0069-b3",
+        "name": "data connector",
+        "kind": "data_connector",
+        "status": "active",
+        "paid_cents": 30000,
+        "refund_cents": 30000,
+        "provides": {
+          "data_connector": 1
+        },
+        "attributes": {
+          "delivery_day": 1
+        },
+        "created_after_boundary": false
+      },
+      {
+        "entity_id": "NEW-0004",
+        "option_id": "0069-b4",
+        "name": "premium support plan",
+        "kind": "support_entitlement",
+        "status": "active",
+        "paid_cents": 50000,
+        "refund_cents": 10000,
+        "provides": {
+          "support_entitlement": 1
+        },
+        "attributes": {
+          "delivery_day": 1
+        },
+        "created_after_boundary": false
+      }
+    ]
+  },
+  "snapshot_sha256": "63ee5ca8fc3bd58ab0b8279426600cace83263a2025212fed08d36651e22b25a",
+  "pre_failure_trace": [
+    {
+      "step": 1,
+      "tool": "activate_service_option",
+      "arguments": {
+        "service_option_id": "0069-b1"
+      },
+      "result": {
+        "ok": true,
+        "message": "New commitment created.",
+        "data": {
+          "entity_id": "NEW-0001",
+          "option_id": "0069-b1",
+          "charge_cents": 100000
+        }
+      }
+    },
+    {
+      "step": 2,
+      "tool": "activate_service_option",
+      "arguments": {
+        "service_option_id": "0069-b2"
+      },
+      "result": {
+        "ok": true,
+        "message": "New commitment created.",
+        "data": {
+          "entity_id": "NEW-0002",
+          "option_id": "0069-b2",
+          "charge_cents": 40000
+        }
+      }
+    },
+    {
+      "step": 3,
+      "tool": "activate_service_option",
+      "arguments": {
+        "service_option_id": "0069-b3"
+      },
+      "result": {
+        "ok": true,
+        "message": "New commitment created.",
+        "data": {
+          "entity_id": "NEW-0003",
+          "option_id": "0069-b3",
+          "charge_cents": 30000
+        }
+      }
+    },
+    {
+      "step": 4,
+      "tool": "activate_service_option",
+      "arguments": {
+        "service_option_id": "0069-b4"
+      },
+      "result": {
+        "ok": true,
+        "message": "New commitment created.",
+        "data": {
+          "entity_id": "NEW-0004",
+          "option_id": "0069-b4",
+          "charge_cents": 50000
+        }
+      }
+    }
+  ],
+  "prefix_ledger": [
+    {
+      "event_index": 1,
+      "tool": "activate_service_option",
+      "entity_id": "NEW-0001",
+      "contract_id": null,
+      "charge_cents": 100000,
+      "refund_cents": 0,
+      "irreversible_loss_delta": 0,
+      "net_outlay_delta": 100000
+    },
+    {
+      "event_index": 2,
+      "tool": "activate_service_option",
+      "entity_id": "NEW-0002",
+      "contract_id": null,
+      "charge_cents": 40000,
+      "refund_cents": 0,
+      "irreversible_loss_delta": 0,
+      "net_outlay_delta": 40000
+    },
+    {
+      "event_index": 3,
+      "tool": "activate_service_option",
+      "entity_id": "NEW-0003",
+      "contract_id": null,
+      "charge_cents": 30000,
+      "refund_cents": 0,
+      "irreversible_loss_delta": 0,
+      "net_outlay_delta": 30000
+    },
+    {
+      "event_index": 4,
+      "tool": "activate_service_option",
+      "entity_id": "NEW-0004",
+      "contract_id": null,
+      "charge_cents": 50000,
+      "refund_cents": 0,
+      "irreversible_loss_delta": 0,
+      "net_outlay_delta": 50000
+    }
+  ],
+  "latest_failure": {
+    "tool": "activate_service_option",
+    "arguments": {
+      "service_option_id": "0069-failed"
+    },
+    "result": {
+      "ok": false,
+      "message": "The selected option is unavailable.",
+      "data": null
+    }
+  },
+  "boundary_commitments": [
+    {
+      "entity_id": "NEW-0001",
+      "option_id": "0069-b1",
+      "name": "core annual subscription",
+      "kind": "core_subscription",
+      "status": "active",
+      "paid_cents": 100000,
+      "refund_cents": 100000,
+      "provides": {
+        "core_subscription": 1
+      },
+      "attributes": {
+        "delivery_day": 1
+      },
+      "created_after_boundary": false,
+      "primary_capability": "core_subscription"
+    },
+    {
+      "entity_id": "NEW-0002",
+      "option_id": "0069-b2",
+      "name": "security package",
+      "kind": "security_coverage",
+      "status": "active",
+      "paid_cents": 40000,
+      "refund_cents": 10000,
+      "provides": {
+        "security_coverage": 1
+      },
+      "attributes": {
+        "delivery_day": 1
+      },
+      "created_after_boundary": false,
+      "primary_capability": "security_coverage"
+    },
+    {
+      "entity_id": "NEW-0003",
+      "option_id": "0069-b3",
+      "name": "data connector",
+      "kind": "data_connector",
+      "status": "active",
+      "paid_cents": 30000,
+      "refund_cents": 30000,
+      "provides": {
+        "data_connector": 1
+      },
+      "attributes": {
+        "delivery_day": 1
+      },
+      "created_after_boundary": false,
+      "primary_capability": "data_connector"
+    },
+    {
+      "entity_id": "NEW-0004",
+      "option_id": "0069-b4",
+      "name": "premium support plan",
+      "kind": "support_entitlement",
+      "status": "active",
+      "paid_cents": 50000,
+      "refund_cents": 10000,
+      "provides": {
+        "support_entitlement": 1
+      },
+      "attributes": {
+        "delivery_day": 1
+      },
+      "created_after_boundary": false,
+      "primary_capability": "support_entitlement"
+    }
+  ],
+  "changed_fact": {
+    "fact_type": "refund_value",
+    "model_access": "cancellation preview",
+    "variant_role": "beta",
+    "value_cents": 100000,
+    "changed_path": "boundary_option[0].refund_after_purchase_cents"
+  },
+  "construction": {
+    "prefix_generated_by_public_tools": true,
+    "failure_generated_by_public_tool": true,
+    "necessary_action_order_invariant": true,
+    "state_bench_provenance": "native RepairScope stateful domain"
+  }
+}

@@ -1,0 +1,1549 @@
+{
+  "schema_version": "1.0",
+  "task_id": "rsb-0013-b",
+  "scenario_id": "scenario-0013",
+  "counterfactual_pair_id": "pair-0013",
+  "variant_role": "beta",
+  "domain": "saas",
+  "environment_type": "repairscope.commitment_graph.v1",
+  "reasoning_structure": "multi_hop_propagation",
+  "reasoning_structure_label": "multi-hop economic impact propagation",
+  "secondary_structures": [
+    "joint_bundle_selection"
+  ],
+  "economic_carriers": [
+    "subscription termination",
+    "replacement purchase"
+  ],
+  "difficulty_level": 2,
+  "frontier_profile": "singleton",
+  "split": "dev",
+  "now": "2026-09-01T09:00:00+08:00",
+  "max_turns": 15,
+  "instruction": "Complete the regulated analytics workspace for the enterprise administrator. Four paid commitments are already active, but the required integration just failed. Preserve every required function, use options deliverable by day 4, and make the best supported recovery decision without asking me to choose.",
+  "inventory": [
+    {
+      "option_id": "0013-b1",
+      "name": "core annual subscription",
+      "kind": "core_subscription",
+      "available": false,
+      "upfront_cents": 100000,
+      "monthly_cents": 0,
+      "horizon_months": 0,
+      "refund_after_purchase_cents": 100000,
+      "provides": {
+        "core_subscription": 1
+      },
+      "attributes": {
+        "delivery_day": 1
+      }
+    },
+    {
+      "option_id": "0013-b2",
+      "name": "security package",
+      "kind": "security_coverage",
+      "available": false,
+      "upfront_cents": 40000,
+      "monthly_cents": 0,
+      "horizon_months": 0,
+      "refund_after_purchase_cents": 10000,
+      "provides": {
+        "security_coverage": 1
+      },
+      "attributes": {
+        "delivery_day": 1
+      }
+    },
+    {
+      "option_id": "0013-b3",
+      "name": "data connector",
+      "kind": "data_connector",
+      "available": false,
+      "upfront_cents": 30000,
+      "monthly_cents": 0,
+      "horizon_months": 0,
+      "refund_after_purchase_cents": 30000,
+      "provides": {
+        "data_connector": 1
+      },
+      "attributes": {
+        "delivery_day": 1
+      }
+    },
+    {
+      "option_id": "0013-b4",
+      "name": "premium support plan",
+      "kind": "support_entitlement",
+      "available": false,
+      "upfront_cents": 50000,
+      "monthly_cents": 0,
+      "horizon_months": 0,
+      "refund_after_purchase_cents": 10000,
+      "provides": {
+        "support_entitlement": 1
+      },
+      "attributes": {
+        "delivery_day": 1
+      }
+    },
+    {
+      "option_id": "0013-rl1",
+      "name": "customer-support platform L recovery component 1",
+      "kind": "required_integration",
+      "available": true,
+      "upfront_cents": 50000,
+      "monthly_cents": 0,
+      "horizon_months": 0,
+      "refund_after_purchase_cents": 0,
+      "provides": {
+        "required_integration": 1
+      },
+      "attributes": {
+        "delivery_day": 3,
+        "system_code": "system-l"
+      }
+    },
+    {
+      "option_id": "0013-ra1",
+      "name": "customer-support platform A recovery component 1",
+      "kind": "recovery_package",
+      "available": true,
+      "upfront_cents": 30000,
+      "monthly_cents": 0,
+      "horizon_months": 0,
+      "refund_after_purchase_cents": 0,
+      "provides": {
+        "core_subscription": 1
+      },
+      "attributes": {
+        "delivery_day": 3,
+        "system_code": "system-a"
+      }
+    },
+    {
+      "option_id": "0013-ra2",
+      "name": "customer-support platform A recovery component 2",
+      "kind": "recovery_package",
+      "available": true,
+      "upfront_cents": 30000,
+      "monthly_cents": 0,
+      "horizon_months": 0,
+      "refund_after_purchase_cents": 0,
+      "provides": {
+        "data_connector": 1
+      },
+      "attributes": {
+        "delivery_day": 2,
+        "system_code": "system-a"
+      }
+    },
+    {
+      "option_id": "0013-ra3",
+      "name": "customer-support platform A recovery component 3",
+      "kind": "recovery_package",
+      "available": true,
+      "upfront_cents": 30000,
+      "monthly_cents": 0,
+      "horizon_months": 0,
+      "refund_after_purchase_cents": 0,
+      "provides": {
+        "required_integration": 1
+      },
+      "attributes": {
+        "delivery_day": 3,
+        "system_code": "system-a"
+      }
+    },
+    {
+      "option_id": "0013-rb1",
+      "name": "customer-support platform B recovery component 1",
+      "kind": "recovery_package",
+      "available": true,
+      "upfront_cents": 33334,
+      "monthly_cents": 0,
+      "horizon_months": 0,
+      "refund_after_purchase_cents": 0,
+      "provides": {
+        "core_subscription": 1
+      },
+      "attributes": {
+        "delivery_day": 3,
+        "system_code": "system-b"
+      }
+    },
+    {
+      "option_id": "0013-rb2",
+      "name": "customer-support platform B recovery component 2",
+      "kind": "recovery_package",
+      "available": true,
+      "upfront_cents": 33333,
+      "monthly_cents": 0,
+      "horizon_months": 0,
+      "refund_after_purchase_cents": 0,
+      "provides": {
+        "security_coverage": 1
+      },
+      "attributes": {
+        "delivery_day": 2,
+        "system_code": "system-b"
+      }
+    },
+    {
+      "option_id": "0013-rb3",
+      "name": "customer-support platform B recovery component 3",
+      "kind": "recovery_package",
+      "available": true,
+      "upfront_cents": 33333,
+      "monthly_cents": 0,
+      "horizon_months": 0,
+      "refund_after_purchase_cents": 0,
+      "provides": {
+        "required_integration": 1
+      },
+      "attributes": {
+        "delivery_day": 3,
+        "system_code": "system-b"
+      }
+    },
+    {
+      "option_id": "0013-rc1",
+      "name": "customer-support platform C recovery component 1",
+      "kind": "recovery_package",
+      "available": true,
+      "upfront_cents": 37334,
+      "monthly_cents": 0,
+      "horizon_months": 0,
+      "refund_after_purchase_cents": 0,
+      "provides": {
+        "core_subscription": 1
+      },
+      "attributes": {
+        "delivery_day": 3,
+        "system_code": "system-c"
+      }
+    },
+    {
+      "option_id": "0013-rc2",
+      "name": "customer-support platform C recovery component 2",
+      "kind": "recovery_package",
+      "available": true,
+      "upfront_cents": 37333,
+      "monthly_cents": 0,
+      "horizon_months": 0,
+      "refund_after_purchase_cents": 0,
+      "provides": {
+        "support_entitlement": 1
+      },
+      "attributes": {
+        "delivery_day": 2,
+        "system_code": "system-c"
+      }
+    },
+    {
+      "option_id": "0013-rc3",
+      "name": "customer-support platform C recovery component 3",
+      "kind": "recovery_package",
+      "available": true,
+      "upfront_cents": 37333,
+      "monthly_cents": 0,
+      "horizon_months": 0,
+      "refund_after_purchase_cents": 0,
+      "provides": {
+        "required_integration": 1
+      },
+      "attributes": {
+        "delivery_day": 3,
+        "system_code": "system-c"
+      }
+    },
+    {
+      "option_id": "0013-rd1",
+      "name": "customer-support platform D recovery component 1",
+      "kind": "recovery_package",
+      "available": true,
+      "upfront_cents": 60000,
+      "monthly_cents": 0,
+      "horizon_months": 0,
+      "refund_after_purchase_cents": 0,
+      "provides": {
+        "core_subscription": 1
+      },
+      "attributes": {
+        "delivery_day": 3,
+        "system_code": "system-d"
+      }
+    },
+    {
+      "option_id": "0013-rd2",
+      "name": "customer-support platform D recovery component 2",
+      "kind": "recovery_package",
+      "available": true,
+      "upfront_cents": 60000,
+      "monthly_cents": 0,
+      "horizon_months": 0,
+      "refund_after_purchase_cents": 0,
+      "provides": {
+        "security_coverage": 1
+      },
+      "attributes": {
+        "delivery_day": 2,
+        "system_code": "system-d"
+      }
+    },
+    {
+      "option_id": "0013-rd3",
+      "name": "customer-support platform D recovery component 3",
+      "kind": "recovery_package",
+      "available": true,
+      "upfront_cents": 60000,
+      "monthly_cents": 0,
+      "horizon_months": 0,
+      "refund_after_purchase_cents": 0,
+      "provides": {
+        "data_connector": 1
+      },
+      "attributes": {
+        "delivery_day": 3,
+        "system_code": "system-d"
+      }
+    },
+    {
+      "option_id": "0013-rd4",
+      "name": "customer-support platform D recovery component 4",
+      "kind": "recovery_package",
+      "available": true,
+      "upfront_cents": 60000,
+      "monthly_cents": 0,
+      "horizon_months": 0,
+      "refund_after_purchase_cents": 0,
+      "provides": {
+        "support_entitlement": 1
+      },
+      "attributes": {
+        "delivery_day": 2,
+        "system_code": "system-d"
+      }
+    },
+    {
+      "option_id": "0013-rd5",
+      "name": "customer-support platform D recovery component 5",
+      "kind": "recovery_package",
+      "available": true,
+      "upfront_cents": 60000,
+      "monthly_cents": 0,
+      "horizon_months": 0,
+      "refund_after_purchase_cents": 0,
+      "provides": {
+        "required_integration": 1
+      },
+      "attributes": {
+        "delivery_day": 3,
+        "system_code": "system-d"
+      }
+    },
+    {
+      "option_id": "0013-failed",
+      "name": "unavailable required integration",
+      "kind": "required_integration",
+      "available": false,
+      "upfront_cents": 18000,
+      "monthly_cents": 0,
+      "horizon_months": 0,
+      "refund_after_purchase_cents": 0,
+      "provides": {
+        "required_integration": 1
+      },
+      "attributes": {
+        "delivery_day": 2
+      }
+    },
+    {
+      "option_id": "0013-decoy",
+      "name": "late required integration",
+      "kind": "required_integration",
+      "available": true,
+      "upfront_cents": 5000,
+      "monthly_cents": 0,
+      "horizon_months": 0,
+      "refund_after_purchase_cents": 0,
+      "provides": {
+        "required_integration": 1
+      },
+      "attributes": {
+        "delivery_day": 9
+      }
+    }
+  ],
+  "contracts": [
+    {
+      "contract_id": "LICENCE-HOP",
+      "description": "Changing both the core commitment and its linked service causes an 8000-cent migration settlement.",
+      "trigger": {
+        "type": "all_changed",
+        "entity_ids": [
+          "NEW-0001",
+          "NEW-0004"
+        ]
+      },
+      "charge_cents": 8000
+    }
+  ],
+  "compatibility_rules": [
+    {
+      "type": "requires_all",
+      "if_option_id": "0013-ra1",
+      "all_option_ids": [
+        "0013-ra1",
+        "0013-ra2",
+        "0013-ra3"
+      ]
+    },
+    {
+      "type": "requires_all",
+      "if_option_id": "0013-ra2",
+      "all_option_ids": [
+        "0013-ra1",
+        "0013-ra2",
+        "0013-ra3"
+      ]
+    },
+    {
+      "type": "requires_all",
+      "if_option_id": "0013-ra3",
+      "all_option_ids": [
+        "0013-ra1",
+        "0013-ra2",
+        "0013-ra3"
+      ]
+    },
+    {
+      "type": "requires_all",
+      "if_option_id": "0013-rb1",
+      "all_option_ids": [
+        "0013-rb1",
+        "0013-rb2",
+        "0013-rb3"
+      ]
+    },
+    {
+      "type": "requires_all",
+      "if_option_id": "0013-rb2",
+      "all_option_ids": [
+        "0013-rb1",
+        "0013-rb2",
+        "0013-rb3"
+      ]
+    },
+    {
+      "type": "requires_all",
+      "if_option_id": "0013-rb3",
+      "all_option_ids": [
+        "0013-rb1",
+        "0013-rb2",
+        "0013-rb3"
+      ]
+    },
+    {
+      "type": "requires_all",
+      "if_option_id": "0013-rc1",
+      "all_option_ids": [
+        "0013-rc1",
+        "0013-rc2",
+        "0013-rc3"
+      ]
+    },
+    {
+      "type": "requires_all",
+      "if_option_id": "0013-rc2",
+      "all_option_ids": [
+        "0013-rc1",
+        "0013-rc2",
+        "0013-rc3"
+      ]
+    },
+    {
+      "type": "requires_all",
+      "if_option_id": "0013-rc3",
+      "all_option_ids": [
+        "0013-rc1",
+        "0013-rc2",
+        "0013-rc3"
+      ]
+    },
+    {
+      "type": "requires_all",
+      "if_option_id": "0013-rd1",
+      "all_option_ids": [
+        "0013-rd1",
+        "0013-rd2",
+        "0013-rd3",
+        "0013-rd4",
+        "0013-rd5"
+      ]
+    },
+    {
+      "type": "requires_all",
+      "if_option_id": "0013-rd2",
+      "all_option_ids": [
+        "0013-rd1",
+        "0013-rd2",
+        "0013-rd3",
+        "0013-rd4",
+        "0013-rd5"
+      ]
+    },
+    {
+      "type": "requires_all",
+      "if_option_id": "0013-rd3",
+      "all_option_ids": [
+        "0013-rd1",
+        "0013-rd2",
+        "0013-rd3",
+        "0013-rd4",
+        "0013-rd5"
+      ]
+    },
+    {
+      "type": "requires_all",
+      "if_option_id": "0013-rd4",
+      "all_option_ids": [
+        "0013-rd1",
+        "0013-rd2",
+        "0013-rd3",
+        "0013-rd4",
+        "0013-rd5"
+      ]
+    },
+    {
+      "type": "requires_all",
+      "if_option_id": "0013-rd5",
+      "all_option_ids": [
+        "0013-rd1",
+        "0013-rd2",
+        "0013-rd3",
+        "0013-rd4",
+        "0013-rd5"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0013-rl1",
+        "0013-ra1"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0013-rl1",
+        "0013-ra2"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0013-rl1",
+        "0013-ra3"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0013-rl1",
+        "0013-rb1"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0013-rl1",
+        "0013-rb2"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0013-rl1",
+        "0013-rb3"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0013-rl1",
+        "0013-rc1"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0013-rl1",
+        "0013-rc2"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0013-rl1",
+        "0013-rc3"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0013-rl1",
+        "0013-rd1"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0013-rl1",
+        "0013-rd2"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0013-rl1",
+        "0013-rd3"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0013-rl1",
+        "0013-rd4"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0013-rl1",
+        "0013-rd5"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0013-rl1",
+        "0013-decoy"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0013-ra1",
+        "0013-rb1"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0013-ra1",
+        "0013-rb2"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0013-ra1",
+        "0013-rb3"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0013-ra2",
+        "0013-rb1"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0013-ra2",
+        "0013-rb2"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0013-ra2",
+        "0013-rb3"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0013-ra3",
+        "0013-rb1"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0013-ra3",
+        "0013-rb2"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0013-ra3",
+        "0013-rb3"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0013-ra1",
+        "0013-rc1"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0013-ra1",
+        "0013-rc2"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0013-ra1",
+        "0013-rc3"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0013-ra2",
+        "0013-rc1"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0013-ra2",
+        "0013-rc2"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0013-ra2",
+        "0013-rc3"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0013-ra3",
+        "0013-rc1"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0013-ra3",
+        "0013-rc2"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0013-ra3",
+        "0013-rc3"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0013-ra1",
+        "0013-rd1"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0013-ra1",
+        "0013-rd2"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0013-ra1",
+        "0013-rd3"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0013-ra1",
+        "0013-rd4"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0013-ra1",
+        "0013-rd5"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0013-ra2",
+        "0013-rd1"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0013-ra2",
+        "0013-rd2"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0013-ra2",
+        "0013-rd3"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0013-ra2",
+        "0013-rd4"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0013-ra2",
+        "0013-rd5"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0013-ra3",
+        "0013-rd1"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0013-ra3",
+        "0013-rd2"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0013-ra3",
+        "0013-rd3"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0013-ra3",
+        "0013-rd4"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0013-ra3",
+        "0013-rd5"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0013-ra1",
+        "0013-decoy"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0013-ra2",
+        "0013-decoy"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0013-ra3",
+        "0013-decoy"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0013-rb1",
+        "0013-rc1"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0013-rb1",
+        "0013-rc2"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0013-rb1",
+        "0013-rc3"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0013-rb2",
+        "0013-rc1"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0013-rb2",
+        "0013-rc2"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0013-rb2",
+        "0013-rc3"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0013-rb3",
+        "0013-rc1"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0013-rb3",
+        "0013-rc2"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0013-rb3",
+        "0013-rc3"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0013-rb1",
+        "0013-rd1"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0013-rb1",
+        "0013-rd2"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0013-rb1",
+        "0013-rd3"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0013-rb1",
+        "0013-rd4"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0013-rb1",
+        "0013-rd5"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0013-rb2",
+        "0013-rd1"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0013-rb2",
+        "0013-rd2"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0013-rb2",
+        "0013-rd3"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0013-rb2",
+        "0013-rd4"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0013-rb2",
+        "0013-rd5"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0013-rb3",
+        "0013-rd1"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0013-rb3",
+        "0013-rd2"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0013-rb3",
+        "0013-rd3"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0013-rb3",
+        "0013-rd4"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0013-rb3",
+        "0013-rd5"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0013-rb1",
+        "0013-decoy"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0013-rb2",
+        "0013-decoy"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0013-rb3",
+        "0013-decoy"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0013-rc1",
+        "0013-rd1"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0013-rc1",
+        "0013-rd2"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0013-rc1",
+        "0013-rd3"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0013-rc1",
+        "0013-rd4"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0013-rc1",
+        "0013-rd5"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0013-rc2",
+        "0013-rd1"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0013-rc2",
+        "0013-rd2"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0013-rc2",
+        "0013-rd3"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0013-rc2",
+        "0013-rd4"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0013-rc2",
+        "0013-rd5"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0013-rc3",
+        "0013-rd1"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0013-rc3",
+        "0013-rd2"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0013-rc3",
+        "0013-rd3"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0013-rc3",
+        "0013-rd4"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0013-rc3",
+        "0013-rd5"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0013-rc1",
+        "0013-decoy"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0013-rc2",
+        "0013-decoy"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0013-rc3",
+        "0013-decoy"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0013-rd1",
+        "0013-decoy"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0013-rd2",
+        "0013-decoy"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0013-rd3",
+        "0013-decoy"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0013-rd4",
+        "0013-decoy"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0013-rd5",
+        "0013-decoy"
+      ]
+    }
+  ],
+  "hard_goals": {
+    "capabilities": [
+      {
+        "capability": "core_subscription",
+        "min": 1,
+        "max": 1
+      },
+      {
+        "capability": "security_coverage",
+        "min": 1,
+        "max": 1
+      },
+      {
+        "capability": "data_connector",
+        "min": 1,
+        "max": 1
+      },
+      {
+        "capability": "support_entitlement",
+        "min": 1,
+        "max": 1
+      },
+      {
+        "capability": "required_integration",
+        "min": 1,
+        "max": 1
+      }
+    ],
+    "attribute_requirements": [
+      {
+        "capability": "required_integration",
+        "attribute": "delivery_day",
+        "op": "le",
+        "value": 4
+      }
+    ],
+    "max_active_value_cents": 500000
+  },
+  "initial_snapshot": {
+    "commitments": []
+  },
+  "initial_snapshot_sha256": "dbc26b7f61e91d0529291823abb38756f52a36dc52e819cf0a83abddfe598124",
+  "failure_snapshot": {
+    "commitments": [
+      {
+        "entity_id": "NEW-0001",
+        "option_id": "0013-b1",
+        "name": "core annual subscription",
+        "kind": "core_subscription",
+        "status": "active",
+        "paid_cents": 100000,
+        "refund_cents": 100000,
+        "provides": {
+          "core_subscription": 1
+        },
+        "attributes": {
+          "delivery_day": 1
+        },
+        "created_after_boundary": false
+      },
+      {
+        "entity_id": "NEW-0002",
+        "option_id": "0013-b2",
+        "name": "security package",
+        "kind": "security_coverage",
+        "status": "active",
+        "paid_cents": 40000,
+        "refund_cents": 10000,
+        "provides": {
+          "security_coverage": 1
+        },
+        "attributes": {
+          "delivery_day": 1
+        },
+        "created_after_boundary": false
+      },
+      {
+        "entity_id": "NEW-0003",
+        "option_id": "0013-b3",
+        "name": "data connector",
+        "kind": "data_connector",
+        "status": "active",
+        "paid_cents": 30000,
+        "refund_cents": 30000,
+        "provides": {
+          "data_connector": 1
+        },
+        "attributes": {
+          "delivery_day": 1
+        },
+        "created_after_boundary": false
+      },
+      {
+        "entity_id": "NEW-0004",
+        "option_id": "0013-b4",
+        "name": "premium support plan",
+        "kind": "support_entitlement",
+        "status": "active",
+        "paid_cents": 50000,
+        "refund_cents": 10000,
+        "provides": {
+          "support_entitlement": 1
+        },
+        "attributes": {
+          "delivery_day": 1
+        },
+        "created_after_boundary": false
+      }
+    ]
+  },
+  "snapshot_sha256": "c38625e7032c16240223061b7bb37d896712fc6102399a9c2e649df5b7458e7c",
+  "pre_failure_trace": [
+    {
+      "step": 1,
+      "tool": "activate_service_option",
+      "arguments": {
+        "service_option_id": "0013-b1"
+      },
+      "result": {
+        "ok": true,
+        "message": "New commitment created.",
+        "data": {
+          "entity_id": "NEW-0001",
+          "option_id": "0013-b1",
+          "charge_cents": 100000
+        }
+      }
+    },
+    {
+      "step": 2,
+      "tool": "activate_service_option",
+      "arguments": {
+        "service_option_id": "0013-b2"
+      },
+      "result": {
+        "ok": true,
+        "message": "New commitment created.",
+        "data": {
+          "entity_id": "NEW-0002",
+          "option_id": "0013-b2",
+          "charge_cents": 40000
+        }
+      }
+    },
+    {
+      "step": 3,
+      "tool": "activate_service_option",
+      "arguments": {
+        "service_option_id": "0013-b3"
+      },
+      "result": {
+        "ok": true,
+        "message": "New commitment created.",
+        "data": {
+          "entity_id": "NEW-0003",
+          "option_id": "0013-b3",
+          "charge_cents": 30000
+        }
+      }
+    },
+    {
+      "step": 4,
+      "tool": "activate_service_option",
+      "arguments": {
+        "service_option_id": "0013-b4"
+      },
+      "result": {
+        "ok": true,
+        "message": "New commitment created.",
+        "data": {
+          "entity_id": "NEW-0004",
+          "option_id": "0013-b4",
+          "charge_cents": 50000
+        }
+      }
+    }
+  ],
+  "prefix_ledger": [
+    {
+      "event_index": 1,
+      "tool": "activate_service_option",
+      "entity_id": "NEW-0001",
+      "contract_id": null,
+      "charge_cents": 100000,
+      "refund_cents": 0,
+      "irreversible_loss_delta": 0,
+      "net_outlay_delta": 100000
+    },
+    {
+      "event_index": 2,
+      "tool": "activate_service_option",
+      "entity_id": "NEW-0002",
+      "contract_id": null,
+      "charge_cents": 40000,
+      "refund_cents": 0,
+      "irreversible_loss_delta": 0,
+      "net_outlay_delta": 40000
+    },
+    {
+      "event_index": 3,
+      "tool": "activate_service_option",
+      "entity_id": "NEW-0003",
+      "contract_id": null,
+      "charge_cents": 30000,
+      "refund_cents": 0,
+      "irreversible_loss_delta": 0,
+      "net_outlay_delta": 30000
+    },
+    {
+      "event_index": 4,
+      "tool": "activate_service_option",
+      "entity_id": "NEW-0004",
+      "contract_id": null,
+      "charge_cents": 50000,
+      "refund_cents": 0,
+      "irreversible_loss_delta": 0,
+      "net_outlay_delta": 50000
+    }
+  ],
+  "latest_failure": {
+    "tool": "activate_service_option",
+    "arguments": {
+      "service_option_id": "0013-failed"
+    },
+    "result": {
+      "ok": false,
+      "message": "The selected option is unavailable.",
+      "data": null
+    }
+  },
+  "boundary_commitments": [
+    {
+      "entity_id": "NEW-0001",
+      "option_id": "0013-b1",
+      "name": "core annual subscription",
+      "kind": "core_subscription",
+      "status": "active",
+      "paid_cents": 100000,
+      "refund_cents": 100000,
+      "provides": {
+        "core_subscription": 1
+      },
+      "attributes": {
+        "delivery_day": 1
+      },
+      "created_after_boundary": false,
+      "primary_capability": "core_subscription"
+    },
+    {
+      "entity_id": "NEW-0002",
+      "option_id": "0013-b2",
+      "name": "security package",
+      "kind": "security_coverage",
+      "status": "active",
+      "paid_cents": 40000,
+      "refund_cents": 10000,
+      "provides": {
+        "security_coverage": 1
+      },
+      "attributes": {
+        "delivery_day": 1
+      },
+      "created_after_boundary": false,
+      "primary_capability": "security_coverage"
+    },
+    {
+      "entity_id": "NEW-0003",
+      "option_id": "0013-b3",
+      "name": "data connector",
+      "kind": "data_connector",
+      "status": "active",
+      "paid_cents": 30000,
+      "refund_cents": 30000,
+      "provides": {
+        "data_connector": 1
+      },
+      "attributes": {
+        "delivery_day": 1
+      },
+      "created_after_boundary": false,
+      "primary_capability": "data_connector"
+    },
+    {
+      "entity_id": "NEW-0004",
+      "option_id": "0013-b4",
+      "name": "premium support plan",
+      "kind": "support_entitlement",
+      "status": "active",
+      "paid_cents": 50000,
+      "refund_cents": 10000,
+      "provides": {
+        "support_entitlement": 1
+      },
+      "attributes": {
+        "delivery_day": 1
+      },
+      "created_after_boundary": false,
+      "primary_capability": "support_entitlement"
+    }
+  ],
+  "changed_fact": {
+    "fact_type": "refund_value",
+    "model_access": "cancellation preview",
+    "variant_role": "beta",
+    "value_cents": 100000,
+    "changed_path": "boundary_option[0].refund_after_purchase_cents"
+  },
+  "construction": {
+    "prefix_generated_by_public_tools": true,
+    "failure_generated_by_public_tool": true,
+    "necessary_action_order_invariant": true,
+    "state_bench_provenance": "native RepairScope stateful domain"
+  }
+}

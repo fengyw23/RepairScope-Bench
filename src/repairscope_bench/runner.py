@@ -73,10 +73,34 @@ alternatives. The environment contains enough information to decide. Verify
 the resulting orders and stop when no further tool action is needed.""",
 }
 
+V1_SYSTEM_PROMPTS = {
+    "travel": """You are a travel service agent continuing a partially executed request.
+Use the authoritative arrangement, inventory, cancellation-preview, contract,
+compatibility, and booking tools. Make the best supported decision in the
+customer's interests without inventing identifiers or asking the customer to
+choose. Verify the resulting arrangements and stop when no further action is
+needed.""",
+    "after_sales": """You are an after-sales service agent continuing a partially executed purchase.
+Use the authoritative order, product, return-preview, contract, compatibility,
+and purchase tools. Make the best supported decision in the customer's
+interests without inventing identifiers or asking the customer to choose.
+Verify the resulting orders and stop when no further action is needed.""",
+    "saas": """You are an enterprise SaaS service agent continuing a partially executed request.
+Use the authoritative subscription, service-option, termination-preview,
+contract, compatibility, and activation tools. Make the best supported
+decision in the customer's interests without inventing identifiers or asking
+the customer to choose. Verify the resulting service and stop when complete.""",
+    "event_logistics": """You are an event-logistics service agent continuing a partially executed request.
+Use the authoritative commitment, vendor, cancellation-preview, contract,
+compatibility, and booking tools. Make the best supported decision in the
+customer's interests without inventing identifiers or asking the customer to
+choose. Verify the resulting event plan and stop when complete.""",
+}
+
 
 def build_user_prompt(task: dict[str, Any]) -> str:
     """Build the model-visible context without evaluator constraints or gold."""
-    if task["schema_version"] == "0.6":
+    if task["schema_version"] in {"0.6", "1.0"}:
         public = {
             "customer_request": task["instruction"],
             "earlier_successful_tool_activity": task["pre_failure_trace"],
@@ -105,10 +129,18 @@ def run_episode(
     run_id: str | None = None,
 ) -> dict[str, Any]:
     is_v06 = task["schema_version"] == "0.6"
+    is_v1 = task["schema_version"] == "1.0"
+    is_stateful = is_v06 or is_v1
     effective_max_turns = (
-        min(max_turns, int(task["max_turns"])) if is_v06 else max_turns
+        min(max_turns, int(task["max_turns"])) if is_stateful else max_turns
     )
-    if is_v06:
+    if is_v1:
+        from .v1_environment import CommitmentRecoveryEnvironment
+        from .v1_evaluator import evaluate_v1_environment
+
+        environment = CommitmentRecoveryEnvironment(task)
+        router = None
+    elif is_v06:
         from .v06_environment import StateBackedRecoveryEnvironment
         from .v06_evaluator import evaluate_v06_environment
 
@@ -118,7 +150,9 @@ def run_episode(
         environment = RepairEnvironment(task)
         router = DomainToolRouter(environment)
     user_prompt = build_user_prompt(task)
-    if is_v06:
+    if is_v1:
+        prompts = V1_SYSTEM_PROMPTS
+    elif is_v06:
         prompts = V06_SYSTEM_PROMPTS
     else:
         prompts = (
@@ -154,7 +188,7 @@ def run_episode(
         if not turn.tool_calls:
             status = (
                 "model_stopped"
-                if is_v06
+                if is_stateful
                 else (
                     "completed"
                     if environment.terminal_mode is not None
@@ -168,7 +202,7 @@ def run_episode(
                 result = ActionResult(False, call.parse_error)
             elif call.arguments is None:
                 result = ActionResult(False, "Missing tool arguments")
-            elif is_v06:
+            elif is_stateful:
                 result = environment.execute_tool(call.name, call.arguments)
             else:
                 assert router is not None
@@ -185,7 +219,7 @@ def run_episode(
                     "result": result.as_dict(),
                 }
             )
-            if not is_v06 and environment.terminal_mode is not None:
+            if not is_stateful and environment.terminal_mode is not None:
                 status = "completed"
                 break
         if status != "running":
@@ -193,7 +227,9 @@ def run_episode(
     else:
         status = "turn_budget_exceeded"
 
-    if is_v06:
+    if is_v1:
+        score = evaluate_v1_environment(task, environment)
+    elif is_v06:
         score = evaluate_v06_environment(task, environment)
     else:
         action_budget_exceeded = status == "action_budget_exceeded"
@@ -206,7 +242,11 @@ def run_episode(
         "task_id": task["task_id"],
         "family_id": task.get("family_id"),
         "variant_id": task.get("variant_id"),
-        "pair_id": task.get("pair_id"),
+        "pair_id": task.get("pair_id", task.get("counterfactual_pair_id")),
+        "scenario_id": task.get("scenario_id"),
+        "reasoning_structure": task.get("reasoning_structure"),
+        "domain": task.get("domain"),
+        "difficulty_level": task.get("difficulty_level"),
         "evaluation_track": task.get("evaluation_track"),
         "mechanism": task.get("mechanism"),
         "split": task.get("split"),
@@ -215,7 +255,7 @@ def run_episode(
         "elapsed_seconds": round(time.monotonic() - started, 3),
         "harness_config": {
             "max_turns": effective_max_turns,
-            "max_mutations": None if is_v06 else task.get("max_mutations"),
+            "max_mutations": None if is_stateful else task.get("max_mutations"),
             "max_output_tokens": getattr(adapter, "max_output_tokens", None),
             "reasoning_effort": getattr(adapter, "reasoning_effort", None),
         },
@@ -280,7 +320,13 @@ def run_suite(
                         "task_id": task["task_id"],
                         "family_id": task.get("family_id"),
                         "variant_id": task.get("variant_id"),
-                        "pair_id": task.get("pair_id"),
+                        "pair_id": task.get(
+                            "pair_id", task.get("counterfactual_pair_id")
+                        ),
+                        "scenario_id": task.get("scenario_id"),
+                        "reasoning_structure": task.get("reasoning_structure"),
+                        "domain": task.get("domain"),
+                        "difficulty_level": task.get("difficulty_level"),
                         "evaluation_track": task.get("evaluation_track"),
                         "mechanism": task.get("mechanism"),
                         "split": task.get("split"),
@@ -422,6 +468,39 @@ def summarize_runs(
             }
             for track, group in track_groups.items()
         }
+    pair_repeat_groups: dict[tuple[str, Any], list[dict[str, Any]]] = {}
+    for record in aggregate_records:
+        if record.get("pair_id") is None:
+            continue
+        pair_repeat_groups.setdefault(
+            (str(record["pair_id"]), record.get("repeat_index")), []
+        ).append(record)
+    if pair_repeat_groups:
+        pair_successes = [
+            len(group) == 2
+            and all(
+                item.get("score", {}).get("non_dominated_repair", False)
+                for item in group
+            )
+            for group in pair_repeat_groups.values()
+        ]
+        summary["counterfactual_pair_success@1"] = (
+            sum(pair_successes) / len(pair_successes)
+        )
+    for field in ["domain", "reasoning_structure", "difficulty_level"]:
+        groups = _group_records(records, field)
+        if groups:
+            summary[f"by_{field}"] = {
+                key: {
+                    "run_count": len(group),
+                    "goal_pass@1": _record_rate(group, "success"),
+                    "non_dominated_repair_pass@1": _record_rate(
+                        group, "optimal_repair"
+                    ),
+                    "dominated_repair_rate": _conditional_dominated_rate(group),
+                }
+                for key, group in groups.items()
+            }
     return summary
 
 

@@ -1,0 +1,1549 @@
+{
+  "schema_version": "1.0",
+  "task_id": "rsb-0015-b",
+  "scenario_id": "scenario-0015",
+  "counterfactual_pair_id": "pair-0015",
+  "variant_role": "beta",
+  "domain": "event_logistics",
+  "environment_type": "repairscope.commitment_graph.v1",
+  "reasoning_structure": "multi_hop_propagation",
+  "reasoning_structure_label": "multi-hop economic impact propagation",
+  "secondary_structures": [
+    "joint_bundle_selection"
+  ],
+  "economic_carriers": [
+    "supplier deposit",
+    "replacement purchase"
+  ],
+  "difficulty_level": 2,
+  "frontier_profile": "singleton",
+  "split": "dev",
+  "now": "2026-09-01T09:00:00+08:00",
+  "max_turns": 15,
+  "instruction": "Complete the vaccination outreach event for the event coordinator. Four paid commitments are already active, but the required final-mile vendor service just failed. Preserve every required function, use options deliverable by day 4, and make the best supported recovery decision without asking me to choose.",
+  "inventory": [
+    {
+      "option_id": "0015-b1",
+      "name": "confirmed venue",
+      "kind": "venue_capacity",
+      "available": false,
+      "upfront_cents": 100000,
+      "monthly_cents": 0,
+      "horizon_months": 0,
+      "refund_after_purchase_cents": 100000,
+      "provides": {
+        "venue_capacity": 1
+      },
+      "attributes": {
+        "delivery_day": 1
+      }
+    },
+    {
+      "option_id": "0015-b2",
+      "name": "transport contract",
+      "kind": "transport_capacity",
+      "available": false,
+      "upfront_cents": 40000,
+      "monthly_cents": 0,
+      "horizon_months": 0,
+      "refund_after_purchase_cents": 10000,
+      "provides": {
+        "transport_capacity": 1
+      },
+      "attributes": {
+        "delivery_day": 1
+      }
+    },
+    {
+      "option_id": "0015-b3",
+      "name": "storage service",
+      "kind": "storage_capacity",
+      "available": false,
+      "upfront_cents": 30000,
+      "monthly_cents": 0,
+      "horizon_months": 0,
+      "refund_after_purchase_cents": 30000,
+      "provides": {
+        "storage_capacity": 1
+      },
+      "attributes": {
+        "delivery_day": 1
+      }
+    },
+    {
+      "option_id": "0015-b4",
+      "name": "event insurance",
+      "kind": "insurance_cover",
+      "available": false,
+      "upfront_cents": 50000,
+      "monthly_cents": 0,
+      "horizon_months": 0,
+      "refund_after_purchase_cents": 10000,
+      "provides": {
+        "insurance_cover": 1
+      },
+      "attributes": {
+        "delivery_day": 1
+      }
+    },
+    {
+      "option_id": "0015-rl1",
+      "name": "regional product launch L recovery component 1",
+      "kind": "missing_vendor_service",
+      "available": true,
+      "upfront_cents": 50000,
+      "monthly_cents": 0,
+      "horizon_months": 0,
+      "refund_after_purchase_cents": 0,
+      "provides": {
+        "missing_vendor_service": 1
+      },
+      "attributes": {
+        "delivery_day": 3,
+        "system_code": "system-l"
+      }
+    },
+    {
+      "option_id": "0015-ra1",
+      "name": "regional product launch A recovery component 1",
+      "kind": "recovery_package",
+      "available": true,
+      "upfront_cents": 30000,
+      "monthly_cents": 0,
+      "horizon_months": 0,
+      "refund_after_purchase_cents": 0,
+      "provides": {
+        "venue_capacity": 1
+      },
+      "attributes": {
+        "delivery_day": 3,
+        "system_code": "system-a"
+      }
+    },
+    {
+      "option_id": "0015-ra2",
+      "name": "regional product launch A recovery component 2",
+      "kind": "recovery_package",
+      "available": true,
+      "upfront_cents": 30000,
+      "monthly_cents": 0,
+      "horizon_months": 0,
+      "refund_after_purchase_cents": 0,
+      "provides": {
+        "storage_capacity": 1
+      },
+      "attributes": {
+        "delivery_day": 2,
+        "system_code": "system-a"
+      }
+    },
+    {
+      "option_id": "0015-ra3",
+      "name": "regional product launch A recovery component 3",
+      "kind": "recovery_package",
+      "available": true,
+      "upfront_cents": 30000,
+      "monthly_cents": 0,
+      "horizon_months": 0,
+      "refund_after_purchase_cents": 0,
+      "provides": {
+        "missing_vendor_service": 1
+      },
+      "attributes": {
+        "delivery_day": 3,
+        "system_code": "system-a"
+      }
+    },
+    {
+      "option_id": "0015-rb1",
+      "name": "regional product launch B recovery component 1",
+      "kind": "recovery_package",
+      "available": true,
+      "upfront_cents": 33334,
+      "monthly_cents": 0,
+      "horizon_months": 0,
+      "refund_after_purchase_cents": 0,
+      "provides": {
+        "venue_capacity": 1
+      },
+      "attributes": {
+        "delivery_day": 3,
+        "system_code": "system-b"
+      }
+    },
+    {
+      "option_id": "0015-rb2",
+      "name": "regional product launch B recovery component 2",
+      "kind": "recovery_package",
+      "available": true,
+      "upfront_cents": 33333,
+      "monthly_cents": 0,
+      "horizon_months": 0,
+      "refund_after_purchase_cents": 0,
+      "provides": {
+        "transport_capacity": 1
+      },
+      "attributes": {
+        "delivery_day": 2,
+        "system_code": "system-b"
+      }
+    },
+    {
+      "option_id": "0015-rb3",
+      "name": "regional product launch B recovery component 3",
+      "kind": "recovery_package",
+      "available": true,
+      "upfront_cents": 33333,
+      "monthly_cents": 0,
+      "horizon_months": 0,
+      "refund_after_purchase_cents": 0,
+      "provides": {
+        "missing_vendor_service": 1
+      },
+      "attributes": {
+        "delivery_day": 3,
+        "system_code": "system-b"
+      }
+    },
+    {
+      "option_id": "0015-rc1",
+      "name": "regional product launch C recovery component 1",
+      "kind": "recovery_package",
+      "available": true,
+      "upfront_cents": 37334,
+      "monthly_cents": 0,
+      "horizon_months": 0,
+      "refund_after_purchase_cents": 0,
+      "provides": {
+        "venue_capacity": 1
+      },
+      "attributes": {
+        "delivery_day": 3,
+        "system_code": "system-c"
+      }
+    },
+    {
+      "option_id": "0015-rc2",
+      "name": "regional product launch C recovery component 2",
+      "kind": "recovery_package",
+      "available": true,
+      "upfront_cents": 37333,
+      "monthly_cents": 0,
+      "horizon_months": 0,
+      "refund_after_purchase_cents": 0,
+      "provides": {
+        "insurance_cover": 1
+      },
+      "attributes": {
+        "delivery_day": 2,
+        "system_code": "system-c"
+      }
+    },
+    {
+      "option_id": "0015-rc3",
+      "name": "regional product launch C recovery component 3",
+      "kind": "recovery_package",
+      "available": true,
+      "upfront_cents": 37333,
+      "monthly_cents": 0,
+      "horizon_months": 0,
+      "refund_after_purchase_cents": 0,
+      "provides": {
+        "missing_vendor_service": 1
+      },
+      "attributes": {
+        "delivery_day": 3,
+        "system_code": "system-c"
+      }
+    },
+    {
+      "option_id": "0015-rd1",
+      "name": "regional product launch D recovery component 1",
+      "kind": "recovery_package",
+      "available": true,
+      "upfront_cents": 60000,
+      "monthly_cents": 0,
+      "horizon_months": 0,
+      "refund_after_purchase_cents": 0,
+      "provides": {
+        "venue_capacity": 1
+      },
+      "attributes": {
+        "delivery_day": 3,
+        "system_code": "system-d"
+      }
+    },
+    {
+      "option_id": "0015-rd2",
+      "name": "regional product launch D recovery component 2",
+      "kind": "recovery_package",
+      "available": true,
+      "upfront_cents": 60000,
+      "monthly_cents": 0,
+      "horizon_months": 0,
+      "refund_after_purchase_cents": 0,
+      "provides": {
+        "transport_capacity": 1
+      },
+      "attributes": {
+        "delivery_day": 2,
+        "system_code": "system-d"
+      }
+    },
+    {
+      "option_id": "0015-rd3",
+      "name": "regional product launch D recovery component 3",
+      "kind": "recovery_package",
+      "available": true,
+      "upfront_cents": 60000,
+      "monthly_cents": 0,
+      "horizon_months": 0,
+      "refund_after_purchase_cents": 0,
+      "provides": {
+        "storage_capacity": 1
+      },
+      "attributes": {
+        "delivery_day": 3,
+        "system_code": "system-d"
+      }
+    },
+    {
+      "option_id": "0015-rd4",
+      "name": "regional product launch D recovery component 4",
+      "kind": "recovery_package",
+      "available": true,
+      "upfront_cents": 60000,
+      "monthly_cents": 0,
+      "horizon_months": 0,
+      "refund_after_purchase_cents": 0,
+      "provides": {
+        "insurance_cover": 1
+      },
+      "attributes": {
+        "delivery_day": 2,
+        "system_code": "system-d"
+      }
+    },
+    {
+      "option_id": "0015-rd5",
+      "name": "regional product launch D recovery component 5",
+      "kind": "recovery_package",
+      "available": true,
+      "upfront_cents": 60000,
+      "monthly_cents": 0,
+      "horizon_months": 0,
+      "refund_after_purchase_cents": 0,
+      "provides": {
+        "missing_vendor_service": 1
+      },
+      "attributes": {
+        "delivery_day": 3,
+        "system_code": "system-d"
+      }
+    },
+    {
+      "option_id": "0015-failed",
+      "name": "unavailable required final-mile vendor service",
+      "kind": "missing_vendor_service",
+      "available": false,
+      "upfront_cents": 18000,
+      "monthly_cents": 0,
+      "horizon_months": 0,
+      "refund_after_purchase_cents": 0,
+      "provides": {
+        "missing_vendor_service": 1
+      },
+      "attributes": {
+        "delivery_day": 2
+      }
+    },
+    {
+      "option_id": "0015-decoy",
+      "name": "late required final-mile vendor service",
+      "kind": "missing_vendor_service",
+      "available": true,
+      "upfront_cents": 5000,
+      "monthly_cents": 0,
+      "horizon_months": 0,
+      "refund_after_purchase_cents": 0,
+      "provides": {
+        "missing_vendor_service": 1
+      },
+      "attributes": {
+        "delivery_day": 9
+      }
+    }
+  ],
+  "contracts": [
+    {
+      "contract_id": "LICENCE-HOP",
+      "description": "Changing both the core commitment and its linked service causes an 8000-cent migration settlement.",
+      "trigger": {
+        "type": "all_changed",
+        "entity_ids": [
+          "NEW-0001",
+          "NEW-0004"
+        ]
+      },
+      "charge_cents": 8000
+    }
+  ],
+  "compatibility_rules": [
+    {
+      "type": "requires_all",
+      "if_option_id": "0015-ra1",
+      "all_option_ids": [
+        "0015-ra1",
+        "0015-ra2",
+        "0015-ra3"
+      ]
+    },
+    {
+      "type": "requires_all",
+      "if_option_id": "0015-ra2",
+      "all_option_ids": [
+        "0015-ra1",
+        "0015-ra2",
+        "0015-ra3"
+      ]
+    },
+    {
+      "type": "requires_all",
+      "if_option_id": "0015-ra3",
+      "all_option_ids": [
+        "0015-ra1",
+        "0015-ra2",
+        "0015-ra3"
+      ]
+    },
+    {
+      "type": "requires_all",
+      "if_option_id": "0015-rb1",
+      "all_option_ids": [
+        "0015-rb1",
+        "0015-rb2",
+        "0015-rb3"
+      ]
+    },
+    {
+      "type": "requires_all",
+      "if_option_id": "0015-rb2",
+      "all_option_ids": [
+        "0015-rb1",
+        "0015-rb2",
+        "0015-rb3"
+      ]
+    },
+    {
+      "type": "requires_all",
+      "if_option_id": "0015-rb3",
+      "all_option_ids": [
+        "0015-rb1",
+        "0015-rb2",
+        "0015-rb3"
+      ]
+    },
+    {
+      "type": "requires_all",
+      "if_option_id": "0015-rc1",
+      "all_option_ids": [
+        "0015-rc1",
+        "0015-rc2",
+        "0015-rc3"
+      ]
+    },
+    {
+      "type": "requires_all",
+      "if_option_id": "0015-rc2",
+      "all_option_ids": [
+        "0015-rc1",
+        "0015-rc2",
+        "0015-rc3"
+      ]
+    },
+    {
+      "type": "requires_all",
+      "if_option_id": "0015-rc3",
+      "all_option_ids": [
+        "0015-rc1",
+        "0015-rc2",
+        "0015-rc3"
+      ]
+    },
+    {
+      "type": "requires_all",
+      "if_option_id": "0015-rd1",
+      "all_option_ids": [
+        "0015-rd1",
+        "0015-rd2",
+        "0015-rd3",
+        "0015-rd4",
+        "0015-rd5"
+      ]
+    },
+    {
+      "type": "requires_all",
+      "if_option_id": "0015-rd2",
+      "all_option_ids": [
+        "0015-rd1",
+        "0015-rd2",
+        "0015-rd3",
+        "0015-rd4",
+        "0015-rd5"
+      ]
+    },
+    {
+      "type": "requires_all",
+      "if_option_id": "0015-rd3",
+      "all_option_ids": [
+        "0015-rd1",
+        "0015-rd2",
+        "0015-rd3",
+        "0015-rd4",
+        "0015-rd5"
+      ]
+    },
+    {
+      "type": "requires_all",
+      "if_option_id": "0015-rd4",
+      "all_option_ids": [
+        "0015-rd1",
+        "0015-rd2",
+        "0015-rd3",
+        "0015-rd4",
+        "0015-rd5"
+      ]
+    },
+    {
+      "type": "requires_all",
+      "if_option_id": "0015-rd5",
+      "all_option_ids": [
+        "0015-rd1",
+        "0015-rd2",
+        "0015-rd3",
+        "0015-rd4",
+        "0015-rd5"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0015-rl1",
+        "0015-ra1"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0015-rl1",
+        "0015-ra2"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0015-rl1",
+        "0015-ra3"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0015-rl1",
+        "0015-rb1"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0015-rl1",
+        "0015-rb2"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0015-rl1",
+        "0015-rb3"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0015-rl1",
+        "0015-rc1"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0015-rl1",
+        "0015-rc2"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0015-rl1",
+        "0015-rc3"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0015-rl1",
+        "0015-rd1"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0015-rl1",
+        "0015-rd2"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0015-rl1",
+        "0015-rd3"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0015-rl1",
+        "0015-rd4"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0015-rl1",
+        "0015-rd5"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0015-rl1",
+        "0015-decoy"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0015-ra1",
+        "0015-rb1"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0015-ra1",
+        "0015-rb2"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0015-ra1",
+        "0015-rb3"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0015-ra2",
+        "0015-rb1"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0015-ra2",
+        "0015-rb2"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0015-ra2",
+        "0015-rb3"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0015-ra3",
+        "0015-rb1"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0015-ra3",
+        "0015-rb2"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0015-ra3",
+        "0015-rb3"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0015-ra1",
+        "0015-rc1"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0015-ra1",
+        "0015-rc2"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0015-ra1",
+        "0015-rc3"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0015-ra2",
+        "0015-rc1"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0015-ra2",
+        "0015-rc2"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0015-ra2",
+        "0015-rc3"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0015-ra3",
+        "0015-rc1"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0015-ra3",
+        "0015-rc2"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0015-ra3",
+        "0015-rc3"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0015-ra1",
+        "0015-rd1"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0015-ra1",
+        "0015-rd2"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0015-ra1",
+        "0015-rd3"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0015-ra1",
+        "0015-rd4"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0015-ra1",
+        "0015-rd5"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0015-ra2",
+        "0015-rd1"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0015-ra2",
+        "0015-rd2"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0015-ra2",
+        "0015-rd3"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0015-ra2",
+        "0015-rd4"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0015-ra2",
+        "0015-rd5"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0015-ra3",
+        "0015-rd1"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0015-ra3",
+        "0015-rd2"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0015-ra3",
+        "0015-rd3"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0015-ra3",
+        "0015-rd4"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0015-ra3",
+        "0015-rd5"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0015-ra1",
+        "0015-decoy"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0015-ra2",
+        "0015-decoy"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0015-ra3",
+        "0015-decoy"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0015-rb1",
+        "0015-rc1"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0015-rb1",
+        "0015-rc2"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0015-rb1",
+        "0015-rc3"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0015-rb2",
+        "0015-rc1"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0015-rb2",
+        "0015-rc2"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0015-rb2",
+        "0015-rc3"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0015-rb3",
+        "0015-rc1"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0015-rb3",
+        "0015-rc2"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0015-rb3",
+        "0015-rc3"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0015-rb1",
+        "0015-rd1"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0015-rb1",
+        "0015-rd2"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0015-rb1",
+        "0015-rd3"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0015-rb1",
+        "0015-rd4"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0015-rb1",
+        "0015-rd5"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0015-rb2",
+        "0015-rd1"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0015-rb2",
+        "0015-rd2"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0015-rb2",
+        "0015-rd3"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0015-rb2",
+        "0015-rd4"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0015-rb2",
+        "0015-rd5"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0015-rb3",
+        "0015-rd1"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0015-rb3",
+        "0015-rd2"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0015-rb3",
+        "0015-rd3"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0015-rb3",
+        "0015-rd4"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0015-rb3",
+        "0015-rd5"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0015-rb1",
+        "0015-decoy"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0015-rb2",
+        "0015-decoy"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0015-rb3",
+        "0015-decoy"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0015-rc1",
+        "0015-rd1"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0015-rc1",
+        "0015-rd2"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0015-rc1",
+        "0015-rd3"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0015-rc1",
+        "0015-rd4"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0015-rc1",
+        "0015-rd5"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0015-rc2",
+        "0015-rd1"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0015-rc2",
+        "0015-rd2"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0015-rc2",
+        "0015-rd3"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0015-rc2",
+        "0015-rd4"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0015-rc2",
+        "0015-rd5"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0015-rc3",
+        "0015-rd1"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0015-rc3",
+        "0015-rd2"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0015-rc3",
+        "0015-rd3"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0015-rc3",
+        "0015-rd4"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0015-rc3",
+        "0015-rd5"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0015-rc1",
+        "0015-decoy"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0015-rc2",
+        "0015-decoy"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0015-rc3",
+        "0015-decoy"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0015-rd1",
+        "0015-decoy"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0015-rd2",
+        "0015-decoy"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0015-rd3",
+        "0015-decoy"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0015-rd4",
+        "0015-decoy"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0015-rd5",
+        "0015-decoy"
+      ]
+    }
+  ],
+  "hard_goals": {
+    "capabilities": [
+      {
+        "capability": "venue_capacity",
+        "min": 1,
+        "max": 1
+      },
+      {
+        "capability": "transport_capacity",
+        "min": 1,
+        "max": 1
+      },
+      {
+        "capability": "storage_capacity",
+        "min": 1,
+        "max": 1
+      },
+      {
+        "capability": "insurance_cover",
+        "min": 1,
+        "max": 1
+      },
+      {
+        "capability": "missing_vendor_service",
+        "min": 1,
+        "max": 1
+      }
+    ],
+    "attribute_requirements": [
+      {
+        "capability": "missing_vendor_service",
+        "attribute": "delivery_day",
+        "op": "le",
+        "value": 4
+      }
+    ],
+    "max_active_value_cents": 500000
+  },
+  "initial_snapshot": {
+    "commitments": []
+  },
+  "initial_snapshot_sha256": "dbc26b7f61e91d0529291823abb38756f52a36dc52e819cf0a83abddfe598124",
+  "failure_snapshot": {
+    "commitments": [
+      {
+        "entity_id": "NEW-0001",
+        "option_id": "0015-b1",
+        "name": "confirmed venue",
+        "kind": "venue_capacity",
+        "status": "active",
+        "paid_cents": 100000,
+        "refund_cents": 100000,
+        "provides": {
+          "venue_capacity": 1
+        },
+        "attributes": {
+          "delivery_day": 1
+        },
+        "created_after_boundary": false
+      },
+      {
+        "entity_id": "NEW-0002",
+        "option_id": "0015-b2",
+        "name": "transport contract",
+        "kind": "transport_capacity",
+        "status": "active",
+        "paid_cents": 40000,
+        "refund_cents": 10000,
+        "provides": {
+          "transport_capacity": 1
+        },
+        "attributes": {
+          "delivery_day": 1
+        },
+        "created_after_boundary": false
+      },
+      {
+        "entity_id": "NEW-0003",
+        "option_id": "0015-b3",
+        "name": "storage service",
+        "kind": "storage_capacity",
+        "status": "active",
+        "paid_cents": 30000,
+        "refund_cents": 30000,
+        "provides": {
+          "storage_capacity": 1
+        },
+        "attributes": {
+          "delivery_day": 1
+        },
+        "created_after_boundary": false
+      },
+      {
+        "entity_id": "NEW-0004",
+        "option_id": "0015-b4",
+        "name": "event insurance",
+        "kind": "insurance_cover",
+        "status": "active",
+        "paid_cents": 50000,
+        "refund_cents": 10000,
+        "provides": {
+          "insurance_cover": 1
+        },
+        "attributes": {
+          "delivery_day": 1
+        },
+        "created_after_boundary": false
+      }
+    ]
+  },
+  "snapshot_sha256": "1d372036c439c6e1e619a78202ce86fcf1fc54d68d13bba6af13ccba76711d4c",
+  "pre_failure_trace": [
+    {
+      "step": 1,
+      "tool": "book_vendor_option",
+      "arguments": {
+        "vendor_option_id": "0015-b1"
+      },
+      "result": {
+        "ok": true,
+        "message": "New commitment created.",
+        "data": {
+          "entity_id": "NEW-0001",
+          "option_id": "0015-b1",
+          "charge_cents": 100000
+        }
+      }
+    },
+    {
+      "step": 2,
+      "tool": "book_vendor_option",
+      "arguments": {
+        "vendor_option_id": "0015-b2"
+      },
+      "result": {
+        "ok": true,
+        "message": "New commitment created.",
+        "data": {
+          "entity_id": "NEW-0002",
+          "option_id": "0015-b2",
+          "charge_cents": 40000
+        }
+      }
+    },
+    {
+      "step": 3,
+      "tool": "book_vendor_option",
+      "arguments": {
+        "vendor_option_id": "0015-b3"
+      },
+      "result": {
+        "ok": true,
+        "message": "New commitment created.",
+        "data": {
+          "entity_id": "NEW-0003",
+          "option_id": "0015-b3",
+          "charge_cents": 30000
+        }
+      }
+    },
+    {
+      "step": 4,
+      "tool": "book_vendor_option",
+      "arguments": {
+        "vendor_option_id": "0015-b4"
+      },
+      "result": {
+        "ok": true,
+        "message": "New commitment created.",
+        "data": {
+          "entity_id": "NEW-0004",
+          "option_id": "0015-b4",
+          "charge_cents": 50000
+        }
+      }
+    }
+  ],
+  "prefix_ledger": [
+    {
+      "event_index": 1,
+      "tool": "book_vendor_option",
+      "entity_id": "NEW-0001",
+      "contract_id": null,
+      "charge_cents": 100000,
+      "refund_cents": 0,
+      "irreversible_loss_delta": 0,
+      "net_outlay_delta": 100000
+    },
+    {
+      "event_index": 2,
+      "tool": "book_vendor_option",
+      "entity_id": "NEW-0002",
+      "contract_id": null,
+      "charge_cents": 40000,
+      "refund_cents": 0,
+      "irreversible_loss_delta": 0,
+      "net_outlay_delta": 40000
+    },
+    {
+      "event_index": 3,
+      "tool": "book_vendor_option",
+      "entity_id": "NEW-0003",
+      "contract_id": null,
+      "charge_cents": 30000,
+      "refund_cents": 0,
+      "irreversible_loss_delta": 0,
+      "net_outlay_delta": 30000
+    },
+    {
+      "event_index": 4,
+      "tool": "book_vendor_option",
+      "entity_id": "NEW-0004",
+      "contract_id": null,
+      "charge_cents": 50000,
+      "refund_cents": 0,
+      "irreversible_loss_delta": 0,
+      "net_outlay_delta": 50000
+    }
+  ],
+  "latest_failure": {
+    "tool": "book_vendor_option",
+    "arguments": {
+      "vendor_option_id": "0015-failed"
+    },
+    "result": {
+      "ok": false,
+      "message": "The selected option is unavailable.",
+      "data": null
+    }
+  },
+  "boundary_commitments": [
+    {
+      "entity_id": "NEW-0001",
+      "option_id": "0015-b1",
+      "name": "confirmed venue",
+      "kind": "venue_capacity",
+      "status": "active",
+      "paid_cents": 100000,
+      "refund_cents": 100000,
+      "provides": {
+        "venue_capacity": 1
+      },
+      "attributes": {
+        "delivery_day": 1
+      },
+      "created_after_boundary": false,
+      "primary_capability": "venue_capacity"
+    },
+    {
+      "entity_id": "NEW-0002",
+      "option_id": "0015-b2",
+      "name": "transport contract",
+      "kind": "transport_capacity",
+      "status": "active",
+      "paid_cents": 40000,
+      "refund_cents": 10000,
+      "provides": {
+        "transport_capacity": 1
+      },
+      "attributes": {
+        "delivery_day": 1
+      },
+      "created_after_boundary": false,
+      "primary_capability": "transport_capacity"
+    },
+    {
+      "entity_id": "NEW-0003",
+      "option_id": "0015-b3",
+      "name": "storage service",
+      "kind": "storage_capacity",
+      "status": "active",
+      "paid_cents": 30000,
+      "refund_cents": 30000,
+      "provides": {
+        "storage_capacity": 1
+      },
+      "attributes": {
+        "delivery_day": 1
+      },
+      "created_after_boundary": false,
+      "primary_capability": "storage_capacity"
+    },
+    {
+      "entity_id": "NEW-0004",
+      "option_id": "0015-b4",
+      "name": "event insurance",
+      "kind": "insurance_cover",
+      "status": "active",
+      "paid_cents": 50000,
+      "refund_cents": 10000,
+      "provides": {
+        "insurance_cover": 1
+      },
+      "attributes": {
+        "delivery_day": 1
+      },
+      "created_after_boundary": false,
+      "primary_capability": "insurance_cover"
+    }
+  ],
+  "changed_fact": {
+    "fact_type": "refund_value",
+    "model_access": "cancellation preview",
+    "variant_role": "beta",
+    "value_cents": 100000,
+    "changed_path": "boundary_option[0].refund_after_purchase_cents"
+  },
+  "construction": {
+    "prefix_generated_by_public_tools": true,
+    "failure_generated_by_public_tool": true,
+    "necessary_action_order_invariant": true,
+    "state_bench_provenance": "native RepairScope stateful domain"
+  }
+}

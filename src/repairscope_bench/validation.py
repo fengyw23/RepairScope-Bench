@@ -15,6 +15,8 @@ def validate_dataset(
     path: str | Path, gold_path: str | Path | None = None
 ) -> dict[str, Any]:
     tasks = load_tasks(path)
+    if tasks and tasks[0]["schema_version"] == "1.0":
+        return _validate_v1_dataset(tasks, path, gold_path)
     if tasks and tasks[0]["schema_version"] == "0.6":
         return _validate_v06_dataset(tasks, path, gold_path)
     gold_file = Path(gold_path) if gold_path is not None else _infer_gold_path(path)
@@ -170,6 +172,219 @@ def _infer_gold_path(path: str | Path) -> Path:
     else:
         data_root = parent
     return data_root / "gold" / f"{dataset_name}.json"
+
+
+def _validate_v1_dataset(
+    tasks: list[dict[str, Any]],
+    path: str | Path,
+    gold_path: str | Path | None,
+) -> dict[str, Any]:
+    from .v1_oracle import frontier_signature, solve_task_v1
+
+    gold_file = (
+        Path(gold_path) if gold_path is not None else _infer_gold_path(path)
+    )
+    with gold_file.open("r", encoding="utf-8") as handle:
+        gold: dict[str, dict[str, Any]] = json.load(handle)
+    errors: list[str] = []
+    pairs: dict[str, list[dict[str, Any]]] = defaultdict(list)
+    scenarios: dict[str, list[dict[str, Any]]] = defaultdict(list)
+    frontier_sizes: list[int] = []
+    positive_gold = 0
+    for task in tasks:
+        pairs[task["counterfactual_pair_id"]].append(task)
+        scenarios[task["scenario_id"]].append(task)
+        oracle = solve_task_v1(task)
+        expected = gold.get(task["task_id"])
+        if expected is None:
+            errors.append(f"{task['task_id']}: missing v1 gold")
+            continue
+        if not oracle.feasible or oracle.feasible_scope_count < 3:
+            errors.append(f"{task['task_id']}: insufficient feasible scopes")
+        if oracle.feasible_terminal_count <= len(oracle.frontier):
+            errors.append(f"{task['task_id']}: no dominated feasible repair")
+        if frontier_signature(oracle.frontier) != frontier_signature(
+            oracle.independent_frontier
+        ):
+            errors.append(f"{task['task_id']}: independent Oracles disagree")
+        if frontier_signature(oracle.frontier) != frontier_signature(
+            expected["frontier"]
+        ):
+            errors.append(f"{task['task_id']}: checked-in gold is stale")
+        frontier_sizes.append(len(oracle.frontier))
+        if any(
+            item["economic_vector"]["irreversible_loss"] > 0
+            for item in oracle.frontier
+        ):
+            positive_gold += 1
+        if not _replay_v1_boundary(task):
+            errors.append(f"{task['task_id']}: failure boundary replay failed")
+
+    if len(tasks) != 160:
+        errors.append(f"expected 160 v1 tasks, found {len(tasks)}")
+    if len(scenarios) != 80 or len(pairs) != 80:
+        errors.append("expected 80 independent scenarios and pairs")
+    structure_counts = Counter(task["reasoning_structure"] for task in tasks)
+    domain_counts = Counter(task["domain"] for task in tasks)
+    if set(structure_counts.values()) != {16} or len(structure_counts) != 10:
+        errors.append(f"reasoning structures are unbalanced: {structure_counts}")
+    if set(domain_counts.values()) != {40} or len(domain_counts) != 4:
+        errors.append(f"domains are unbalanced: {domain_counts}")
+    for pair_id, members in pairs.items():
+        if len(members) != 2:
+            errors.append(f"{pair_id}: expected two variants")
+            continue
+        first, second = sorted(members, key=lambda item: item["variant_role"])
+        if _normalized_pair_task(first) != _normalized_pair_task(second):
+            errors.append(f"{pair_id}: more than the declared fact changed")
+        first_scopes = {
+            tuple(sorted(item["scope"].items()))
+            for item in gold[first["task_id"]]["frontier"]
+        }
+        second_scopes = {
+            tuple(sorted(item["scope"].items()))
+            for item in gold[second["task_id"]]["frontier"]
+        }
+        if first_scopes == second_scopes:
+            errors.append(f"{pair_id}: Pareto recovery scope did not change")
+
+    multi_frontier_rate = (
+        sum(size >= 2 for size in frontier_sizes) / len(frontier_sizes)
+        if frontier_sizes
+        else 0
+    )
+    positive_gold_rate = positive_gold / len(tasks) if tasks else 0
+    if multi_frontier_rate < 0.40:
+        errors.append("fewer than 40% of tasks have multi-point frontiers")
+    if positive_gold_rate < 0.40:
+        errors.append("fewer than 40% of tasks have positive-loss gold points")
+
+    strategies = [
+        "no_repair",
+        "local_repair",
+        "dependency_repair",
+        "full_rollback",
+        "sticker_price",
+        "refund_only",
+        "min_changes",
+        "loss_only",
+        "outlay_only",
+        "pareto_oracle",
+    ]
+    baseline_summary: dict[str, dict[str, int | float]] = {}
+    for strategy in strategies:
+        results = [
+            evaluate_actions(task, make_actions(task, strategy)) for task in tasks
+        ]
+        nd_pass = sum(result["non_dominated_repair"] for result in results)
+        baseline_summary[strategy] = {
+            "goal_pass": sum(result["goal_pass"] for result in results),
+            "non_dominated_pass": nd_pass,
+            "non_dominated_rate": nd_pass / len(tasks),
+        }
+    if baseline_summary["pareto_oracle"]["non_dominated_pass"] != len(tasks):
+        errors.append("Pareto Oracle does not pass every task")
+    for strategy in [
+        "local_repair",
+        "full_rollback",
+        "sticker_price",
+        "refund_only",
+        "min_changes",
+    ]:
+        if baseline_summary[strategy]["non_dominated_rate"] >= 0.65:
+            errors.append(f"{strategy}: heuristic exceeds the 65% ceiling")
+
+    return {
+        "valid": not errors,
+        "schema_version": "1.0",
+        "task_count": len(tasks),
+        "scenario_count": len(scenarios),
+        "counterfactual_pair_count": len(pairs),
+        "domain_counts": dict(domain_counts),
+        "reasoning_structure_counts": dict(structure_counts),
+        "difficulty_counts": dict(
+            Counter(task["difficulty_level"] for task in tasks)
+        ),
+        "split_counts": dict(Counter(task["split"] for task in tasks)),
+        "multi_frontier_rate": multi_frontier_rate,
+        "positive_loss_gold_rate": positive_gold_rate,
+        "errors": errors,
+        "gold_path": str(gold_file.resolve()),
+        "baselines": baseline_summary,
+    }
+
+
+def _normalized_pair_task(task: dict[str, Any]) -> dict[str, Any]:
+    from copy import deepcopy
+
+    normalized = deepcopy({k: v for k, v in task.items() if not k.startswith("_")})
+    for field in [
+        "task_id",
+        "variant_role",
+        "changed_fact",
+        "snapshot_sha256",
+    ]:
+        normalized.pop(field, None)
+    changed_path = task["changed_fact"]["changed_path"]
+    if changed_path.startswith("boundary_option"):
+        option_id = task["boundary_commitments"][0]["option_id"]
+        for item in normalized["inventory"]:
+            if item["option_id"] == option_id:
+                item["refund_after_purchase_cents"] = "<CHANGED>"
+        for item in normalized["failure_snapshot"]["commitments"]:
+            if item["option_id"] == option_id:
+                item["refund_cents"] = "<CHANGED>"
+        for item in normalized["boundary_commitments"]:
+            if item["option_id"] == option_id:
+                item["refund_cents"] = "<CHANGED>"
+    else:
+        for contract in normalized["contracts"]:
+            if contract["contract_id"] == "PAIR-TERM":
+                contract["charge_cents"] = "<CHANGED>"
+                contract["description"] = "<CHANGED>"
+    return normalized
+
+
+def _replay_v1_boundary(task: dict[str, Any]) -> bool:
+    from copy import deepcopy
+
+    from .v1_environment import CommitmentRecoveryEnvironment, snapshot_hash
+
+    replay_task = deepcopy(task)
+    replay_task["failure_snapshot"] = deepcopy(task["initial_snapshot"])
+    replay_task["boundary_commitments"] = []
+    replay_task["contracts"] = []
+    replay_task["inventory"] = deepcopy(task["inventory"])
+    boundary_options = {
+        item["option_id"] for item in task["boundary_commitments"]
+    }
+    for option in replay_task["inventory"]:
+        if option["option_id"] in boundary_options:
+            option["available"] = True
+    environment = CommitmentRecoveryEnvironment(replay_task)
+    for expected in task["pre_failure_trace"]:
+        result = environment.execute_tool(expected["tool"], expected["arguments"])
+        if result.as_dict() != expected["result"]:
+            return False
+    failure = task["latest_failure"]
+    result = environment.execute_tool(failure["tool"], failure["arguments"])
+    replayed_commitments = sorted(
+        (deepcopy(item) for item in environment.commitments.values()),
+        key=lambda item: item["entity_id"],
+    )
+    for item in replayed_commitments:
+        item["created_after_boundary"] = False
+    return (
+        not result.ok
+        and result.as_dict() == failure["result"]
+        and snapshot_hash(
+            {
+                "commitments": replayed_commitments
+            }
+        )
+        == task["snapshot_sha256"]
+        and environment.ledger == task["prefix_ledger"]
+    )
 
 
 def _validate_v06_dataset(

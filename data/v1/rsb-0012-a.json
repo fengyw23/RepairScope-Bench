@@ -1,0 +1,1561 @@
+{
+  "schema_version": "1.0",
+  "task_id": "rsb-0012-a",
+  "scenario_id": "scenario-0012",
+  "counterfactual_pair_id": "pair-0012",
+  "variant_role": "alpha",
+  "domain": "after_sales",
+  "environment_type": "repairscope.commitment_graph.v1",
+  "reasoning_structure": "multi_hop_propagation",
+  "reasoning_structure_label": "multi-hop economic impact propagation",
+  "secondary_structures": [
+    "joint_bundle_selection"
+  ],
+  "economic_carriers": [
+    "licence settlement",
+    "replacement purchase"
+  ],
+  "difficulty_level": 2,
+  "frontier_profile": "multi_two",
+  "split": "dev",
+  "now": "2026-09-01T09:00:00+08:00",
+  "max_turns": 15,
+  "instruction": "Complete the clinic cold-chain console for the clinic operations team. Four paid commitments are already active, but the required compatible accessory just failed. Preserve every required function, use options deliverable by day 4, and make the best supported recovery decision without asking me to choose.",
+  "inventory": [
+    {
+      "option_id": "0012-b1",
+      "name": "approved core device",
+      "kind": "core_device",
+      "available": false,
+      "upfront_cents": 100000,
+      "monthly_cents": 0,
+      "horizon_months": 0,
+      "refund_after_purchase_cents": 100000,
+      "provides": {
+        "core_device": 1
+      },
+      "attributes": {
+        "delivery_day": 1
+      }
+    },
+    {
+      "option_id": "0012-b2",
+      "name": "service warranty",
+      "kind": "warranty_cover",
+      "available": false,
+      "upfront_cents": 40000,
+      "monthly_cents": 0,
+      "horizon_months": 0,
+      "refund_after_purchase_cents": 40000,
+      "provides": {
+        "warranty_cover": 1
+      },
+      "attributes": {
+        "delivery_day": 1
+      }
+    },
+    {
+      "option_id": "0012-b3",
+      "name": "bound software licence",
+      "kind": "licensed_software",
+      "available": false,
+      "upfront_cents": 30000,
+      "monthly_cents": 0,
+      "horizon_months": 0,
+      "refund_after_purchase_cents": 20000,
+      "provides": {
+        "licensed_software": 1
+      },
+      "attributes": {
+        "delivery_day": 1
+      }
+    },
+    {
+      "option_id": "0012-b4",
+      "name": "retained display or sensor",
+      "kind": "display_or_sensor",
+      "available": false,
+      "upfront_cents": 50000,
+      "monthly_cents": 0,
+      "horizon_months": 0,
+      "refund_after_purchase_cents": 10000,
+      "provides": {
+        "display_or_sensor": 1
+      },
+      "attributes": {
+        "delivery_day": 1
+      }
+    },
+    {
+      "option_id": "0012-rl1",
+      "name": "radiology workstation L recovery component 1",
+      "kind": "missing_accessory",
+      "available": true,
+      "upfront_cents": 50000,
+      "monthly_cents": 0,
+      "horizon_months": 0,
+      "refund_after_purchase_cents": 0,
+      "provides": {
+        "missing_accessory": 1
+      },
+      "attributes": {
+        "delivery_day": 3,
+        "system_code": "system-l"
+      }
+    },
+    {
+      "option_id": "0012-ra1",
+      "name": "radiology workstation A recovery component 1",
+      "kind": "recovery_package",
+      "available": true,
+      "upfront_cents": 30000,
+      "monthly_cents": 0,
+      "horizon_months": 0,
+      "refund_after_purchase_cents": 0,
+      "provides": {
+        "core_device": 1
+      },
+      "attributes": {
+        "delivery_day": 3,
+        "system_code": "system-a"
+      }
+    },
+    {
+      "option_id": "0012-ra2",
+      "name": "radiology workstation A recovery component 2",
+      "kind": "recovery_package",
+      "available": true,
+      "upfront_cents": 30000,
+      "monthly_cents": 0,
+      "horizon_months": 0,
+      "refund_after_purchase_cents": 0,
+      "provides": {
+        "licensed_software": 1
+      },
+      "attributes": {
+        "delivery_day": 2,
+        "system_code": "system-a"
+      }
+    },
+    {
+      "option_id": "0012-ra3",
+      "name": "radiology workstation A recovery component 3",
+      "kind": "recovery_package",
+      "available": true,
+      "upfront_cents": 30000,
+      "monthly_cents": 0,
+      "horizon_months": 0,
+      "refund_after_purchase_cents": 0,
+      "provides": {
+        "missing_accessory": 1
+      },
+      "attributes": {
+        "delivery_day": 3,
+        "system_code": "system-a"
+      }
+    },
+    {
+      "option_id": "0012-rb1",
+      "name": "radiology workstation B recovery component 1",
+      "kind": "recovery_package",
+      "available": true,
+      "upfront_cents": 46667,
+      "monthly_cents": 0,
+      "horizon_months": 0,
+      "refund_after_purchase_cents": 0,
+      "provides": {
+        "core_device": 1
+      },
+      "attributes": {
+        "delivery_day": 3,
+        "system_code": "system-b"
+      }
+    },
+    {
+      "option_id": "0012-rb2",
+      "name": "radiology workstation B recovery component 2",
+      "kind": "recovery_package",
+      "available": true,
+      "upfront_cents": 46667,
+      "monthly_cents": 0,
+      "horizon_months": 0,
+      "refund_after_purchase_cents": 0,
+      "provides": {
+        "warranty_cover": 1
+      },
+      "attributes": {
+        "delivery_day": 2,
+        "system_code": "system-b"
+      }
+    },
+    {
+      "option_id": "0012-rb3",
+      "name": "radiology workstation B recovery component 3",
+      "kind": "recovery_package",
+      "available": true,
+      "upfront_cents": 46666,
+      "monthly_cents": 0,
+      "horizon_months": 0,
+      "refund_after_purchase_cents": 0,
+      "provides": {
+        "missing_accessory": 1
+      },
+      "attributes": {
+        "delivery_day": 3,
+        "system_code": "system-b"
+      }
+    },
+    {
+      "option_id": "0012-rc1",
+      "name": "radiology workstation C recovery component 1",
+      "kind": "recovery_package",
+      "available": true,
+      "upfront_cents": 17334,
+      "monthly_cents": 0,
+      "horizon_months": 0,
+      "refund_after_purchase_cents": 0,
+      "provides": {
+        "core_device": 1
+      },
+      "attributes": {
+        "delivery_day": 3,
+        "system_code": "system-c"
+      }
+    },
+    {
+      "option_id": "0012-rc2",
+      "name": "radiology workstation C recovery component 2",
+      "kind": "recovery_package",
+      "available": true,
+      "upfront_cents": 17333,
+      "monthly_cents": 0,
+      "horizon_months": 0,
+      "refund_after_purchase_cents": 0,
+      "provides": {
+        "display_or_sensor": 1
+      },
+      "attributes": {
+        "delivery_day": 2,
+        "system_code": "system-c"
+      }
+    },
+    {
+      "option_id": "0012-rc3",
+      "name": "radiology workstation C recovery component 3",
+      "kind": "recovery_package",
+      "available": true,
+      "upfront_cents": 17333,
+      "monthly_cents": 0,
+      "horizon_months": 0,
+      "refund_after_purchase_cents": 0,
+      "provides": {
+        "missing_accessory": 1
+      },
+      "attributes": {
+        "delivery_day": 3,
+        "system_code": "system-c"
+      }
+    },
+    {
+      "option_id": "0012-rd1",
+      "name": "radiology workstation D recovery component 1",
+      "kind": "recovery_package",
+      "available": true,
+      "upfront_cents": 60000,
+      "monthly_cents": 0,
+      "horizon_months": 0,
+      "refund_after_purchase_cents": 0,
+      "provides": {
+        "core_device": 1
+      },
+      "attributes": {
+        "delivery_day": 3,
+        "system_code": "system-d"
+      }
+    },
+    {
+      "option_id": "0012-rd2",
+      "name": "radiology workstation D recovery component 2",
+      "kind": "recovery_package",
+      "available": true,
+      "upfront_cents": 60000,
+      "monthly_cents": 0,
+      "horizon_months": 0,
+      "refund_after_purchase_cents": 0,
+      "provides": {
+        "warranty_cover": 1
+      },
+      "attributes": {
+        "delivery_day": 2,
+        "system_code": "system-d"
+      }
+    },
+    {
+      "option_id": "0012-rd3",
+      "name": "radiology workstation D recovery component 3",
+      "kind": "recovery_package",
+      "available": true,
+      "upfront_cents": 60000,
+      "monthly_cents": 0,
+      "horizon_months": 0,
+      "refund_after_purchase_cents": 0,
+      "provides": {
+        "licensed_software": 1
+      },
+      "attributes": {
+        "delivery_day": 3,
+        "system_code": "system-d"
+      }
+    },
+    {
+      "option_id": "0012-rd4",
+      "name": "radiology workstation D recovery component 4",
+      "kind": "recovery_package",
+      "available": true,
+      "upfront_cents": 60000,
+      "monthly_cents": 0,
+      "horizon_months": 0,
+      "refund_after_purchase_cents": 0,
+      "provides": {
+        "display_or_sensor": 1
+      },
+      "attributes": {
+        "delivery_day": 2,
+        "system_code": "system-d"
+      }
+    },
+    {
+      "option_id": "0012-rd5",
+      "name": "radiology workstation D recovery component 5",
+      "kind": "recovery_package",
+      "available": true,
+      "upfront_cents": 60000,
+      "monthly_cents": 0,
+      "horizon_months": 0,
+      "refund_after_purchase_cents": 0,
+      "provides": {
+        "missing_accessory": 1
+      },
+      "attributes": {
+        "delivery_day": 3,
+        "system_code": "system-d"
+      }
+    },
+    {
+      "option_id": "0012-failed",
+      "name": "unavailable required compatible accessory",
+      "kind": "missing_accessory",
+      "available": false,
+      "upfront_cents": 18000,
+      "monthly_cents": 0,
+      "horizon_months": 0,
+      "refund_after_purchase_cents": 0,
+      "provides": {
+        "missing_accessory": 1
+      },
+      "attributes": {
+        "delivery_day": 2
+      }
+    },
+    {
+      "option_id": "0012-decoy",
+      "name": "late required compatible accessory",
+      "kind": "missing_accessory",
+      "available": true,
+      "upfront_cents": 5000,
+      "monthly_cents": 0,
+      "horizon_months": 0,
+      "refund_after_purchase_cents": 0,
+      "provides": {
+        "missing_accessory": 1
+      },
+      "attributes": {
+        "delivery_day": 9
+      }
+    }
+  ],
+  "contracts": [
+    {
+      "contract_id": "PAIR-TERM",
+      "description": "The linked return refund applies when both the first and second original commitments change; charge 80000 cents.",
+      "trigger": {
+        "type": "all_changed",
+        "entity_ids": [
+          "NEW-0001",
+          "NEW-0002"
+        ]
+      },
+      "charge_cents": 80000
+    },
+    {
+      "contract_id": "LICENCE-HOP",
+      "description": "Changing both the core commitment and its linked service causes an 8000-cent migration settlement.",
+      "trigger": {
+        "type": "all_changed",
+        "entity_ids": [
+          "NEW-0001",
+          "NEW-0004"
+        ]
+      },
+      "charge_cents": 8000
+    }
+  ],
+  "compatibility_rules": [
+    {
+      "type": "requires_all",
+      "if_option_id": "0012-ra1",
+      "all_option_ids": [
+        "0012-ra1",
+        "0012-ra2",
+        "0012-ra3"
+      ]
+    },
+    {
+      "type": "requires_all",
+      "if_option_id": "0012-ra2",
+      "all_option_ids": [
+        "0012-ra1",
+        "0012-ra2",
+        "0012-ra3"
+      ]
+    },
+    {
+      "type": "requires_all",
+      "if_option_id": "0012-ra3",
+      "all_option_ids": [
+        "0012-ra1",
+        "0012-ra2",
+        "0012-ra3"
+      ]
+    },
+    {
+      "type": "requires_all",
+      "if_option_id": "0012-rb1",
+      "all_option_ids": [
+        "0012-rb1",
+        "0012-rb2",
+        "0012-rb3"
+      ]
+    },
+    {
+      "type": "requires_all",
+      "if_option_id": "0012-rb2",
+      "all_option_ids": [
+        "0012-rb1",
+        "0012-rb2",
+        "0012-rb3"
+      ]
+    },
+    {
+      "type": "requires_all",
+      "if_option_id": "0012-rb3",
+      "all_option_ids": [
+        "0012-rb1",
+        "0012-rb2",
+        "0012-rb3"
+      ]
+    },
+    {
+      "type": "requires_all",
+      "if_option_id": "0012-rc1",
+      "all_option_ids": [
+        "0012-rc1",
+        "0012-rc2",
+        "0012-rc3"
+      ]
+    },
+    {
+      "type": "requires_all",
+      "if_option_id": "0012-rc2",
+      "all_option_ids": [
+        "0012-rc1",
+        "0012-rc2",
+        "0012-rc3"
+      ]
+    },
+    {
+      "type": "requires_all",
+      "if_option_id": "0012-rc3",
+      "all_option_ids": [
+        "0012-rc1",
+        "0012-rc2",
+        "0012-rc3"
+      ]
+    },
+    {
+      "type": "requires_all",
+      "if_option_id": "0012-rd1",
+      "all_option_ids": [
+        "0012-rd1",
+        "0012-rd2",
+        "0012-rd3",
+        "0012-rd4",
+        "0012-rd5"
+      ]
+    },
+    {
+      "type": "requires_all",
+      "if_option_id": "0012-rd2",
+      "all_option_ids": [
+        "0012-rd1",
+        "0012-rd2",
+        "0012-rd3",
+        "0012-rd4",
+        "0012-rd5"
+      ]
+    },
+    {
+      "type": "requires_all",
+      "if_option_id": "0012-rd3",
+      "all_option_ids": [
+        "0012-rd1",
+        "0012-rd2",
+        "0012-rd3",
+        "0012-rd4",
+        "0012-rd5"
+      ]
+    },
+    {
+      "type": "requires_all",
+      "if_option_id": "0012-rd4",
+      "all_option_ids": [
+        "0012-rd1",
+        "0012-rd2",
+        "0012-rd3",
+        "0012-rd4",
+        "0012-rd5"
+      ]
+    },
+    {
+      "type": "requires_all",
+      "if_option_id": "0012-rd5",
+      "all_option_ids": [
+        "0012-rd1",
+        "0012-rd2",
+        "0012-rd3",
+        "0012-rd4",
+        "0012-rd5"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0012-rl1",
+        "0012-ra1"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0012-rl1",
+        "0012-ra2"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0012-rl1",
+        "0012-ra3"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0012-rl1",
+        "0012-rb1"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0012-rl1",
+        "0012-rb2"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0012-rl1",
+        "0012-rb3"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0012-rl1",
+        "0012-rc1"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0012-rl1",
+        "0012-rc2"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0012-rl1",
+        "0012-rc3"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0012-rl1",
+        "0012-rd1"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0012-rl1",
+        "0012-rd2"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0012-rl1",
+        "0012-rd3"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0012-rl1",
+        "0012-rd4"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0012-rl1",
+        "0012-rd5"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0012-rl1",
+        "0012-decoy"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0012-ra1",
+        "0012-rb1"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0012-ra1",
+        "0012-rb2"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0012-ra1",
+        "0012-rb3"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0012-ra2",
+        "0012-rb1"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0012-ra2",
+        "0012-rb2"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0012-ra2",
+        "0012-rb3"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0012-ra3",
+        "0012-rb1"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0012-ra3",
+        "0012-rb2"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0012-ra3",
+        "0012-rb3"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0012-ra1",
+        "0012-rc1"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0012-ra1",
+        "0012-rc2"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0012-ra1",
+        "0012-rc3"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0012-ra2",
+        "0012-rc1"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0012-ra2",
+        "0012-rc2"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0012-ra2",
+        "0012-rc3"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0012-ra3",
+        "0012-rc1"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0012-ra3",
+        "0012-rc2"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0012-ra3",
+        "0012-rc3"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0012-ra1",
+        "0012-rd1"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0012-ra1",
+        "0012-rd2"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0012-ra1",
+        "0012-rd3"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0012-ra1",
+        "0012-rd4"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0012-ra1",
+        "0012-rd5"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0012-ra2",
+        "0012-rd1"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0012-ra2",
+        "0012-rd2"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0012-ra2",
+        "0012-rd3"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0012-ra2",
+        "0012-rd4"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0012-ra2",
+        "0012-rd5"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0012-ra3",
+        "0012-rd1"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0012-ra3",
+        "0012-rd2"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0012-ra3",
+        "0012-rd3"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0012-ra3",
+        "0012-rd4"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0012-ra3",
+        "0012-rd5"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0012-ra1",
+        "0012-decoy"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0012-ra2",
+        "0012-decoy"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0012-ra3",
+        "0012-decoy"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0012-rb1",
+        "0012-rc1"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0012-rb1",
+        "0012-rc2"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0012-rb1",
+        "0012-rc3"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0012-rb2",
+        "0012-rc1"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0012-rb2",
+        "0012-rc2"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0012-rb2",
+        "0012-rc3"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0012-rb3",
+        "0012-rc1"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0012-rb3",
+        "0012-rc2"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0012-rb3",
+        "0012-rc3"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0012-rb1",
+        "0012-rd1"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0012-rb1",
+        "0012-rd2"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0012-rb1",
+        "0012-rd3"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0012-rb1",
+        "0012-rd4"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0012-rb1",
+        "0012-rd5"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0012-rb2",
+        "0012-rd1"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0012-rb2",
+        "0012-rd2"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0012-rb2",
+        "0012-rd3"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0012-rb2",
+        "0012-rd4"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0012-rb2",
+        "0012-rd5"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0012-rb3",
+        "0012-rd1"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0012-rb3",
+        "0012-rd2"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0012-rb3",
+        "0012-rd3"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0012-rb3",
+        "0012-rd4"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0012-rb3",
+        "0012-rd5"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0012-rb1",
+        "0012-decoy"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0012-rb2",
+        "0012-decoy"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0012-rb3",
+        "0012-decoy"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0012-rc1",
+        "0012-rd1"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0012-rc1",
+        "0012-rd2"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0012-rc1",
+        "0012-rd3"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0012-rc1",
+        "0012-rd4"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0012-rc1",
+        "0012-rd5"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0012-rc2",
+        "0012-rd1"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0012-rc2",
+        "0012-rd2"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0012-rc2",
+        "0012-rd3"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0012-rc2",
+        "0012-rd4"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0012-rc2",
+        "0012-rd5"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0012-rc3",
+        "0012-rd1"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0012-rc3",
+        "0012-rd2"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0012-rc3",
+        "0012-rd3"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0012-rc3",
+        "0012-rd4"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0012-rc3",
+        "0012-rd5"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0012-rc1",
+        "0012-decoy"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0012-rc2",
+        "0012-decoy"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0012-rc3",
+        "0012-decoy"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0012-rd1",
+        "0012-decoy"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0012-rd2",
+        "0012-decoy"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0012-rd3",
+        "0012-decoy"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0012-rd4",
+        "0012-decoy"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0012-rd5",
+        "0012-decoy"
+      ]
+    }
+  ],
+  "hard_goals": {
+    "capabilities": [
+      {
+        "capability": "core_device",
+        "min": 1,
+        "max": 1
+      },
+      {
+        "capability": "warranty_cover",
+        "min": 1,
+        "max": 1
+      },
+      {
+        "capability": "licensed_software",
+        "min": 1,
+        "max": 1
+      },
+      {
+        "capability": "display_or_sensor",
+        "min": 1,
+        "max": 1
+      },
+      {
+        "capability": "missing_accessory",
+        "min": 1,
+        "max": 1
+      }
+    ],
+    "attribute_requirements": [
+      {
+        "capability": "missing_accessory",
+        "attribute": "delivery_day",
+        "op": "le",
+        "value": 4
+      }
+    ],
+    "max_active_value_cents": 500000
+  },
+  "initial_snapshot": {
+    "commitments": []
+  },
+  "initial_snapshot_sha256": "dbc26b7f61e91d0529291823abb38756f52a36dc52e819cf0a83abddfe598124",
+  "failure_snapshot": {
+    "commitments": [
+      {
+        "entity_id": "NEW-0001",
+        "option_id": "0012-b1",
+        "name": "approved core device",
+        "kind": "core_device",
+        "status": "active",
+        "paid_cents": 100000,
+        "refund_cents": 100000,
+        "provides": {
+          "core_device": 1
+        },
+        "attributes": {
+          "delivery_day": 1
+        },
+        "created_after_boundary": false
+      },
+      {
+        "entity_id": "NEW-0002",
+        "option_id": "0012-b2",
+        "name": "service warranty",
+        "kind": "warranty_cover",
+        "status": "active",
+        "paid_cents": 40000,
+        "refund_cents": 40000,
+        "provides": {
+          "warranty_cover": 1
+        },
+        "attributes": {
+          "delivery_day": 1
+        },
+        "created_after_boundary": false
+      },
+      {
+        "entity_id": "NEW-0003",
+        "option_id": "0012-b3",
+        "name": "bound software licence",
+        "kind": "licensed_software",
+        "status": "active",
+        "paid_cents": 30000,
+        "refund_cents": 20000,
+        "provides": {
+          "licensed_software": 1
+        },
+        "attributes": {
+          "delivery_day": 1
+        },
+        "created_after_boundary": false
+      },
+      {
+        "entity_id": "NEW-0004",
+        "option_id": "0012-b4",
+        "name": "retained display or sensor",
+        "kind": "display_or_sensor",
+        "status": "active",
+        "paid_cents": 50000,
+        "refund_cents": 10000,
+        "provides": {
+          "display_or_sensor": 1
+        },
+        "attributes": {
+          "delivery_day": 1
+        },
+        "created_after_boundary": false
+      }
+    ]
+  },
+  "snapshot_sha256": "80c4069701930dc40c263d58aca5abe4d4a3b5fe67806baa3a4d779880954d6d",
+  "pre_failure_trace": [
+    {
+      "step": 1,
+      "tool": "purchase_product",
+      "arguments": {
+        "product_id": "0012-b1"
+      },
+      "result": {
+        "ok": true,
+        "message": "New commitment created.",
+        "data": {
+          "entity_id": "NEW-0001",
+          "option_id": "0012-b1",
+          "charge_cents": 100000
+        }
+      }
+    },
+    {
+      "step": 2,
+      "tool": "purchase_product",
+      "arguments": {
+        "product_id": "0012-b2"
+      },
+      "result": {
+        "ok": true,
+        "message": "New commitment created.",
+        "data": {
+          "entity_id": "NEW-0002",
+          "option_id": "0012-b2",
+          "charge_cents": 40000
+        }
+      }
+    },
+    {
+      "step": 3,
+      "tool": "purchase_product",
+      "arguments": {
+        "product_id": "0012-b3"
+      },
+      "result": {
+        "ok": true,
+        "message": "New commitment created.",
+        "data": {
+          "entity_id": "NEW-0003",
+          "option_id": "0012-b3",
+          "charge_cents": 30000
+        }
+      }
+    },
+    {
+      "step": 4,
+      "tool": "purchase_product",
+      "arguments": {
+        "product_id": "0012-b4"
+      },
+      "result": {
+        "ok": true,
+        "message": "New commitment created.",
+        "data": {
+          "entity_id": "NEW-0004",
+          "option_id": "0012-b4",
+          "charge_cents": 50000
+        }
+      }
+    }
+  ],
+  "prefix_ledger": [
+    {
+      "event_index": 1,
+      "tool": "purchase_product",
+      "entity_id": "NEW-0001",
+      "contract_id": null,
+      "charge_cents": 100000,
+      "refund_cents": 0,
+      "irreversible_loss_delta": 0,
+      "net_outlay_delta": 100000
+    },
+    {
+      "event_index": 2,
+      "tool": "purchase_product",
+      "entity_id": "NEW-0002",
+      "contract_id": null,
+      "charge_cents": 40000,
+      "refund_cents": 0,
+      "irreversible_loss_delta": 0,
+      "net_outlay_delta": 40000
+    },
+    {
+      "event_index": 3,
+      "tool": "purchase_product",
+      "entity_id": "NEW-0003",
+      "contract_id": null,
+      "charge_cents": 30000,
+      "refund_cents": 0,
+      "irreversible_loss_delta": 0,
+      "net_outlay_delta": 30000
+    },
+    {
+      "event_index": 4,
+      "tool": "purchase_product",
+      "entity_id": "NEW-0004",
+      "contract_id": null,
+      "charge_cents": 50000,
+      "refund_cents": 0,
+      "irreversible_loss_delta": 0,
+      "net_outlay_delta": 50000
+    }
+  ],
+  "latest_failure": {
+    "tool": "purchase_product",
+    "arguments": {
+      "product_id": "0012-failed"
+    },
+    "result": {
+      "ok": false,
+      "message": "The selected option is unavailable.",
+      "data": null
+    }
+  },
+  "boundary_commitments": [
+    {
+      "entity_id": "NEW-0001",
+      "option_id": "0012-b1",
+      "name": "approved core device",
+      "kind": "core_device",
+      "status": "active",
+      "paid_cents": 100000,
+      "refund_cents": 100000,
+      "provides": {
+        "core_device": 1
+      },
+      "attributes": {
+        "delivery_day": 1
+      },
+      "created_after_boundary": false,
+      "primary_capability": "core_device"
+    },
+    {
+      "entity_id": "NEW-0002",
+      "option_id": "0012-b2",
+      "name": "service warranty",
+      "kind": "warranty_cover",
+      "status": "active",
+      "paid_cents": 40000,
+      "refund_cents": 40000,
+      "provides": {
+        "warranty_cover": 1
+      },
+      "attributes": {
+        "delivery_day": 1
+      },
+      "created_after_boundary": false,
+      "primary_capability": "warranty_cover"
+    },
+    {
+      "entity_id": "NEW-0003",
+      "option_id": "0012-b3",
+      "name": "bound software licence",
+      "kind": "licensed_software",
+      "status": "active",
+      "paid_cents": 30000,
+      "refund_cents": 20000,
+      "provides": {
+        "licensed_software": 1
+      },
+      "attributes": {
+        "delivery_day": 1
+      },
+      "created_after_boundary": false,
+      "primary_capability": "licensed_software"
+    },
+    {
+      "entity_id": "NEW-0004",
+      "option_id": "0012-b4",
+      "name": "retained display or sensor",
+      "kind": "display_or_sensor",
+      "status": "active",
+      "paid_cents": 50000,
+      "refund_cents": 10000,
+      "provides": {
+        "display_or_sensor": 1
+      },
+      "attributes": {
+        "delivery_day": 1
+      },
+      "created_after_boundary": false,
+      "primary_capability": "display_or_sensor"
+    }
+  ],
+  "changed_fact": {
+    "fact_type": "licence_or_package_settlement",
+    "model_access": "linked contract terms",
+    "variant_role": "alpha",
+    "value_cents": 80000,
+    "changed_path": "contracts[PAIR-TERM].charge_cents"
+  },
+  "construction": {
+    "prefix_generated_by_public_tools": true,
+    "failure_generated_by_public_tool": true,
+    "necessary_action_order_invariant": true,
+    "state_bench_provenance": "after-sales adapter derived from pinned STATE-Bench customer-support semantics"
+  }
+}

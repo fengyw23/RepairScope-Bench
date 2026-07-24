@@ -32,7 +32,7 @@ does not incorrectly claim that the request went directly to a model vendor:
 
 ```bash
 export OPENAI_COMPATIBLE_API_KEY=...
-repairscope run-suite data/v06 \
+repairscope run-suite data/v1 \
   --provider openai-compatible \
   --model YOUR_GATEWAY_MODEL_ID \
   --base-url https://gateway.example/v1 \
@@ -52,8 +52,9 @@ assistant content and replies with user-role `tool_result` blocks keyed by
 Qwen and DeepSeek return Chat Completions `tool_calls`. The adapter appends the
 assistant message and sends one `role=tool` message per `tool_call_id`.
 
-The environment executes emitted calls serially because order matters for
-side effects. OpenAI-compatible requests also set
+The environment executes emitted calls serially to preserve an auditable
+event log. v1 gold does not rely on action-order price differences; legacy
+tasks may still have ordinary state preconditions. OpenAI-compatible requests also set
 `parallel_tool_calls=false`. OpenAI tools use strict JSON schemas.
 
 ## Reproducibility

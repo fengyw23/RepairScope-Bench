@@ -51,12 +51,45 @@ V06_REQUIRED_FIELDS = {
     "max_turns",
 }
 
+V1_REQUIRED_FIELDS = {
+    "schema_version",
+    "task_id",
+    "scenario_id",
+    "counterfactual_pair_id",
+    "variant_role",
+    "domain",
+    "environment_type",
+    "reasoning_structure",
+    "economic_carriers",
+    "difficulty_level",
+    "split",
+    "instruction",
+    "initial_snapshot",
+    "initial_snapshot_sha256",
+    "failure_snapshot",
+    "snapshot_sha256",
+    "pre_failure_trace",
+    "prefix_ledger",
+    "latest_failure",
+    "boundary_commitments",
+    "inventory",
+    "contracts",
+    "compatibility_rules",
+    "hard_goals",
+    "changed_fact",
+    "construction",
+    "max_turns",
+}
+
 
 class TaskValidationError(ValueError):
     """Raised when a benchmark task violates the public schema."""
 
 
 def validate_task(task: dict[str, Any]) -> None:
+    if task.get("schema_version") == "1.0":
+        _validate_v1_task(task)
+        return
     if task.get("schema_version") == "0.6":
         _validate_v06_task(task)
         return
@@ -388,6 +421,116 @@ def _validate_v06_task(task: dict[str, Any]) -> None:
         ):
             raise TaskValidationError(
                 f"{task['task_id']}: invalid settlement charge"
+            )
+
+
+def _validate_v1_task(task: dict[str, Any]) -> None:
+    from .v1_environment import DOMAIN_TOOL_NAMES, snapshot_hash
+
+    missing = V1_REQUIRED_FIELDS - task.keys()
+    if missing:
+        raise TaskValidationError(
+            f"{task.get('task_id', '<unknown>')}: missing v1 fields "
+            f"{sorted(missing)}"
+        )
+    if task["domain"] not in DOMAIN_TOOL_NAMES:
+        raise TaskValidationError(
+            f"{task['task_id']}: unsupported v1 domain {task['domain']!r}"
+        )
+    if task["max_turns"] != 15:
+        raise TaskValidationError(
+            f"{task['task_id']}: v1 requires exactly 15 turns"
+        )
+    if task["variant_role"] not in {"alpha", "beta"}:
+        raise TaskValidationError(
+            f"{task['task_id']}: invalid counterfactual role"
+        )
+    if task["difficulty_level"] not in {1, 2, 3, 4}:
+        raise TaskValidationError(
+            f"{task['task_id']}: invalid difficulty level"
+        )
+    if snapshot_hash(task["failure_snapshot"]) != task["snapshot_sha256"]:
+        raise TaskValidationError(
+            f"{task['task_id']}: failure snapshot hash mismatch"
+        )
+    if snapshot_hash(task["initial_snapshot"]) != task["initial_snapshot_sha256"]:
+        raise TaskValidationError(
+            f"{task['task_id']}: initial snapshot hash mismatch"
+        )
+    if len(task["boundary_commitments"]) < 4:
+        raise TaskValidationError(
+            f"{task['task_id']}: fewer than four persistent commitments"
+        )
+    if len(task["pre_failure_trace"]) != len(task["boundary_commitments"]):
+        raise TaskValidationError(
+            f"{task['task_id']}: prefix writes do not match commitments"
+        )
+    if any(
+        not step.get("result", {}).get("ok", False)
+        for step in task["pre_failure_trace"]
+    ):
+        raise TaskValidationError(
+            f"{task['task_id']}: prefix contains a failed write"
+        )
+    if task["latest_failure"].get("result", {}).get("ok", True):
+        raise TaskValidationError(
+            f"{task['task_id']}: latest operation is not a real failure"
+        )
+    if not task["construction"].get("necessary_action_order_invariant", False):
+        raise TaskValidationError(
+            f"{task['task_id']}: sequence-dependent gold is forbidden"
+        )
+    if "oracle_actions" in task or "candidate_scopes" in task:
+        raise TaskValidationError(
+            f"{task['task_id']}: author-specified Oracle macros are forbidden"
+        )
+    option_ids = [item["option_id"] for item in task["inventory"]]
+    if len(option_ids) != len(set(option_ids)):
+        raise TaskValidationError(f"{task['task_id']}: duplicate option ID")
+    boundary_ids = [item["entity_id"] for item in task["boundary_commitments"]]
+    if len(boundary_ids) != len(set(boundary_ids)):
+        raise TaskValidationError(f"{task['task_id']}: duplicate boundary ID")
+    for item in task["inventory"]:
+        integer_fields = [
+            item["upfront_cents"],
+            item.get("monthly_cents", 0),
+            item.get("horizon_months", 0),
+            item.get("refund_after_purchase_cents", 0),
+        ]
+        if any(not isinstance(value, int) or value < 0 for value in integer_fields):
+            raise TaskValidationError(
+                f"{task['task_id']}: prices must be non-negative integer cents"
+            )
+        if not item.get("provides"):
+            raise TaskValidationError(
+                f"{task['task_id']}: option provides no capability"
+            )
+    known_boundary = set(boundary_ids)
+    contract_ids: set[str] = set()
+    for contract in task["contracts"]:
+        if contract["contract_id"] in contract_ids:
+            raise TaskValidationError(
+                f"{task['task_id']}: duplicate contract ID"
+            )
+        contract_ids.add(contract["contract_id"])
+        if not set(contract["trigger"].get("entity_ids", [])).issubset(
+            known_boundary
+        ):
+            raise TaskValidationError(
+                f"{task['task_id']}: contract references unknown commitment"
+            )
+        if contract["trigger"]["type"] not in {
+            "any_changed",
+            "all_changed",
+            "changed_count_at_least",
+            "retained_paid_below",
+        }:
+            raise TaskValidationError(
+                f"{task['task_id']}: unsupported contract trigger"
+            )
+        if not isinstance(contract["charge_cents"], int) or contract["charge_cents"] < 0:
+            raise TaskValidationError(
+                f"{task['task_id']}: invalid contract charge"
             )
 
 

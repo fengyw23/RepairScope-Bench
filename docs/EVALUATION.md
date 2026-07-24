@@ -1,131 +1,113 @@
 # Evaluation Protocol
 
-## Controlled starting point
+## Model input
 
-Every run begins from a deep copy of the task's hashed failure snapshot. The
-agent receives a normal service-agent system prompt, the customer request, a
-compact trace of prior successful writes, the failed call and its result, and
-domain tools. It does not receive the hard-constraint DSL, objective vector,
-global economic summary, candidate scopes, or Oracle trajectory.
+Every run starts from a deep copy of the hashed failure snapshot. The model
+receives:
 
-The official limit is 15 model turns. There is no separate mutation budget
-and no benchmark-specific `finish()` tool. When the model stops calling tools
-or reaches the turn limit, the evaluator reads the persistent terminal state.
+- a normal domain-agent system prompt;
+- the natural customer request;
+- the successful prefix tool trace;
+- the latest failed call and result;
+- eight domain-specific tools.
 
-## Hard-goal evaluation
+It does not receive hard goals, reasoning labels, the changed-fact manifest,
+economic totals, candidate scopes, or gold.
 
-The deterministic constraint DSL supports:
+The limit is 15 model turns. There is no mutation budget or `finish()` tool.
+When the model stops or exhausts the budget, the evaluator reads state.
 
-- exact active-record counts by semantic slot;
-- record status, quantity, time, location, deadline, and budget;
-- permitted option attributes;
-- flight/hotel/ground-transport consistency;
-- product/accessory/software/service compatibility;
-- duplicate and conflict prevention;
-- database reference and ledger integrity.
+## Hard goals
 
-Constraints describe what the customer must receive. They must not require
-unmentioned records to remain unchanged or otherwise encode an author-chosen
-repair trajectory.
+The deterministic evaluator checks:
 
-`Goal Pass` is true only if every hard constraint and business-policy check
-passes.
+- minimum and maximum functional capability quantities;
+- delivery deadlines and explicit service horizons;
+- option compatibility and required component sets;
+- no conflicting or duplicate active capability coverage;
+- active-value limits.
+
+Only goal-satisfying outcomes enter economic quality evaluation.
 
 ## Economic vector
 
-For each goal-satisfying terminal state, the evaluator derives two values
-solely from executed transaction records and visible contract terms:
+All amounts use integer cents.
 
 ```text
-L = irreversible_loss
-O = net_recovery_outlay
+irreversible_loss =
+    unrecovered value of changed boundary commitments
+  + triggered cancellation, threshold, licence, warranty, or settlement charges
+  + unrecovered value from unnecessary post-boundary purchases
+
+net_recovery_outlay =
+    post-boundary purchases and recurring charges over the stated horizon
+  + post-boundary fees and settlements
+  - refunds
 ```
 
-`L` includes cancellation/modification fees, non-refundable value, bundle or
-licence clawbacks, and recovery purchases that were later wasted. `O` is all
-post-boundary payments, fees, and settlements minus refunds and compensation.
-Amounts paid before the standardized failure boundary are sunk and are not
-silently charged again.
+Outcome A dominates B when A is no worse on both dimensions and strictly
+better on at least one. Every non-dominated outcome is accepted.
 
-There is no scalar combination of `L` and `O`.
-
-## Pareto acceptance
-
-Feasible outcome A dominates feasible outcome B exactly when:
-
-```text
-A.L <= B.L and A.O <= B.O
-and at least one inequality is strict
-```
-
-`Non-Dominated Repair Pass` requires Goal Pass and membership in the Pareto
-frontier. Every non-dominated terminal state is accepted, regardless of which
-trajectory produced it.
-
-If a model reaches a feasible vector that strictly dominates all stored
-frontier points, the evaluator marks `oracle_violation=true`,
-`exclude_from_aggregate=true`, and preserves the trace for adjudication.
-
-## Oracle
-
-The primary Oracle performs bounded graph search over normalized persistent
-states. Its actions are domain-semantic operations—keep, change, cancel and
-rebook a travel record; keep, return, exchange, cancel or replace a purchased
-item; and update linked contracts. Each semantic action expands to public
-tool calls. Economically dominated prefixes at an identical normalized state
-are pruned.
-
-An independent candidate-scope enumerator replays separately declared tool
-sequences. Both solvers must agree on feasible scopes and the Pareto frontier.
-Gold stores all accepted terminal states and replay traces.
+An exact optimizer for either dimension is an Oracle upper bound: after
+proper tie-breaking, a global minimum of one Pareto dimension is necessarily
+non-dominated. Such controls do not represent simple agent heuristics.
 
 ## Metrics
 
-Official aggregate metrics:
+Primary:
 
-- `Goal Pass@1`: mean success across all runs;
-- `Goal Pass^5`: fraction of tasks solved in all five runs;
-- `Non-Dominated Repair Pass@1`;
-- `Non-Dominated Repair Pass^5`;
-- `Dominated Repair Rate`: dominated outcomes among goal completions;
-- `Irreversible-Loss Regret`;
-- `Net-Outlay Regret`.
+- Goal Pass@1 and Goal Pass^5;
+- Non-Dominated Repair Pass@1 and Pass^5;
+- Dominated Repair Rate among goal completions;
+- irreversible-loss and net-outlay regret;
+- Counterfactual Pair Success.
 
-Diagnostic fields include changed prior commitments, over-repair,
-under-repair, nearest-frontier scope distance, tool errors, model stopping,
-turn exhaustion, provider error, and Oracle violation.
+Diagnostics:
 
-Provider failures remain in the denominator as failures. Oracle-violation
-cases are excluded as specified above.
+- over-repair and under-repair;
+- correct scope but wasteful execution;
+- tool errors and turn exhaustion;
+- breakdowns by domain, reasoning structure, and difficulty.
+
+Counterfactual Pair Success requires both alpha and beta variants to obtain
+Non-Dominated Repair Pass in the same repeat. Because pair frontiers differ,
+this rules out a fixed scope policy.
+
+## Oracle
+
+The terminal solver enumerates all subsets of retained boundary commitments
+and compatible inventory options, then applies hard constraints and
+order-invariant contract clauses.
+
+The independent solver constructs the same choices separately and replays
+actual cancellation and purchase calls through the public environment.
+Tasks are rejected if their feasible frontiers differ. A model outcome that
+strictly dominates stored gold is marked `oracle_violation` and excluded.
 
 ## Baselines
 
-The release includes:
+Official baselines:
 
-| Baseline | Policy |
-|---|---|
-| no repair | preserve the failed state |
-| local repair | change only the failed component |
-| dependency repair | repair the declared dependency closure |
-| full rollback | choose the broadest replacement scope |
-| sticker price | optimize visible final prices |
-| refund only | optimize immediate refund |
-| Pareto Oracle | execute a non-dominated gold trace |
+- no repair;
+- local repair;
+- dependency repair;
+- full rollback;
+- minimum changed commitments;
+- final sticker price;
+- gross refund only;
+- exact irreversible-loss Oracle;
+- exact net-outlay Oracle;
+- Pareto Oracle.
 
-Run them with:
+Release gates require local, full rollback, minimum changes, sticker price,
+and refund-only strategies to remain below 65% Non-Dominated Pass. Exact
+single-objective Oracles are reported as analytical upper bounds and are not
+subject to that gate.
 
-```bash
-repairscope run-baselines data/v06
-```
+## Official experiments
 
-The task release is valid only if the Pareto Oracle passes every case and the
-heuristics exhibit both goal completion and scope-quality separation.
-
-## Official model experiment
-
-Run each task independently five times at the provider's documented sampling
-settings and report exact model identifiers, date, token limits, reasoning
-configuration, and provider endpoint class. Preserve `runs.jsonl` and
-`summary.json`. Report Goal Pass and Non-Dominated Repair Pass together;
-reporting only the second can hide execution failures, while reporting only
-the first hides dominated repair.
+Run five independent episodes per task and report exact model identifiers,
+provider, date, token limits, reasoning settings, and endpoint class.
+Provider errors remain failures in denominators. Report clustered confidence
+intervals over the 80 base scenarios and use paired analysis for alpha/beta
+variants.

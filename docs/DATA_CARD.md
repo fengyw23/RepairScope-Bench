@@ -1,133 +1,100 @@
-# RepairScope-Bench v0.6 Data Card
+# RepairScope-Bench v1.0 Data Card
 
 ## Summary
 
-RepairScope-Bench v0.6 contains 24 fixed post-failure states across six task
-families and two executable STATE-Bench domains. It measures whether an agent
-can inspect persisted commitments, finish the user's hard goal, and avoid an
-economically dominated recovery.
+RepairScope-Bench v1.0 contains 160 fixed post-failure tasks derived from 80
+single-fact counterfactual pairs. It evaluates whether an agent can satisfy
+hard goals while avoiding an economically dominated recovery scope.
 
-| Split | Tasks | Families represented |
-|---|---:|---:|
-| dev | 8 | 6 |
-| test | 8 | 6 |
-| heldout | 8 | 6 |
-| total | 24 | 6 |
+| Dimension | Distribution |
+|---|---|
+| Domains | 40 tasks each in travel, after-sales, SaaS, event logistics |
+| Reasoning structures | 16 tasks for each of ten structures |
+| Splits | 48 dev, 48 test, 64 heldout |
+| Difficulty | 32 L1, 56 L2, 48 L3, 24 L4 |
+| Pareto structure | 60% multi-point frontiers |
+| Positive-loss gold | 60% of tasks |
 
-There are 12 travel tasks and 12 customer-support tasks. Each family has two
-counterfactual pairs:
+The statistical unit for counterfactual analysis is the 80 base scenarios,
+not 160 independent observations.
 
-- `refund-low` versus `refund-full`;
-- `penalty-none` versus `penalty-high`.
+## Reasoning matrix
 
-Within a pair, the executable starting state, inventory, instruction, prefix,
-and failure are identical. Only the named economic term differs.
+The primary labels are reasoning structures rather than fee names:
 
-## Unit of evaluation
+- sunk versus marginal cost;
+- multi-hop impact propagation;
+- shared commitments;
+- non-linear thresholds;
+- conditional contracts;
+- partial quantities;
+- bridge repair;
+- joint bundle selection;
+- explicit-horizon recurring cost;
+- Pareto trade-offs.
 
-One JSON file is one independently constructed failure state, not a second
-prompt over a shared hidden state. Important public fields are:
+Each appears in all four domains. Economic carriers are deliberately crossed
+with structures to reduce surface-template shortcuts.
+
+## Task schema
+
+Important public fields:
 
 | Field | Meaning |
 |---|---|
-| `schema_version` | `0.6` |
-| `task_id`, `family_id`, `variant_id` | task and counterfactual identity |
-| `split` | `dev`, `test`, or `heldout` |
-| `instruction` | model-visible natural-language request |
-| `initial_snapshot` | clean executable state before prefix writes |
-| `pre_failure_trace` | actual successful prefix calls and results |
-| `prefix_ledger` | transaction record produced by those calls |
-| `latest_failure` | actual failed call and returned error |
-| `failure_snapshot` | authoritative model starting state |
-| `snapshot_sha256` | canonical hash of that state |
-| `boundary_commitments` | audit metadata for prior commitments |
-| `contracts` | item-level refund, bundle, licence, or service terms |
-| `constraints` | evaluator-only deterministic hard-goal DSL |
-| `oracle_actions` | evaluator-only semantic actions |
-| `candidate_scopes` | independent gold-enumerator inputs |
-| `max_turns` | 15 |
+| `schema_version` | `1.0` |
+| `task_id` | opaque task identifier |
+| `scenario_id` | shared base-scenario identifier |
+| `counterfactual_pair_id` | paired-analysis identifier |
+| `variant_role` | opaque alpha/beta role; never shown to the model |
+| `domain` | one of four tool domains |
+| `reasoning_structure` | evaluator metadata; not shown to the model |
+| `instruction` | natural customer request |
+| `pre_failure_trace` | successful public write calls |
+| `latest_failure` | actual unavailable-option call |
+| `failure_snapshot` | authoritative persistent starting state |
+| `snapshot_sha256` | canonical state hash |
+| `inventory` | tool-queryable alternatives |
+| `contracts` | tool-queryable economic clauses |
+| `hard_goals` | deterministic evaluator constraints |
+| `changed_fact` | pair-audit metadata |
 
-The public benchmark files include evaluator fields for reproducibility. The
-runner constructs model input explicitly and does not expose constraints,
-semantic actions, economic totals, or gold.
+There are no authored `oracle_actions` or `candidate_scopes`.
 
-## Construction pipeline
+## Construction
 
-For every task, `scripts/build_v06.py`:
+The builder creates commitments with public write tools, records the prefix
+ledger, executes the failed call, and hashes the state. Each pair changes one
+refund or linked-term amount while preserving the task story and operational
+structure.
 
-1. creates a clean STATE-style database;
-2. invokes the same write tools available to models;
-3. records successful results and ledger entries;
-4. injects an inventory, compatibility, or policy change;
-5. invokes the intended failing operation and asserts failure;
-6. serializes and hashes the failure state;
-7. reloads it and checks exact state and ledger equality;
-8. solves it with semantic state search and independent scope enumeration;
-9. releases it only if both methods agree.
-
-Travel uses the upstream `TravelEnvironment`. Customer-support tasks use the
-upstream `CustomerSupportEnvironment` and real `Order`/`OrderItem` records.
-Composition-based extensions supply restaurant or service reservations,
-alternative purchases, compatibility relations, and cross-order contracts.
-The upstream runtime is imported rather than copied.
-
-## Task requirements
-
-The generator and validator enforce:
-
-- at least three hard-goal-feasible semantic recovery scopes;
-- both local and non-local recovery;
-- at least one feasible but economically dominated distractor;
-- each hard constraint filters at least one real available option;
-- two interacting loss mechanisms in difficult variants;
-- a scope flip in each single-fact counterfactual pair;
-- a reference solution that fits within the 15-turn protocol.
-
-The six families are conference dinner, destination-linked ground plan,
-shortened trip, radiology workstation, clinic cold chain, and media
-production kit.
+Necessary changes are order-invariant: contract triggers depend only on the
+monotonically growing set of changed boundary commitments. Extra model
+mutations remain charged and are diagnosed separately.
 
 ## Gold
 
-`data/gold/v06.json` contains all non-dominated terminal states, their
-two-dimensional economic vectors, changed commitments, and replayable raw
-tool calls. It does not prescribe one trajectory.
+`data/gold/v1.json` contains:
 
-The bounded search expands domain-semantic actions. A separate enumerator
-replays declared candidate scopes. Tasks are rejected if their feasible
-scope sets or Pareto frontiers differ. If a model nevertheless finds a
-strictly better feasible point, evaluation emits `oracle_violation` and
-excludes the case instead of punishing the model.
+- all hard-goal-feasible terminal assignments;
+- all Pareto non-dominated outcomes;
+- an independently replayed frontier;
+- economic vectors, scopes, state hashes, and public-tool witness traces.
 
-## Data quality and reproducibility
+The primary solver enumerates terminal assignments directly from raw
+capabilities and constraints. The independent solver enumerates legal
+mutations and executes them through the public runtime. Release validation
+requires exact frontier agreement.
 
-`repairscope validate data/v06` checks:
+## Provenance and limitations
 
-- schema, tool and hash integrity;
-- prefix and failed-call replay from the clean snapshot;
-- persistence and ledger equality after reload;
-- constraint effectiveness;
-- pair isomorphism outside the designated fact;
-- expected Pareto-scope flips;
-- independent Oracle agreement;
-- baseline separation.
+Travel and after-sales adapters follow STATE-Bench-style workflows and tool
+semantics. The older v0.6 release remains the direct STATE-Bench runtime
+integration. SaaS and event logistics are native synthetic stateful domains.
 
-The checked-in release passes 56 unit and integration tests. Rebuilding is
-deterministic under the pinned STATE-Bench revision.
-
-## Intended and out-of-scope uses
-
-Intended uses include evaluation of tool-using agents, repair-policy
-ablations, query/action error analysis, and comparison of feasibility with
-recovery quality.
-
-The benchmark does not measure pre-failure planning, open-world user
-preference elicitation, subjective utility, irreversible real-world harm, or
-production safety. Prices and policies are synthetic. Results should not be
-interpreted as a claim that the agent can safely operate real accounts.
-
-## Legacy data
-
-The v0.4 pilot and v0.5 challenge set are archived under
-`data/legacy/v0.5`. They remain covered by regression tests but are not the
-default benchmark.
+All prices, contracts, inventory, and people are synthetic. The release does
+not demonstrate safety on production accounts, subjective preference
+elicitation, failure-prevention planning, or pre-failure autonomy. Although
+there are 80 distinct executable states, they are generated from ten
+reasoning blueprints; claims about unrestricted real-world diversity require
+additional independently authored scenarios and human audit.

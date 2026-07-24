@@ -1,0 +1,648 @@
+{
+  "schema_version": "1.0",
+  "task_id": "rsb-0017-b",
+  "scenario_id": "scenario-0017",
+  "counterfactual_pair_id": "pair-0017",
+  "variant_role": "beta",
+  "domain": "travel",
+  "environment_type": "repairscope.commitment_graph.v1",
+  "reasoning_structure": "shared_commitment",
+  "reasoning_structure_label": "shared-commitment preservation",
+  "secondary_structures": [],
+  "economic_carriers": [
+    "hotel refund",
+    "replacement purchase"
+  ],
+  "difficulty_level": 1,
+  "frontier_profile": "singleton",
+  "split": "dev",
+  "now": "2026-09-01T09:00:00+08:00",
+  "max_turns": 15,
+  "instruction": "Complete the Shanghai medical congress for the conference traveller. Four paid commitments are already active, but the required dinner or venue service just failed. Preserve every required function, use options deliverable by day 4, and make the best supported recovery decision without asking me to choose.",
+  "inventory": [
+    {
+      "option_id": "0017-b1",
+      "name": "existing hotel",
+      "kind": "lodging",
+      "available": false,
+      "upfront_cents": 100000,
+      "monthly_cents": 0,
+      "horizon_months": 0,
+      "refund_after_purchase_cents": 100000,
+      "provides": {
+        "lodging": 1,
+        "shared_secondary_goal": 1
+      },
+      "attributes": {
+        "delivery_day": 1
+      }
+    },
+    {
+      "option_id": "0017-b2",
+      "name": "airport transfer",
+      "kind": "ground_transport",
+      "available": false,
+      "upfront_cents": 40000,
+      "monthly_cents": 0,
+      "horizon_months": 0,
+      "refund_after_purchase_cents": 10000,
+      "provides": {
+        "ground_transport": 1
+      },
+      "attributes": {
+        "delivery_day": 1
+      }
+    },
+    {
+      "option_id": "0017-b3",
+      "name": "conference pass",
+      "kind": "event_access",
+      "available": false,
+      "upfront_cents": 30000,
+      "monthly_cents": 0,
+      "horizon_months": 0,
+      "refund_after_purchase_cents": 30000,
+      "provides": {
+        "event_access": 1
+      },
+      "attributes": {
+        "delivery_day": 1
+      }
+    },
+    {
+      "option_id": "0017-b4",
+      "name": "arrival flight",
+      "kind": "arrival_transport",
+      "available": false,
+      "upfront_cents": 50000,
+      "monthly_cents": 0,
+      "horizon_months": 0,
+      "refund_after_purchase_cents": 10000,
+      "provides": {
+        "arrival_transport": 1
+      },
+      "attributes": {
+        "delivery_day": 1
+      }
+    },
+    {
+      "option_id": "0017-rl1",
+      "name": "Shenzhen client summit L recovery component 1",
+      "kind": "meal_or_venue_service",
+      "available": true,
+      "upfront_cents": 50000,
+      "monthly_cents": 0,
+      "horizon_months": 0,
+      "refund_after_purchase_cents": 0,
+      "provides": {
+        "meal_or_venue_service": 1
+      },
+      "attributes": {
+        "delivery_day": 3,
+        "system_code": "system-l"
+      }
+    },
+    {
+      "option_id": "0017-ra1",
+      "name": "Shenzhen client summit A recovery component 1",
+      "kind": "recovery_package",
+      "available": true,
+      "upfront_cents": 90000,
+      "monthly_cents": 0,
+      "horizon_months": 0,
+      "refund_after_purchase_cents": 0,
+      "provides": {
+        "lodging": 1,
+        "event_access": 1,
+        "meal_or_venue_service": 1,
+        "shared_secondary_goal": 1
+      },
+      "attributes": {
+        "delivery_day": 3,
+        "system_code": "system-a"
+      }
+    },
+    {
+      "option_id": "0017-rb1",
+      "name": "Shenzhen client summit B recovery component 1",
+      "kind": "recovery_package",
+      "available": true,
+      "upfront_cents": 100000,
+      "monthly_cents": 0,
+      "horizon_months": 0,
+      "refund_after_purchase_cents": 0,
+      "provides": {
+        "lodging": 1,
+        "ground_transport": 1,
+        "meal_or_venue_service": 1,
+        "shared_secondary_goal": 1
+      },
+      "attributes": {
+        "delivery_day": 3,
+        "system_code": "system-b"
+      }
+    },
+    {
+      "option_id": "0017-rc1",
+      "name": "Shenzhen client summit C recovery component 1",
+      "kind": "recovery_package",
+      "available": true,
+      "upfront_cents": 120000,
+      "monthly_cents": 0,
+      "horizon_months": 0,
+      "refund_after_purchase_cents": 0,
+      "provides": {
+        "lodging": 1,
+        "arrival_transport": 1,
+        "meal_or_venue_service": 1,
+        "shared_secondary_goal": 1
+      },
+      "attributes": {
+        "delivery_day": 3,
+        "system_code": "system-c"
+      }
+    },
+    {
+      "option_id": "0017-rd1",
+      "name": "Shenzhen client summit D recovery component 1",
+      "kind": "recovery_package",
+      "available": true,
+      "upfront_cents": 300000,
+      "monthly_cents": 0,
+      "horizon_months": 0,
+      "refund_after_purchase_cents": 0,
+      "provides": {
+        "lodging": 1,
+        "ground_transport": 1,
+        "event_access": 1,
+        "arrival_transport": 1,
+        "meal_or_venue_service": 1,
+        "shared_secondary_goal": 1
+      },
+      "attributes": {
+        "delivery_day": 3,
+        "system_code": "system-d"
+      }
+    },
+    {
+      "option_id": "0017-failed",
+      "name": "unavailable required dinner or venue service",
+      "kind": "meal_or_venue_service",
+      "available": false,
+      "upfront_cents": 18000,
+      "monthly_cents": 0,
+      "horizon_months": 0,
+      "refund_after_purchase_cents": 0,
+      "provides": {
+        "meal_or_venue_service": 1
+      },
+      "attributes": {
+        "delivery_day": 2
+      }
+    },
+    {
+      "option_id": "0017-decoy",
+      "name": "late required dinner or venue service",
+      "kind": "meal_or_venue_service",
+      "available": true,
+      "upfront_cents": 5000,
+      "monthly_cents": 0,
+      "horizon_months": 0,
+      "refund_after_purchase_cents": 0,
+      "provides": {
+        "meal_or_venue_service": 1
+      },
+      "attributes": {
+        "delivery_day": 9
+      }
+    }
+  ],
+  "contracts": [],
+  "compatibility_rules": [
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0017-rl1",
+        "0017-ra1"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0017-rl1",
+        "0017-rb1"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0017-rl1",
+        "0017-rc1"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0017-rl1",
+        "0017-rd1"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0017-rl1",
+        "0017-decoy"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0017-ra1",
+        "0017-rb1"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0017-ra1",
+        "0017-rc1"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0017-ra1",
+        "0017-rd1"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0017-ra1",
+        "0017-decoy"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0017-rb1",
+        "0017-rc1"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0017-rb1",
+        "0017-rd1"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0017-rb1",
+        "0017-decoy"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0017-rc1",
+        "0017-rd1"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0017-rc1",
+        "0017-decoy"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0017-rd1",
+        "0017-decoy"
+      ]
+    }
+  ],
+  "hard_goals": {
+    "capabilities": [
+      {
+        "capability": "lodging",
+        "min": 1,
+        "max": 1
+      },
+      {
+        "capability": "ground_transport",
+        "min": 1,
+        "max": 1
+      },
+      {
+        "capability": "event_access",
+        "min": 1,
+        "max": 1
+      },
+      {
+        "capability": "arrival_transport",
+        "min": 1,
+        "max": 1
+      },
+      {
+        "capability": "meal_or_venue_service",
+        "min": 1,
+        "max": 1
+      },
+      {
+        "capability": "shared_secondary_goal",
+        "min": 1,
+        "max": 1
+      }
+    ],
+    "attribute_requirements": [
+      {
+        "capability": "meal_or_venue_service",
+        "attribute": "delivery_day",
+        "op": "le",
+        "value": 4
+      }
+    ],
+    "max_active_value_cents": 500000
+  },
+  "initial_snapshot": {
+    "commitments": []
+  },
+  "initial_snapshot_sha256": "dbc26b7f61e91d0529291823abb38756f52a36dc52e819cf0a83abddfe598124",
+  "failure_snapshot": {
+    "commitments": [
+      {
+        "entity_id": "NEW-0001",
+        "option_id": "0017-b1",
+        "name": "existing hotel",
+        "kind": "lodging",
+        "status": "active",
+        "paid_cents": 100000,
+        "refund_cents": 100000,
+        "provides": {
+          "lodging": 1,
+          "shared_secondary_goal": 1
+        },
+        "attributes": {
+          "delivery_day": 1
+        },
+        "created_after_boundary": false
+      },
+      {
+        "entity_id": "NEW-0002",
+        "option_id": "0017-b2",
+        "name": "airport transfer",
+        "kind": "ground_transport",
+        "status": "active",
+        "paid_cents": 40000,
+        "refund_cents": 10000,
+        "provides": {
+          "ground_transport": 1
+        },
+        "attributes": {
+          "delivery_day": 1
+        },
+        "created_after_boundary": false
+      },
+      {
+        "entity_id": "NEW-0003",
+        "option_id": "0017-b3",
+        "name": "conference pass",
+        "kind": "event_access",
+        "status": "active",
+        "paid_cents": 30000,
+        "refund_cents": 30000,
+        "provides": {
+          "event_access": 1
+        },
+        "attributes": {
+          "delivery_day": 1
+        },
+        "created_after_boundary": false
+      },
+      {
+        "entity_id": "NEW-0004",
+        "option_id": "0017-b4",
+        "name": "arrival flight",
+        "kind": "arrival_transport",
+        "status": "active",
+        "paid_cents": 50000,
+        "refund_cents": 10000,
+        "provides": {
+          "arrival_transport": 1
+        },
+        "attributes": {
+          "delivery_day": 1
+        },
+        "created_after_boundary": false
+      }
+    ]
+  },
+  "snapshot_sha256": "9cd876a6c9a828a5ff085a6f5eb832982f4b2ffa031834ba86a698e62fd528ee",
+  "pre_failure_trace": [
+    {
+      "step": 1,
+      "tool": "book_trip_option",
+      "arguments": {
+        "option_id": "0017-b1"
+      },
+      "result": {
+        "ok": true,
+        "message": "New commitment created.",
+        "data": {
+          "entity_id": "NEW-0001",
+          "option_id": "0017-b1",
+          "charge_cents": 100000
+        }
+      }
+    },
+    {
+      "step": 2,
+      "tool": "book_trip_option",
+      "arguments": {
+        "option_id": "0017-b2"
+      },
+      "result": {
+        "ok": true,
+        "message": "New commitment created.",
+        "data": {
+          "entity_id": "NEW-0002",
+          "option_id": "0017-b2",
+          "charge_cents": 40000
+        }
+      }
+    },
+    {
+      "step": 3,
+      "tool": "book_trip_option",
+      "arguments": {
+        "option_id": "0017-b3"
+      },
+      "result": {
+        "ok": true,
+        "message": "New commitment created.",
+        "data": {
+          "entity_id": "NEW-0003",
+          "option_id": "0017-b3",
+          "charge_cents": 30000
+        }
+      }
+    },
+    {
+      "step": 4,
+      "tool": "book_trip_option",
+      "arguments": {
+        "option_id": "0017-b4"
+      },
+      "result": {
+        "ok": true,
+        "message": "New commitment created.",
+        "data": {
+          "entity_id": "NEW-0004",
+          "option_id": "0017-b4",
+          "charge_cents": 50000
+        }
+      }
+    }
+  ],
+  "prefix_ledger": [
+    {
+      "event_index": 1,
+      "tool": "book_trip_option",
+      "entity_id": "NEW-0001",
+      "contract_id": null,
+      "charge_cents": 100000,
+      "refund_cents": 0,
+      "irreversible_loss_delta": 0,
+      "net_outlay_delta": 100000
+    },
+    {
+      "event_index": 2,
+      "tool": "book_trip_option",
+      "entity_id": "NEW-0002",
+      "contract_id": null,
+      "charge_cents": 40000,
+      "refund_cents": 0,
+      "irreversible_loss_delta": 0,
+      "net_outlay_delta": 40000
+    },
+    {
+      "event_index": 3,
+      "tool": "book_trip_option",
+      "entity_id": "NEW-0003",
+      "contract_id": null,
+      "charge_cents": 30000,
+      "refund_cents": 0,
+      "irreversible_loss_delta": 0,
+      "net_outlay_delta": 30000
+    },
+    {
+      "event_index": 4,
+      "tool": "book_trip_option",
+      "entity_id": "NEW-0004",
+      "contract_id": null,
+      "charge_cents": 50000,
+      "refund_cents": 0,
+      "irreversible_loss_delta": 0,
+      "net_outlay_delta": 50000
+    }
+  ],
+  "latest_failure": {
+    "tool": "book_trip_option",
+    "arguments": {
+      "option_id": "0017-failed"
+    },
+    "result": {
+      "ok": false,
+      "message": "The selected option is unavailable.",
+      "data": null
+    }
+  },
+  "boundary_commitments": [
+    {
+      "entity_id": "NEW-0001",
+      "option_id": "0017-b1",
+      "name": "existing hotel",
+      "kind": "lodging",
+      "status": "active",
+      "paid_cents": 100000,
+      "refund_cents": 100000,
+      "provides": {
+        "lodging": 1,
+        "shared_secondary_goal": 1
+      },
+      "attributes": {
+        "delivery_day": 1
+      },
+      "created_after_boundary": false,
+      "primary_capability": "lodging"
+    },
+    {
+      "entity_id": "NEW-0002",
+      "option_id": "0017-b2",
+      "name": "airport transfer",
+      "kind": "ground_transport",
+      "status": "active",
+      "paid_cents": 40000,
+      "refund_cents": 10000,
+      "provides": {
+        "ground_transport": 1
+      },
+      "attributes": {
+        "delivery_day": 1
+      },
+      "created_after_boundary": false,
+      "primary_capability": "ground_transport"
+    },
+    {
+      "entity_id": "NEW-0003",
+      "option_id": "0017-b3",
+      "name": "conference pass",
+      "kind": "event_access",
+      "status": "active",
+      "paid_cents": 30000,
+      "refund_cents": 30000,
+      "provides": {
+        "event_access": 1
+      },
+      "attributes": {
+        "delivery_day": 1
+      },
+      "created_after_boundary": false,
+      "primary_capability": "event_access"
+    },
+    {
+      "entity_id": "NEW-0004",
+      "option_id": "0017-b4",
+      "name": "arrival flight",
+      "kind": "arrival_transport",
+      "status": "active",
+      "paid_cents": 50000,
+      "refund_cents": 10000,
+      "provides": {
+        "arrival_transport": 1
+      },
+      "attributes": {
+        "delivery_day": 1
+      },
+      "created_after_boundary": false,
+      "primary_capability": "arrival_transport"
+    }
+  ],
+  "changed_fact": {
+    "fact_type": "refund_value",
+    "model_access": "cancellation preview",
+    "variant_role": "beta",
+    "value_cents": 100000,
+    "changed_path": "boundary_option[0].refund_after_purchase_cents"
+  },
+  "construction": {
+    "prefix_generated_by_public_tools": true,
+    "failure_generated_by_public_tool": true,
+    "necessary_action_order_invariant": true,
+    "state_bench_provenance": "travel-domain adapter derived from pinned STATE-Bench travel semantics"
+  }
+}

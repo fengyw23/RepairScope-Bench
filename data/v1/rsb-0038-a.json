@@ -1,0 +1,663 @@
+{
+  "schema_version": "1.0",
+  "task_id": "rsb-0038-a",
+  "scenario_id": "scenario-0038",
+  "counterfactual_pair_id": "pair-0038",
+  "variant_role": "alpha",
+  "domain": "saas",
+  "environment_type": "repairscope.commitment_graph.v1",
+  "reasoning_structure": "conditional_contract",
+  "reasoning_structure_label": "conditional contract logic",
+  "secondary_structures": [
+    "multi_hop_propagation"
+  ],
+  "economic_carriers": [
+    "recurring licence charge",
+    "replacement purchase"
+  ],
+  "difficulty_level": 2,
+  "frontier_profile": "multi_two",
+  "split": "test",
+  "now": "2026-09-01T09:00:00+08:00",
+  "max_turns": 15,
+  "instruction": "Complete the customer-support platform for the security administrator. Four paid commitments are already active, but the required integration just failed. Preserve every required function, use options deliverable by day 4, and make the best supported recovery decision without asking me to choose.",
+  "inventory": [
+    {
+      "option_id": "0038-b1",
+      "name": "core annual subscription",
+      "kind": "core_subscription",
+      "available": false,
+      "upfront_cents": 100000,
+      "monthly_cents": 0,
+      "horizon_months": 0,
+      "refund_after_purchase_cents": 100000,
+      "provides": {
+        "core_subscription": 1
+      },
+      "attributes": {
+        "delivery_day": 1
+      }
+    },
+    {
+      "option_id": "0038-b2",
+      "name": "security package",
+      "kind": "security_coverage",
+      "available": false,
+      "upfront_cents": 40000,
+      "monthly_cents": 0,
+      "horizon_months": 0,
+      "refund_after_purchase_cents": 40000,
+      "provides": {
+        "security_coverage": 1
+      },
+      "attributes": {
+        "delivery_day": 1
+      }
+    },
+    {
+      "option_id": "0038-b3",
+      "name": "data connector",
+      "kind": "data_connector",
+      "available": false,
+      "upfront_cents": 30000,
+      "monthly_cents": 0,
+      "horizon_months": 0,
+      "refund_after_purchase_cents": 20000,
+      "provides": {
+        "data_connector": 1
+      },
+      "attributes": {
+        "delivery_day": 1
+      }
+    },
+    {
+      "option_id": "0038-b4",
+      "name": "premium support plan",
+      "kind": "support_entitlement",
+      "available": false,
+      "upfront_cents": 50000,
+      "monthly_cents": 0,
+      "horizon_months": 0,
+      "refund_after_purchase_cents": 10000,
+      "provides": {
+        "support_entitlement": 1
+      },
+      "attributes": {
+        "delivery_day": 1
+      }
+    },
+    {
+      "option_id": "0038-rl1",
+      "name": "regulated analytics workspace L recovery component 1",
+      "kind": "required_integration",
+      "available": true,
+      "upfront_cents": 50000,
+      "monthly_cents": 0,
+      "horizon_months": 0,
+      "refund_after_purchase_cents": 0,
+      "provides": {
+        "required_integration": 1
+      },
+      "attributes": {
+        "delivery_day": 3,
+        "system_code": "system-l"
+      }
+    },
+    {
+      "option_id": "0038-ra1",
+      "name": "regulated analytics workspace A recovery component 1",
+      "kind": "recovery_package",
+      "available": true,
+      "upfront_cents": 90000,
+      "monthly_cents": 0,
+      "horizon_months": 0,
+      "refund_after_purchase_cents": 0,
+      "provides": {
+        "core_subscription": 1,
+        "data_connector": 1,
+        "required_integration": 1
+      },
+      "attributes": {
+        "delivery_day": 3,
+        "system_code": "system-a"
+      }
+    },
+    {
+      "option_id": "0038-rb1",
+      "name": "regulated analytics workspace B recovery component 1",
+      "kind": "recovery_package",
+      "available": true,
+      "upfront_cents": 140000,
+      "monthly_cents": 0,
+      "horizon_months": 0,
+      "refund_after_purchase_cents": 0,
+      "provides": {
+        "core_subscription": 1,
+        "security_coverage": 1,
+        "required_integration": 1
+      },
+      "attributes": {
+        "delivery_day": 3,
+        "system_code": "system-b"
+      }
+    },
+    {
+      "option_id": "0038-rc1",
+      "name": "regulated analytics workspace C recovery component 1",
+      "kind": "recovery_package",
+      "available": true,
+      "upfront_cents": 48000,
+      "monthly_cents": 0,
+      "horizon_months": 0,
+      "refund_after_purchase_cents": 0,
+      "provides": {
+        "core_subscription": 1,
+        "support_entitlement": 1,
+        "required_integration": 1
+      },
+      "attributes": {
+        "delivery_day": 3,
+        "system_code": "system-c"
+      }
+    },
+    {
+      "option_id": "0038-rd1",
+      "name": "regulated analytics workspace D recovery component 1",
+      "kind": "recovery_package",
+      "available": true,
+      "upfront_cents": 300000,
+      "monthly_cents": 0,
+      "horizon_months": 0,
+      "refund_after_purchase_cents": 0,
+      "provides": {
+        "core_subscription": 1,
+        "security_coverage": 1,
+        "data_connector": 1,
+        "support_entitlement": 1,
+        "required_integration": 1
+      },
+      "attributes": {
+        "delivery_day": 3,
+        "system_code": "system-d"
+      }
+    },
+    {
+      "option_id": "0038-failed",
+      "name": "unavailable required integration",
+      "kind": "required_integration",
+      "available": false,
+      "upfront_cents": 18000,
+      "monthly_cents": 0,
+      "horizon_months": 0,
+      "refund_after_purchase_cents": 0,
+      "provides": {
+        "required_integration": 1
+      },
+      "attributes": {
+        "delivery_day": 2
+      }
+    },
+    {
+      "option_id": "0038-decoy",
+      "name": "late required integration",
+      "kind": "required_integration",
+      "available": true,
+      "upfront_cents": 5000,
+      "monthly_cents": 0,
+      "horizon_months": 0,
+      "refund_after_purchase_cents": 0,
+      "provides": {
+        "required_integration": 1
+      },
+      "attributes": {
+        "delivery_day": 9
+      }
+    }
+  ],
+  "contracts": [
+    {
+      "contract_id": "PAIR-TERM",
+      "description": "The linked subscription termination applies when both the first and second original commitments change; charge 80000 cents.",
+      "trigger": {
+        "type": "all_changed",
+        "entity_ids": [
+          "NEW-0001",
+          "NEW-0002"
+        ]
+      },
+      "charge_cents": 80000
+    },
+    {
+      "contract_id": "CONDITIONAL-TERM",
+      "description": "A 12000-cent settlement applies only when both the first and fourth original commitments change.",
+      "trigger": {
+        "type": "all_changed",
+        "entity_ids": [
+          "NEW-0001",
+          "NEW-0004"
+        ]
+      },
+      "charge_cents": 12000
+    }
+  ],
+  "compatibility_rules": [
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0038-rl1",
+        "0038-ra1"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0038-rl1",
+        "0038-rb1"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0038-rl1",
+        "0038-rc1"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0038-rl1",
+        "0038-rd1"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0038-rl1",
+        "0038-decoy"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0038-ra1",
+        "0038-rb1"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0038-ra1",
+        "0038-rc1"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0038-ra1",
+        "0038-rd1"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0038-ra1",
+        "0038-decoy"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0038-rb1",
+        "0038-rc1"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0038-rb1",
+        "0038-rd1"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0038-rb1",
+        "0038-decoy"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0038-rc1",
+        "0038-rd1"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0038-rc1",
+        "0038-decoy"
+      ]
+    },
+    {
+      "type": "forbid_pair",
+      "option_ids": [
+        "0038-rd1",
+        "0038-decoy"
+      ]
+    }
+  ],
+  "hard_goals": {
+    "capabilities": [
+      {
+        "capability": "core_subscription",
+        "min": 1,
+        "max": 1
+      },
+      {
+        "capability": "security_coverage",
+        "min": 1,
+        "max": 1
+      },
+      {
+        "capability": "data_connector",
+        "min": 1,
+        "max": 1
+      },
+      {
+        "capability": "support_entitlement",
+        "min": 1,
+        "max": 1
+      },
+      {
+        "capability": "required_integration",
+        "min": 1,
+        "max": 1
+      }
+    ],
+    "attribute_requirements": [
+      {
+        "capability": "required_integration",
+        "attribute": "delivery_day",
+        "op": "le",
+        "value": 4
+      }
+    ],
+    "max_active_value_cents": 500000
+  },
+  "initial_snapshot": {
+    "commitments": []
+  },
+  "initial_snapshot_sha256": "dbc26b7f61e91d0529291823abb38756f52a36dc52e819cf0a83abddfe598124",
+  "failure_snapshot": {
+    "commitments": [
+      {
+        "entity_id": "NEW-0001",
+        "option_id": "0038-b1",
+        "name": "core annual subscription",
+        "kind": "core_subscription",
+        "status": "active",
+        "paid_cents": 100000,
+        "refund_cents": 100000,
+        "provides": {
+          "core_subscription": 1
+        },
+        "attributes": {
+          "delivery_day": 1
+        },
+        "created_after_boundary": false
+      },
+      {
+        "entity_id": "NEW-0002",
+        "option_id": "0038-b2",
+        "name": "security package",
+        "kind": "security_coverage",
+        "status": "active",
+        "paid_cents": 40000,
+        "refund_cents": 40000,
+        "provides": {
+          "security_coverage": 1
+        },
+        "attributes": {
+          "delivery_day": 1
+        },
+        "created_after_boundary": false
+      },
+      {
+        "entity_id": "NEW-0003",
+        "option_id": "0038-b3",
+        "name": "data connector",
+        "kind": "data_connector",
+        "status": "active",
+        "paid_cents": 30000,
+        "refund_cents": 20000,
+        "provides": {
+          "data_connector": 1
+        },
+        "attributes": {
+          "delivery_day": 1
+        },
+        "created_after_boundary": false
+      },
+      {
+        "entity_id": "NEW-0004",
+        "option_id": "0038-b4",
+        "name": "premium support plan",
+        "kind": "support_entitlement",
+        "status": "active",
+        "paid_cents": 50000,
+        "refund_cents": 10000,
+        "provides": {
+          "support_entitlement": 1
+        },
+        "attributes": {
+          "delivery_day": 1
+        },
+        "created_after_boundary": false
+      }
+    ]
+  },
+  "snapshot_sha256": "b34a6aa70603ff53699cf5fb0f82e5936229f9e4f451f930df037b15226e2968",
+  "pre_failure_trace": [
+    {
+      "step": 1,
+      "tool": "activate_service_option",
+      "arguments": {
+        "service_option_id": "0038-b1"
+      },
+      "result": {
+        "ok": true,
+        "message": "New commitment created.",
+        "data": {
+          "entity_id": "NEW-0001",
+          "option_id": "0038-b1",
+          "charge_cents": 100000
+        }
+      }
+    },
+    {
+      "step": 2,
+      "tool": "activate_service_option",
+      "arguments": {
+        "service_option_id": "0038-b2"
+      },
+      "result": {
+        "ok": true,
+        "message": "New commitment created.",
+        "data": {
+          "entity_id": "NEW-0002",
+          "option_id": "0038-b2",
+          "charge_cents": 40000
+        }
+      }
+    },
+    {
+      "step": 3,
+      "tool": "activate_service_option",
+      "arguments": {
+        "service_option_id": "0038-b3"
+      },
+      "result": {
+        "ok": true,
+        "message": "New commitment created.",
+        "data": {
+          "entity_id": "NEW-0003",
+          "option_id": "0038-b3",
+          "charge_cents": 30000
+        }
+      }
+    },
+    {
+      "step": 4,
+      "tool": "activate_service_option",
+      "arguments": {
+        "service_option_id": "0038-b4"
+      },
+      "result": {
+        "ok": true,
+        "message": "New commitment created.",
+        "data": {
+          "entity_id": "NEW-0004",
+          "option_id": "0038-b4",
+          "charge_cents": 50000
+        }
+      }
+    }
+  ],
+  "prefix_ledger": [
+    {
+      "event_index": 1,
+      "tool": "activate_service_option",
+      "entity_id": "NEW-0001",
+      "contract_id": null,
+      "charge_cents": 100000,
+      "refund_cents": 0,
+      "irreversible_loss_delta": 0,
+      "net_outlay_delta": 100000
+    },
+    {
+      "event_index": 2,
+      "tool": "activate_service_option",
+      "entity_id": "NEW-0002",
+      "contract_id": null,
+      "charge_cents": 40000,
+      "refund_cents": 0,
+      "irreversible_loss_delta": 0,
+      "net_outlay_delta": 40000
+    },
+    {
+      "event_index": 3,
+      "tool": "activate_service_option",
+      "entity_id": "NEW-0003",
+      "contract_id": null,
+      "charge_cents": 30000,
+      "refund_cents": 0,
+      "irreversible_loss_delta": 0,
+      "net_outlay_delta": 30000
+    },
+    {
+      "event_index": 4,
+      "tool": "activate_service_option",
+      "entity_id": "NEW-0004",
+      "contract_id": null,
+      "charge_cents": 50000,
+      "refund_cents": 0,
+      "irreversible_loss_delta": 0,
+      "net_outlay_delta": 50000
+    }
+  ],
+  "latest_failure": {
+    "tool": "activate_service_option",
+    "arguments": {
+      "service_option_id": "0038-failed"
+    },
+    "result": {
+      "ok": false,
+      "message": "The selected option is unavailable.",
+      "data": null
+    }
+  },
+  "boundary_commitments": [
+    {
+      "entity_id": "NEW-0001",
+      "option_id": "0038-b1",
+      "name": "core annual subscription",
+      "kind": "core_subscription",
+      "status": "active",
+      "paid_cents": 100000,
+      "refund_cents": 100000,
+      "provides": {
+        "core_subscription": 1
+      },
+      "attributes": {
+        "delivery_day": 1
+      },
+      "created_after_boundary": false,
+      "primary_capability": "core_subscription"
+    },
+    {
+      "entity_id": "NEW-0002",
+      "option_id": "0038-b2",
+      "name": "security package",
+      "kind": "security_coverage",
+      "status": "active",
+      "paid_cents": 40000,
+      "refund_cents": 40000,
+      "provides": {
+        "security_coverage": 1
+      },
+      "attributes": {
+        "delivery_day": 1
+      },
+      "created_after_boundary": false,
+      "primary_capability": "security_coverage"
+    },
+    {
+      "entity_id": "NEW-0003",
+      "option_id": "0038-b3",
+      "name": "data connector",
+      "kind": "data_connector",
+      "status": "active",
+      "paid_cents": 30000,
+      "refund_cents": 20000,
+      "provides": {
+        "data_connector": 1
+      },
+      "attributes": {
+        "delivery_day": 1
+      },
+      "created_after_boundary": false,
+      "primary_capability": "data_connector"
+    },
+    {
+      "entity_id": "NEW-0004",
+      "option_id": "0038-b4",
+      "name": "premium support plan",
+      "kind": "support_entitlement",
+      "status": "active",
+      "paid_cents": 50000,
+      "refund_cents": 10000,
+      "provides": {
+        "support_entitlement": 1
+      },
+      "attributes": {
+        "delivery_day": 1
+      },
+      "created_after_boundary": false,
+      "primary_capability": "support_entitlement"
+    }
+  ],
+  "changed_fact": {
+    "fact_type": "licence_or_package_settlement",
+    "model_access": "linked contract terms",
+    "variant_role": "alpha",
+    "value_cents": 80000,
+    "changed_path": "contracts[PAIR-TERM].charge_cents"
+  },
+  "construction": {
+    "prefix_generated_by_public_tools": true,
+    "failure_generated_by_public_tool": true,
+    "necessary_action_order_invariant": true,
+    "state_bench_provenance": "native RepairScope stateful domain"
+  }
+}

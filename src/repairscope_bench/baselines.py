@@ -7,6 +7,8 @@ from .oracle import solve_task
 
 
 def make_actions(task: dict[str, Any], strategy: str) -> list[dict[str, Any]]:
+    if task.get("schema_version") == "1.0":
+        return _make_v1_calls(task, strategy)
     if task.get("schema_version") == "0.6":
         return _make_v06_calls(task, strategy)
     if strategy == "oracle":
@@ -45,6 +47,84 @@ def make_actions(task: dict[str, Any], strategy: str) -> list[dict[str, Any]]:
             ]
         return oracle.optimal_plans[0] + _completion_actions(task)
     raise ValueError(f"Unknown baseline strategy: {strategy}")
+
+
+def _make_v1_calls(
+    task: dict[str, Any], strategy: str
+) -> list[dict[str, Any]]:
+    from .v1_oracle import solve_task_v1
+
+    oracle = solve_task_v1(task)
+    if strategy == "no_repair":
+        return []
+    candidates = deepcopy(oracle.feasible_terminals)
+    if not candidates:
+        return []
+    if strategy in {"oracle", "pareto_oracle"}:
+        return deepcopy(oracle.frontier[0]["tool_calls"])
+    if strategy in {"local_repair", "dependency_repair", "min_changes"}:
+        selected = min(
+            candidates,
+            key=lambda item: (
+                len(item["changed_boundary_entities"]),
+                len(item["tool_calls"]),
+            ),
+        )
+    elif strategy == "full_rollback":
+        selected = max(
+            candidates,
+            key=lambda item: (
+                len(item["changed_boundary_entities"]),
+                item["economic_vector"]["net_recovery_outlay"],
+            ),
+        )
+    elif strategy in {"sticker_price", "global_cost"}:
+        selected = min(
+            candidates,
+            key=lambda item: _v1_active_value(task, item["active_option_ids"]),
+        )
+    elif strategy == "refund_only":
+        boundary = {
+            item["entity_id"]: item for item in task["boundary_commitments"]
+        }
+        selected = max(
+            candidates,
+            key=lambda item: sum(
+                int(boundary[entity_id]["refund_cents"])
+                for entity_id in item["changed_boundary_entities"]
+            ),
+        )
+    elif strategy == "loss_only":
+        selected = min(
+            candidates,
+            key=lambda item: item["economic_vector"]["irreversible_loss"],
+        )
+    elif strategy == "outlay_only":
+        selected = min(
+            candidates,
+            key=lambda item: item["economic_vector"]["net_recovery_outlay"],
+        )
+    else:
+        raise ValueError(f"Unknown v1 baseline strategy: {strategy}")
+    return deepcopy(selected["tool_calls"])
+
+
+def _v1_active_value(
+    task: dict[str, Any], active_option_ids: list[str]
+) -> int:
+    paid = {
+        item["option_id"]: int(item["paid_cents"])
+        for item in task["boundary_commitments"]
+    }
+    paid.update(
+        {
+            item["option_id"]: int(item["upfront_cents"])
+            + int(item.get("monthly_cents", 0))
+            * int(item.get("horizon_months", 0))
+            for item in task["inventory"]
+        }
+    )
+    return sum(paid[item] for item in active_option_ids)
 
 
 def _make_v06_calls(

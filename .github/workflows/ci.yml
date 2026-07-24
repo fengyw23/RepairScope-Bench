@@ -18,9 +18,10 @@ jobs:
       - run: python -m pip install -e .
       - run: python -m pip install ruff
       - run: ruff check src scripts tests
+      - run: python scripts/build_v1.py
+      - run: repairscope validate data/v1
       - run: python scripts/build_v06.py
       - run: repairscope validate data/v06
-      - run: repairscope run-baselines data/v06
       - run: python scripts/build_pilot.py
       - run: python scripts/build_challenge.py
       - run: repairscope validate data/legacy/v0.5/pilot
