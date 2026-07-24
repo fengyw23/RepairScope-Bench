@@ -1,0 +1,1209 @@
+{
+  "schema_version": "0.6",
+  "task_id": "conference-dinner-refund-full",
+  "family_id": "conference-dinner",
+  "variant_id": "refund-full",
+  "counterfactual_pair_id": "conference-dinner-refund",
+  "domain": "travel",
+  "environment_type": "state_bench.travel+repair_extensions",
+  "split": "dev",
+  "now": "2026-08-01T10:00:00",
+  "instruction": "Complete my Shanghai conference trip for September 14-16. The flights, hotel, airport transfer, and conference pass already exist, but the dinner booking just failed. Keep the trip coherent and within CNY 4,800.",
+  "source": {
+    "benchmark": "STATE-Bench",
+    "repository": "https://github.com/microsoft/STATE-Bench",
+    "commit": "4efcbf2d4fe60df04878859b692d9391f3d5b33a",
+    "reuse": "Domain schemas, policy engine, read tools, preview-confirm writes, and persistent state runtime are imported directly."
+  },
+  "max_turns": 15,
+  "oracle_max_semantic_actions": 2,
+  "contracts": [
+    {
+      "contract_id": "conference-dinner-refund-full-refund-term",
+      "description": "The original hotel supplier adjusts the refund by 0 if that reservation is cancelled.",
+      "trigger": "any_changed",
+      "dispositions": [
+        "CANCEL",
+        "REPLACE"
+      ],
+      "entity_ids": [
+        "HR-0001"
+      ],
+      "refund_adjustment": 0,
+      "settlement_charge": 0
+    },
+    {
+      "contract_id": "conference-dinner-refund-full-package-term",
+      "description": "Changing the original hotel breaks its linked ground-service package and charges 0.",
+      "trigger": "any_changed",
+      "entity_ids": [
+        "HR-0001",
+        "SV-0001"
+      ],
+      "refund_adjustment": 0,
+      "settlement_charge": 0
+    }
+  ],
+  "boundary_commitments": [
+    {
+      "entity_id": "HR-0001",
+      "slot": "hotel",
+      "option_id": "conference-dinner-HOTEL-ORIG",
+      "paid_value": 900
+    },
+    {
+      "entity_id": "BK-0001",
+      "slot": "outbound",
+      "option_id": "MU-OUT-ORIG",
+      "paid_value": 520
+    },
+    {
+      "entity_id": "SV-0002",
+      "slot": "pass",
+      "option_id": "conference-dinner-PASS-ORIG",
+      "paid_value": 300
+    },
+    {
+      "entity_id": "BK-0002",
+      "slot": "return",
+      "option_id": "MU-RET-ORIG",
+      "paid_value": 480
+    },
+    {
+      "entity_id": "SV-0001",
+      "slot": "transfer",
+      "option_id": "conference-dinner-TRANSFER-ORIG",
+      "paid_value": 160
+    }
+  ],
+  "pre_failure_trace": [
+    {
+      "step": 1,
+      "tool": "create_booking",
+      "arguments": {
+        "flight_id": "MU-OUT-ORIG",
+        "user_id": "user_repair",
+        "cabin_class": "economy",
+        "seat_type": "aisle",
+        "meal_preference": "standard",
+        "add_wifi": false,
+        "add_extra_legroom": false,
+        "add_insurance": false,
+        "payment_method": "credit_card"
+      },
+      "result": {
+        "ok": true,
+        "message": "confirmed",
+        "data": {
+          "status": "confirmed",
+          "booking_id": "BK-0001",
+          "flight_id": "MU-OUT-ORIG",
+          "cabin_class": "economy",
+          "price": 520,
+          "payment_method": "credit_card"
+        }
+      }
+    },
+    {
+      "step": 2,
+      "tool": "create_booking",
+      "arguments": {
+        "flight_id": "MU-RET-ORIG",
+        "user_id": "user_repair",
+        "cabin_class": "economy",
+        "seat_type": "aisle",
+        "meal_preference": "standard",
+        "add_wifi": false,
+        "add_extra_legroom": false,
+        "add_insurance": false,
+        "payment_method": "credit_card"
+      },
+      "result": {
+        "ok": true,
+        "message": "confirmed",
+        "data": {
+          "status": "confirmed",
+          "booking_id": "BK-0002",
+          "flight_id": "MU-RET-ORIG",
+          "cabin_class": "economy",
+          "price": 480,
+          "payment_method": "credit_card"
+        }
+      }
+    },
+    {
+      "step": 3,
+      "tool": "book_hotel",
+      "arguments": {
+        "hotel_id": "conference-dinner-HOTEL-ORIG",
+        "user_id": "user_repair"
+      },
+      "result": {
+        "ok": true,
+        "message": "confirmed",
+        "data": {
+          "status": "confirmed",
+          "reservation_id": "HR-0001",
+          "hotel_id": "conference-dinner-HOTEL-ORIG",
+          "hotel_name": "Huangpu Existing Hotel",
+          "total_price": 900,
+          "room_type": "standard"
+        }
+      }
+    },
+    {
+      "step": 4,
+      "tool": "book_local_service",
+      "arguments": {
+        "option_id": "conference-dinner-TRANSFER-ORIG",
+        "user_id": "user_repair"
+      },
+      "result": {
+        "ok": true,
+        "message": "confirmed",
+        "data": {
+          "status": "confirmed",
+          "service_id": "SV-0001",
+          "option_id": "conference-dinner-TRANSFER-ORIG",
+          "charge": 160
+        }
+      }
+    },
+    {
+      "step": 5,
+      "tool": "book_local_service",
+      "arguments": {
+        "option_id": "conference-dinner-PASS-ORIG",
+        "user_id": "user_repair"
+      },
+      "result": {
+        "ok": true,
+        "message": "confirmed",
+        "data": {
+          "status": "confirmed",
+          "service_id": "SV-0002",
+          "option_id": "conference-dinner-PASS-ORIG",
+          "charge": 300
+        }
+      }
+    }
+  ],
+  "prefix_ledger": [
+    {
+      "event_index": 1,
+      "tool": "create_booking",
+      "charge": 520,
+      "refund": 0,
+      "contract_refund_adjustment": 0,
+      "settlement_charge": 0,
+      "irreversible_loss_delta": 0,
+      "net_outlay_delta": 520
+    },
+    {
+      "event_index": 2,
+      "tool": "create_booking",
+      "charge": 480,
+      "refund": 0,
+      "contract_refund_adjustment": 0,
+      "settlement_charge": 0,
+      "irreversible_loss_delta": 0,
+      "net_outlay_delta": 480
+    },
+    {
+      "event_index": 3,
+      "tool": "book_hotel",
+      "charge": 900,
+      "refund": 0,
+      "contract_refund_adjustment": 0,
+      "settlement_charge": 0,
+      "irreversible_loss_delta": 0,
+      "net_outlay_delta": 900
+    },
+    {
+      "event_index": 4,
+      "tool": "book_local_service",
+      "charge": 160,
+      "refund": 0,
+      "contract_refund_adjustment": 0,
+      "settlement_charge": 0,
+      "irreversible_loss_delta": 0,
+      "net_outlay_delta": 160
+    },
+    {
+      "event_index": 5,
+      "tool": "book_local_service",
+      "charge": 300,
+      "refund": 0,
+      "contract_refund_adjustment": 0,
+      "settlement_charge": 0,
+      "irreversible_loss_delta": 0,
+      "net_outlay_delta": 300
+    }
+  ],
+  "latest_failure": {
+    "tool": "book_local_service",
+    "arguments": {
+      "option_id": "conference-dinner-dinner-FAILED",
+      "user_id": "user_repair"
+    },
+    "result": {
+      "ok": false,
+      "message": "The selected conference dinner has no remaining inventory.",
+      "data": {
+        "error": "The selected conference dinner has no remaining inventory."
+      }
+    }
+  },
+  "initial_snapshot": {
+    "state_bench": {
+      "flights": [
+        {
+          "flight_id": "MU-OUT-ORIG",
+          "airline_code": "MU",
+          "origin": "PEK",
+          "destination": "PVG",
+          "departure_time": "2026-09-14T08:00:00",
+          "arrival_time": "2026-09-14T10:30:00",
+          "duration_minutes": 150,
+          "stops": 0,
+          "cabin_prices": {
+            "economy": 520
+          },
+          "status": "scheduled",
+          "delay_minutes": 0,
+          "route_type": "domestic"
+        },
+        {
+          "flight_id": "MU-RET-ORIG",
+          "airline_code": "MU",
+          "origin": "PVG",
+          "destination": "PEK",
+          "departure_time": "2026-09-16T19:00:00",
+          "arrival_time": "2026-09-16T21:30:00",
+          "duration_minutes": 150,
+          "stops": 0,
+          "cabin_prices": {
+            "economy": 480
+          },
+          "status": "scheduled",
+          "delay_minutes": 0,
+          "route_type": "domestic"
+        }
+      ],
+      "bookings": [],
+      "users": [
+        {
+          "user_id": "user_repair",
+          "name": "Repair Scope User",
+          "email": "repair@example.com",
+          "loyalty_tier": "basic",
+          "loyalty_points": 0,
+          "budget": 4800,
+          "preferences": {
+            "meal_preference": "standard",
+            "seat_type": "aisle",
+            "add_wifi": false,
+            "add_extra_legroom": false,
+            "add_insurance": false
+          }
+        }
+      ],
+      "hotel_inventory": [
+        {
+          "hotel_id": "conference-dinner-HOTEL-ORIG",
+          "hotel_name": "Huangpu Existing Hotel",
+          "city": "Shanghai",
+          "check_in": "2026-09-14",
+          "check_out": "2026-09-16",
+          "room_type": "standard",
+          "nightly_rate": 450,
+          "total_price": 900
+        },
+        {
+          "hotel_id": "conference-dinner-HOTEL-A",
+          "hotel_name": "Lujiazui Riverside Hotel",
+          "city": "Shanghai",
+          "check_in": "2026-09-14",
+          "check_out": "2026-09-16",
+          "room_type": "standard",
+          "nightly_rate": 350,
+          "total_price": 700
+        },
+        {
+          "hotel_id": "conference-dinner-HOTEL-B",
+          "hotel_name": "JingAn Business Hotel",
+          "city": "Shanghai",
+          "check_in": "2026-09-14",
+          "check_out": "2026-09-16",
+          "room_type": "standard",
+          "nightly_rate": 675,
+          "total_price": 1350
+        },
+        {
+          "hotel_id": "conference-dinner-HOTEL-DECOY",
+          "hotel_name": "Beijing Decoy Hotel",
+          "city": "Beijing",
+          "check_in": "2026-09-14",
+          "check_out": "2026-09-16",
+          "room_type": "standard",
+          "nightly_rate": 200,
+          "total_price": 400
+        }
+      ],
+      "hotels": [],
+      "car_inventory": [],
+      "car_rentals": []
+    },
+    "extensions": {
+      "services": [],
+      "service_inventory": [
+        {
+          "option_id": "conference-dinner-TRANSFER-ORIG",
+          "slot": "transfer",
+          "price": 160,
+          "available": true,
+          "attributes": {
+            "area": "Huangpu",
+            "city": "Shanghai"
+          }
+        },
+        {
+          "option_id": "conference-dinner-PASS-ORIG",
+          "slot": "pass",
+          "price": 300,
+          "available": true,
+          "attributes": {
+            "area": "citywide",
+            "city": "Shanghai"
+          }
+        },
+        {
+          "option_id": "conference-dinner-PASS-B",
+          "slot": "pass",
+          "price": 50,
+          "available": true,
+          "attributes": {
+            "area": "citywide",
+            "city": "Shanghai"
+          }
+        },
+        {
+          "option_id": "conference-dinner-dinner-FAILED",
+          "slot": "dinner",
+          "price": 180,
+          "available": false,
+          "attributes": {
+            "area": "Huangpu",
+            "city": "Shanghai"
+          },
+          "failure_message": "The selected conference dinner has no remaining inventory."
+        },
+        {
+          "option_id": "conference-dinner-dinner-LOCAL",
+          "slot": "dinner",
+          "price": 300,
+          "available": true,
+          "attributes": {
+            "area": "Huangpu",
+            "city": "Shanghai"
+          }
+        },
+        {
+          "option_id": "conference-dinner-TRANSFER-A",
+          "slot": "transfer",
+          "price": 150,
+          "available": true,
+          "attributes": {
+            "area": "Lujiazui",
+            "city": "Shanghai"
+          }
+        },
+        {
+          "option_id": "conference-dinner-dinner-A",
+          "slot": "dinner",
+          "price": 100,
+          "available": true,
+          "attributes": {
+            "area": "Lujiazui",
+            "city": "Shanghai"
+          }
+        },
+        {
+          "option_id": "conference-dinner-TRANSFER-B",
+          "slot": "transfer",
+          "price": 120,
+          "available": true,
+          "attributes": {
+            "area": "JingAn",
+            "city": "Shanghai"
+          }
+        },
+        {
+          "option_id": "conference-dinner-dinner-B",
+          "slot": "dinner",
+          "price": 80,
+          "available": true,
+          "attributes": {
+            "area": "JingAn",
+            "city": "Shanghai"
+          }
+        },
+        {
+          "option_id": "conference-dinner-dinner-DECOY",
+          "slot": "dinner",
+          "price": 50,
+          "available": true,
+          "attributes": {
+            "area": "Chaoyang",
+            "city": "Beijing"
+          }
+        },
+        {
+          "option_id": "conference-dinner-TRANSFER-DECOY",
+          "slot": "transfer",
+          "price": 40,
+          "available": true,
+          "attributes": {
+            "area": "Chaoyang",
+            "city": "Beijing"
+          }
+        }
+      ]
+    }
+  },
+  "initial_snapshot_sha256": "4f5ae13f53f431bee572c7fb694754a50e517026a81ff215096063d72e9a64bb",
+  "failure_snapshot": {
+    "state_bench": {
+      "flights": [
+        {
+          "flight_id": "MU-OUT-ORIG",
+          "airline_code": "MU",
+          "origin": "PEK",
+          "destination": "PVG",
+          "departure_time": "2026-09-14T08:00:00",
+          "arrival_time": "2026-09-14T10:30:00",
+          "duration_minutes": 150,
+          "stops": 0,
+          "cabin_prices": {
+            "economy": 520
+          },
+          "status": "scheduled",
+          "delay_minutes": 0,
+          "route_type": "domestic"
+        },
+        {
+          "flight_id": "MU-RET-ORIG",
+          "airline_code": "MU",
+          "origin": "PVG",
+          "destination": "PEK",
+          "departure_time": "2026-09-16T19:00:00",
+          "arrival_time": "2026-09-16T21:30:00",
+          "duration_minutes": 150,
+          "stops": 0,
+          "cabin_prices": {
+            "economy": 480
+          },
+          "status": "scheduled",
+          "delay_minutes": 0,
+          "route_type": "domestic"
+        }
+      ],
+      "bookings": [
+        {
+          "booking_id": "BK-0001",
+          "user_id": "user_repair",
+          "flight_id": "MU-OUT-ORIG",
+          "status": "confirmed",
+          "cabin_class": "economy",
+          "seat_type": "aisle",
+          "meal_preference": "standard",
+          "add_wifi": false,
+          "add_extra_legroom": false,
+          "add_insurance": false,
+          "price_paid": 520,
+          "payment_method": "credit_card",
+          "points_used": 0,
+          "cash_amount": 520,
+          "booked_at": "2026-08-01T10:00:00",
+          "cancellation_fee": null,
+          "refund_amount": null,
+          "change_fee": null,
+          "fare_difference": null,
+          "delay_compensation": null,
+          "paid_checked_bags": 0
+        },
+        {
+          "booking_id": "BK-0002",
+          "user_id": "user_repair",
+          "flight_id": "MU-RET-ORIG",
+          "status": "confirmed",
+          "cabin_class": "economy",
+          "seat_type": "aisle",
+          "meal_preference": "standard",
+          "add_wifi": false,
+          "add_extra_legroom": false,
+          "add_insurance": false,
+          "price_paid": 480,
+          "payment_method": "credit_card",
+          "points_used": 0,
+          "cash_amount": 480,
+          "booked_at": "2026-08-01T10:00:00",
+          "cancellation_fee": null,
+          "refund_amount": null,
+          "change_fee": null,
+          "fare_difference": null,
+          "delay_compensation": null,
+          "paid_checked_bags": 0
+        }
+      ],
+      "users": [
+        {
+          "user_id": "user_repair",
+          "name": "Repair Scope User",
+          "email": "repair@example.com",
+          "loyalty_tier": "basic",
+          "loyalty_points": 0,
+          "budget": 4800,
+          "preferences": {
+            "meal_preference": "standard",
+            "seat_type": "aisle",
+            "add_wifi": false,
+            "add_extra_legroom": false,
+            "add_insurance": false
+          }
+        }
+      ],
+      "hotel_inventory": [
+        {
+          "hotel_id": "conference-dinner-HOTEL-A",
+          "hotel_name": "Lujiazui Riverside Hotel",
+          "city": "Shanghai",
+          "check_in": "2026-09-14",
+          "check_out": "2026-09-16",
+          "room_type": "standard",
+          "nightly_rate": 350,
+          "total_price": 700
+        },
+        {
+          "hotel_id": "conference-dinner-HOTEL-B",
+          "hotel_name": "JingAn Business Hotel",
+          "city": "Shanghai",
+          "check_in": "2026-09-14",
+          "check_out": "2026-09-16",
+          "room_type": "standard",
+          "nightly_rate": 675,
+          "total_price": 1350
+        },
+        {
+          "hotel_id": "conference-dinner-HOTEL-DECOY",
+          "hotel_name": "Beijing Decoy Hotel",
+          "city": "Beijing",
+          "check_in": "2026-09-14",
+          "check_out": "2026-09-16",
+          "room_type": "standard",
+          "nightly_rate": 200,
+          "total_price": 400
+        },
+        {
+          "hotel_id": "conference-dinner-HOTEL-ORIG",
+          "hotel_name": "Huangpu Existing Hotel",
+          "city": "Shanghai",
+          "check_in": "2026-09-14",
+          "check_out": "2026-09-16",
+          "room_type": "standard",
+          "nightly_rate": 450,
+          "total_price": 900
+        }
+      ],
+      "hotels": [
+        {
+          "reservation_id": "HR-0001",
+          "user_id": "user_repair",
+          "hotel_name": "Huangpu Existing Hotel",
+          "city": "Shanghai",
+          "check_in": "2026-09-14",
+          "check_out": "2026-09-16",
+          "room_type": "standard",
+          "nightly_rate": 450,
+          "total_price": 900,
+          "hotel_id": "conference-dinner-HOTEL-ORIG",
+          "status": "confirmed",
+          "booked_at": "2026-08-01T10:00:00",
+          "cancellation_fee": null,
+          "refund_amount": null
+        }
+      ],
+      "car_inventory": [],
+      "car_rentals": []
+    },
+    "extensions": {
+      "services": [
+        {
+          "service_id": "SV-0001",
+          "user_id": "user_repair",
+          "option_id": "conference-dinner-TRANSFER-ORIG",
+          "slot": "transfer",
+          "status": "confirmed",
+          "price_paid": 160,
+          "refund_amount": null,
+          "cancellation_fee": null,
+          "attributes": {
+            "area": "Huangpu",
+            "city": "Shanghai"
+          }
+        },
+        {
+          "service_id": "SV-0002",
+          "user_id": "user_repair",
+          "option_id": "conference-dinner-PASS-ORIG",
+          "slot": "pass",
+          "status": "confirmed",
+          "price_paid": 300,
+          "refund_amount": null,
+          "cancellation_fee": null,
+          "attributes": {
+            "area": "citywide",
+            "city": "Shanghai"
+          }
+        }
+      ],
+      "service_inventory": [
+        {
+          "option_id": "conference-dinner-PASS-B",
+          "slot": "pass",
+          "price": 50,
+          "available": true,
+          "attributes": {
+            "area": "citywide",
+            "city": "Shanghai"
+          }
+        },
+        {
+          "option_id": "conference-dinner-PASS-ORIG",
+          "slot": "pass",
+          "price": 300,
+          "available": true,
+          "attributes": {
+            "area": "citywide",
+            "city": "Shanghai"
+          }
+        },
+        {
+          "option_id": "conference-dinner-TRANSFER-A",
+          "slot": "transfer",
+          "price": 150,
+          "available": true,
+          "attributes": {
+            "area": "Lujiazui",
+            "city": "Shanghai"
+          }
+        },
+        {
+          "option_id": "conference-dinner-TRANSFER-B",
+          "slot": "transfer",
+          "price": 120,
+          "available": true,
+          "attributes": {
+            "area": "JingAn",
+            "city": "Shanghai"
+          }
+        },
+        {
+          "option_id": "conference-dinner-TRANSFER-DECOY",
+          "slot": "transfer",
+          "price": 40,
+          "available": true,
+          "attributes": {
+            "area": "Chaoyang",
+            "city": "Beijing"
+          }
+        },
+        {
+          "option_id": "conference-dinner-TRANSFER-ORIG",
+          "slot": "transfer",
+          "price": 160,
+          "available": true,
+          "attributes": {
+            "area": "Huangpu",
+            "city": "Shanghai"
+          }
+        },
+        {
+          "option_id": "conference-dinner-dinner-A",
+          "slot": "dinner",
+          "price": 100,
+          "available": true,
+          "attributes": {
+            "area": "Lujiazui",
+            "city": "Shanghai"
+          }
+        },
+        {
+          "option_id": "conference-dinner-dinner-B",
+          "slot": "dinner",
+          "price": 80,
+          "available": true,
+          "attributes": {
+            "area": "JingAn",
+            "city": "Shanghai"
+          }
+        },
+        {
+          "option_id": "conference-dinner-dinner-DECOY",
+          "slot": "dinner",
+          "price": 50,
+          "available": true,
+          "attributes": {
+            "area": "Chaoyang",
+            "city": "Beijing"
+          }
+        },
+        {
+          "option_id": "conference-dinner-dinner-FAILED",
+          "slot": "dinner",
+          "price": 180,
+          "available": false,
+          "attributes": {
+            "area": "Huangpu",
+            "city": "Shanghai"
+          },
+          "failure_message": "The selected conference dinner has no remaining inventory."
+        },
+        {
+          "option_id": "conference-dinner-dinner-LOCAL",
+          "slot": "dinner",
+          "price": 300,
+          "available": true,
+          "attributes": {
+            "area": "Huangpu",
+            "city": "Shanghai"
+          }
+        }
+      ]
+    }
+  },
+  "snapshot_sha256": "df7fee6d31b766dc3a33c58e09c8066a72c29c3fd700d029f0bcd75ed23fe724",
+  "option_metadata": {
+    "MU-OUT-ORIG": {
+      "slot": "outbound",
+      "price": 520,
+      "available": true,
+      "attributes": {
+        "city": "Shanghai"
+      }
+    },
+    "MU-RET-ORIG": {
+      "slot": "return",
+      "price": 480,
+      "available": true,
+      "attributes": {
+        "city": "Shanghai"
+      }
+    },
+    "conference-dinner-HOTEL-ORIG": {
+      "slot": "hotel",
+      "price": 900,
+      "available": true,
+      "attributes": {
+        "city": "Shanghai",
+        "area": "Huangpu"
+      }
+    },
+    "conference-dinner-HOTEL-A": {
+      "slot": "hotel",
+      "price": 700,
+      "available": true,
+      "attributes": {
+        "city": "Shanghai",
+        "area": "Lujiazui"
+      }
+    },
+    "conference-dinner-HOTEL-B": {
+      "slot": "hotel",
+      "price": 1350,
+      "available": true,
+      "attributes": {
+        "city": "Shanghai",
+        "area": "JingAn"
+      }
+    },
+    "conference-dinner-HOTEL-DECOY": {
+      "slot": "hotel",
+      "price": 400,
+      "available": true,
+      "attributes": {
+        "city": "Beijing",
+        "area": "Chaoyang"
+      }
+    },
+    "conference-dinner-TRANSFER-ORIG": {
+      "slot": "transfer",
+      "price": 160,
+      "available": true,
+      "attributes": {
+        "area": "Huangpu",
+        "city": "Shanghai"
+      }
+    },
+    "conference-dinner-PASS-ORIG": {
+      "slot": "pass",
+      "price": 300,
+      "available": true,
+      "attributes": {
+        "area": "citywide",
+        "city": "Shanghai"
+      }
+    },
+    "conference-dinner-PASS-B": {
+      "slot": "pass",
+      "price": 50,
+      "available": true,
+      "attributes": {
+        "area": "citywide",
+        "city": "Shanghai"
+      }
+    },
+    "conference-dinner-dinner-FAILED": {
+      "slot": "dinner",
+      "price": 180,
+      "available": false,
+      "attributes": {
+        "area": "Huangpu",
+        "city": "Shanghai"
+      }
+    },
+    "conference-dinner-dinner-LOCAL": {
+      "slot": "dinner",
+      "price": 300,
+      "available": true,
+      "attributes": {
+        "area": "Huangpu",
+        "city": "Shanghai"
+      }
+    },
+    "conference-dinner-TRANSFER-A": {
+      "slot": "transfer",
+      "price": 150,
+      "available": true,
+      "attributes": {
+        "area": "Lujiazui",
+        "city": "Shanghai"
+      }
+    },
+    "conference-dinner-dinner-A": {
+      "slot": "dinner",
+      "price": 100,
+      "available": true,
+      "attributes": {
+        "area": "Lujiazui",
+        "city": "Shanghai"
+      }
+    },
+    "conference-dinner-TRANSFER-B": {
+      "slot": "transfer",
+      "price": 120,
+      "available": true,
+      "attributes": {
+        "area": "JingAn",
+        "city": "Shanghai"
+      }
+    },
+    "conference-dinner-dinner-B": {
+      "slot": "dinner",
+      "price": 80,
+      "available": true,
+      "attributes": {
+        "area": "JingAn",
+        "city": "Shanghai"
+      }
+    },
+    "conference-dinner-dinner-DECOY": {
+      "slot": "dinner",
+      "price": 50,
+      "available": true,
+      "attributes": {
+        "area": "Chaoyang",
+        "city": "Beijing"
+      }
+    },
+    "conference-dinner-TRANSFER-DECOY": {
+      "slot": "transfer",
+      "price": 40,
+      "available": true,
+      "attributes": {
+        "area": "Chaoyang",
+        "city": "Beijing"
+      }
+    }
+  },
+  "compatibility_rules": [
+    {
+      "left_slot": "hotel",
+      "right_slot": "transfer",
+      "pairs": [
+        [
+          "conference-dinner-HOTEL-ORIG",
+          "conference-dinner-TRANSFER-ORIG"
+        ],
+        [
+          "conference-dinner-HOTEL-A",
+          "conference-dinner-TRANSFER-A"
+        ],
+        [
+          "conference-dinner-HOTEL-B",
+          "conference-dinner-TRANSFER-B"
+        ]
+      ]
+    },
+    {
+      "left_slot": "hotel",
+      "right_slot": "dinner",
+      "pairs": [
+        [
+          "conference-dinner-HOTEL-ORIG",
+          "conference-dinner-dinner-LOCAL"
+        ],
+        [
+          "conference-dinner-HOTEL-A",
+          "conference-dinner-dinner-A"
+        ],
+        [
+          "conference-dinner-HOTEL-B",
+          "conference-dinner-dinner-B"
+        ]
+      ]
+    }
+  ],
+  "required_slots": [
+    "outbound",
+    "return",
+    "hotel",
+    "transfer",
+    "pass",
+    "dinner"
+  ],
+  "hard_constraints": [
+    {
+      "type": "slot_attribute",
+      "slot": "hotel",
+      "attribute": "city",
+      "op": "eq",
+      "value": "Shanghai"
+    },
+    {
+      "type": "slot_attribute",
+      "slot": "transfer",
+      "attribute": "city",
+      "op": "eq",
+      "value": "Shanghai"
+    },
+    {
+      "type": "slot_attribute",
+      "slot": "dinner",
+      "attribute": "city",
+      "op": "eq",
+      "value": "Shanghai"
+    },
+    {
+      "type": "allowed_pairs",
+      "left_slot": "hotel",
+      "right_slot": "transfer",
+      "pairs": [
+        [
+          "conference-dinner-HOTEL-ORIG",
+          "conference-dinner-TRANSFER-ORIG"
+        ],
+        [
+          "conference-dinner-HOTEL-A",
+          "conference-dinner-TRANSFER-A"
+        ],
+        [
+          "conference-dinner-HOTEL-B",
+          "conference-dinner-TRANSFER-B"
+        ]
+      ]
+    },
+    {
+      "type": "allowed_pairs",
+      "left_slot": "hotel",
+      "right_slot": "dinner",
+      "pairs": [
+        [
+          "conference-dinner-HOTEL-ORIG",
+          "conference-dinner-dinner-LOCAL"
+        ],
+        [
+          "conference-dinner-HOTEL-A",
+          "conference-dinner-dinner-A"
+        ],
+        [
+          "conference-dinner-HOTEL-B",
+          "conference-dinner-dinner-B"
+        ]
+      ]
+    },
+    {
+      "type": "max_active_total",
+      "value": 4800
+    }
+  ],
+  "failure_observation": "The selected conference dinner has no remaining inventory.",
+  "oracle_actions": [
+    {
+      "action_id": "local-repair",
+      "tool_calls": [
+        {
+          "name": "book_local_service",
+          "arguments": {
+            "option_id": "conference-dinner-dinner-LOCAL",
+            "user_id": "user_repair"
+          }
+        }
+      ]
+    },
+    {
+      "action_id": "replace-hotel-bundle-a",
+      "tool_calls": [
+        {
+          "name": "cancel_hotel_reservation",
+          "arguments": {
+            "reservation_id": "HR-0001"
+          }
+        },
+        {
+          "name": "cancel_hotel_reservation",
+          "arguments": {
+            "reservation_id": "HR-0001",
+            "confirm": true
+          }
+        },
+        {
+          "name": "cancel_local_service",
+          "arguments": {
+            "service_id": "SV-0001"
+          }
+        },
+        {
+          "name": "cancel_local_service",
+          "arguments": {
+            "service_id": "SV-0001",
+            "confirm": true
+          }
+        },
+        {
+          "name": "book_hotel",
+          "arguments": {
+            "hotel_id": "conference-dinner-HOTEL-A",
+            "user_id": "user_repair"
+          }
+        },
+        {
+          "name": "book_local_service",
+          "arguments": {
+            "option_id": "conference-dinner-TRANSFER-A",
+            "user_id": "user_repair"
+          }
+        },
+        {
+          "name": "book_local_service",
+          "arguments": {
+            "option_id": "conference-dinner-dinner-A",
+            "user_id": "user_repair"
+          }
+        }
+      ]
+    },
+    {
+      "action_id": "replace-hotel-bundle-b",
+      "tool_calls": [
+        {
+          "name": "cancel_hotel_reservation",
+          "arguments": {
+            "reservation_id": "HR-0001"
+          }
+        },
+        {
+          "name": "cancel_hotel_reservation",
+          "arguments": {
+            "reservation_id": "HR-0001",
+            "confirm": true
+          }
+        },
+        {
+          "name": "cancel_local_service",
+          "arguments": {
+            "service_id": "SV-0001"
+          }
+        },
+        {
+          "name": "cancel_local_service",
+          "arguments": {
+            "service_id": "SV-0001",
+            "confirm": true
+          }
+        },
+        {
+          "name": "cancel_local_service",
+          "arguments": {
+            "service_id": "SV-0002"
+          }
+        },
+        {
+          "name": "cancel_local_service",
+          "arguments": {
+            "service_id": "SV-0002",
+            "confirm": true
+          }
+        },
+        {
+          "name": "book_hotel",
+          "arguments": {
+            "hotel_id": "conference-dinner-HOTEL-B",
+            "user_id": "user_repair"
+          }
+        },
+        {
+          "name": "book_local_service",
+          "arguments": {
+            "option_id": "conference-dinner-TRANSFER-B",
+            "user_id": "user_repair"
+          }
+        },
+        {
+          "name": "book_local_service",
+          "arguments": {
+            "option_id": "conference-dinner-dinner-B",
+            "user_id": "user_repair"
+          }
+        },
+        {
+          "name": "book_local_service",
+          "arguments": {
+            "option_id": "conference-dinner-PASS-B",
+            "user_id": "user_repair"
+          }
+        }
+      ]
+    }
+  ],
+  "candidate_scopes": [
+    {
+      "scope_id": "local-repair",
+      "action_ids": [
+        "local-repair"
+      ]
+    },
+    {
+      "scope_id": "replace-hotel-bundle-a",
+      "action_ids": [
+        "replace-hotel-bundle-a"
+      ]
+    },
+    {
+      "scope_id": "replace-hotel-bundle-b",
+      "action_ids": [
+        "replace-hotel-bundle-b"
+      ]
+    }
+  ]
+}

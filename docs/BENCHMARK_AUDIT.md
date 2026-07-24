@@ -1,8 +1,10 @@
 # Benchmark Mechanism Audit
 
-> Historical note: references below to the “current pilot” describe the
-> pre-v0.4 implementation that this audit evaluated. The v0.5 status appears
-> in the final section.
+> Historical note: this audit records the analysis that motivated the v0.5
+> prototype. RepairScope-Bench v0.6 now uses real STATE-Bench environment
+> classes, tool-generated failure snapshots, Pareto economic scoring, and two
+> independent Oracle checks. See the current Data Card and Evaluation
+> Protocol for the release definition.
 
 This note records a code-level comparison performed against the public
 STT-Arena and STATE-Bench repositories on 2026-07-24. It separates what the

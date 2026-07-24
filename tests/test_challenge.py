@@ -15,7 +15,7 @@ from repairscope_bench.validation import validate_dataset
 
 
 ROOT = Path(__file__).resolve().parents[1]
-DATA = ROOT / "data" / "challenge"
+DATA = ROOT / "data" / "legacy" / "v0.5" / "challenge"
 
 
 class ChallengeScriptedAdapter:

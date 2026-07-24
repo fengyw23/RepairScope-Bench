@@ -346,6 +346,10 @@ SHOPPING_V05_TOOLS = [
 
 
 def tool_definitions_for_task(task: dict[str, Any]) -> list[dict[str, Any]]:
+    if task["schema_version"] == "0.6":
+        from .v06_environment import tool_definitions_v06
+
+        return tool_definitions_v06(task)
     if task["schema_version"] == "0.5":
         tools = TRAVEL_V05_TOOLS if task["domain"] == "travel" else SHOPPING_V05_TOOLS
         result = deepcopy(tools)

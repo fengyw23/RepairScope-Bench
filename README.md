@@ -1,175 +1,166 @@
 # RepairScope-Bench
 
-**Can an agent repair a partially executed task without destroying useful
-commitments or paying avoidable recovery costs?**
+**When a tool-using agent is blocked after creating real commitments, can it
+finish the task without choosing an economically dominated repair scope?**
 
-An agent has already booked flights, a hotel, a transfer, and a conference
-pass when a dinner reservation fails. Completing the task is not enough: a
-full rollback can still reach a valid final state while forfeiting refunds and
-package credits. RepairScope-Bench evaluates whether the agent explores the
-current environment, executes a valid repair, and selects the
-minimum-additional-loss repair scope.
+RepairScope-Bench v0.6 is a fixed-failure-state benchmark for post-commit
+agent recovery. Flights, hotels, orders, warranties, and service contracts
+are first created through executable tools and persisted in a STATE-Bench
+domain database. A builder then injects one changed fact, executes a failing
+operation, and hashes the resulting snapshot. Every model starts from an
+independent copy of that same state.
 
-> Status: **v0.5.1 research challenge set**. The repository contains the
-> original 16-task protocol pilot and a new 12-task paired challenge set.
-> This remains a research artifact, not a leaderboard-scale dataset.
+The model is not told which records to keep, cancel, or replace. It sees only
+the natural customer request, a compact trace of successful earlier tool
+activity, the latest failure, and ordinary domain tools for inspecting and
+changing the state.
 
 [中文说明](README.zh-CN.md) · [Data card](docs/DATA_CARD.md) ·
-[Evaluation protocol](docs/EVALUATION.md) ·
-[Research positioning](docs/RESEARCH_STORY.md)
+[Evaluation](docs/EVALUATION.md) · [Research story](docs/RESEARCH_STORY.md) ·
+[Provider setup](docs/PROVIDERS.md)
 
-## What v0.5 changes
+## What is new in v0.6
 
-- **Larger repair graphs:** each challenge task has 486–729 raw candidate
-  repairs, 18–235 feasible repairs, 4–30 feasible scope patterns, and 4–30
-  objectively distinct recovery-loss levels.
-- **Paired objective demand:** every failure state appears once as a
-  feasibility-only request and once with a natural request to avoid waste.
-- **Non-local loss:** cancelling or changing one record can forfeit a package
-  credit, product rebate, license, or service term attached to another record.
-- **Distributed discovery:** the model must separately inspect records,
-  category-filtered live inventory, refund/exchange quotes, compatibility, and
-  linked settlement terms. Search never depends on a hidden exact-match phrase.
-- **Mechanism splits:** package breakage is development data, compatibility
-  cascade is test data, and service-contract cascade is a held-out mechanism.
-- **Correct budget semantics:** the official limit is 15 model turns. Read
-  calls do not consume a mutation budget. v0.5 exposes no `finish()` tool:
-  feasible tasks are scored from the resulting environment state.
-- **Optimization gap:** reports now include
-  `Goal Pass - Optimal Pass`, exposing agents that complete the goal but
-  choose a dominated repair scope.
+- **Real stateful foundations.** Travel tasks instantiate STATE-Bench's
+  `TravelEnvironment`; purchase tasks instantiate its
+  `CustomerSupportEnvironment`. The dependency is pinned to commit
+  `4efcbf2d4fe60df04878859b692d9391f3d5b33a`.
+- **Verifiable failure boundaries.** Every prior commitment is traceable to a
+  successful write-tool result. The final pre-evaluation operation really
+  fails, and the serialized state, event log, and transaction ledger are
+  replay-checked.
+- **No answer-leaking cost tool.** Agents must combine item-level orders,
+  refund previews, compatibility facts, and contract terms. There is no
+  global cost summary, hidden loss field, benchmark `finish()` action, or
+  mutation budget.
+- **Objective multi-criteria scoring.** Hard goals are checked first.
+  Goal-satisfying outcomes are accepted iff no feasible repair is no worse in
+  both irreversible loss and net recovery outlay and strictly better in at
+  least one. No subjective utility weights are used.
+- **Counterfactual scope flips.** Each family has four variants. One refund
+  fact or one bundle/licence term changes while the operational state remains
+  the same, causing the Pareto-optimal repair scope to flip.
+- **Two independent gold checks.** A bounded semantic state search and a
+  separately implemented candidate-scope enumerator must agree before a task
+  is released.
 
-## Scientific target
+## Dataset
 
-Every model starts from the same authoritative failure boundary. It receives:
+The default set contains 24 independently materialized failure snapshots:
 
-1. the customer request;
-2. the public trace of successful earlier operations;
-3. the latest failed tool result;
-4. executable domain tools.
-
-It does **not** receive evaluator constraints, the objective tuple, global
-loss totals, optimal scopes, or an answer trajectory. It must query the
-environment and mutate persistent state. This controlled track isolates
-post-commit repair-scope selection; it does not claim to score pre-failure
-planning quality.
-
-## Objective and metrics
-
-Hard constraints are checked first. Among goal-satisfying terminal states, the
-oracle minimizes:
-
-```text
-(recovery_loss,
- lifecycle_cost,
- mutated_prior_commitments,
- state_changing_actions)
-```
-
-`recovery_loss` is computed from auditable transactions:
-
-```text
-unrefunded cancelled value
-+ wasted recovery purchases
-+ positive in-place modification cash
-+ triggered linked settlement charges
-```
-
-All exact ties are accepted. Primary reports contain Goal Pass@1/Pass^5,
-Optimal Pass@1/Pass^5, Scope-Optimization Gap, extra loss, financial regret,
-scope distance, over-repair, under-repair, and tool errors.
-
-## Challenge-set design
-
-| Family | Persistent prefix | Failed operation | Counterfactual scope flip |
+| Domain | Family | Already committed | Failed operation |
 |---|---|---|---|
-| Shanghai conference | flights, hotel, transfer, pass | dinner sold out | keep hotel vs replace hotel and settle a package term |
-| Radiology workstation | laptop, monitor, key, warranty, software | dock rejected | add universal dock vs replace laptop, warranty, and software |
-| Clinic cold chain | freezer, sensor, gateway, service, installation | battery out of stock | add legacy battery vs replace freezer and service contract |
+| Travel | Shanghai conference dinner | flight, hotel, transfer, conference pass | restaurant booking |
+| Travel | destination-linked ground plan | changed flight, hotel, ground transport, pass | replacement hotel |
+| Travel | shortened trip | flight, hotel, rental car, event pass | date-aligned replacement |
+| Customer support | radiology workstation | computer, monitor, warranty, software | dock purchase |
+| Customer support | clinic cold chain | freezer, sensor, gateway, service, installation | battery purchase |
+| Customer support | media production kit | camera, storage, lens, protection, software | accessory purchase |
 
-Each A/B counterfactual changes one decisive availability or compatibility
-fact. The public failure message stays the same while the oracle-optimal scope
-changes.
+Each family has `refund-low`, `refund-full`, `penalty-none`, and
+`penalty-high` variants. Every task has three executable semantic recovery
+scopes, including local repair and non-local replacement. At least one
+goal-satisfying scope is economically dominated.
 
-Quality gates reject a loss-aware task unless it has at least:
+This is a controlled recovery-stage benchmark. It deliberately does not score
+planning before the failure boundary.
 
-- 100 raw candidate plans;
-- 8 goal-satisfying plans;
-- 4 feasible repair-scope patterns;
-- 3 recovery-loss levels.
+## Economic criterion
 
-Actual checked-in tasks exceed these minima.
+For every feasible terminal state:
 
-## Install, validate, and test
+```text
+irreversible_loss =
+    cancellation and modification fees
+  + non-refundable value
+  + rebate or licence clawbacks
+  + wasted recovery purchases
+
+net_recovery_outlay =
+    post-boundary charges
+  + fees and settlements
+  - post-boundary refunds and compensation
+```
+
+Outcome A dominates B iff A is no worse on both values and strictly better on
+at least one. All non-dominated outcomes are accepted. The number of changed
+commitments and tool calls are diagnostic only.
+
+Primary metrics are:
+
+- Goal Pass@1 and Goal Pass^5;
+- Non-Dominated Repair Pass@1 and Pass^5;
+- Dominated Repair Rate;
+- irreversible-loss and net-outlay regret;
+- over-repair, under-repair, tool errors, and turn exhaustion.
+
+If a model reaches a feasible outcome better than the computed frontier, the
+run is marked `oracle_violation`, is not penalized, and is excluded from the
+official aggregate.
+
+## Install and verify
+
+Python 3.12 or later and Git are required because STATE-Bench is installed
+from the pinned Git revision.
 
 ```bash
 python -m pip install -e .
-python scripts/build_pilot.py
-python scripts/build_challenge.py
-repairscope validate data/pilot
-repairscope validate data/challenge
+python scripts/build_v06.py
+repairscope validate data/v06
+repairscope run-baselines data/v06
 python -m unittest discover -s tests -v
-repairscope run-baselines data/challenge
 ```
 
-Challenge regression results:
+The checked-in v0.6 data currently yields:
 
-| Baseline | Goal Pass | Optimal Pass |
+| Baseline | Goal Pass | Non-Dominated Repair Pass |
 |---|---:|---:|
-| No repair | 0 / 12 | 0 / 12 |
-| Repair only failed slot | 0 / 12 | 0 / 12 |
-| Dependency-declared repair | 0 / 12 | 0 / 12 |
-| Full rollback and rebuild | 12 / 12 | 0 / 12 |
-| Globally cheapest valid final state | 12 / 12 | 6 / 12 |
-| Loss-aware exhaustive oracle | 12 / 12 | 12 / 12 |
+| No repair | 0 / 24 | 0 / 24 |
+| Repair only the failed part | 24 / 24 | 12 / 24 |
+| Dependency-closure repair | 24 / 24 | 12 / 24 |
+| Full rollback | 24 / 24 | 0 / 24 |
+| Choose by final sticker price | 24 / 24 | 12 / 24 |
+| Choose by gross refund only | 24 / 24 | 0 / 24 |
+| Pareto oracle | 24 / 24 | 24 / 24 |
 
-This is the intended diagnostic separation: a strategy can complete every
-task and still fail every repair-scope judgment.
+The separation is intentional: completing the customer's task does not prove
+that the agent chose a defensible recovery scope.
 
-## Run current models
-
-The harness supports OpenAI Responses, Anthropic Messages, and
-OpenAI-compatible Chat Completions for Qwen, DeepSeek, and gateways. API keys
-are read from environment variables and are never written to task logs.
+## Run models
 
 ```bash
-repairscope run-suite data/challenge --provider openai \
-  --model YOUR_MODEL_ID --output-dir results/openai
+repairscope run-suite data/v06 --provider openai \
+  --model YOUR_MODEL_ID --repeats 5 --output-dir results/openai
 
-repairscope run-suite data/challenge --provider anthropic \
-  --model YOUR_MODEL_ID --output-dir results/anthropic
+repairscope run-suite data/v06 --provider anthropic \
+  --model YOUR_MODEL_ID --repeats 5 --output-dir results/anthropic
 
-repairscope run-suite data/challenge --provider deepseek \
-  --model YOUR_MODEL_ID --output-dir results/deepseek
+repairscope run-suite data/v06 --provider qwen \
+  --model YOUR_MODEL_ID --repeats 5 --output-dir results/qwen
 
-repairscope run-suite data/challenge --provider openai-compatible \
-  --model YOUR_MODEL_ID --base-url https://gateway.example/v1 \
-  --output-dir results/gateway
+repairscope run-suite data/v06 --provider deepseek \
+  --model YOUR_MODEL_ID --repeats 5 --output-dir results/deepseek
 ```
 
-The official protocol uses five independent runs per task and at most 15
-model turns per run. A single run is only a smoke test.
+The task-level limit is 15 model turns. If a larger CLI value is supplied,
+v0.6 still enforces the task limit. A model may stop naturally; scoring uses
+the terminal database state and does not depend on emitting `finish()`.
 
 ## Repository layout
 
 ```text
-data/pilot/                    v0.4 protocol pilot
-data/challenge/                v0.5 paired challenge tasks
-data/gold/                     evaluator-only solver output
-scripts/build_pilot.py         deterministic pilot generator
-scripts/build_challenge.py     deterministic challenge generator
-src/repairscope_bench/         environment, oracle, evaluator, runner
-tests/                         accounting, data, provider, and runner tests
-docs/                          protocol and research documentation
+data/v06/                     public v0.6 tasks and failure snapshots
+data/gold/v06.json            evaluator-only Pareto frontiers and replays
+data/legacy/v0.5/             archived v0.4/v0.5 data and gold
+scripts/build_v06.py          deterministic failure-boundary builder
+src/repairscope_bench/        adapters, DSL, oracle, evaluator, and harness
+tests/                        unit, integration, replay, and protocol tests
+docs/                         data, evaluation, and research documentation
 ```
 
-## Honest scope
+## Claim boundary
 
-The contribution is not “the first partial rollback.” Compensation and
-partial recovery predate language agents. The defensible contribution is an
-executable, controlled evaluation of **post-commit repair-scope selection
-under hard goals and objective additional losses**.
-
-The current challenge set proves the mechanism and evaluation separation, but
-a conference submission still needs more independently authored domains,
-larger hidden test sets, second-oracle verification, and broad model results.
+The contribution is not the first proposal for partial rollback. It is an
+executable evaluation of whether language agents, faced with real persisted
+commitments and auditable economic consequences, complete a task using a
+repair scope that is not objectively dominated by another feasible repair.

@@ -12,6 +12,10 @@ def evaluate_actions(
     actions: list[dict[str, Any]],
     max_actions: int | None = None,
 ) -> dict[str, Any]:
+    if task.get("schema_version") == "0.6":
+        from .v06_evaluator import evaluate_v06_actions
+
+        return evaluate_v06_actions(task, actions)
     environment = RepairEnvironment(task)
     action_limit = max_actions or task.get("max_mutations")
     for action in actions:

@@ -9,8 +9,8 @@ from typing import Any
 
 
 ROOT = Path(__file__).resolve().parents[1]
-OUTPUT = ROOT / "data" / "challenge"
-GOLD_OUTPUT = ROOT / "data" / "gold" / "challenge.json"
+OUTPUT = ROOT / "data" / "legacy" / "v0.5" / "challenge"
+GOLD_OUTPUT = ROOT / "data" / "legacy" / "v0.5" / "gold" / "challenge.json"
 OBJECTIVE = [
     "recovery_loss",
     "financial_cost",

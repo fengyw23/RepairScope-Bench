@@ -11,7 +11,7 @@ from repairscope_bench.validation import validate_dataset
 
 
 ROOT = Path(__file__).resolve().parents[1]
-DATA = ROOT / "data" / "pilot"
+DATA = ROOT / "data" / "legacy" / "v0.5" / "pilot"
 
 
 class PilotDatasetTest(unittest.TestCase):

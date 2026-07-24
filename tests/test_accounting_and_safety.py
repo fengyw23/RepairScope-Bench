@@ -12,7 +12,7 @@ from repairscope_bench.oracle import solve_task
 
 
 ROOT = Path(__file__).resolve().parents[1]
-DATA = ROOT / "data" / "pilot"
+DATA = ROOT / "data" / "legacy" / "v0.5" / "pilot"
 
 
 class AccountingAndSafetyTest(unittest.TestCase):

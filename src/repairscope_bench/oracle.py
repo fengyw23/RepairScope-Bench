@@ -51,6 +51,10 @@ _ORACLE_CACHE: dict[str, OracleResult] = {}
 
 def solve_task(task: dict[str, Any]) -> OracleResult:
     """Solve a task exactly, reusing results across evaluator and baselines."""
+    if task.get("schema_version") == "0.6":
+        from .v06_oracle import solve_task_v06
+
+        return solve_task_v06(task)  # type: ignore[return-value]
     public_task = {key: value for key, value in task.items() if not key.startswith("_")}
     cache_key = json.dumps(public_task, sort_keys=True, separators=(",", ":"))
     if cache_key not in _ORACLE_CACHE:

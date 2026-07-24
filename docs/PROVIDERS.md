@@ -32,7 +32,7 @@ does not incorrectly claim that the request went directly to a model vendor:
 
 ```bash
 export OPENAI_COMPATIBLE_API_KEY=...
-repairscope run-suite data/challenge \
+repairscope run-suite data/v06 \
   --provider openai-compatible \
   --model YOUR_GATEWAY_MODEL_ID \
   --base-url https://gateway.example/v1 \
@@ -65,7 +65,7 @@ marketing alias. Use `--repeats` for stochastic runs. Each run stores:
 - exact model-visible system/user input;
 - normalized token usage;
 - model text, tool calls, tool results, and stop reasons;
-- action and turn budgets;
+- task turn limit and terminal-state score;
 - complete evaluator score and environment event log.
 
 By default the harness refuses to mix a new suite with an existing

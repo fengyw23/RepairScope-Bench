@@ -4,10 +4,10 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "repairscope-bench"
-version = "0.5.1"
+version = "0.6.0"
 description = "A controlled benchmark for post-commit agent recovery from standardized failure states."
 readme = "README.md"
-requires-python = ">=3.10"
+requires-python = ">=3.12"
 license = { text = "MIT" }
 authors = [
   { name = "RepairScope-Bench contributors" }
@@ -18,7 +18,9 @@ classifiers = [
   "License :: OSI Approved :: MIT License",
   "Programming Language :: Python :: 3",
 ]
-dependencies = []
+dependencies = [
+  "state-bench @ git+https://github.com/microsoft/STATE-Bench.git@4efcbf2d4fe60df04878859b692d9391f3d5b33a",
+]
 
 [project.scripts]
 repairscope = "repairscope_bench.cli:main"

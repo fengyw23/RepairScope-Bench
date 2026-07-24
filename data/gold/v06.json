@@ -1,0 +1,2990 @@
+{
+  "conference-dinner-refund-low": {
+    "feasible": true,
+    "frontier": [
+      {
+        "economic_vector": {
+          "irreversible_loss": 0,
+          "net_recovery_outlay": 300
+        },
+        "scope": {
+          "HR-0001": "KEEP",
+          "BK-0001": "KEEP",
+          "SV-0002": "KEEP",
+          "BK-0002": "KEEP",
+          "SV-0001": "KEEP"
+        },
+        "semantic_actions": [
+          "local-repair"
+        ],
+        "tool_calls": [
+          {
+            "name": "book_local_service",
+            "arguments": {
+              "option_id": "conference-dinner-dinner-LOCAL",
+              "user_id": "user_repair"
+            }
+          }
+        ],
+        "state_hash": "02efaf07b766183ee1edf4182d6a50ad7f09f445f0c987efb4eada1b70a2d1cd",
+        "changed_boundary_entities": [],
+        "state_changing_actions": 1
+      }
+    ],
+    "feasible_terminal_count": 3,
+    "feasible_scope_count": 3,
+    "explored_state_count": 8,
+    "semantic_action_count": 3,
+    "independent_frontier": [
+      {
+        "economic_vector": {
+          "irreversible_loss": 0,
+          "net_recovery_outlay": 300
+        },
+        "scope": {
+          "HR-0001": "KEEP",
+          "BK-0001": "KEEP",
+          "SV-0002": "KEEP",
+          "BK-0002": "KEEP",
+          "SV-0001": "KEEP"
+        },
+        "semantic_actions": [
+          "local-repair"
+        ],
+        "tool_calls": [
+          {
+            "name": "book_local_service",
+            "arguments": {
+              "option_id": "conference-dinner-dinner-LOCAL",
+              "user_id": "user_repair"
+            }
+          }
+        ],
+        "state_hash": "02efaf07b766183ee1edf4182d6a50ad7f09f445f0c987efb4eada1b70a2d1cd",
+        "changed_boundary_entities": [],
+        "state_changing_actions": 1,
+        "candidate_scope_id": "local-repair"
+      }
+    ]
+  },
+  "conference-dinner-refund-full": {
+    "feasible": true,
+    "frontier": [
+      {
+        "economic_vector": {
+          "irreversible_loss": 0,
+          "net_recovery_outlay": -110
+        },
+        "scope": {
+          "HR-0001": "REPLACE",
+          "BK-0001": "KEEP",
+          "SV-0002": "KEEP",
+          "BK-0002": "KEEP",
+          "SV-0001": "REPLACE"
+        },
+        "semantic_actions": [
+          "replace-hotel-bundle-a"
+        ],
+        "tool_calls": [
+          {
+            "name": "cancel_hotel_reservation",
+            "arguments": {
+              "reservation_id": "HR-0001"
+            }
+          },
+          {
+            "name": "cancel_hotel_reservation",
+            "arguments": {
+              "reservation_id": "HR-0001",
+              "confirm": true
+            }
+          },
+          {
+            "name": "cancel_local_service",
+            "arguments": {
+              "service_id": "SV-0001"
+            }
+          },
+          {
+            "name": "cancel_local_service",
+            "arguments": {
+              "service_id": "SV-0001",
+              "confirm": true
+            }
+          },
+          {
+            "name": "book_hotel",
+            "arguments": {
+              "hotel_id": "conference-dinner-HOTEL-A",
+              "user_id": "user_repair"
+            }
+          },
+          {
+            "name": "book_local_service",
+            "arguments": {
+              "option_id": "conference-dinner-TRANSFER-A",
+              "user_id": "user_repair"
+            }
+          },
+          {
+            "name": "book_local_service",
+            "arguments": {
+              "option_id": "conference-dinner-dinner-A",
+              "user_id": "user_repair"
+            }
+          }
+        ],
+        "state_hash": "89e57de543ddb3e36f5ec4520218c9612ba4e0fd157c655074e699ef88f68ef5",
+        "changed_boundary_entities": [
+          "HR-0001",
+          "SV-0001"
+        ],
+        "state_changing_actions": 5
+      }
+    ],
+    "feasible_terminal_count": 3,
+    "feasible_scope_count": 3,
+    "explored_state_count": 8,
+    "semantic_action_count": 3,
+    "independent_frontier": [
+      {
+        "economic_vector": {
+          "irreversible_loss": 0,
+          "net_recovery_outlay": -110
+        },
+        "scope": {
+          "HR-0001": "REPLACE",
+          "BK-0001": "KEEP",
+          "SV-0002": "KEEP",
+          "BK-0002": "KEEP",
+          "SV-0001": "REPLACE"
+        },
+        "semantic_actions": [
+          "replace-hotel-bundle-a"
+        ],
+        "tool_calls": [
+          {
+            "name": "cancel_hotel_reservation",
+            "arguments": {
+              "reservation_id": "HR-0001"
+            }
+          },
+          {
+            "name": "cancel_hotel_reservation",
+            "arguments": {
+              "reservation_id": "HR-0001",
+              "confirm": true
+            }
+          },
+          {
+            "name": "cancel_local_service",
+            "arguments": {
+              "service_id": "SV-0001"
+            }
+          },
+          {
+            "name": "cancel_local_service",
+            "arguments": {
+              "service_id": "SV-0001",
+              "confirm": true
+            }
+          },
+          {
+            "name": "book_hotel",
+            "arguments": {
+              "hotel_id": "conference-dinner-HOTEL-A",
+              "user_id": "user_repair"
+            }
+          },
+          {
+            "name": "book_local_service",
+            "arguments": {
+              "option_id": "conference-dinner-TRANSFER-A",
+              "user_id": "user_repair"
+            }
+          },
+          {
+            "name": "book_local_service",
+            "arguments": {
+              "option_id": "conference-dinner-dinner-A",
+              "user_id": "user_repair"
+            }
+          }
+        ],
+        "state_hash": "89e57de543ddb3e36f5ec4520218c9612ba4e0fd157c655074e699ef88f68ef5",
+        "changed_boundary_entities": [
+          "HR-0001",
+          "SV-0001"
+        ],
+        "state_changing_actions": 5,
+        "candidate_scope_id": "replace-hotel-bundle-a"
+      }
+    ]
+  },
+  "conference-dinner-penalty-none": {
+    "feasible": true,
+    "frontier": [
+      {
+        "economic_vector": {
+          "irreversible_loss": 0,
+          "net_recovery_outlay": -160
+        },
+        "scope": {
+          "HR-0001": "REPLACE",
+          "BK-0001": "KEEP",
+          "SV-0002": "KEEP",
+          "BK-0002": "KEEP",
+          "SV-0001": "REPLACE"
+        },
+        "semantic_actions": [
+          "replace-hotel-bundle-a"
+        ],
+        "tool_calls": [
+          {
+            "name": "cancel_hotel_reservation",
+            "arguments": {
+              "reservation_id": "HR-0001"
+            }
+          },
+          {
+            "name": "cancel_hotel_reservation",
+            "arguments": {
+              "reservation_id": "HR-0001",
+              "confirm": true
+            }
+          },
+          {
+            "name": "cancel_local_service",
+            "arguments": {
+              "service_id": "SV-0001"
+            }
+          },
+          {
+            "name": "cancel_local_service",
+            "arguments": {
+              "service_id": "SV-0001",
+              "confirm": true
+            }
+          },
+          {
+            "name": "book_hotel",
+            "arguments": {
+              "hotel_id": "conference-dinner-HOTEL-A",
+              "user_id": "user_repair"
+            }
+          },
+          {
+            "name": "book_local_service",
+            "arguments": {
+              "option_id": "conference-dinner-TRANSFER-A",
+              "user_id": "user_repair"
+            }
+          },
+          {
+            "name": "book_local_service",
+            "arguments": {
+              "option_id": "conference-dinner-dinner-A",
+              "user_id": "user_repair"
+            }
+          }
+        ],
+        "state_hash": "1e73da7ea6132c245952ee67403f7b5e9b04eda2fd0a71d1469520c946bc5893",
+        "changed_boundary_entities": [
+          "HR-0001",
+          "SV-0001"
+        ],
+        "state_changing_actions": 5
+      }
+    ],
+    "feasible_terminal_count": 3,
+    "feasible_scope_count": 3,
+    "explored_state_count": 8,
+    "semantic_action_count": 3,
+    "independent_frontier": [
+      {
+        "economic_vector": {
+          "irreversible_loss": 0,
+          "net_recovery_outlay": -160
+        },
+        "scope": {
+          "HR-0001": "REPLACE",
+          "BK-0001": "KEEP",
+          "SV-0002": "KEEP",
+          "BK-0002": "KEEP",
+          "SV-0001": "REPLACE"
+        },
+        "semantic_actions": [
+          "replace-hotel-bundle-a"
+        ],
+        "tool_calls": [
+          {
+            "name": "cancel_hotel_reservation",
+            "arguments": {
+              "reservation_id": "HR-0001"
+            }
+          },
+          {
+            "name": "cancel_hotel_reservation",
+            "arguments": {
+              "reservation_id": "HR-0001",
+              "confirm": true
+            }
+          },
+          {
+            "name": "cancel_local_service",
+            "arguments": {
+              "service_id": "SV-0001"
+            }
+          },
+          {
+            "name": "cancel_local_service",
+            "arguments": {
+              "service_id": "SV-0001",
+              "confirm": true
+            }
+          },
+          {
+            "name": "book_hotel",
+            "arguments": {
+              "hotel_id": "conference-dinner-HOTEL-A",
+              "user_id": "user_repair"
+            }
+          },
+          {
+            "name": "book_local_service",
+            "arguments": {
+              "option_id": "conference-dinner-TRANSFER-A",
+              "user_id": "user_repair"
+            }
+          },
+          {
+            "name": "book_local_service",
+            "arguments": {
+              "option_id": "conference-dinner-dinner-A",
+              "user_id": "user_repair"
+            }
+          }
+        ],
+        "state_hash": "1e73da7ea6132c245952ee67403f7b5e9b04eda2fd0a71d1469520c946bc5893",
+        "changed_boundary_entities": [
+          "HR-0001",
+          "SV-0001"
+        ],
+        "state_changing_actions": 5,
+        "candidate_scope_id": "replace-hotel-bundle-a"
+      }
+    ]
+  },
+  "conference-dinner-penalty-high": {
+    "feasible": true,
+    "frontier": [
+      {
+        "economic_vector": {
+          "irreversible_loss": 0,
+          "net_recovery_outlay": 450
+        },
+        "scope": {
+          "HR-0001": "KEEP",
+          "BK-0001": "KEEP",
+          "SV-0002": "KEEP",
+          "BK-0002": "KEEP",
+          "SV-0001": "KEEP"
+        },
+        "semantic_actions": [
+          "local-repair"
+        ],
+        "tool_calls": [
+          {
+            "name": "book_local_service",
+            "arguments": {
+              "option_id": "conference-dinner-dinner-LOCAL",
+              "user_id": "user_repair"
+            }
+          }
+        ],
+        "state_hash": "f8b8ec43da82d219d42a5c29baeaa378f1827fdac729f5c628af271d5fb198cd",
+        "changed_boundary_entities": [],
+        "state_changing_actions": 1
+      }
+    ],
+    "feasible_terminal_count": 3,
+    "feasible_scope_count": 3,
+    "explored_state_count": 8,
+    "semantic_action_count": 3,
+    "independent_frontier": [
+      {
+        "economic_vector": {
+          "irreversible_loss": 0,
+          "net_recovery_outlay": 450
+        },
+        "scope": {
+          "HR-0001": "KEEP",
+          "BK-0001": "KEEP",
+          "SV-0002": "KEEP",
+          "BK-0002": "KEEP",
+          "SV-0001": "KEEP"
+        },
+        "semantic_actions": [
+          "local-repair"
+        ],
+        "tool_calls": [
+          {
+            "name": "book_local_service",
+            "arguments": {
+              "option_id": "conference-dinner-dinner-LOCAL",
+              "user_id": "user_repair"
+            }
+          }
+        ],
+        "state_hash": "f8b8ec43da82d219d42a5c29baeaa378f1827fdac729f5c628af271d5fb198cd",
+        "changed_boundary_entities": [],
+        "state_changing_actions": 1,
+        "candidate_scope_id": "local-repair"
+      }
+    ]
+  },
+  "destination-ground-plan-refund-low": {
+    "feasible": true,
+    "frontier": [
+      {
+        "economic_vector": {
+          "irreversible_loss": 0,
+          "net_recovery_outlay": 300
+        },
+        "scope": {
+          "HR-0001": "KEEP",
+          "BK-0001": "KEEP",
+          "SV-0002": "KEEP",
+          "BK-0002": "KEEP",
+          "SV-0001": "KEEP"
+        },
+        "semantic_actions": [
+          "local-repair"
+        ],
+        "tool_calls": [
+          {
+            "name": "book_local_service",
+            "arguments": {
+              "option_id": "destination-ground-plan-venue_shuttle-LOCAL",
+              "user_id": "user_repair"
+            }
+          }
+        ],
+        "state_hash": "d4566d84d31b512beff22b3fd7d8f4a61d68bc51c91e0befe0969cdb9a71a900",
+        "changed_boundary_entities": [],
+        "state_changing_actions": 1
+      }
+    ],
+    "feasible_terminal_count": 3,
+    "feasible_scope_count": 3,
+    "explored_state_count": 8,
+    "semantic_action_count": 3,
+    "independent_frontier": [
+      {
+        "economic_vector": {
+          "irreversible_loss": 0,
+          "net_recovery_outlay": 300
+        },
+        "scope": {
+          "HR-0001": "KEEP",
+          "BK-0001": "KEEP",
+          "SV-0002": "KEEP",
+          "BK-0002": "KEEP",
+          "SV-0001": "KEEP"
+        },
+        "semantic_actions": [
+          "local-repair"
+        ],
+        "tool_calls": [
+          {
+            "name": "book_local_service",
+            "arguments": {
+              "option_id": "destination-ground-plan-venue_shuttle-LOCAL",
+              "user_id": "user_repair"
+            }
+          }
+        ],
+        "state_hash": "d4566d84d31b512beff22b3fd7d8f4a61d68bc51c91e0befe0969cdb9a71a900",
+        "changed_boundary_entities": [],
+        "state_changing_actions": 1,
+        "candidate_scope_id": "local-repair"
+      }
+    ]
+  },
+  "destination-ground-plan-refund-full": {
+    "feasible": true,
+    "frontier": [
+      {
+        "economic_vector": {
+          "irreversible_loss": 0,
+          "net_recovery_outlay": -110
+        },
+        "scope": {
+          "HR-0001": "REPLACE",
+          "BK-0001": "KEEP",
+          "SV-0002": "KEEP",
+          "BK-0002": "KEEP",
+          "SV-0001": "REPLACE"
+        },
+        "semantic_actions": [
+          "replace-hotel-bundle-a"
+        ],
+        "tool_calls": [
+          {
+            "name": "cancel_hotel_reservation",
+            "arguments": {
+              "reservation_id": "HR-0001"
+            }
+          },
+          {
+            "name": "cancel_hotel_reservation",
+            "arguments": {
+              "reservation_id": "HR-0001",
+              "confirm": true
+            }
+          },
+          {
+            "name": "cancel_local_service",
+            "arguments": {
+              "service_id": "SV-0001"
+            }
+          },
+          {
+            "name": "cancel_local_service",
+            "arguments": {
+              "service_id": "SV-0001",
+              "confirm": true
+            }
+          },
+          {
+            "name": "book_hotel",
+            "arguments": {
+              "hotel_id": "destination-ground-plan-HOTEL-A",
+              "user_id": "user_repair"
+            }
+          },
+          {
+            "name": "book_local_service",
+            "arguments": {
+              "option_id": "destination-ground-plan-TRANSFER-A",
+              "user_id": "user_repair"
+            }
+          },
+          {
+            "name": "book_local_service",
+            "arguments": {
+              "option_id": "destination-ground-plan-venue_shuttle-A",
+              "user_id": "user_repair"
+            }
+          }
+        ],
+        "state_hash": "cc2ef2d80e171ca5cc4826e7bdc492e9eaecabccc2b5e28c7635f347b7dc3ab1",
+        "changed_boundary_entities": [
+          "HR-0001",
+          "SV-0001"
+        ],
+        "state_changing_actions": 5
+      }
+    ],
+    "feasible_terminal_count": 3,
+    "feasible_scope_count": 3,
+    "explored_state_count": 8,
+    "semantic_action_count": 3,
+    "independent_frontier": [
+      {
+        "economic_vector": {
+          "irreversible_loss": 0,
+          "net_recovery_outlay": -110
+        },
+        "scope": {
+          "HR-0001": "REPLACE",
+          "BK-0001": "KEEP",
+          "SV-0002": "KEEP",
+          "BK-0002": "KEEP",
+          "SV-0001": "REPLACE"
+        },
+        "semantic_actions": [
+          "replace-hotel-bundle-a"
+        ],
+        "tool_calls": [
+          {
+            "name": "cancel_hotel_reservation",
+            "arguments": {
+              "reservation_id": "HR-0001"
+            }
+          },
+          {
+            "name": "cancel_hotel_reservation",
+            "arguments": {
+              "reservation_id": "HR-0001",
+              "confirm": true
+            }
+          },
+          {
+            "name": "cancel_local_service",
+            "arguments": {
+              "service_id": "SV-0001"
+            }
+          },
+          {
+            "name": "cancel_local_service",
+            "arguments": {
+              "service_id": "SV-0001",
+              "confirm": true
+            }
+          },
+          {
+            "name": "book_hotel",
+            "arguments": {
+              "hotel_id": "destination-ground-plan-HOTEL-A",
+              "user_id": "user_repair"
+            }
+          },
+          {
+            "name": "book_local_service",
+            "arguments": {
+              "option_id": "destination-ground-plan-TRANSFER-A",
+              "user_id": "user_repair"
+            }
+          },
+          {
+            "name": "book_local_service",
+            "arguments": {
+              "option_id": "destination-ground-plan-venue_shuttle-A",
+              "user_id": "user_repair"
+            }
+          }
+        ],
+        "state_hash": "cc2ef2d80e171ca5cc4826e7bdc492e9eaecabccc2b5e28c7635f347b7dc3ab1",
+        "changed_boundary_entities": [
+          "HR-0001",
+          "SV-0001"
+        ],
+        "state_changing_actions": 5,
+        "candidate_scope_id": "replace-hotel-bundle-a"
+      }
+    ]
+  },
+  "destination-ground-plan-penalty-none": {
+    "feasible": true,
+    "frontier": [
+      {
+        "economic_vector": {
+          "irreversible_loss": 0,
+          "net_recovery_outlay": -160
+        },
+        "scope": {
+          "HR-0001": "REPLACE",
+          "BK-0001": "KEEP",
+          "SV-0002": "KEEP",
+          "BK-0002": "KEEP",
+          "SV-0001": "REPLACE"
+        },
+        "semantic_actions": [
+          "replace-hotel-bundle-a"
+        ],
+        "tool_calls": [
+          {
+            "name": "cancel_hotel_reservation",
+            "arguments": {
+              "reservation_id": "HR-0001"
+            }
+          },
+          {
+            "name": "cancel_hotel_reservation",
+            "arguments": {
+              "reservation_id": "HR-0001",
+              "confirm": true
+            }
+          },
+          {
+            "name": "cancel_local_service",
+            "arguments": {
+              "service_id": "SV-0001"
+            }
+          },
+          {
+            "name": "cancel_local_service",
+            "arguments": {
+              "service_id": "SV-0001",
+              "confirm": true
+            }
+          },
+          {
+            "name": "book_hotel",
+            "arguments": {
+              "hotel_id": "destination-ground-plan-HOTEL-A",
+              "user_id": "user_repair"
+            }
+          },
+          {
+            "name": "book_local_service",
+            "arguments": {
+              "option_id": "destination-ground-plan-TRANSFER-A",
+              "user_id": "user_repair"
+            }
+          },
+          {
+            "name": "book_local_service",
+            "arguments": {
+              "option_id": "destination-ground-plan-venue_shuttle-A",
+              "user_id": "user_repair"
+            }
+          }
+        ],
+        "state_hash": "0a468d2e431e92f159b2ae2061c8be415599a3342fb1affb00634bb9b5f7a242",
+        "changed_boundary_entities": [
+          "HR-0001",
+          "SV-0001"
+        ],
+        "state_changing_actions": 5
+      }
+    ],
+    "feasible_terminal_count": 3,
+    "feasible_scope_count": 3,
+    "explored_state_count": 8,
+    "semantic_action_count": 3,
+    "independent_frontier": [
+      {
+        "economic_vector": {
+          "irreversible_loss": 0,
+          "net_recovery_outlay": -160
+        },
+        "scope": {
+          "HR-0001": "REPLACE",
+          "BK-0001": "KEEP",
+          "SV-0002": "KEEP",
+          "BK-0002": "KEEP",
+          "SV-0001": "REPLACE"
+        },
+        "semantic_actions": [
+          "replace-hotel-bundle-a"
+        ],
+        "tool_calls": [
+          {
+            "name": "cancel_hotel_reservation",
+            "arguments": {
+              "reservation_id": "HR-0001"
+            }
+          },
+          {
+            "name": "cancel_hotel_reservation",
+            "arguments": {
+              "reservation_id": "HR-0001",
+              "confirm": true
+            }
+          },
+          {
+            "name": "cancel_local_service",
+            "arguments": {
+              "service_id": "SV-0001"
+            }
+          },
+          {
+            "name": "cancel_local_service",
+            "arguments": {
+              "service_id": "SV-0001",
+              "confirm": true
+            }
+          },
+          {
+            "name": "book_hotel",
+            "arguments": {
+              "hotel_id": "destination-ground-plan-HOTEL-A",
+              "user_id": "user_repair"
+            }
+          },
+          {
+            "name": "book_local_service",
+            "arguments": {
+              "option_id": "destination-ground-plan-TRANSFER-A",
+              "user_id": "user_repair"
+            }
+          },
+          {
+            "name": "book_local_service",
+            "arguments": {
+              "option_id": "destination-ground-plan-venue_shuttle-A",
+              "user_id": "user_repair"
+            }
+          }
+        ],
+        "state_hash": "0a468d2e431e92f159b2ae2061c8be415599a3342fb1affb00634bb9b5f7a242",
+        "changed_boundary_entities": [
+          "HR-0001",
+          "SV-0001"
+        ],
+        "state_changing_actions": 5,
+        "candidate_scope_id": "replace-hotel-bundle-a"
+      }
+    ]
+  },
+  "destination-ground-plan-penalty-high": {
+    "feasible": true,
+    "frontier": [
+      {
+        "economic_vector": {
+          "irreversible_loss": 0,
+          "net_recovery_outlay": 450
+        },
+        "scope": {
+          "HR-0001": "KEEP",
+          "BK-0001": "KEEP",
+          "SV-0002": "KEEP",
+          "BK-0002": "KEEP",
+          "SV-0001": "KEEP"
+        },
+        "semantic_actions": [
+          "local-repair"
+        ],
+        "tool_calls": [
+          {
+            "name": "book_local_service",
+            "arguments": {
+              "option_id": "destination-ground-plan-venue_shuttle-LOCAL",
+              "user_id": "user_repair"
+            }
+          }
+        ],
+        "state_hash": "6dde0fab34099e6fa301efe7146ff8dbaceb784dc0bc3b371339dcee5c968abc",
+        "changed_boundary_entities": [],
+        "state_changing_actions": 1
+      }
+    ],
+    "feasible_terminal_count": 3,
+    "feasible_scope_count": 3,
+    "explored_state_count": 8,
+    "semantic_action_count": 3,
+    "independent_frontier": [
+      {
+        "economic_vector": {
+          "irreversible_loss": 0,
+          "net_recovery_outlay": 450
+        },
+        "scope": {
+          "HR-0001": "KEEP",
+          "BK-0001": "KEEP",
+          "SV-0002": "KEEP",
+          "BK-0002": "KEEP",
+          "SV-0001": "KEEP"
+        },
+        "semantic_actions": [
+          "local-repair"
+        ],
+        "tool_calls": [
+          {
+            "name": "book_local_service",
+            "arguments": {
+              "option_id": "destination-ground-plan-venue_shuttle-LOCAL",
+              "user_id": "user_repair"
+            }
+          }
+        ],
+        "state_hash": "6dde0fab34099e6fa301efe7146ff8dbaceb784dc0bc3b371339dcee5c968abc",
+        "changed_boundary_entities": [],
+        "state_changing_actions": 1,
+        "candidate_scope_id": "local-repair"
+      }
+    ]
+  },
+  "shortened-trip-refund-low": {
+    "feasible": true,
+    "frontier": [
+      {
+        "economic_vector": {
+          "irreversible_loss": 0,
+          "net_recovery_outlay": 300
+        },
+        "scope": {
+          "HR-0001": "KEEP",
+          "BK-0001": "KEEP",
+          "SV-0002": "KEEP",
+          "BK-0002": "KEEP",
+          "SV-0001": "KEEP"
+        },
+        "semantic_actions": [
+          "local-repair"
+        ],
+        "tool_calls": [
+          {
+            "name": "book_local_service",
+            "arguments": {
+              "option_id": "shortened-trip-departure_transfer-LOCAL",
+              "user_id": "user_repair"
+            }
+          }
+        ],
+        "state_hash": "604387623d7696740fff02d8708ef64a355e7ce659a520bebe8b4908c6f68da5",
+        "changed_boundary_entities": [],
+        "state_changing_actions": 1
+      }
+    ],
+    "feasible_terminal_count": 3,
+    "feasible_scope_count": 3,
+    "explored_state_count": 8,
+    "semantic_action_count": 3,
+    "independent_frontier": [
+      {
+        "economic_vector": {
+          "irreversible_loss": 0,
+          "net_recovery_outlay": 300
+        },
+        "scope": {
+          "HR-0001": "KEEP",
+          "BK-0001": "KEEP",
+          "SV-0002": "KEEP",
+          "BK-0002": "KEEP",
+          "SV-0001": "KEEP"
+        },
+        "semantic_actions": [
+          "local-repair"
+        ],
+        "tool_calls": [
+          {
+            "name": "book_local_service",
+            "arguments": {
+              "option_id": "shortened-trip-departure_transfer-LOCAL",
+              "user_id": "user_repair"
+            }
+          }
+        ],
+        "state_hash": "604387623d7696740fff02d8708ef64a355e7ce659a520bebe8b4908c6f68da5",
+        "changed_boundary_entities": [],
+        "state_changing_actions": 1,
+        "candidate_scope_id": "local-repair"
+      }
+    ]
+  },
+  "shortened-trip-refund-full": {
+    "feasible": true,
+    "frontier": [
+      {
+        "economic_vector": {
+          "irreversible_loss": 0,
+          "net_recovery_outlay": -110
+        },
+        "scope": {
+          "HR-0001": "REPLACE",
+          "BK-0001": "KEEP",
+          "SV-0002": "KEEP",
+          "BK-0002": "KEEP",
+          "SV-0001": "REPLACE"
+        },
+        "semantic_actions": [
+          "replace-hotel-bundle-a"
+        ],
+        "tool_calls": [
+          {
+            "name": "cancel_hotel_reservation",
+            "arguments": {
+              "reservation_id": "HR-0001"
+            }
+          },
+          {
+            "name": "cancel_hotel_reservation",
+            "arguments": {
+              "reservation_id": "HR-0001",
+              "confirm": true
+            }
+          },
+          {
+            "name": "cancel_local_service",
+            "arguments": {
+              "service_id": "SV-0001"
+            }
+          },
+          {
+            "name": "cancel_local_service",
+            "arguments": {
+              "service_id": "SV-0001",
+              "confirm": true
+            }
+          },
+          {
+            "name": "book_hotel",
+            "arguments": {
+              "hotel_id": "shortened-trip-HOTEL-A",
+              "user_id": "user_repair"
+            }
+          },
+          {
+            "name": "book_local_service",
+            "arguments": {
+              "option_id": "shortened-trip-TRANSFER-A",
+              "user_id": "user_repair"
+            }
+          },
+          {
+            "name": "book_local_service",
+            "arguments": {
+              "option_id": "shortened-trip-departure_transfer-A",
+              "user_id": "user_repair"
+            }
+          }
+        ],
+        "state_hash": "18c80d2c15f5bfabfa3cf2bc0dc3ecc4c843e704e89c4a91d3023f5a5fcfc5b4",
+        "changed_boundary_entities": [
+          "HR-0001",
+          "SV-0001"
+        ],
+        "state_changing_actions": 5
+      }
+    ],
+    "feasible_terminal_count": 3,
+    "feasible_scope_count": 3,
+    "explored_state_count": 8,
+    "semantic_action_count": 3,
+    "independent_frontier": [
+      {
+        "economic_vector": {
+          "irreversible_loss": 0,
+          "net_recovery_outlay": -110
+        },
+        "scope": {
+          "HR-0001": "REPLACE",
+          "BK-0001": "KEEP",
+          "SV-0002": "KEEP",
+          "BK-0002": "KEEP",
+          "SV-0001": "REPLACE"
+        },
+        "semantic_actions": [
+          "replace-hotel-bundle-a"
+        ],
+        "tool_calls": [
+          {
+            "name": "cancel_hotel_reservation",
+            "arguments": {
+              "reservation_id": "HR-0001"
+            }
+          },
+          {
+            "name": "cancel_hotel_reservation",
+            "arguments": {
+              "reservation_id": "HR-0001",
+              "confirm": true
+            }
+          },
+          {
+            "name": "cancel_local_service",
+            "arguments": {
+              "service_id": "SV-0001"
+            }
+          },
+          {
+            "name": "cancel_local_service",
+            "arguments": {
+              "service_id": "SV-0001",
+              "confirm": true
+            }
+          },
+          {
+            "name": "book_hotel",
+            "arguments": {
+              "hotel_id": "shortened-trip-HOTEL-A",
+              "user_id": "user_repair"
+            }
+          },
+          {
+            "name": "book_local_service",
+            "arguments": {
+              "option_id": "shortened-trip-TRANSFER-A",
+              "user_id": "user_repair"
+            }
+          },
+          {
+            "name": "book_local_service",
+            "arguments": {
+              "option_id": "shortened-trip-departure_transfer-A",
+              "user_id": "user_repair"
+            }
+          }
+        ],
+        "state_hash": "18c80d2c15f5bfabfa3cf2bc0dc3ecc4c843e704e89c4a91d3023f5a5fcfc5b4",
+        "changed_boundary_entities": [
+          "HR-0001",
+          "SV-0001"
+        ],
+        "state_changing_actions": 5,
+        "candidate_scope_id": "replace-hotel-bundle-a"
+      }
+    ]
+  },
+  "shortened-trip-penalty-none": {
+    "feasible": true,
+    "frontier": [
+      {
+        "economic_vector": {
+          "irreversible_loss": 0,
+          "net_recovery_outlay": -160
+        },
+        "scope": {
+          "HR-0001": "REPLACE",
+          "BK-0001": "KEEP",
+          "SV-0002": "KEEP",
+          "BK-0002": "KEEP",
+          "SV-0001": "REPLACE"
+        },
+        "semantic_actions": [
+          "replace-hotel-bundle-a"
+        ],
+        "tool_calls": [
+          {
+            "name": "cancel_hotel_reservation",
+            "arguments": {
+              "reservation_id": "HR-0001"
+            }
+          },
+          {
+            "name": "cancel_hotel_reservation",
+            "arguments": {
+              "reservation_id": "HR-0001",
+              "confirm": true
+            }
+          },
+          {
+            "name": "cancel_local_service",
+            "arguments": {
+              "service_id": "SV-0001"
+            }
+          },
+          {
+            "name": "cancel_local_service",
+            "arguments": {
+              "service_id": "SV-0001",
+              "confirm": true
+            }
+          },
+          {
+            "name": "book_hotel",
+            "arguments": {
+              "hotel_id": "shortened-trip-HOTEL-A",
+              "user_id": "user_repair"
+            }
+          },
+          {
+            "name": "book_local_service",
+            "arguments": {
+              "option_id": "shortened-trip-TRANSFER-A",
+              "user_id": "user_repair"
+            }
+          },
+          {
+            "name": "book_local_service",
+            "arguments": {
+              "option_id": "shortened-trip-departure_transfer-A",
+              "user_id": "user_repair"
+            }
+          }
+        ],
+        "state_hash": "d5cde854916998f592ef1f8998601e050ac9f3f9342be8d46b44ae5d3c9d20e4",
+        "changed_boundary_entities": [
+          "HR-0001",
+          "SV-0001"
+        ],
+        "state_changing_actions": 5
+      }
+    ],
+    "feasible_terminal_count": 3,
+    "feasible_scope_count": 3,
+    "explored_state_count": 8,
+    "semantic_action_count": 3,
+    "independent_frontier": [
+      {
+        "economic_vector": {
+          "irreversible_loss": 0,
+          "net_recovery_outlay": -160
+        },
+        "scope": {
+          "HR-0001": "REPLACE",
+          "BK-0001": "KEEP",
+          "SV-0002": "KEEP",
+          "BK-0002": "KEEP",
+          "SV-0001": "REPLACE"
+        },
+        "semantic_actions": [
+          "replace-hotel-bundle-a"
+        ],
+        "tool_calls": [
+          {
+            "name": "cancel_hotel_reservation",
+            "arguments": {
+              "reservation_id": "HR-0001"
+            }
+          },
+          {
+            "name": "cancel_hotel_reservation",
+            "arguments": {
+              "reservation_id": "HR-0001",
+              "confirm": true
+            }
+          },
+          {
+            "name": "cancel_local_service",
+            "arguments": {
+              "service_id": "SV-0001"
+            }
+          },
+          {
+            "name": "cancel_local_service",
+            "arguments": {
+              "service_id": "SV-0001",
+              "confirm": true
+            }
+          },
+          {
+            "name": "book_hotel",
+            "arguments": {
+              "hotel_id": "shortened-trip-HOTEL-A",
+              "user_id": "user_repair"
+            }
+          },
+          {
+            "name": "book_local_service",
+            "arguments": {
+              "option_id": "shortened-trip-TRANSFER-A",
+              "user_id": "user_repair"
+            }
+          },
+          {
+            "name": "book_local_service",
+            "arguments": {
+              "option_id": "shortened-trip-departure_transfer-A",
+              "user_id": "user_repair"
+            }
+          }
+        ],
+        "state_hash": "d5cde854916998f592ef1f8998601e050ac9f3f9342be8d46b44ae5d3c9d20e4",
+        "changed_boundary_entities": [
+          "HR-0001",
+          "SV-0001"
+        ],
+        "state_changing_actions": 5,
+        "candidate_scope_id": "replace-hotel-bundle-a"
+      }
+    ]
+  },
+  "shortened-trip-penalty-high": {
+    "feasible": true,
+    "frontier": [
+      {
+        "economic_vector": {
+          "irreversible_loss": 0,
+          "net_recovery_outlay": 450
+        },
+        "scope": {
+          "HR-0001": "KEEP",
+          "BK-0001": "KEEP",
+          "SV-0002": "KEEP",
+          "BK-0002": "KEEP",
+          "SV-0001": "KEEP"
+        },
+        "semantic_actions": [
+          "local-repair"
+        ],
+        "tool_calls": [
+          {
+            "name": "book_local_service",
+            "arguments": {
+              "option_id": "shortened-trip-departure_transfer-LOCAL",
+              "user_id": "user_repair"
+            }
+          }
+        ],
+        "state_hash": "4803a60d67002a19c7485b2fd967697150c6a2f5d2956a58e9bc7cfd81acac3b",
+        "changed_boundary_entities": [],
+        "state_changing_actions": 1
+      }
+    ],
+    "feasible_terminal_count": 3,
+    "feasible_scope_count": 3,
+    "explored_state_count": 8,
+    "semantic_action_count": 3,
+    "independent_frontier": [
+      {
+        "economic_vector": {
+          "irreversible_loss": 0,
+          "net_recovery_outlay": 450
+        },
+        "scope": {
+          "HR-0001": "KEEP",
+          "BK-0001": "KEEP",
+          "SV-0002": "KEEP",
+          "BK-0002": "KEEP",
+          "SV-0001": "KEEP"
+        },
+        "semantic_actions": [
+          "local-repair"
+        ],
+        "tool_calls": [
+          {
+            "name": "book_local_service",
+            "arguments": {
+              "option_id": "shortened-trip-departure_transfer-LOCAL",
+              "user_id": "user_repair"
+            }
+          }
+        ],
+        "state_hash": "4803a60d67002a19c7485b2fd967697150c6a2f5d2956a58e9bc7cfd81acac3b",
+        "changed_boundary_entities": [],
+        "state_changing_actions": 1,
+        "candidate_scope_id": "local-repair"
+      }
+    ]
+  },
+  "radiology-workstation-refund-low": {
+    "feasible": true,
+    "frontier": [
+      {
+        "economic_vector": {
+          "irreversible_loss": 0,
+          "net_recovery_outlay": 300
+        },
+        "scope": {
+          "ITEM-R0001": "KEEP",
+          "ITEM-R0002": "KEEP",
+          "ITEM-R0003": "KEEP",
+          "ITEM-R0005": "KEEP",
+          "ITEM-R0004": "KEEP"
+        },
+        "semantic_actions": [
+          "local-repair"
+        ],
+        "tool_calls": [
+          {
+            "name": "purchase_product",
+            "arguments": {
+              "customer_id": "cust_repair",
+              "product_id": "radiology-workstation-dock-LOCAL"
+            }
+          }
+        ],
+        "state_hash": "db80e3251dd663b484c80372b5daa493f3ad955f8cb6594a3f8477f8661a95ae",
+        "changed_boundary_entities": [],
+        "state_changing_actions": 1
+      }
+    ],
+    "feasible_terminal_count": 3,
+    "feasible_scope_count": 3,
+    "explored_state_count": 8,
+    "semantic_action_count": 3,
+    "independent_frontier": [
+      {
+        "economic_vector": {
+          "irreversible_loss": 0,
+          "net_recovery_outlay": 300
+        },
+        "scope": {
+          "ITEM-R0001": "KEEP",
+          "ITEM-R0002": "KEEP",
+          "ITEM-R0003": "KEEP",
+          "ITEM-R0005": "KEEP",
+          "ITEM-R0004": "KEEP"
+        },
+        "semantic_actions": [
+          "local-repair"
+        ],
+        "tool_calls": [
+          {
+            "name": "purchase_product",
+            "arguments": {
+              "customer_id": "cust_repair",
+              "product_id": "radiology-workstation-dock-LOCAL"
+            }
+          }
+        ],
+        "state_hash": "db80e3251dd663b484c80372b5daa493f3ad955f8cb6594a3f8477f8661a95ae",
+        "changed_boundary_entities": [],
+        "state_changing_actions": 1,
+        "candidate_scope_id": "local-repair"
+      }
+    ]
+  },
+  "radiology-workstation-refund-full": {
+    "feasible": true,
+    "frontier": [
+      {
+        "economic_vector": {
+          "irreversible_loss": 0,
+          "net_recovery_outlay": -390
+        },
+        "scope": {
+          "ITEM-R0001": "REPLACE",
+          "ITEM-R0002": "KEEP",
+          "ITEM-R0003": "KEEP",
+          "ITEM-R0005": "REPLACE",
+          "ITEM-R0004": "REPLACE"
+        },
+        "semantic_actions": [
+          "replace-anchor-bundle-a"
+        ],
+        "tool_calls": [
+          {
+            "name": "get_policies",
+            "arguments": {
+              "topic": "cancellation"
+            }
+          },
+          {
+            "name": "cancel_order",
+            "arguments": {
+              "order_id": "ORD-R0001"
+            }
+          },
+          {
+            "name": "cancel_order",
+            "arguments": {
+              "order_id": "ORD-R0001",
+              "confirm": true
+            }
+          },
+          {
+            "name": "cancel_order",
+            "arguments": {
+              "order_id": "ORD-R0004"
+            }
+          },
+          {
+            "name": "cancel_order",
+            "arguments": {
+              "order_id": "ORD-R0004",
+              "confirm": true
+            }
+          },
+          {
+            "name": "cancel_order",
+            "arguments": {
+              "order_id": "ORD-R0005"
+            }
+          },
+          {
+            "name": "cancel_order",
+            "arguments": {
+              "order_id": "ORD-R0005",
+              "confirm": true
+            }
+          },
+          {
+            "name": "purchase_product",
+            "arguments": {
+              "customer_id": "cust_repair",
+              "product_id": "radiology-workstation-ANCHOR-A"
+            }
+          },
+          {
+            "name": "purchase_product",
+            "arguments": {
+              "customer_id": "cust_repair",
+              "product_id": "radiology-workstation-WARRANTY-A"
+            }
+          },
+          {
+            "name": "purchase_product",
+            "arguments": {
+              "customer_id": "cust_repair",
+              "product_id": "radiology-workstation-SOFTWARE-A"
+            }
+          },
+          {
+            "name": "purchase_product",
+            "arguments": {
+              "customer_id": "cust_repair",
+              "product_id": "radiology-workstation-dock-A"
+            }
+          }
+        ],
+        "state_hash": "1f59b5cd8be52ef6a7b849afed886efe81437b1b3cf1d5af77db2306081206a5",
+        "changed_boundary_entities": [
+          "ITEM-R0001",
+          "ITEM-R0004",
+          "ITEM-R0005"
+        ],
+        "state_changing_actions": 7
+      }
+    ],
+    "feasible_terminal_count": 3,
+    "feasible_scope_count": 3,
+    "explored_state_count": 8,
+    "semantic_action_count": 3,
+    "independent_frontier": [
+      {
+        "economic_vector": {
+          "irreversible_loss": 0,
+          "net_recovery_outlay": -390
+        },
+        "scope": {
+          "ITEM-R0001": "REPLACE",
+          "ITEM-R0002": "KEEP",
+          "ITEM-R0003": "KEEP",
+          "ITEM-R0005": "REPLACE",
+          "ITEM-R0004": "REPLACE"
+        },
+        "semantic_actions": [
+          "replace-anchor-bundle-a"
+        ],
+        "tool_calls": [
+          {
+            "name": "get_policies",
+            "arguments": {
+              "topic": "cancellation"
+            }
+          },
+          {
+            "name": "cancel_order",
+            "arguments": {
+              "order_id": "ORD-R0001"
+            }
+          },
+          {
+            "name": "cancel_order",
+            "arguments": {
+              "order_id": "ORD-R0001",
+              "confirm": true
+            }
+          },
+          {
+            "name": "cancel_order",
+            "arguments": {
+              "order_id": "ORD-R0004"
+            }
+          },
+          {
+            "name": "cancel_order",
+            "arguments": {
+              "order_id": "ORD-R0004",
+              "confirm": true
+            }
+          },
+          {
+            "name": "cancel_order",
+            "arguments": {
+              "order_id": "ORD-R0005"
+            }
+          },
+          {
+            "name": "cancel_order",
+            "arguments": {
+              "order_id": "ORD-R0005",
+              "confirm": true
+            }
+          },
+          {
+            "name": "purchase_product",
+            "arguments": {
+              "customer_id": "cust_repair",
+              "product_id": "radiology-workstation-ANCHOR-A"
+            }
+          },
+          {
+            "name": "purchase_product",
+            "arguments": {
+              "customer_id": "cust_repair",
+              "product_id": "radiology-workstation-WARRANTY-A"
+            }
+          },
+          {
+            "name": "purchase_product",
+            "arguments": {
+              "customer_id": "cust_repair",
+              "product_id": "radiology-workstation-SOFTWARE-A"
+            }
+          },
+          {
+            "name": "purchase_product",
+            "arguments": {
+              "customer_id": "cust_repair",
+              "product_id": "radiology-workstation-dock-A"
+            }
+          }
+        ],
+        "state_hash": "1f59b5cd8be52ef6a7b849afed886efe81437b1b3cf1d5af77db2306081206a5",
+        "changed_boundary_entities": [
+          "ITEM-R0001",
+          "ITEM-R0004",
+          "ITEM-R0005"
+        ],
+        "state_changing_actions": 7,
+        "candidate_scope_id": "replace-anchor-bundle-a"
+      }
+    ]
+  },
+  "radiology-workstation-penalty-none": {
+    "feasible": true,
+    "frontier": [
+      {
+        "economic_vector": {
+          "irreversible_loss": 0,
+          "net_recovery_outlay": -440
+        },
+        "scope": {
+          "ITEM-R0001": "REPLACE",
+          "ITEM-R0002": "KEEP",
+          "ITEM-R0003": "KEEP",
+          "ITEM-R0005": "REPLACE",
+          "ITEM-R0004": "REPLACE"
+        },
+        "semantic_actions": [
+          "replace-anchor-bundle-a"
+        ],
+        "tool_calls": [
+          {
+            "name": "get_policies",
+            "arguments": {
+              "topic": "cancellation"
+            }
+          },
+          {
+            "name": "cancel_order",
+            "arguments": {
+              "order_id": "ORD-R0001"
+            }
+          },
+          {
+            "name": "cancel_order",
+            "arguments": {
+              "order_id": "ORD-R0001",
+              "confirm": true
+            }
+          },
+          {
+            "name": "cancel_order",
+            "arguments": {
+              "order_id": "ORD-R0004"
+            }
+          },
+          {
+            "name": "cancel_order",
+            "arguments": {
+              "order_id": "ORD-R0004",
+              "confirm": true
+            }
+          },
+          {
+            "name": "cancel_order",
+            "arguments": {
+              "order_id": "ORD-R0005"
+            }
+          },
+          {
+            "name": "cancel_order",
+            "arguments": {
+              "order_id": "ORD-R0005",
+              "confirm": true
+            }
+          },
+          {
+            "name": "purchase_product",
+            "arguments": {
+              "customer_id": "cust_repair",
+              "product_id": "radiology-workstation-ANCHOR-A"
+            }
+          },
+          {
+            "name": "purchase_product",
+            "arguments": {
+              "customer_id": "cust_repair",
+              "product_id": "radiology-workstation-WARRANTY-A"
+            }
+          },
+          {
+            "name": "purchase_product",
+            "arguments": {
+              "customer_id": "cust_repair",
+              "product_id": "radiology-workstation-SOFTWARE-A"
+            }
+          },
+          {
+            "name": "purchase_product",
+            "arguments": {
+              "customer_id": "cust_repair",
+              "product_id": "radiology-workstation-dock-A"
+            }
+          }
+        ],
+        "state_hash": "d04f8a736c4530e025441eb7465c6b9d20832cadc4c3d71b03f8f5bee18b3ede",
+        "changed_boundary_entities": [
+          "ITEM-R0001",
+          "ITEM-R0004",
+          "ITEM-R0005"
+        ],
+        "state_changing_actions": 7
+      }
+    ],
+    "feasible_terminal_count": 3,
+    "feasible_scope_count": 3,
+    "explored_state_count": 8,
+    "semantic_action_count": 3,
+    "independent_frontier": [
+      {
+        "economic_vector": {
+          "irreversible_loss": 0,
+          "net_recovery_outlay": -440
+        },
+        "scope": {
+          "ITEM-R0001": "REPLACE",
+          "ITEM-R0002": "KEEP",
+          "ITEM-R0003": "KEEP",
+          "ITEM-R0005": "REPLACE",
+          "ITEM-R0004": "REPLACE"
+        },
+        "semantic_actions": [
+          "replace-anchor-bundle-a"
+        ],
+        "tool_calls": [
+          {
+            "name": "get_policies",
+            "arguments": {
+              "topic": "cancellation"
+            }
+          },
+          {
+            "name": "cancel_order",
+            "arguments": {
+              "order_id": "ORD-R0001"
+            }
+          },
+          {
+            "name": "cancel_order",
+            "arguments": {
+              "order_id": "ORD-R0001",
+              "confirm": true
+            }
+          },
+          {
+            "name": "cancel_order",
+            "arguments": {
+              "order_id": "ORD-R0004"
+            }
+          },
+          {
+            "name": "cancel_order",
+            "arguments": {
+              "order_id": "ORD-R0004",
+              "confirm": true
+            }
+          },
+          {
+            "name": "cancel_order",
+            "arguments": {
+              "order_id": "ORD-R0005"
+            }
+          },
+          {
+            "name": "cancel_order",
+            "arguments": {
+              "order_id": "ORD-R0005",
+              "confirm": true
+            }
+          },
+          {
+            "name": "purchase_product",
+            "arguments": {
+              "customer_id": "cust_repair",
+              "product_id": "radiology-workstation-ANCHOR-A"
+            }
+          },
+          {
+            "name": "purchase_product",
+            "arguments": {
+              "customer_id": "cust_repair",
+              "product_id": "radiology-workstation-WARRANTY-A"
+            }
+          },
+          {
+            "name": "purchase_product",
+            "arguments": {
+              "customer_id": "cust_repair",
+              "product_id": "radiology-workstation-SOFTWARE-A"
+            }
+          },
+          {
+            "name": "purchase_product",
+            "arguments": {
+              "customer_id": "cust_repair",
+              "product_id": "radiology-workstation-dock-A"
+            }
+          }
+        ],
+        "state_hash": "d04f8a736c4530e025441eb7465c6b9d20832cadc4c3d71b03f8f5bee18b3ede",
+        "changed_boundary_entities": [
+          "ITEM-R0001",
+          "ITEM-R0004",
+          "ITEM-R0005"
+        ],
+        "state_changing_actions": 7,
+        "candidate_scope_id": "replace-anchor-bundle-a"
+      }
+    ]
+  },
+  "radiology-workstation-penalty-high": {
+    "feasible": true,
+    "frontier": [
+      {
+        "economic_vector": {
+          "irreversible_loss": 0,
+          "net_recovery_outlay": 450
+        },
+        "scope": {
+          "ITEM-R0001": "KEEP",
+          "ITEM-R0002": "KEEP",
+          "ITEM-R0003": "KEEP",
+          "ITEM-R0005": "KEEP",
+          "ITEM-R0004": "KEEP"
+        },
+        "semantic_actions": [
+          "local-repair"
+        ],
+        "tool_calls": [
+          {
+            "name": "purchase_product",
+            "arguments": {
+              "customer_id": "cust_repair",
+              "product_id": "radiology-workstation-dock-LOCAL"
+            }
+          }
+        ],
+        "state_hash": "b1193ae2834f0442a31cd8419e97a91463d47f6242f3e738f853d43bb2b72d8d",
+        "changed_boundary_entities": [],
+        "state_changing_actions": 1
+      }
+    ],
+    "feasible_terminal_count": 3,
+    "feasible_scope_count": 3,
+    "explored_state_count": 8,
+    "semantic_action_count": 3,
+    "independent_frontier": [
+      {
+        "economic_vector": {
+          "irreversible_loss": 0,
+          "net_recovery_outlay": 450
+        },
+        "scope": {
+          "ITEM-R0001": "KEEP",
+          "ITEM-R0002": "KEEP",
+          "ITEM-R0003": "KEEP",
+          "ITEM-R0005": "KEEP",
+          "ITEM-R0004": "KEEP"
+        },
+        "semantic_actions": [
+          "local-repair"
+        ],
+        "tool_calls": [
+          {
+            "name": "purchase_product",
+            "arguments": {
+              "customer_id": "cust_repair",
+              "product_id": "radiology-workstation-dock-LOCAL"
+            }
+          }
+        ],
+        "state_hash": "b1193ae2834f0442a31cd8419e97a91463d47f6242f3e738f853d43bb2b72d8d",
+        "changed_boundary_entities": [],
+        "state_changing_actions": 1,
+        "candidate_scope_id": "local-repair"
+      }
+    ]
+  },
+  "clinic-cold-chain-refund-low": {
+    "feasible": true,
+    "frontier": [
+      {
+        "economic_vector": {
+          "irreversible_loss": 0,
+          "net_recovery_outlay": 300
+        },
+        "scope": {
+          "ITEM-R0001": "KEEP",
+          "ITEM-R0003": "KEEP",
+          "ITEM-R0005": "KEEP",
+          "ITEM-R0002": "KEEP",
+          "ITEM-R0004": "KEEP"
+        },
+        "semantic_actions": [
+          "local-repair"
+        ],
+        "tool_calls": [
+          {
+            "name": "purchase_product",
+            "arguments": {
+              "customer_id": "cust_repair",
+              "product_id": "clinic-cold-chain-battery-LOCAL"
+            }
+          }
+        ],
+        "state_hash": "03b982ea0c2ee0e5200aac6f3cdb21b2e4a028c21dbdc257b6ae69d78afaa789",
+        "changed_boundary_entities": [],
+        "state_changing_actions": 1
+      }
+    ],
+    "feasible_terminal_count": 3,
+    "feasible_scope_count": 3,
+    "explored_state_count": 8,
+    "semantic_action_count": 3,
+    "independent_frontier": [
+      {
+        "economic_vector": {
+          "irreversible_loss": 0,
+          "net_recovery_outlay": 300
+        },
+        "scope": {
+          "ITEM-R0001": "KEEP",
+          "ITEM-R0003": "KEEP",
+          "ITEM-R0005": "KEEP",
+          "ITEM-R0002": "KEEP",
+          "ITEM-R0004": "KEEP"
+        },
+        "semantic_actions": [
+          "local-repair"
+        ],
+        "tool_calls": [
+          {
+            "name": "purchase_product",
+            "arguments": {
+              "customer_id": "cust_repair",
+              "product_id": "clinic-cold-chain-battery-LOCAL"
+            }
+          }
+        ],
+        "state_hash": "03b982ea0c2ee0e5200aac6f3cdb21b2e4a028c21dbdc257b6ae69d78afaa789",
+        "changed_boundary_entities": [],
+        "state_changing_actions": 1,
+        "candidate_scope_id": "local-repair"
+      }
+    ]
+  },
+  "clinic-cold-chain-refund-full": {
+    "feasible": true,
+    "frontier": [
+      {
+        "economic_vector": {
+          "irreversible_loss": 0,
+          "net_recovery_outlay": -390
+        },
+        "scope": {
+          "ITEM-R0001": "REPLACE",
+          "ITEM-R0003": "KEEP",
+          "ITEM-R0005": "REPLACE",
+          "ITEM-R0002": "KEEP",
+          "ITEM-R0004": "REPLACE"
+        },
+        "semantic_actions": [
+          "replace-anchor-bundle-a"
+        ],
+        "tool_calls": [
+          {
+            "name": "get_policies",
+            "arguments": {
+              "topic": "cancellation"
+            }
+          },
+          {
+            "name": "cancel_order",
+            "arguments": {
+              "order_id": "ORD-R0001"
+            }
+          },
+          {
+            "name": "cancel_order",
+            "arguments": {
+              "order_id": "ORD-R0001",
+              "confirm": true
+            }
+          },
+          {
+            "name": "cancel_order",
+            "arguments": {
+              "order_id": "ORD-R0004"
+            }
+          },
+          {
+            "name": "cancel_order",
+            "arguments": {
+              "order_id": "ORD-R0004",
+              "confirm": true
+            }
+          },
+          {
+            "name": "cancel_order",
+            "arguments": {
+              "order_id": "ORD-R0005"
+            }
+          },
+          {
+            "name": "cancel_order",
+            "arguments": {
+              "order_id": "ORD-R0005",
+              "confirm": true
+            }
+          },
+          {
+            "name": "purchase_product",
+            "arguments": {
+              "customer_id": "cust_repair",
+              "product_id": "clinic-cold-chain-ANCHOR-A"
+            }
+          },
+          {
+            "name": "purchase_product",
+            "arguments": {
+              "customer_id": "cust_repair",
+              "product_id": "clinic-cold-chain-WARRANTY-A"
+            }
+          },
+          {
+            "name": "purchase_product",
+            "arguments": {
+              "customer_id": "cust_repair",
+              "product_id": "clinic-cold-chain-SOFTWARE-A"
+            }
+          },
+          {
+            "name": "purchase_product",
+            "arguments": {
+              "customer_id": "cust_repair",
+              "product_id": "clinic-cold-chain-battery-A"
+            }
+          }
+        ],
+        "state_hash": "79ae21c73c7780d417c7c5a5a8632ad954a37d59502bd510c1a72dc7b6a88bb7",
+        "changed_boundary_entities": [
+          "ITEM-R0001",
+          "ITEM-R0004",
+          "ITEM-R0005"
+        ],
+        "state_changing_actions": 7
+      }
+    ],
+    "feasible_terminal_count": 3,
+    "feasible_scope_count": 3,
+    "explored_state_count": 8,
+    "semantic_action_count": 3,
+    "independent_frontier": [
+      {
+        "economic_vector": {
+          "irreversible_loss": 0,
+          "net_recovery_outlay": -390
+        },
+        "scope": {
+          "ITEM-R0001": "REPLACE",
+          "ITEM-R0003": "KEEP",
+          "ITEM-R0005": "REPLACE",
+          "ITEM-R0002": "KEEP",
+          "ITEM-R0004": "REPLACE"
+        },
+        "semantic_actions": [
+          "replace-anchor-bundle-a"
+        ],
+        "tool_calls": [
+          {
+            "name": "get_policies",
+            "arguments": {
+              "topic": "cancellation"
+            }
+          },
+          {
+            "name": "cancel_order",
+            "arguments": {
+              "order_id": "ORD-R0001"
+            }
+          },
+          {
+            "name": "cancel_order",
+            "arguments": {
+              "order_id": "ORD-R0001",
+              "confirm": true
+            }
+          },
+          {
+            "name": "cancel_order",
+            "arguments": {
+              "order_id": "ORD-R0004"
+            }
+          },
+          {
+            "name": "cancel_order",
+            "arguments": {
+              "order_id": "ORD-R0004",
+              "confirm": true
+            }
+          },
+          {
+            "name": "cancel_order",
+            "arguments": {
+              "order_id": "ORD-R0005"
+            }
+          },
+          {
+            "name": "cancel_order",
+            "arguments": {
+              "order_id": "ORD-R0005",
+              "confirm": true
+            }
+          },
+          {
+            "name": "purchase_product",
+            "arguments": {
+              "customer_id": "cust_repair",
+              "product_id": "clinic-cold-chain-ANCHOR-A"
+            }
+          },
+          {
+            "name": "purchase_product",
+            "arguments": {
+              "customer_id": "cust_repair",
+              "product_id": "clinic-cold-chain-WARRANTY-A"
+            }
+          },
+          {
+            "name": "purchase_product",
+            "arguments": {
+              "customer_id": "cust_repair",
+              "product_id": "clinic-cold-chain-SOFTWARE-A"
+            }
+          },
+          {
+            "name": "purchase_product",
+            "arguments": {
+              "customer_id": "cust_repair",
+              "product_id": "clinic-cold-chain-battery-A"
+            }
+          }
+        ],
+        "state_hash": "79ae21c73c7780d417c7c5a5a8632ad954a37d59502bd510c1a72dc7b6a88bb7",
+        "changed_boundary_entities": [
+          "ITEM-R0001",
+          "ITEM-R0004",
+          "ITEM-R0005"
+        ],
+        "state_changing_actions": 7,
+        "candidate_scope_id": "replace-anchor-bundle-a"
+      }
+    ]
+  },
+  "clinic-cold-chain-penalty-none": {
+    "feasible": true,
+    "frontier": [
+      {
+        "economic_vector": {
+          "irreversible_loss": 0,
+          "net_recovery_outlay": -440
+        },
+        "scope": {
+          "ITEM-R0001": "REPLACE",
+          "ITEM-R0003": "KEEP",
+          "ITEM-R0005": "REPLACE",
+          "ITEM-R0002": "KEEP",
+          "ITEM-R0004": "REPLACE"
+        },
+        "semantic_actions": [
+          "replace-anchor-bundle-a"
+        ],
+        "tool_calls": [
+          {
+            "name": "get_policies",
+            "arguments": {
+              "topic": "cancellation"
+            }
+          },
+          {
+            "name": "cancel_order",
+            "arguments": {
+              "order_id": "ORD-R0001"
+            }
+          },
+          {
+            "name": "cancel_order",
+            "arguments": {
+              "order_id": "ORD-R0001",
+              "confirm": true
+            }
+          },
+          {
+            "name": "cancel_order",
+            "arguments": {
+              "order_id": "ORD-R0004"
+            }
+          },
+          {
+            "name": "cancel_order",
+            "arguments": {
+              "order_id": "ORD-R0004",
+              "confirm": true
+            }
+          },
+          {
+            "name": "cancel_order",
+            "arguments": {
+              "order_id": "ORD-R0005"
+            }
+          },
+          {
+            "name": "cancel_order",
+            "arguments": {
+              "order_id": "ORD-R0005",
+              "confirm": true
+            }
+          },
+          {
+            "name": "purchase_product",
+            "arguments": {
+              "customer_id": "cust_repair",
+              "product_id": "clinic-cold-chain-ANCHOR-A"
+            }
+          },
+          {
+            "name": "purchase_product",
+            "arguments": {
+              "customer_id": "cust_repair",
+              "product_id": "clinic-cold-chain-WARRANTY-A"
+            }
+          },
+          {
+            "name": "purchase_product",
+            "arguments": {
+              "customer_id": "cust_repair",
+              "product_id": "clinic-cold-chain-SOFTWARE-A"
+            }
+          },
+          {
+            "name": "purchase_product",
+            "arguments": {
+              "customer_id": "cust_repair",
+              "product_id": "clinic-cold-chain-battery-A"
+            }
+          }
+        ],
+        "state_hash": "c3b9932ddbb46ec2bec7b3d8c471636a9993f8e89881ac63e33fed673312c61d",
+        "changed_boundary_entities": [
+          "ITEM-R0001",
+          "ITEM-R0004",
+          "ITEM-R0005"
+        ],
+        "state_changing_actions": 7
+      }
+    ],
+    "feasible_terminal_count": 3,
+    "feasible_scope_count": 3,
+    "explored_state_count": 8,
+    "semantic_action_count": 3,
+    "independent_frontier": [
+      {
+        "economic_vector": {
+          "irreversible_loss": 0,
+          "net_recovery_outlay": -440
+        },
+        "scope": {
+          "ITEM-R0001": "REPLACE",
+          "ITEM-R0003": "KEEP",
+          "ITEM-R0005": "REPLACE",
+          "ITEM-R0002": "KEEP",
+          "ITEM-R0004": "REPLACE"
+        },
+        "semantic_actions": [
+          "replace-anchor-bundle-a"
+        ],
+        "tool_calls": [
+          {
+            "name": "get_policies",
+            "arguments": {
+              "topic": "cancellation"
+            }
+          },
+          {
+            "name": "cancel_order",
+            "arguments": {
+              "order_id": "ORD-R0001"
+            }
+          },
+          {
+            "name": "cancel_order",
+            "arguments": {
+              "order_id": "ORD-R0001",
+              "confirm": true
+            }
+          },
+          {
+            "name": "cancel_order",
+            "arguments": {
+              "order_id": "ORD-R0004"
+            }
+          },
+          {
+            "name": "cancel_order",
+            "arguments": {
+              "order_id": "ORD-R0004",
+              "confirm": true
+            }
+          },
+          {
+            "name": "cancel_order",
+            "arguments": {
+              "order_id": "ORD-R0005"
+            }
+          },
+          {
+            "name": "cancel_order",
+            "arguments": {
+              "order_id": "ORD-R0005",
+              "confirm": true
+            }
+          },
+          {
+            "name": "purchase_product",
+            "arguments": {
+              "customer_id": "cust_repair",
+              "product_id": "clinic-cold-chain-ANCHOR-A"
+            }
+          },
+          {
+            "name": "purchase_product",
+            "arguments": {
+              "customer_id": "cust_repair",
+              "product_id": "clinic-cold-chain-WARRANTY-A"
+            }
+          },
+          {
+            "name": "purchase_product",
+            "arguments": {
+              "customer_id": "cust_repair",
+              "product_id": "clinic-cold-chain-SOFTWARE-A"
+            }
+          },
+          {
+            "name": "purchase_product",
+            "arguments": {
+              "customer_id": "cust_repair",
+              "product_id": "clinic-cold-chain-battery-A"
+            }
+          }
+        ],
+        "state_hash": "c3b9932ddbb46ec2bec7b3d8c471636a9993f8e89881ac63e33fed673312c61d",
+        "changed_boundary_entities": [
+          "ITEM-R0001",
+          "ITEM-R0004",
+          "ITEM-R0005"
+        ],
+        "state_changing_actions": 7,
+        "candidate_scope_id": "replace-anchor-bundle-a"
+      }
+    ]
+  },
+  "clinic-cold-chain-penalty-high": {
+    "feasible": true,
+    "frontier": [
+      {
+        "economic_vector": {
+          "irreversible_loss": 0,
+          "net_recovery_outlay": 450
+        },
+        "scope": {
+          "ITEM-R0001": "KEEP",
+          "ITEM-R0003": "KEEP",
+          "ITEM-R0005": "KEEP",
+          "ITEM-R0002": "KEEP",
+          "ITEM-R0004": "KEEP"
+        },
+        "semantic_actions": [
+          "local-repair"
+        ],
+        "tool_calls": [
+          {
+            "name": "purchase_product",
+            "arguments": {
+              "customer_id": "cust_repair",
+              "product_id": "clinic-cold-chain-battery-LOCAL"
+            }
+          }
+        ],
+        "state_hash": "3286a9e91ee0e01816732061acd52b71ffbc8d76bf6ae00ab840864aca85f246",
+        "changed_boundary_entities": [],
+        "state_changing_actions": 1
+      }
+    ],
+    "feasible_terminal_count": 3,
+    "feasible_scope_count": 3,
+    "explored_state_count": 8,
+    "semantic_action_count": 3,
+    "independent_frontier": [
+      {
+        "economic_vector": {
+          "irreversible_loss": 0,
+          "net_recovery_outlay": 450
+        },
+        "scope": {
+          "ITEM-R0001": "KEEP",
+          "ITEM-R0003": "KEEP",
+          "ITEM-R0005": "KEEP",
+          "ITEM-R0002": "KEEP",
+          "ITEM-R0004": "KEEP"
+        },
+        "semantic_actions": [
+          "local-repair"
+        ],
+        "tool_calls": [
+          {
+            "name": "purchase_product",
+            "arguments": {
+              "customer_id": "cust_repair",
+              "product_id": "clinic-cold-chain-battery-LOCAL"
+            }
+          }
+        ],
+        "state_hash": "3286a9e91ee0e01816732061acd52b71ffbc8d76bf6ae00ab840864aca85f246",
+        "changed_boundary_entities": [],
+        "state_changing_actions": 1,
+        "candidate_scope_id": "local-repair"
+      }
+    ]
+  },
+  "media-production-kit-refund-low": {
+    "feasible": true,
+    "frontier": [
+      {
+        "economic_vector": {
+          "irreversible_loss": 0,
+          "net_recovery_outlay": 300
+        },
+        "scope": {
+          "ITEM-R0001": "KEEP",
+          "ITEM-R0002": "KEEP",
+          "ITEM-R0003": "KEEP",
+          "ITEM-R0005": "KEEP",
+          "ITEM-R0004": "KEEP"
+        },
+        "semantic_actions": [
+          "local-repair"
+        ],
+        "tool_calls": [
+          {
+            "name": "purchase_product",
+            "arguments": {
+              "customer_id": "cust_repair",
+              "product_id": "media-production-kit-storage-LOCAL"
+            }
+          }
+        ],
+        "state_hash": "c69d6147629087324c822b54a19fa9f35f3b4e6e6f0d235be2c86da22596e202",
+        "changed_boundary_entities": [],
+        "state_changing_actions": 1
+      }
+    ],
+    "feasible_terminal_count": 3,
+    "feasible_scope_count": 3,
+    "explored_state_count": 8,
+    "semantic_action_count": 3,
+    "independent_frontier": [
+      {
+        "economic_vector": {
+          "irreversible_loss": 0,
+          "net_recovery_outlay": 300
+        },
+        "scope": {
+          "ITEM-R0001": "KEEP",
+          "ITEM-R0002": "KEEP",
+          "ITEM-R0003": "KEEP",
+          "ITEM-R0005": "KEEP",
+          "ITEM-R0004": "KEEP"
+        },
+        "semantic_actions": [
+          "local-repair"
+        ],
+        "tool_calls": [
+          {
+            "name": "purchase_product",
+            "arguments": {
+              "customer_id": "cust_repair",
+              "product_id": "media-production-kit-storage-LOCAL"
+            }
+          }
+        ],
+        "state_hash": "c69d6147629087324c822b54a19fa9f35f3b4e6e6f0d235be2c86da22596e202",
+        "changed_boundary_entities": [],
+        "state_changing_actions": 1,
+        "candidate_scope_id": "local-repair"
+      }
+    ]
+  },
+  "media-production-kit-refund-full": {
+    "feasible": true,
+    "frontier": [
+      {
+        "economic_vector": {
+          "irreversible_loss": 0,
+          "net_recovery_outlay": -390
+        },
+        "scope": {
+          "ITEM-R0001": "REPLACE",
+          "ITEM-R0002": "KEEP",
+          "ITEM-R0003": "KEEP",
+          "ITEM-R0005": "REPLACE",
+          "ITEM-R0004": "REPLACE"
+        },
+        "semantic_actions": [
+          "replace-anchor-bundle-a"
+        ],
+        "tool_calls": [
+          {
+            "name": "get_policies",
+            "arguments": {
+              "topic": "cancellation"
+            }
+          },
+          {
+            "name": "cancel_order",
+            "arguments": {
+              "order_id": "ORD-R0001"
+            }
+          },
+          {
+            "name": "cancel_order",
+            "arguments": {
+              "order_id": "ORD-R0001",
+              "confirm": true
+            }
+          },
+          {
+            "name": "cancel_order",
+            "arguments": {
+              "order_id": "ORD-R0004"
+            }
+          },
+          {
+            "name": "cancel_order",
+            "arguments": {
+              "order_id": "ORD-R0004",
+              "confirm": true
+            }
+          },
+          {
+            "name": "cancel_order",
+            "arguments": {
+              "order_id": "ORD-R0005"
+            }
+          },
+          {
+            "name": "cancel_order",
+            "arguments": {
+              "order_id": "ORD-R0005",
+              "confirm": true
+            }
+          },
+          {
+            "name": "purchase_product",
+            "arguments": {
+              "customer_id": "cust_repair",
+              "product_id": "media-production-kit-ANCHOR-A"
+            }
+          },
+          {
+            "name": "purchase_product",
+            "arguments": {
+              "customer_id": "cust_repair",
+              "product_id": "media-production-kit-WARRANTY-A"
+            }
+          },
+          {
+            "name": "purchase_product",
+            "arguments": {
+              "customer_id": "cust_repair",
+              "product_id": "media-production-kit-SOFTWARE-A"
+            }
+          },
+          {
+            "name": "purchase_product",
+            "arguments": {
+              "customer_id": "cust_repair",
+              "product_id": "media-production-kit-storage-A"
+            }
+          }
+        ],
+        "state_hash": "be7f00bd3cae1e749c961d20777e00751c5dba127923a037f99173ee5df19a29",
+        "changed_boundary_entities": [
+          "ITEM-R0001",
+          "ITEM-R0004",
+          "ITEM-R0005"
+        ],
+        "state_changing_actions": 7
+      }
+    ],
+    "feasible_terminal_count": 3,
+    "feasible_scope_count": 3,
+    "explored_state_count": 8,
+    "semantic_action_count": 3,
+    "independent_frontier": [
+      {
+        "economic_vector": {
+          "irreversible_loss": 0,
+          "net_recovery_outlay": -390
+        },
+        "scope": {
+          "ITEM-R0001": "REPLACE",
+          "ITEM-R0002": "KEEP",
+          "ITEM-R0003": "KEEP",
+          "ITEM-R0005": "REPLACE",
+          "ITEM-R0004": "REPLACE"
+        },
+        "semantic_actions": [
+          "replace-anchor-bundle-a"
+        ],
+        "tool_calls": [
+          {
+            "name": "get_policies",
+            "arguments": {
+              "topic": "cancellation"
+            }
+          },
+          {
+            "name": "cancel_order",
+            "arguments": {
+              "order_id": "ORD-R0001"
+            }
+          },
+          {
+            "name": "cancel_order",
+            "arguments": {
+              "order_id": "ORD-R0001",
+              "confirm": true
+            }
+          },
+          {
+            "name": "cancel_order",
+            "arguments": {
+              "order_id": "ORD-R0004"
+            }
+          },
+          {
+            "name": "cancel_order",
+            "arguments": {
+              "order_id": "ORD-R0004",
+              "confirm": true
+            }
+          },
+          {
+            "name": "cancel_order",
+            "arguments": {
+              "order_id": "ORD-R0005"
+            }
+          },
+          {
+            "name": "cancel_order",
+            "arguments": {
+              "order_id": "ORD-R0005",
+              "confirm": true
+            }
+          },
+          {
+            "name": "purchase_product",
+            "arguments": {
+              "customer_id": "cust_repair",
+              "product_id": "media-production-kit-ANCHOR-A"
+            }
+          },
+          {
+            "name": "purchase_product",
+            "arguments": {
+              "customer_id": "cust_repair",
+              "product_id": "media-production-kit-WARRANTY-A"
+            }
+          },
+          {
+            "name": "purchase_product",
+            "arguments": {
+              "customer_id": "cust_repair",
+              "product_id": "media-production-kit-SOFTWARE-A"
+            }
+          },
+          {
+            "name": "purchase_product",
+            "arguments": {
+              "customer_id": "cust_repair",
+              "product_id": "media-production-kit-storage-A"
+            }
+          }
+        ],
+        "state_hash": "be7f00bd3cae1e749c961d20777e00751c5dba127923a037f99173ee5df19a29",
+        "changed_boundary_entities": [
+          "ITEM-R0001",
+          "ITEM-R0004",
+          "ITEM-R0005"
+        ],
+        "state_changing_actions": 7,
+        "candidate_scope_id": "replace-anchor-bundle-a"
+      }
+    ]
+  },
+  "media-production-kit-penalty-none": {
+    "feasible": true,
+    "frontier": [
+      {
+        "economic_vector": {
+          "irreversible_loss": 0,
+          "net_recovery_outlay": -440
+        },
+        "scope": {
+          "ITEM-R0001": "REPLACE",
+          "ITEM-R0002": "KEEP",
+          "ITEM-R0003": "KEEP",
+          "ITEM-R0005": "REPLACE",
+          "ITEM-R0004": "REPLACE"
+        },
+        "semantic_actions": [
+          "replace-anchor-bundle-a"
+        ],
+        "tool_calls": [
+          {
+            "name": "get_policies",
+            "arguments": {
+              "topic": "cancellation"
+            }
+          },
+          {
+            "name": "cancel_order",
+            "arguments": {
+              "order_id": "ORD-R0001"
+            }
+          },
+          {
+            "name": "cancel_order",
+            "arguments": {
+              "order_id": "ORD-R0001",
+              "confirm": true
+            }
+          },
+          {
+            "name": "cancel_order",
+            "arguments": {
+              "order_id": "ORD-R0004"
+            }
+          },
+          {
+            "name": "cancel_order",
+            "arguments": {
+              "order_id": "ORD-R0004",
+              "confirm": true
+            }
+          },
+          {
+            "name": "cancel_order",
+            "arguments": {
+              "order_id": "ORD-R0005"
+            }
+          },
+          {
+            "name": "cancel_order",
+            "arguments": {
+              "order_id": "ORD-R0005",
+              "confirm": true
+            }
+          },
+          {
+            "name": "purchase_product",
+            "arguments": {
+              "customer_id": "cust_repair",
+              "product_id": "media-production-kit-ANCHOR-A"
+            }
+          },
+          {
+            "name": "purchase_product",
+            "arguments": {
+              "customer_id": "cust_repair",
+              "product_id": "media-production-kit-WARRANTY-A"
+            }
+          },
+          {
+            "name": "purchase_product",
+            "arguments": {
+              "customer_id": "cust_repair",
+              "product_id": "media-production-kit-SOFTWARE-A"
+            }
+          },
+          {
+            "name": "purchase_product",
+            "arguments": {
+              "customer_id": "cust_repair",
+              "product_id": "media-production-kit-storage-A"
+            }
+          }
+        ],
+        "state_hash": "0b4b7dbf8c778acb15f36470f31aa9090d1453372d7873c70d8be8d66395aef5",
+        "changed_boundary_entities": [
+          "ITEM-R0001",
+          "ITEM-R0004",
+          "ITEM-R0005"
+        ],
+        "state_changing_actions": 7
+      }
+    ],
+    "feasible_terminal_count": 3,
+    "feasible_scope_count": 3,
+    "explored_state_count": 8,
+    "semantic_action_count": 3,
+    "independent_frontier": [
+      {
+        "economic_vector": {
+          "irreversible_loss": 0,
+          "net_recovery_outlay": -440
+        },
+        "scope": {
+          "ITEM-R0001": "REPLACE",
+          "ITEM-R0002": "KEEP",
+          "ITEM-R0003": "KEEP",
+          "ITEM-R0005": "REPLACE",
+          "ITEM-R0004": "REPLACE"
+        },
+        "semantic_actions": [
+          "replace-anchor-bundle-a"
+        ],
+        "tool_calls": [
+          {
+            "name": "get_policies",
+            "arguments": {
+              "topic": "cancellation"
+            }
+          },
+          {
+            "name": "cancel_order",
+            "arguments": {
+              "order_id": "ORD-R0001"
+            }
+          },
+          {
+            "name": "cancel_order",
+            "arguments": {
+              "order_id": "ORD-R0001",
+              "confirm": true
+            }
+          },
+          {
+            "name": "cancel_order",
+            "arguments": {
+              "order_id": "ORD-R0004"
+            }
+          },
+          {
+            "name": "cancel_order",
+            "arguments": {
+              "order_id": "ORD-R0004",
+              "confirm": true
+            }
+          },
+          {
+            "name": "cancel_order",
+            "arguments": {
+              "order_id": "ORD-R0005"
+            }
+          },
+          {
+            "name": "cancel_order",
+            "arguments": {
+              "order_id": "ORD-R0005",
+              "confirm": true
+            }
+          },
+          {
+            "name": "purchase_product",
+            "arguments": {
+              "customer_id": "cust_repair",
+              "product_id": "media-production-kit-ANCHOR-A"
+            }
+          },
+          {
+            "name": "purchase_product",
+            "arguments": {
+              "customer_id": "cust_repair",
+              "product_id": "media-production-kit-WARRANTY-A"
+            }
+          },
+          {
+            "name": "purchase_product",
+            "arguments": {
+              "customer_id": "cust_repair",
+              "product_id": "media-production-kit-SOFTWARE-A"
+            }
+          },
+          {
+            "name": "purchase_product",
+            "arguments": {
+              "customer_id": "cust_repair",
+              "product_id": "media-production-kit-storage-A"
+            }
+          }
+        ],
+        "state_hash": "0b4b7dbf8c778acb15f36470f31aa9090d1453372d7873c70d8be8d66395aef5",
+        "changed_boundary_entities": [
+          "ITEM-R0001",
+          "ITEM-R0004",
+          "ITEM-R0005"
+        ],
+        "state_changing_actions": 7,
+        "candidate_scope_id": "replace-anchor-bundle-a"
+      }
+    ]
+  },
+  "media-production-kit-penalty-high": {
+    "feasible": true,
+    "frontier": [
+      {
+        "economic_vector": {
+          "irreversible_loss": 0,
+          "net_recovery_outlay": 450
+        },
+        "scope": {
+          "ITEM-R0001": "KEEP",
+          "ITEM-R0002": "KEEP",
+          "ITEM-R0003": "KEEP",
+          "ITEM-R0005": "KEEP",
+          "ITEM-R0004": "KEEP"
+        },
+        "semantic_actions": [
+          "local-repair"
+        ],
+        "tool_calls": [
+          {
+            "name": "purchase_product",
+            "arguments": {
+              "customer_id": "cust_repair",
+              "product_id": "media-production-kit-storage-LOCAL"
+            }
+          }
+        ],
+        "state_hash": "5fcb9ec68655e1446506e5c41f93b96e18db66995207ffe2287a77ebc65e7509",
+        "changed_boundary_entities": [],
+        "state_changing_actions": 1
+      }
+    ],
+    "feasible_terminal_count": 3,
+    "feasible_scope_count": 3,
+    "explored_state_count": 8,
+    "semantic_action_count": 3,
+    "independent_frontier": [
+      {
+        "economic_vector": {
+          "irreversible_loss": 0,
+          "net_recovery_outlay": 450
+        },
+        "scope": {
+          "ITEM-R0001": "KEEP",
+          "ITEM-R0002": "KEEP",
+          "ITEM-R0003": "KEEP",
+          "ITEM-R0005": "KEEP",
+          "ITEM-R0004": "KEEP"
+        },
+        "semantic_actions": [
+          "local-repair"
+        ],
+        "tool_calls": [
+          {
+            "name": "purchase_product",
+            "arguments": {
+              "customer_id": "cust_repair",
+              "product_id": "media-production-kit-storage-LOCAL"
+            }
+          }
+        ],
+        "state_hash": "5fcb9ec68655e1446506e5c41f93b96e18db66995207ffe2287a77ebc65e7509",
+        "changed_boundary_entities": [],
+        "state_changing_actions": 1,
+        "candidate_scope_id": "local-repair"
+      }
+    ]
+  }
+}

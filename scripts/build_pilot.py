@@ -9,8 +9,8 @@ from typing import Any
 
 
 ROOT = Path(__file__).resolve().parents[1]
-OUTPUT = ROOT / "data" / "pilot"
-GOLD_OUTPUT = ROOT / "data" / "gold" / "pilot.json"
+OUTPUT = ROOT / "data" / "legacy" / "v0.5" / "pilot"
+GOLD_OUTPUT = ROOT / "data" / "legacy" / "v0.5" / "gold" / "pilot.json"
 NATURAL_MONEY_REQUEST = (
     " Please sort this out without wasting money or undoing arrangements that "
     "still help with the trip."

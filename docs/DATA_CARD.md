@@ -1,120 +1,133 @@
-# Data Card
+# RepairScope-Bench v0.6 Data Card
 
-## Releases
+## Summary
 
-| Set | Schema | Tasks | Purpose |
-|---|---:|---:|---|
-| `data/pilot` | 0.4 | 16 | protocol, accounting, infeasibility, and provider-loop regression |
-| `data/challenge` | 0.5 | 12 | paired scope optimization with larger repair graphs and linked losses |
+RepairScope-Bench v0.6 contains 24 fixed post-failure states across six task
+families and two executable STATE-Bench domains. It measures whether an agent
+can inspect persisted commitments, finish the user's hard goal, and avoid an
+economically dominated recovery.
 
-The challenge set contains six unique failure states. Each has a `goal` and
-`loss_aware` prompt, producing 12 episodes. There are three counterfactual
-families, two domains, and three causal mechanisms.
+| Split | Tasks | Families represented |
+|---|---:|---:|
+| dev | 8 | 6 |
+| test | 8 | 6 |
+| heldout | 8 | 6 |
+| total | 24 | 6 |
+
+There are 12 travel tasks and 12 customer-support tasks. Each family has two
+counterfactual pairs:
+
+- `refund-low` versus `refund-full`;
+- `penalty-none` versus `penalty-high`.
+
+Within a pair, the executable starting state, inventory, instruction, prefix,
+and failure are identical. Only the named economic term differs.
 
 ## Unit of evaluation
 
-Each task contains:
+One JSON file is one independently constructed failure state, not a second
+prompt over a shared hidden state. Important public fields are:
 
-- natural customer instruction;
-- successful pre-failure tool trace and failed call;
-- authoritative persistent commitments;
-- live option catalog and in-place modification rules;
-- linked settlement rules;
-- live inventory partitioned by public domain categories;
-- required slots and executable hard constraints;
-- evaluator objective and automatic challenge thresholds;
-- pair, mechanism, and split metadata;
-- provenance and transformation disclosure.
+| Field | Meaning |
+|---|---|
+| `schema_version` | `0.6` |
+| `task_id`, `family_id`, `variant_id` | task and counterfactual identity |
+| `split` | `dev`, `test`, or `heldout` |
+| `instruction` | model-visible natural-language request |
+| `initial_snapshot` | clean executable state before prefix writes |
+| `pre_failure_trace` | actual successful prefix calls and results |
+| `prefix_ledger` | transaction record produced by those calls |
+| `latest_failure` | actual failed call and returned error |
+| `failure_snapshot` | authoritative model starting state |
+| `snapshot_sha256` | canonical hash of that state |
+| `boundary_commitments` | audit metadata for prior commitments |
+| `contracts` | item-level refund, bundle, licence, or service terms |
+| `constraints` | evaluator-only deterministic hard-goal DSL |
+| `oracle_actions` | evaluator-only semantic actions |
+| `candidate_scopes` | independent gold-enumerator inputs |
+| `max_turns` | 15 |
 
-The prompt exposes only instruction, public trace, failed result, and tools.
-Gold and evaluator mechanics are not serialized to the model.
+The public benchmark files include evaluator fields for reproducibility. The
+runner constructs model input explicitly and does not expose constraints,
+semantic actions, economic totals, or gold.
 
-## Challenge families
+## Construction pipeline
 
-| Family | Mechanism | Split | A variant | B variant |
-|---|---|---|---|---|
-| Shanghai conference dinner | package breakage | dev | compatible dinner exists near current hotel | current hotel has no compatible dinner |
-| Radiology workstation dock | compatibility cascade | test | universal dock is available | laptop change forces warranty/software changes |
-| Clinic cold-chain battery | service-contract cascade | heldout | legacy-compatible battery is available | freezer and service plan must change |
+For every task, `scripts/build_v06.py`:
 
-All variants remain feasible. This is intentional: the challenge measures
-which feasible repair scope is chosen, not only whether the model recognizes
-impossibility.
+1. creates a clean STATE-style database;
+2. invokes the same write tools available to models;
+3. records successful results and ledger entries;
+4. injects an inventory, compatibility, or policy change;
+5. invokes the intended failing operation and asserts failure;
+6. serializes and hashes the failure state;
+7. reloads it and checks exact state and ledger equality;
+8. solves it with semantic state search and independent scope enumeration;
+9. releases it only if both methods agree.
 
-## Repair-graph statistics
+Travel uses the upstream `TravelEnvironment`. Customer-support tasks use the
+upstream `CustomerSupportEnvironment` and real `Order`/`OrderItem` records.
+Composition-based extensions supply restaurant or service reservations,
+alternative purchases, compatibility relations, and cross-order contracts.
+The upstream runtime is imported rather than copied.
 
-Across the six loss-aware tasks:
+## Task requirements
 
-| Statistic | Minimum | Maximum |
-|---|---:|---:|
-| Raw candidate plans | 486 | 729 |
-| Goal-satisfying plans | 18 | 235 |
-| Feasible scope patterns | 4 | 30 |
-| Recovery-loss levels | 4 | 30 |
-| Persistent prior commitments | 5 | 5 |
-| Required final slots | 6 | 6 |
+The generator and validator enforce:
 
-The paired `goal` task has the same graph as its `loss_aware` twin.
+- at least three hard-goal-feasible semantic recovery scopes;
+- both local and non-local recovery;
+- at least one feasible but economically dominated distractor;
+- each hard constraint filters at least one real available option;
+- two interacting loss mechanisms in difficult variants;
+- a scope flip in each single-fact counterfactual pair;
+- a reference solution that fits within the 15-turn protocol.
 
-## Important fields
+The six families are conference dinner, destination-linked ground plan,
+shortened trip, radiology workstation, clinic cold chain, and media
+production kit.
 
-| Field | Meaning | Directly model-visible |
-|---|---|---:|
-| `instruction` | hard goal and natural objective demand | yes |
-| `failure_observation` | raw latest failed call | yes |
-| `pre_failure_trace` | public evidence of earlier persistent effects | yes |
-| `failure_snapshot` | executable initial state | through record tools |
-| `catalog` | live and unavailable options | available matches through search |
-| `modification_rules` | possible in-place changes | through targeted quote |
-| `linked_loss_rules` | non-local settlement consequences | through targeted linked-term lookup |
-| `constraints` | deterministic terminal checks | no |
-| `objective` | Oracle ordering | no |
-| `pair_id` | matched-pair identity | no |
-| `evaluation_track` | goal or loss-aware analysis track | no |
-| `mechanism`, `split` | causal grouping | no |
+## Gold
 
-## Construction
+`data/gold/v06.json` contains all non-dominated terminal states, their
+two-dimensional economic vectors, changed commitments, and replayable raw
+tool calls. It does not prescribe one trajectory.
 
-`scripts/build_challenge.py` deterministically generates public tasks and
-solver-derived evaluator gold. The scenarios are newly authored around
-coordination structures inspired by STATE-Bench cases 105, 121, and 122; no
-upstream answer or runtime is reused.
+The bounded search expands domain-semantic actions. A separate enumerator
+replays declared candidate scopes. Tasks are rejected if their feasible
+scope sets or Pareto frontiers differ. If a model nevertheless finds a
+strictly better feasible point, evaluation emits `oracle_violation` and
+excludes the case instead of punishing the model.
 
-The generator creates two counterfactual variants per family and two prompt
-tracks per state. It then invokes the same Oracle used by evaluation.
-`repairscope validate data/challenge` independently recomputes gold, checks
-scope flips, applies challenge thresholds, and replays baseline policies.
+## Data quality and reproducibility
 
-## Quality controls
+`repairscope validate data/v06` checks:
 
-Automated tests verify:
+- schema, tool and hash integrity;
+- prefix and failed-call replay from the clean snapshot;
+- persistence and ledger equality after reload;
+- constraint effectiveness;
+- pair isomorphism outside the designated fact;
+- expected Pareto-scope flips;
+- independent Oracle agreement;
+- baseline separation.
 
-- public files load under the versioned schema;
-- every linked loss references real prior commitments and is charged once;
-- category searches expose every live option in the requested public category
-  and require no hidden phrase;
-- model-facing schemas remain domain-native and contain no generic evaluator
-  operations;
-- every loss-aware graph meets all four minimum thresholds;
-- A/B variants change the optimal disposition of prior commitments;
-- Oracle replay passes every task;
-- full rollback completes every task but is never optimal;
-- a final-cost-only solver completes every task but is optimal on only half;
-- natural model termination cannot invalidate an otherwise correct final state;
-- provider tool loops retain state across OpenAI, Anthropic, Qwen, and
-  DeepSeek-compatible protocols.
+The checked-in release passes 56 unit and integration tests. Rebuilding is
+deterministic under the pinned STATE-Bench revision.
 
-## Limitations
+## Intended and out-of-scope uses
 
-- Six unique failure states are enough to test mechanisms, not enough for
-  leaderboard-scale statistical claims.
-- The option space is finite and deterministic.
-- Each slot supports at most one active commitment.
-- Losses use dollar-like deterministic units; taxes, exchange rates, and
-  uncertain future value are excluded.
-- There is no simulated clarification user because current tasks are
-  deliberately decision-complete.
-- The main track starts after the failure boundary and therefore does not
-  score pre-failure planning.
-- The current Oracle should be cross-checked by an independent solver before
-  a paper-scale release.
+Intended uses include evaluation of tool-using agents, repair-policy
+ablations, query/action error analysis, and comparison of feasibility with
+recovery quality.
+
+The benchmark does not measure pre-failure planning, open-world user
+preference elicitation, subjective utility, irreversible real-world harm, or
+production safety. Prices and policies are synthetic. Results should not be
+interpreted as a claim that the agent can safely operate real accounts.
+
+## Legacy data
+
+The v0.4 pilot and v0.5 challenge set are archived under
+`data/legacy/v0.5`. They remain covered by regression tests but are not the
+default benchmark.

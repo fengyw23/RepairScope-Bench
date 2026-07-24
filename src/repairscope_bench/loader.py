@@ -22,12 +22,44 @@ REQUIRED_TOP_LEVEL_FIELDS = {
     "objective",
 }
 
+V06_REQUIRED_FIELDS = {
+    "schema_version",
+    "task_id",
+    "family_id",
+    "variant_id",
+    "counterfactual_pair_id",
+    "domain",
+    "environment_type",
+    "split",
+    "now",
+    "instruction",
+    "initial_snapshot",
+    "initial_snapshot_sha256",
+    "failure_snapshot",
+    "snapshot_sha256",
+    "pre_failure_trace",
+    "prefix_ledger",
+    "latest_failure",
+    "option_metadata",
+    "boundary_commitments",
+    "contracts",
+    "required_slots",
+    "hard_constraints",
+    "compatibility_rules",
+    "oracle_actions",
+    "candidate_scopes",
+    "max_turns",
+}
+
 
 class TaskValidationError(ValueError):
     """Raised when a benchmark task violates the public schema."""
 
 
 def validate_task(task: dict[str, Any]) -> None:
+    if task.get("schema_version") == "0.6":
+        _validate_v06_task(task)
+        return
     missing = REQUIRED_TOP_LEVEL_FIELDS - task.keys()
     if missing:
         raise TaskValidationError(
@@ -238,6 +270,124 @@ def validate_task(task: dict[str, Any]) -> None:
         if task["evaluation_track"] not in {"goal", "loss_aware"}:
             raise TaskValidationError(
                 f"{task['task_id']}: invalid evaluation_track"
+            )
+
+
+def _validate_v06_task(task: dict[str, Any]) -> None:
+    from .v06_constraints import constraint_is_effective
+    from .v06_environment import snapshot_hash
+
+    missing = V06_REQUIRED_FIELDS - task.keys()
+    if missing:
+        raise TaskValidationError(
+            f"{task.get('task_id', '<unknown>')}: missing v0.6 fields "
+            f"{sorted(missing)}"
+        )
+    if task["domain"] not in {"travel", "customer_support"}:
+        raise TaskValidationError(
+            f"{task['task_id']}: unsupported v0.6 domain {task['domain']!r}"
+        )
+    if task["max_turns"] != 15:
+        raise TaskValidationError(
+            f"{task['task_id']}: the v0.6 protocol requires exactly 15 turns"
+        )
+    if snapshot_hash(task["failure_snapshot"]) != task["snapshot_sha256"]:
+        raise TaskValidationError(
+            f"{task['task_id']}: failure snapshot hash mismatch"
+        )
+    if snapshot_hash(task["initial_snapshot"]) != task["initial_snapshot_sha256"]:
+        raise TaskValidationError(
+            f"{task['task_id']}: initial snapshot hash mismatch"
+        )
+    if not task["required_slots"]:
+        raise TaskValidationError(
+            f"{task['task_id']}: required_slots cannot be empty"
+        )
+    boundary_ids = [
+        item["entity_id"] for item in task["boundary_commitments"]
+    ]
+    if len(boundary_ids) != len(set(boundary_ids)):
+        raise TaskValidationError(
+            f"{task['task_id']}: duplicate boundary entity"
+        )
+    if len(task["boundary_commitments"]) < 3:
+        raise TaskValidationError(
+            f"{task['task_id']}: too few persistent prefix commitments"
+        )
+    if not task["pre_failure_trace"] or any(
+        not step.get("result", {}).get("ok", False)
+        for step in task["pre_failure_trace"]
+    ):
+        raise TaskValidationError(
+            f"{task['task_id']}: prefix trace must contain only successful calls"
+        )
+    if task["latest_failure"].get("result", {}).get("ok", True):
+        raise TaskValidationError(
+            f"{task['task_id']}: latest tool result must be a real failure"
+        )
+    if not task["prefix_ledger"]:
+        raise TaskValidationError(
+            f"{task['task_id']}: missing auditable prefix ledger"
+        )
+    for constraint in task["hard_constraints"]:
+        if constraint["type"] not in {
+            "slot_attribute",
+            "allowed_pairs",
+            "max_active_total",
+            "forbid_option",
+        }:
+            raise TaskValidationError(
+                f"{task['task_id']}: unsupported hard constraint "
+                f"{constraint['type']!r}"
+            )
+        if not constraint_is_effective(task, constraint):
+            raise TaskValidationError(
+                f"{task['task_id']}: ineffective hard constraint {constraint!r}"
+            )
+    action_ids = [item["action_id"] for item in task["oracle_actions"]]
+    if len(action_ids) != len(set(action_ids)) or len(action_ids) < 3:
+        raise TaskValidationError(
+            f"{task['task_id']}: expected at least three unique semantic actions"
+        )
+    forbidden_tools = {"finish", "get_cost_summary", "get_linked_loss_quote"}
+    for action in task["oracle_actions"]:
+        names = {call["name"] for call in action["tool_calls"]}
+        if names & forbidden_tools:
+            raise TaskValidationError(
+                f"{task['task_id']}: oracle uses forbidden protocol tool "
+                f"{sorted(names & forbidden_tools)}"
+            )
+    known_actions = set(action_ids)
+    if len(task["candidate_scopes"]) < 3:
+        raise TaskValidationError(
+            f"{task['task_id']}: fewer than three candidate scopes"
+        )
+    for scope in task["candidate_scopes"]:
+        if not set(scope["action_ids"]).issubset(known_actions):
+            raise TaskValidationError(
+                f"{task['task_id']}: candidate scope references unknown action"
+            )
+    contract_ids: set[str] = set()
+    for contract in task["contracts"]:
+        if contract["contract_id"] in contract_ids:
+            raise TaskValidationError(
+                f"{task['task_id']}: duplicate contract ID"
+            )
+        contract_ids.add(contract["contract_id"])
+        if not set(contract["entity_ids"]).issubset(set(boundary_ids)):
+            raise TaskValidationError(
+                f"{task['task_id']}: contract references unknown boundary entity"
+            )
+        if not isinstance(contract.get("refund_adjustment", 0), (int, float)):
+            raise TaskValidationError(
+                f"{task['task_id']}: invalid refund adjustment"
+            )
+        if (
+            not isinstance(contract.get("settlement_charge", 0), (int, float))
+            or contract.get("settlement_charge", 0) < 0
+        ):
+            raise TaskValidationError(
+                f"{task['task_id']}: invalid settlement charge"
             )
 
 

@@ -1,165 +1,131 @@
 # Evaluation Protocol
 
-## Episode
+## Controlled starting point
 
-1. Reset an executable environment to the public failure snapshot.
-2. Give the model only the customer request, public pre-failure trace, latest
-   failed tool result, and domain tools.
-3. Require the model to investigate, decide, execute, verify, and stop when no
-   further action is needed. `report_infeasible` is valid only when no
-   hard-goal repair exists.
-4. Serialize mutations and stop after at most 15 model turns.
-5. Recompute terminal constraints, transaction ledgers, scope, and exact
-   Oracle objective.
+Every run begins from a deep copy of the task's hashed failure snapshot. The
+agent receives a normal service-agent system prompt, the customer request, a
+compact trace of prior successful writes, the failed call and its result, and
+domain tools. It does not receive the hard-constraint DSL, objective vector,
+global economic summary, candidate scopes, or Oracle trajectory.
 
-Every repetition receives a fresh deep copy. Read-only calls do not consume a
-separate action budget. A task may set a high mutation safety cap. The v0.5
-model-facing tools contain no benchmark-specific `finish()` action.
+The official limit is 15 model turns. There is no separate mutation budget
+and no benchmark-specific `finish()` tool. When the model stops calling tools
+or reaches the turn limit, the evaluator reads the persistent terminal state.
 
-The official protocol runs each task five independent times. Provider errors
-count as failed episodes in pass rates and are also reported separately.
+## Hard-goal evaluation
 
-## Hard-goal pass
+The deterministic constraint DSL supports:
 
-A feasible task passes only when:
+- exact active-record counts by semantic slot;
+- record status, quantity, time, location, deadline, and budget;
+- permitted option attributes;
+- flight/hotel/ground-transport consistency;
+- product/accessory/software/service compatibility;
+- duplicate and conflict prevention;
+- database reference and ledger integrity.
 
-- exactly one active commitment exists in every required slot;
-- every slot, cross-slot, deadline, compatibility, and lifecycle-budget
-  constraint holds;
-- the model did not incorrectly report the feasible task as infeasible;
-- no protocol budget was exceeded.
+Constraints describe what the customer must receive. They must not require
+unmentioned records to remain unchanged or otherwise encode an author-chosen
+repair trajectory.
 
-Natural model termination is not part of the task score. The evaluator reads
-the external state after the tool loop stops, so a correct repair cannot fail
-merely because a provider produced prose instead of a `finish()` call.
+`Goal Pass` is true only if every hard constraint and business-policy check
+passes.
 
-For an objectively infeasible task, the exact failure-boundary state and cash
-ledger must remain pristine and the model must call `report_infeasible`.
+## Economic vector
 
-## Auditable accounting
+For each goal-satisfying terminal state, the evaluator derives two values
+solely from executed transaction records and visible contract terms:
 
 ```text
-financial_delta =
-    post-failure charges
-  + in-place modification net cash
-  + triggered linked settlement charges
-  - refunds of prior commitments
-  - refunds of post-failure commitments
-
-lifecycle_cost = pre-failure spend + financial_delta
-
-cancellation_loss =
-  sum(price_paid - refund_received for cancelled prior commitments)
-
-post_failure_waste =
-  sum(price_paid - refund_received for recovery purchases later cancelled)
-
-recovery_loss =
-    cancellation_loss
-  + post_failure_waste
-  + max(0, total modification net cash)
-  + linked settlement loss
+L = irreversible_loss
+O = net_recovery_outlay
 ```
 
-Linked settlement rules model objective non-local effects such as forfeiting
-an air-hotel credit when either reservation changes, losing a workstation
-bundle rebate when the laptop is returned, or invalidating a prepaid
-calibration credit. Each rule names its triggering prior commitments and
-fixed settlement amount. The model can inspect the term through a targeted
-domain tool; the evaluator recomputes it from final dispositions.
+`L` includes cancellation/modification fees, non-refundable value, bundle or
+licence clawbacks, and recovery purchases that were later wasted. `O` is all
+post-boundary payments, fees, and settlements minus refunds and compensation.
+Amounts paid before the standardized failure boundary are sunk and are not
+silently charged again.
 
-## Exact Oracle
+There is no scalar combination of `L` and `O`.
 
-For each required slot, the Oracle enumerates:
+## Pareto acceptance
 
-- keep the active commitment;
-- cancel and book each currently available replacement;
-- apply each allowed in-place modification;
-- book each available option when the slot is empty.
-
-It executes the Cartesian product in fresh environments and rejects tool
-errors and hard-goal violations. Feasible plans are compared by:
+Feasible outcome A dominates feasible outcome B exactly when:
 
 ```text
-(recovery_loss,
- lifecycle_cost,
- mutated_prior_commitments,
- state_changing_actions)
+A.L <= B.L and A.O <= B.O
+and at least one inequality is strict
 ```
 
-This is an unweighted lexicographic rule. All plans tied on the complete tuple
-are accepted. Commitment preservation is a tie-breaker after objective money,
-not a subjective preference that can override it.
+`Non-Dominated Repair Pass` requires Goal Pass and membership in the Pareto
+frontier. Every non-dominated terminal state is accepted, regardless of which
+trajectory produced it.
 
-The Oracle result records raw candidate count, feasible-plan count,
-feasible-scope count, all loss levels, every optimal plan, and every optimal
-scope. Results are cached during a process so validation and baselines do not
-repeat identical exhaustive searches.
+If a model reaches a feasible vector that strictly dominates all stored
+frontier points, the evaluator marks `oracle_violation=true`,
+`exclude_from_aggregate=true`, and preserves the trace for adjudication.
 
-## Challenge quality gates
+## Oracle
 
-Every v0.5 `loss_aware` task must have at least:
+The primary Oracle performs bounded graph search over normalized persistent
+states. Its actions are domain-semantic operations—keep, change, cancel and
+rebook a travel record; keep, return, exchange, cancel or replace a purchased
+item; and update linked contracts. Each semantic action expands to public
+tool calls. Economically dominated prefixes at an identical normalized state
+are pruned.
 
-- 100 raw candidate repairs;
-- 8 goal-satisfying repairs;
-- 4 feasible repair-scope patterns;
-- 3 recovery-loss levels.
-
-The checked-in tasks have 486–729 raw candidates, 18–235 feasible plans,
-4–30 feasible scopes, and 4–30 loss levels.
+An independent candidate-scope enumerator replays separately declared tool
+sequences. Both solvers must agree on feasible scopes and the Pareto frontier.
+Gold stores all accepted terminal states and replay traces.
 
 ## Metrics
 
-Primary:
+Official aggregate metrics:
 
-- **Goal Pass@1** and **Goal Pass^5**;
-- **Optimal Pass@1** and **Optimal Pass^5**;
-- **Scope-Optimization Gap** = Goal Pass − Optimal Pass;
-- **Extra Loss** = observed recovery loss − minimum feasible recovery loss;
-- **Financial Regret** = observed lifecycle cost − minimum feasible lifecycle
-  cost.
+- `Goal Pass@1`: mean success across all runs;
+- `Goal Pass^5`: fraction of tasks solved in all five runs;
+- `Non-Dominated Repair Pass@1`;
+- `Non-Dominated Repair Pass^5`;
+- `Dominated Repair Rate`: dominated outcomes among goal completions;
+- `Irreversible-Loss Regret`;
+- `Net-Outlay Regret`.
 
-Diagnostics:
+Diagnostic fields include changed prior commitments, over-repair,
+under-repair, nearest-frontier scope distance, tool errors, model stopping,
+turn exhaustion, provider error, and Oracle violation.
 
-- nearest optimal-scope distance;
-- over-repair and under-repair;
-- cancellation, recovery-waste, and linked-loss components;
-- action count and tool errors;
-- correct infeasibility.
+Provider failures remain in the denominator as failures. Oracle-violation
+cases are excluded as specified above.
 
-Bootstrap confidence intervals by family, not by treating paired prompts or
-counterfactual twins as independent examples.
+## Baselines
 
-## Paired tasks and mechanism splits
+The release includes:
 
-Each v0.5 failure state appears twice:
+| Baseline | Policy |
+|---|---|
+| no repair | preserve the failed state |
+| local repair | change only the failed component |
+| dependency repair | repair the declared dependency closure |
+| full rollback | choose the broadest replacement scope |
+| sticker price | optimize visible final prices |
+| refund only | optimize immediate refund |
+| Pareto Oracle | execute a non-dominated gold trace |
 
-- `goal`: asks only for the complete hard goal;
-- `loss_aware`: naturally asks to avoid non-refundable or linked losses.
+Run them with:
 
-The environment and Oracle are identical within a pair. Report tracks
-separately to determine whether models preserve commitments spontaneously or
-only when the user requests it.
+```bash
+repairscope run-baselines data/v06
+```
 
-Splits are causal-mechanism based:
+The task release is valid only if the Pareto Oracle passes every case and the
+heuristics exhibit both goal completion and scope-quality separation.
 
-- `dev`: travel package breakage;
-- `test`: product compatibility cascade;
-- `heldout`: service-contract cascade.
+## Official model experiment
 
-Never place one member of a counterfactual family in training and its twin in
-test.
-
-## Gold isolation and fairness
-
-Public task JSON contains no expected feasibility, optimal scope, optimal
-plan, or objective result. `data/gold/*.json` is evaluator-only.
-`build_user_prompt` serializes an explicit allowlist rather than the task.
-
-The agent must join facts from record details, category-filtered live inventory
-searches, cancellation/exchange previews, compatibility checks, and linked
-terms. No tool returns the evaluator's global recovery loss or solution.
-
-Use identical prompts, tools, 15-turn budgets, explicit model IDs, and
-provider settings. Retain raw per-episode JSONL. One run is a smoke test; the
-official result uses five independent runs.
+Run each task independently five times at the provider's documented sampling
+settings and report exact model identifiers, date, token limits, reasoning
+configuration, and provider endpoint class. Preserve `runs.jsonl` and
+`summary.json`. Report Goal Pass and Non-Dominated Repair Pass together;
+reporting only the second can hide execution failures, while reporting only
+the first hides dominated repair.

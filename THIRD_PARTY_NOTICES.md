@@ -2,7 +2,7 @@
 
 ## STATE-Bench
 
-The task structures in the pilot and challenge set were inspired by the
+The archived pilot and challenge task structures were inspired by the
 following STATE-Bench tasks:
 
 - Case 105: `105-hard_compat_dock_wrong_laptop`
@@ -39,11 +39,16 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
 
-RepairScope-Bench does not copy the STATE-Bench runtime. Its travel-facing
-adapter preserves the upstream partition into flight bookings, hotel
-reservations, and car rentals and the corresponding list/detail/search API
-pattern. All RepairScope-Bench tasks use new text, fixed post-failure states,
-new policies and prices, counterfactual variants, and an independently
-implemented transaction ledger and oracle. The v0.5 challenge further adds
-paired objective-demand prompts, linked settlement rules, parameterized
-search, and mechanism splits. Each JSON task retains its source case and URL.
+RepairScope-Bench v0.6 imports STATE-Bench as a Git dependency fixed at commit
+`4efcbf2d4fe60df04878859b692d9391f3d5b33a`. It directly instantiates the
+upstream travel and customer-support environment classes and reuses their
+schemas, records, policy engine, read tools, and preview/confirm write tools.
+Composition-based adapters add service reservations, new purchase creation,
+compatibility relations, economic contracts, failure-snapshot hashing, and
+the RepairScope transaction ledger. The upstream runtime is not copied or
+modified in this repository.
+
+All v0.6 task text, inventories, prices, fixed post-failure states,
+counterfactual variants, contracts, constraints, and Oracle traces are newly
+generated for RepairScope-Bench. Each JSON task records the pinned upstream
+commit and reuse statement.

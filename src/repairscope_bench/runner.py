@@ -56,9 +56,36 @@ stop when no further tool action is needed. If and only if the request is
 objectively impossible, call report_infeasible.""",
 }
 
+V06_SYSTEM_PROMPTS = {
+    "travel": """You are a customer service agent for a travel company.
+Continue the partially executed request using the authoritative reservation,
+inventory, policy, contract, preview, and booking tools. Make the best
+supported decision in the customer's interests, do not invent identifiers or
+tool results, and do not ask the customer to choose among alternatives. The
+environment contains enough information to decide. Verify the resulting
+arrangements and stop when no further tool action is needed.""",
+    "customer_support": """You are a customer service agent for an online store.
+Continue the partially executed request using the authoritative order,
+catalog, policy, contract, compatibility, preview, and transaction tools.
+Make the best supported decision in the customer's interests, do not invent
+identifiers or tool results, and do not ask the customer to choose among
+alternatives. The environment contains enough information to decide. Verify
+the resulting orders and stop when no further tool action is needed.""",
+}
+
 
 def build_user_prompt(task: dict[str, Any]) -> str:
     """Build the model-visible context without evaluator constraints or gold."""
+    if task["schema_version"] == "0.6":
+        public = {
+            "customer_request": task["instruction"],
+            "earlier_successful_tool_activity": task["pre_failure_trace"],
+            "latest_failed_tool_call": task["latest_failure"],
+        }
+        return (
+            "Continue helping the customer from this fixed failure boundary.\n\n"
+            + json.dumps(public, ensure_ascii=False, indent=2)
+        )
     public = {
         "customer_request": task["instruction"],
         "latest_tool_result": task["failure_observation"],
@@ -77,10 +104,28 @@ def run_episode(
     max_turns: int = 15,
     run_id: str | None = None,
 ) -> dict[str, Any]:
-    environment = RepairEnvironment(task)
-    router = DomainToolRouter(environment)
+    is_v06 = task["schema_version"] == "0.6"
+    effective_max_turns = (
+        min(max_turns, int(task["max_turns"])) if is_v06 else max_turns
+    )
+    if is_v06:
+        from .v06_environment import StateBackedRecoveryEnvironment
+        from .v06_evaluator import evaluate_v06_environment
+
+        environment = StateBackedRecoveryEnvironment(task)
+        router = None
+    else:
+        environment = RepairEnvironment(task)
+        router = DomainToolRouter(environment)
     user_prompt = build_user_prompt(task)
-    prompts = V05_SYSTEM_PROMPTS if task["schema_version"] == "0.5" else SYSTEM_PROMPTS
+    if is_v06:
+        prompts = V06_SYSTEM_PROMPTS
+    else:
+        prompts = (
+            V05_SYSTEM_PROMPTS
+            if task["schema_version"] == "0.5"
+            else SYSTEM_PROMPTS
+        )
     system_prompt = prompts[task["domain"]]
     session = adapter.start_session(
         system_prompt, user_prompt, tool_definitions_for_task(task)
@@ -92,7 +137,7 @@ def run_episode(
     status = "running"
     started = time.monotonic()
 
-    for turn_index in range(1, max_turns + 1):
+    for turn_index in range(1, effective_max_turns + 1):
         turn = session.advance(pending_results)
         pending_results = []
         for key, value in turn.usage.items():
@@ -108,34 +153,25 @@ def run_episode(
 
         if not turn.tool_calls:
             status = (
-                "completed"
-                if environment.terminal_mode is not None
-                else "model_stopped"
+                "model_stopped"
+                if is_v06
+                else (
+                    "completed"
+                    if environment.terminal_mode is not None
+                    else "model_stopped"
+                )
             )
             break
 
         for call in turn.tool_calls:
-            mutation_limit = task.get("max_mutations")
-            mutation_call = call.name in {
-                "cancel_reservation",
-                "book_travel_option",
-                "change_reservation",
-                "return_product",
-                "purchase_product",
-                "exchange_product",
-            }
-            if (
-                mutation_limit is not None
-                and mutation_call
-                and environment.state_changing_actions() >= mutation_limit
-            ):
-                status = "action_budget_exceeded"
-                break
             if call.parse_error:
                 result = ActionResult(False, call.parse_error)
             elif call.arguments is None:
                 result = ActionResult(False, "Missing tool arguments")
+            elif is_v06:
+                result = environment.execute_tool(call.name, call.arguments)
             else:
+                assert router is not None
                 result = router.execute(call.name, call.arguments)
             pending_results.append(
                 ToolResult(call.call_id, call.name, result.as_dict())
@@ -149,7 +185,7 @@ def run_episode(
                     "result": result.as_dict(),
                 }
             )
-            if environment.terminal_mode is not None:
+            if not is_v06 and environment.terminal_mode is not None:
                 status = "completed"
                 break
         if status != "running":
@@ -157,8 +193,11 @@ def run_episode(
     else:
         status = "turn_budget_exceeded"
 
-    action_budget_exceeded = status == "action_budget_exceeded"
-    score = evaluate_environment(task, environment, action_budget_exceeded)
+    if is_v06:
+        score = evaluate_v06_environment(task, environment)
+    else:
+        action_budget_exceeded = status == "action_budget_exceeded"
+        score = evaluate_environment(task, environment, action_budget_exceeded)
     return {
         "run_id": episode_id,
         "created_at": datetime.now(timezone.utc).isoformat(),
@@ -175,8 +214,8 @@ def run_episode(
         "status": status,
         "elapsed_seconds": round(time.monotonic() - started, 3),
         "harness_config": {
-            "max_turns": max_turns,
-            "max_mutations": task.get("max_mutations"),
+            "max_turns": effective_max_turns,
+            "max_mutations": None if is_v06 else task.get("max_mutations"),
             "max_output_tokens": getattr(adapter, "max_output_tokens", None),
             "reasoning_effort": getattr(adapter, "reasoning_effort", None),
         },
@@ -271,13 +310,19 @@ def summarize_runs(
         (len(group) for group in task_groups.values()), default=0
     )
     repeat_groups = _group_records(records, "repeat_index")
-    goal_pass_at_1 = _record_rate(records, "success")
-    optimal_pass_at_1 = _record_rate(records, "optimal_repair")
+    aggregate_records = [
+        record
+        for record in records
+        if not record.get("score", {}).get("exclude_from_aggregate", False)
+    ]
+    aggregate_task_groups = _group_records(aggregate_records, "task_id")
+    goal_pass_at_1 = _record_rate(aggregate_records, "success")
+    optimal_pass_at_1 = _record_rate(aggregate_records, "optimal_repair")
     goal_pass_at_k = _all_repeats_rate(
-        task_groups, "success", expected_repeats=repeats
+        aggregate_task_groups, "success", expected_repeats=repeats
     )
     optimal_pass_at_k = _all_repeats_rate(
-        task_groups, "optimal_repair", expected_repeats=repeats
+        aggregate_task_groups, "optimal_repair", expected_repeats=repeats
     )
     goal_repeat_rates = [
         rate
@@ -305,6 +350,10 @@ def summarize_runs(
         "run_count": count,
         "scored_run_count": scored_count,
         "provider_error_count": count - scored_count,
+        "oracle_violation_count": sum(
+            bool(record.get("score", {}).get("oracle_violation", False))
+            for record in records
+        ),
         "task_count": len(task_groups),
         "repeats_per_task": repeats,
         "goal_pass@1": goal_pass_at_1,
@@ -312,6 +361,10 @@ def summarize_runs(
         "goal_pass^k": goal_pass_at_k,
         f"goal_pass^{repeats}": goal_pass_at_k,
         "optimal_pass@1": optimal_pass_at_1,
+        "non_dominated_repair_pass@1": optimal_pass_at_1,
+        "dominated_repair_rate": _conditional_dominated_rate(
+            aggregate_records
+        ),
         "scope_optimization_gap@1": (
             goal_pass_at_1 - optimal_pass_at_1
             if goal_pass_at_1 is not None and optimal_pass_at_1 is not None
@@ -339,6 +392,20 @@ def summarize_runs(
                 if score.get("scope_distance") is not None
             ]
         ),
+        "mean_irreversible_loss_regret": _mean(
+            [
+                score.get("irreversible_loss_regret")
+                for score in scored
+                if score.get("irreversible_loss_regret") is not None
+            ]
+        ),
+        "mean_net_outlay_regret": _mean(
+            [
+                score.get("net_outlay_regret")
+                for score in scored
+                if score.get("net_outlay_regret") is not None
+            ]
+        ),
     }
     track_groups: dict[str, list[dict[str, Any]]] = {}
     for record in records:
@@ -362,6 +429,22 @@ def _rate_gap(records: list[dict[str, Any]]) -> float | None:
     goal = _record_rate(records, "success")
     optimal = _record_rate(records, "optimal_repair")
     return goal - optimal if goal is not None and optimal is not None else None
+
+
+def _conditional_dominated_rate(
+    records: list[dict[str, Any]],
+) -> float | None:
+    completed = [
+        record
+        for record in records
+        if record.get("score", {}).get("goal_pass", False)
+    ]
+    if not completed:
+        return None
+    return sum(
+        bool(record.get("score", {}).get("dominated_repair", False))
+        for record in completed
+    ) / len(completed)
 
 
 def _record_rate(records: list[dict[str, Any]], key: str) -> float | None:

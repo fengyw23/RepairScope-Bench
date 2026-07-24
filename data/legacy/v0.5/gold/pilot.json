@@ -20,6 +20,8 @@
       }
     ],
     "feasible_plan_count": 3,
+    "feasible_scope_count": 2,
+    "raw_plan_count": 4,
     "feasible_recovery_losses": [
       0,
       300
@@ -79,6 +81,8 @@
       }
     ],
     "feasible_plan_count": 2,
+    "feasible_scope_count": 2,
+    "raw_plan_count": 5,
     "feasible_recovery_losses": [
       0,
       80
@@ -127,6 +131,8 @@
       }
     ],
     "feasible_plan_count": 2,
+    "feasible_scope_count": 2,
+    "raw_plan_count": 5,
     "feasible_recovery_losses": [
       50,
       200
@@ -155,6 +161,8 @@
     "optimal_plans": [],
     "optimal_scopes": [],
     "feasible_plan_count": 0,
+    "feasible_scope_count": 0,
+    "raw_plan_count": 3,
     "feasible_recovery_losses": [],
     "feasible_objectives": []
   },
@@ -188,6 +196,8 @@
       }
     ],
     "feasible_plan_count": 2,
+    "feasible_scope_count": 2,
+    "raw_plan_count": 5,
     "feasible_recovery_losses": [
       30,
       210
@@ -242,6 +252,8 @@
       }
     ],
     "feasible_plan_count": 2,
+    "feasible_scope_count": 2,
+    "raw_plan_count": 5,
     "feasible_recovery_losses": [
       70,
       120
@@ -283,6 +295,8 @@
       }
     ],
     "feasible_plan_count": 4,
+    "feasible_scope_count": 3,
+    "raw_plan_count": 5,
     "feasible_recovery_losses": [
       0,
       30,
@@ -324,6 +338,8 @@
     "optimal_plans": [],
     "optimal_scopes": [],
     "feasible_plan_count": 0,
+    "feasible_scope_count": 0,
+    "raw_plan_count": 3,
     "feasible_recovery_losses": [],
     "feasible_objectives": []
   },
@@ -355,6 +371,8 @@
       }
     ],
     "feasible_plan_count": 2,
+    "feasible_scope_count": 2,
+    "raw_plan_count": 12,
     "feasible_recovery_losses": [
       0,
       300
@@ -409,6 +427,8 @@
       }
     ],
     "feasible_plan_count": 2,
+    "feasible_scope_count": 2,
+    "raw_plan_count": 12,
     "feasible_recovery_losses": [
       40,
       300
@@ -468,6 +488,8 @@
       }
     ],
     "feasible_plan_count": 2,
+    "feasible_scope_count": 2,
+    "raw_plan_count": 12,
     "feasible_recovery_losses": [
       100,
       400
@@ -496,6 +518,8 @@
     "optimal_plans": [],
     "optimal_scopes": [],
     "feasible_plan_count": 0,
+    "feasible_scope_count": 0,
+    "raw_plan_count": 4,
     "feasible_recovery_losses": [],
     "feasible_objectives": []
   },
@@ -528,6 +552,8 @@
       }
     ],
     "feasible_plan_count": 2,
+    "feasible_scope_count": 2,
+    "raw_plan_count": 12,
     "feasible_recovery_losses": [
       0,
       200
@@ -588,6 +614,8 @@
       }
     ],
     "feasible_plan_count": 3,
+    "feasible_scope_count": 3,
+    "raw_plan_count": 18,
     "feasible_recovery_losses": [
       0,
       100
@@ -654,6 +682,8 @@
       }
     ],
     "feasible_plan_count": 2,
+    "feasible_scope_count": 2,
+    "raw_plan_count": 18,
     "feasible_recovery_losses": [
       50,
       150
@@ -682,6 +712,8 @@
     "optimal_plans": [],
     "optimal_scopes": [],
     "feasible_plan_count": 0,
+    "feasible_scope_count": 0,
+    "raw_plan_count": 8,
     "feasible_recovery_losses": [],
     "feasible_objectives": []
   }

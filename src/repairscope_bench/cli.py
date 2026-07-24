@@ -20,7 +20,7 @@ def main(argv: list[str] | None = None) -> int:
     subparsers = parser.add_subparsers(dest="command", required=True)
 
     validate_parser = subparsers.add_parser("validate")
-    validate_parser.add_argument("data")
+    validate_parser.add_argument("data", nargs="?", default="data/v06")
     validate_parser.add_argument("--gold")
 
     oracle_parser = subparsers.add_parser("oracle")
@@ -34,7 +34,7 @@ def main(argv: list[str] | None = None) -> int:
     evaluate_parser.add_argument("actions")
 
     baselines_parser = subparsers.add_parser("run-baselines")
-    baselines_parser.add_argument("data")
+    baselines_parser.add_argument("data", nargs="?", default="data/v06")
 
     model_parser = subparsers.add_parser("run-model")
     model_parser.add_argument("task")
@@ -43,7 +43,7 @@ def main(argv: list[str] | None = None) -> int:
     model_parser.add_argument("--overwrite", action="store_true")
 
     suite_parser = subparsers.add_parser("run-suite")
-    suite_parser.add_argument("data")
+    suite_parser.add_argument("data", nargs="?", default="data/v06")
     _add_provider_arguments(suite_parser)
     suite_parser.add_argument("--output-dir", required=True)
     suite_parser.add_argument(
@@ -64,6 +64,19 @@ def main(argv: list[str] | None = None) -> int:
         return _print_result(solve_task(load_task(args.task)).as_dict())
     if args.command == "inspect":
         task = load_task(args.task)
+        if task["schema_version"] == "0.6":
+            return _print_result(
+                {
+                    "task_id": task["task_id"],
+                    "instruction": task["instruction"],
+                    "latest_failure": task["latest_failure"],
+                    "failure_snapshot_sha256": task["snapshot_sha256"],
+                    "boundary_commitments": task["boundary_commitments"],
+                    "available_tools": [
+                        item["name"] for item in tool_definitions_for_task(task)
+                    ],
+                }
+            )
         return _print_result(
             {
                 "task_id": task["task_id"],
@@ -82,14 +95,27 @@ def main(argv: list[str] | None = None) -> int:
     if args.command == "run-baselines":
         results: dict[str, Any] = {}
         tasks = load_tasks(args.data)
-        for strategy in [
-            "no_repair",
-            "local_repair",
-            "dependency_repair",
-            "full_rollback",
-            "global_cost",
-            "oracle",
-        ]:
+        strategies = (
+            [
+                "no_repair",
+                "local_repair",
+                "dependency_repair",
+                "full_rollback",
+                "sticker_price",
+                "refund_only",
+                "pareto_oracle",
+            ]
+            if tasks and tasks[0]["schema_version"] == "0.6"
+            else [
+                "no_repair",
+                "local_repair",
+                "dependency_repair",
+                "full_rollback",
+                "global_cost",
+                "oracle",
+            ]
+        )
+        for strategy in strategies:
             scores = [
                 evaluate_actions(task, make_actions(task, strategy)) for task in tasks
             ]
@@ -100,10 +126,20 @@ def main(argv: list[str] | None = None) -> int:
                     score["optimal_repair"] for score in scores
                 )
                 / len(scores),
-                "mean_scope_distance": sum(
-                    score["scope_distance"] for score in scores
-                )
-                / len(scores),
+                "mean_scope_distance": (
+                    sum(
+                        score["scope_distance"]
+                        for score in scores
+                        if score["scope_distance"] is not None
+                    )
+                    / sum(
+                        score["scope_distance"] is not None for score in scores
+                    )
+                    if any(
+                        score["scope_distance"] is not None for score in scores
+                    )
+                    else None
+                ),
             }
         return _print_result(results)
     if args.command in {"run-model", "run-suite"}:

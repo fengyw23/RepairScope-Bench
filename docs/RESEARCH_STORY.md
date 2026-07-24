@@ -1,156 +1,130 @@
-# Research Positioning
+# Research Story: Repair Scope After Real Commitments
 
-## Core observation
+## Motivation
 
-When a tool agent fails halfway through a task, the location of the failed
-operation does not determine which earlier successful effects should be
-reversed.
+A service agent books a flight to Shanghai, a hotel, an airport transfer, and
+a conference pass. The final restaurant booking fails. The failed restaurant
+must be handled, but the flight still secures the central goal of attending
+the conference. Replacing the hotel may or may not make sense: it depends on
+the hotel's refund, the transfer change fee, and a package credit.
 
-For a Shanghai conference trip, a failed dinner booking clearly requires a
-new dinner. It may also make a hotel change necessary if no nearby restaurant
-remains. It normally should not cancel the flight that is still required to
-attend the conference. Which scope is correct depends on hard compatibility,
-refunds, package terms, deadlines, and the persistent commitments already
-created.
+The same conflict appears in purchasing. A clinic has already bought a
+workstation, display, warranty, and imaging licence when the dock purchase
+fails. A universal dock repairs the missing component locally. Replacing the
+computer may yield a cheaper compatible bundle, but can forfeit the original
+warranty refund and invalidate the licence. The hard goal does not identify
+the right recovery scope; the economic consequences of already executed
+commitments do.
 
-The research question is:
+The central observation is:
 
-> Given an authoritative post-failure state with persistent commitments, can
-> an agent explore the environment and execute a hard-goal-satisfying repair
-> with minimum objectively measurable additional loss?
+> Knowing where execution failed does not determine which successful
+> commitments should be preserved, replaced, or cancelled.
 
-This is narrower and more defensible than “value-aware rollback.” Gold comes
-from executable constraints and transaction rules, not a human preference
-label.
+## Gap
 
-## Why completion accuracy is insufficient
+Existing work covers important neighboring abilities:
 
-A full rollback policy can complete all 12 v0.5 challenge tasks, yet it is
-optimal on none. A solver that ignores sunk/cancellation loss and searches
-only for the cheapest final arrangement completes all tasks but is optimal on
-only half.
+| Research direction | What it evaluates | Remaining question |
+|---|---|---|
+| compensation and rollback | whether side effects can be reversed | which successful effects should be reversed |
+| failure localization and replanning | where an invalid plan should resume | whether a broader or narrower valid repair wastes money |
+| stateful task benchmarks such as STATE-Bench | whether the requested final database state is reached | which of several valid states respects existing economic commitments |
+| dynamic adaptation such as STT-Arena | whether an agent notices a changed condition and replans | whether prior paid commitments create avoidable loss |
+| planning and cost optimization | which prospective plan is cheap | how sunk commitments, refunds, fees, and clawbacks change recovery |
 
-Therefore:
+RepairScope-Bench does not claim that partial rollback is new. Its target is a
+missing evaluation question:
+
+> After real tool calls have created persistent commitments and a later
+> action fails, can an agent achieve the remaining hard goal without choosing
+> a repair that another feasible repair objectively dominates in both
+> irreversible loss and net recovery spending?
+
+## Why a fixed failure boundary
+
+v0.6 intentionally controls the pre-failure state. This does not make the
+commitments textual fiction: the builder creates them using executable tools,
+records the returned identifiers and charges, injects the changed condition,
+and performs the failed call. The snapshot is therefore a real reachable
+state.
+
+Starting every model from that same state isolates recovery-scope selection.
+An end-to-end extension can later measure planning quality, but mixing
+different prefixes in the first benchmark would make recovery comparisons
+ambiguous: models would face different commitments, policies, and losses.
+
+The paper must state this boundary explicitly rather than calling v0.6 a
+complete end-to-end agent benchmark.
+
+## Objective rather than “value”
+
+“Value-aware recovery” invites subjective judgments about comfort or
+preference. v0.6 uses a narrower, auditable claim. Hard requirements determine
+feasibility. Two ledger-derived economic quantities determine dominance:
+irreversible loss and net recovery outlay.
+
+No exchange rate between those objectives is assumed. A solution is wrong for
+repair quality only when another feasible solution is no worse on both and
+strictly better on at least one. This supports multiple valid answers and
+avoids an LLM judge or author-assigned utility.
+
+## Benchmark construction
+
+The benchmark contributes:
+
+1. a STATE-backed construction pipeline that materializes and hashes real
+   failure boundaries;
+2. 24 recovery tasks across travel and after-sales purchasing, with local and
+   cross-commitment alternatives;
+3. single-fact counterfactual pairs in which the economically defensible
+   repair scope flips;
+4. deterministic hard-goal checking and transaction-ledger accounting;
+5. a semantic state-search Oracle cross-checked by an independent enumerator;
+6. metrics that separate task completion from dominated recovery.
+
+The key experimental pattern is not merely that agents fail. A particularly
+informative result is:
 
 ```text
-hard-goal success ≠ correct recovery scope
+high Goal Pass
++ lower Non-Dominated Repair Pass
+= agents can execute a valid repair but choose an avoidably costly scope
 ```
 
-The empirical quantity of interest is the
-**Scope-Optimization Gap = Goal Pass − Optimal Pass**.
+The deterministic baselines already demonstrate that the benchmark can expose
+this gap: full rollback completes 24/24 tasks but obtains 0/24
+Non-Dominated Repair Pass, while local repair completes 24/24 and obtains
+12/24.
 
-## Relation to neighboring benchmarks
+## Evidence needed for a conference paper
 
-| Evaluation target | What it asks | Missing question addressed here |
-|---|---|---|
-| Stateful execution such as STATE-Bench | Did the final database satisfy the user's requested changes? | When several final states satisfy the hard goal, which prior commitments should be preserved? |
-| Dynamic adaptation such as STT-Arena | Did the model notice an injected change and find a valid continuation? | What irreversible cost did its repair impose on effects created before the failure? |
-| Stream revision benchmarks | Can an output or plan be revised as new textual information arrives? | Do revisions operate on persistent external commitments with refunds and compensation? |
-| Failure recovery/rollback | Can affected steps be undone or re-executed? | Is the selected compensation scope objectively dominated by a less destructive feasible scope? |
-| Pre-execution optimization | Which complete plan is cheapest before acting? | How should sunk commitments and cancellation policies change the optimum after execution starts? |
-
-The claim is not that partial rollback is new. The contribution is the
-controlled, executable evaluation of post-commit scope selection for modern
-tool agents.
-
-## Why the fixed failure state is legitimate
-
-Allowing every model to create its own prefix is valuable for an end-to-end
-system score, but it confounds the diagnostic question. Different models may
-reach different failure states, so their later losses and repair choices are
-not comparable.
-
-The controlled main track:
-
-- fixes the causal input state;
-- preserves a public trace explaining how each commitment arose;
-- requires real post-boundary queries and mutations;
-- supports exact matched counterfactuals;
-- permits an exhaustive objective Oracle;
-- resembles resuming a production workflow from a persisted incident state.
-
-This does not imply that end-to-end evaluation is unimportant. A later
-auxiliary track can execute a deterministic prefix, verify that the trigger
-and commitments occurred, and then reuse the same recovery evaluator.
-
-## v0.5 benchmark story
-
-### 1. Larger, genuinely competitive repair graphs
-
-Each loss-aware task contains hundreds of candidate repairs, dozens of
-goal-satisfying plans in many tasks, multiple scope patterns, and several
-loss levels. Validation enforces minimum graph complexity instead of relying
-on author intuition.
-
-### 2. Objective non-local consequences
-
-Changing one reservation or order can trigger a charge elsewhere:
-
-- air-hotel package credit;
-- workstation rebate;
-- cold-chain calibration/service term.
-
-This prevents the benchmark from collapsing into “pick the smallest refund
-fee attached to the failed step.”
-
-### 3. Tool-mediated composition
-
-No single tool returns the answer. The model must combine:
-
-- what is already confirmed;
-- exact paid amounts and dates;
-- live category-filtered inventory;
-- cancellation or exchange terms;
-- cross-option compatibility;
-- linked settlement consequences.
-
-The evaluator computes the global loss, but the model sees only source facts.
-
-### 4. Matched objective-demand pairs
-
-The same physical failure state is prompted once with only the hard goal and
-once with a natural anti-waste request. This distinguishes:
-
-- inability to find a feasible repair;
-- inability to infer that preserving commitments matters;
-- inability to optimize even after the user states that concern.
-
-### 5. Mechanism-level generalization
-
-Development, test, and held-out sets use different causal loss mechanisms.
-Splitting by mechanism and family avoids leakage from numerical twins.
-
-## Paper-scale contributions
-
-1. A formal distinction between failure localization, feasible recovery, and
-   objective repair-scope selection.
-2. An executable fixed-boundary benchmark with persistent pre-failure
-   commitments and real post-boundary mutations.
-3. An exact Oracle over hard constraints, transaction loss, linked settlement
-   effects, and all tied optimal scopes.
-4. Matched feasibility/loss-aware prompts and counterfactual scope flips.
-5. Metrics that explicitly expose “completed but needlessly destructive”
-   behavior.
-6. Empirical analysis across current agents, planning baselines, and
-   ledger/compatibility ablations.
-
-## What remains for a top-conference paper
-
-The v0.5 release makes the benchmark mechanism credible, but a submission
+The repository is an implementable benchmark release, but a strong paper
 still needs:
 
-- tens to hundreds of independently authored failure states;
-- at least four domains with distinct commitment semantics;
-- hidden mechanism-disjoint test data;
-- independent solver or certificate verification;
-- human checks for linguistic clarity and realism, without human voting on
-  the gold;
-- broad multi-model results with five runs per task;
-- ablations for linked terms, inventory visibility, state visibility, and
-  objective-demand prompts;
-- an auxiliary end-to-end or no-failure control track.
+- five-run evaluations of current GPT, Claude, Qwen, and DeepSeek models;
+- per-family and per-mechanism error analysis;
+- evidence that models actually query distributed facts rather than exploit
+  identifiers or templates;
+- paraphrase and held-out-template robustness;
+- independent human audit of constraints, contract text, and Oracle traces;
+- additional independently authored task families if strong models saturate
+  the current 24 cases.
 
-A convincing paper result would show high Goal Pass but substantially lower
-Optimal Pass, plus failure analyses demonstrating over-repair, under-repair,
-and loss-blind global replanning. If all strong models remain near Oracle,
-the data must be expanded rather than claiming the task is solved.
+Difficulty should come from meaningful economic counterfactuals and
+cross-contract dependencies, not malformed tools, hidden termination
+protocols, or arbitrary interaction traps.
+
+## Claim boundary and risks
+
+The defensible novelty is the benchmark formulation and executable
+measurement, not the general idea of compensating or partially rolling back
+work. The release does not cover pre-failure planning or subjective
+preference elicitation.
+
+Major risks are limited domain breadth, templated family structure, and
+Oracle incompleteness. The countermeasures are held-out mechanisms,
+single-fact pair validation, two solvers, `oracle_violation` handling, and
+release-time baseline gates. If all goal-completing model traces become
+non-dominated, the correct response is to expand economic mechanisms and
+families—not to lower scores through interface traps.
