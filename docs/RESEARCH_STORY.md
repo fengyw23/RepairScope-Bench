@@ -70,7 +70,7 @@ release should publish a deterministic prefix generator plus snapshot hashes.
 
 ## What would make the idea top-conference ready
 
-The v0.3.2 repository is a protocol demonstration, not the final empirical
+The v0.4.0 repository is a protocol demonstration, not the final empirical
 contribution. A strong submission needs:
 
 - substantially more independent causal structures rather than numeric

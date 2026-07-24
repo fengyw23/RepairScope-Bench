@@ -37,6 +37,17 @@ class PilotDatasetTest(unittest.TestCase):
                 self.assertTrue(score["success"])
                 self.assertTrue(score["optimal_repair"])
 
+    def test_every_loss_sensitive_task_has_competing_loss_levels(self) -> None:
+        for task in self.tasks:
+            if task.get("evaluation_class") != "loss_sensitive":
+                continue
+            oracle = solve_task(task)
+            with self.subTest(task=task["task_id"]):
+                self.assertGreaterEqual(oracle.feasible_plan_count, 2)
+                self.assertGreaterEqual(
+                    len(oracle.feasible_recovery_losses), 2
+                )
+
     def test_infeasible_tasks_require_preservation(self) -> None:
         infeasible = [
             task for task in self.tasks if not solve_task(task).feasible

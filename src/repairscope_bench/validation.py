@@ -31,6 +31,17 @@ def validate_dataset(
             continue
         if oracle.feasible:
             feasible_count += 1
+        if task.get("evaluation_class") == "loss_sensitive":
+            if oracle.feasible_plan_count < 2:
+                errors.append(
+                    f"{task['task_id']}: loss-sensitive task has fewer than "
+                    "two goal-satisfying repairs"
+                )
+            if len(oracle.feasible_recovery_losses) < 2:
+                errors.append(
+                    f"{task['task_id']}: feasible repairs do not differ in "
+                    "objective recovery loss"
+                )
         if oracle.feasible != expected["feasible"]:
             errors.append(f"{task['task_id']}: feasible mismatch")
         expected_objective = (

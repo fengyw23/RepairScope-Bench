@@ -145,7 +145,9 @@ TOOL_DEFINITIONS: list[dict[str, Any]] = [
 ]
 
 
-def responses_tools() -> list[dict[str, Any]]:
+def responses_tools(
+    definitions: list[dict[str, Any]] | None = None,
+) -> list[dict[str, Any]]:
     return [
         {
             "type": "function",
@@ -154,11 +156,13 @@ def responses_tools() -> list[dict[str, Any]]:
             "parameters": deepcopy(item["parameters"]),
             "strict": True,
         }
-        for item in TOOL_DEFINITIONS
+        for item in (definitions if definitions is not None else TOOL_DEFINITIONS)
     ]
 
 
-def chat_tools() -> list[dict[str, Any]]:
+def chat_tools(
+    definitions: list[dict[str, Any]] | None = None,
+) -> list[dict[str, Any]]:
     return [
         {
             "type": "function",
@@ -168,16 +172,18 @@ def chat_tools() -> list[dict[str, Any]]:
                 "parameters": deepcopy(item["parameters"]),
             },
         }
-        for item in TOOL_DEFINITIONS
+        for item in (definitions if definitions is not None else TOOL_DEFINITIONS)
     ]
 
 
-def anthropic_tools() -> list[dict[str, Any]]:
+def anthropic_tools(
+    definitions: list[dict[str, Any]] | None = None,
+) -> list[dict[str, Any]]:
     return [
         {
             "name": item["name"],
             "description": item["description"],
             "input_schema": deepcopy(item["parameters"]),
         }
-        for item in TOOL_DEFINITIONS
+        for item in (definitions if definitions is not None else TOOL_DEFINITIONS)
     ]

@@ -206,6 +206,45 @@ class ProviderProtocolTest(unittest.TestCase):
         adapter.start_session("system", "user").advance()
         self.assertFalse(transport.requests[0]["payload"]["enable_thinking"])
 
+    def test_task_specific_tools_replace_generic_tool_set(self) -> None:
+        transport = SequenceTransport(
+            [
+                {
+                    "choices": [
+                        {
+                            "finish_reason": "stop",
+                            "message": {"role": "assistant", "content": "done"},
+                        }
+                    ]
+                }
+            ]
+        )
+        adapter = ChatCompletionsAdapter(
+            "deepseek",
+            "test",
+            "secret",
+            "https://api.example/v1",
+            transport=transport,
+        )
+        custom = [
+            {
+                "name": "preview_cancellation",
+                "description": "Preview a cancellation.",
+                "parameters": {
+                    "type": "object",
+                    "properties": {},
+                    "required": [],
+                    "additionalProperties": False,
+                },
+            }
+        ]
+        adapter.start_session("system", "user", custom).advance()
+        names = {
+            item["function"]["name"]
+            for item in transport.requests[0]["payload"]["tools"]
+        }
+        self.assertEqual(names, {"preview_cancellation"})
+
 
 if __name__ == "__main__":
     unittest.main()

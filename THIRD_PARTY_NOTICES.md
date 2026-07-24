@@ -39,8 +39,9 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
 
-RepairScope-Bench does not copy the STATE-Bench runtime. The pilot tasks use
-new text, fixed post-failure states, new policies and prices, counterfactual
-variants, and an independently implemented environment and oracle. Each JSON
-task retains its source case and URL.
-
+RepairScope-Bench does not copy the STATE-Bench runtime. Its travel-facing
+adapter preserves the upstream partition into flight bookings, hotel
+reservations, and car rentals and the corresponding list/detail/search API
+pattern. The pilot tasks use new text, fixed post-failure states, new policies
+and prices, counterfactual variants, and an independently implemented
+transaction ledger and oracle. Each JSON task retains its source case and URL.

@@ -1,5 +1,505 @@
 {
-  "travel-package-a-local-car": {
+  "destination-hotel-a": {
+    "feasible": true,
+    "optimal_recovery_loss": 0,
+    "optimal_financial_cost": 960,
+    "minimum_feasible_financial_cost": 960,
+    "optimal_objective": [
+      0,
+      960,
+      0,
+      0
+    ],
+    "optimal_plans": [
+      []
+    ],
+    "optimal_scopes": [
+      {
+        "BK-183": "KEEP",
+        "HR-183": "KEEP"
+      }
+    ],
+    "feasible_plan_count": 3,
+    "feasible_recovery_losses": [
+      0,
+      300
+    ],
+    "feasible_objectives": [
+      [
+        0,
+        960,
+        0,
+        0
+      ],
+      [
+        300,
+        1035,
+        1,
+        2
+      ],
+      [
+        300,
+        1155,
+        1,
+        2
+      ]
+    ]
+  },
+  "destination-hotel-b": {
+    "feasible": true,
+    "optimal_recovery_loss": 0,
+    "optimal_financial_cost": 855,
+    "minimum_feasible_financial_cost": 855,
+    "optimal_objective": [
+      0,
+      855,
+      1,
+      2
+    ],
+    "optimal_plans": [
+      [
+        {
+          "action": "cancel",
+          "args": {
+            "commitment_id": "HR-183"
+          }
+        },
+        {
+          "action": "book",
+          "args": {
+            "option_id": "HOTEL-OAK-ALT"
+          }
+        }
+      ]
+    ],
+    "optimal_scopes": [
+      {
+        "BK-183": "KEEP",
+        "HR-183": "REPLACE"
+      }
+    ],
+    "feasible_plan_count": 2,
+    "feasible_recovery_losses": [
+      0,
+      80
+    ],
+    "feasible_objectives": [
+      [
+        0,
+        855,
+        1,
+        2
+      ],
+      [
+        80,
+        1040,
+        1,
+        1
+      ]
+    ]
+  },
+  "destination-hotel-c": {
+    "feasible": true,
+    "optimal_recovery_loss": 50,
+    "optimal_financial_cost": 1010,
+    "minimum_feasible_financial_cost": 1010,
+    "optimal_objective": [
+      50,
+      1010,
+      1,
+      1
+    ],
+    "optimal_plans": [
+      [
+        {
+          "action": "modify",
+          "args": {
+            "commitment_id": "HR-183",
+            "to_option_id": "HOTEL-OAK-ALT"
+          }
+        }
+      ]
+    ],
+    "optimal_scopes": [
+      {
+        "BK-183": "KEEP",
+        "HR-183": "MODIFY"
+      }
+    ],
+    "feasible_plan_count": 2,
+    "feasible_recovery_losses": [
+      50,
+      200
+    ],
+    "feasible_objectives": [
+      [
+        50,
+        1010,
+        1,
+        1
+      ],
+      [
+        200,
+        1055,
+        1,
+        2
+      ]
+    ]
+  },
+  "destination-hotel-d": {
+    "feasible": false,
+    "optimal_recovery_loss": null,
+    "optimal_financial_cost": null,
+    "minimum_feasible_financial_cost": null,
+    "optimal_objective": null,
+    "optimal_plans": [],
+    "optimal_scopes": [],
+    "feasible_plan_count": 0,
+    "feasible_recovery_losses": [],
+    "feasible_objectives": []
+  },
+  "short-trip-a-modify-car": {
+    "feasible": true,
+    "optimal_recovery_loss": 30,
+    "optimal_financial_cost": 1120,
+    "minimum_feasible_financial_cost": 1120,
+    "optimal_objective": [
+      30,
+      1120,
+      1,
+      1
+    ],
+    "optimal_plans": [
+      [
+        {
+          "action": "modify",
+          "args": {
+            "commitment_id": "CR-184",
+            "to_option_id": "CAR-SEA-SHORT"
+          }
+        }
+      ]
+    ],
+    "optimal_scopes": [
+      {
+        "BK-SEA": "KEEP",
+        "HR-SEA": "KEEP",
+        "CR-184": "MODIFY"
+      }
+    ],
+    "feasible_plan_count": 2,
+    "feasible_recovery_losses": [
+      30,
+      210
+    ],
+    "feasible_objectives": [
+      [
+        30,
+        1120,
+        1,
+        1
+      ],
+      [
+        210,
+        1230,
+        1,
+        2
+      ]
+    ]
+  },
+  "short-trip-b-replace-car": {
+    "feasible": true,
+    "optimal_recovery_loss": 70,
+    "optimal_financial_cost": 1090,
+    "minimum_feasible_financial_cost": 1090,
+    "optimal_objective": [
+      70,
+      1090,
+      1,
+      2
+    ],
+    "optimal_plans": [
+      [
+        {
+          "action": "cancel",
+          "args": {
+            "commitment_id": "CR-184"
+          }
+        },
+        {
+          "action": "book",
+          "args": {
+            "option_id": "CAR-SEA-SHORT"
+          }
+        }
+      ]
+    ],
+    "optimal_scopes": [
+      {
+        "BK-SEA": "KEEP",
+        "HR-SEA": "KEEP",
+        "CR-184": "REPLACE"
+      }
+    ],
+    "feasible_plan_count": 2,
+    "feasible_recovery_losses": [
+      70,
+      120
+    ],
+    "feasible_objectives": [
+      [
+        70,
+        1090,
+        1,
+        2
+      ],
+      [
+        120,
+        1210,
+        1,
+        1
+      ]
+    ]
+  },
+  "short-trip-c-keep-extra-day": {
+    "feasible": true,
+    "optimal_recovery_loss": 0,
+    "optimal_financial_cost": 1090,
+    "minimum_feasible_financial_cost": 1050,
+    "optimal_objective": [
+      0,
+      1090,
+      0,
+      0
+    ],
+    "optimal_plans": [
+      []
+    ],
+    "optimal_scopes": [
+      {
+        "BK-SEA": "KEEP",
+        "HR-SEA": "KEEP",
+        "CR-184": "KEEP"
+      }
+    ],
+    "feasible_plan_count": 4,
+    "feasible_recovery_losses": [
+      0,
+      30,
+      70
+    ],
+    "feasible_objectives": [
+      [
+        0,
+        1090,
+        0,
+        0
+      ],
+      [
+        30,
+        1120,
+        1,
+        1
+      ],
+      [
+        70,
+        1050,
+        1,
+        2
+      ],
+      [
+        70,
+        1090,
+        1,
+        2
+      ]
+    ]
+  },
+  "short-trip-d-infeasible": {
+    "feasible": false,
+    "optimal_recovery_loss": null,
+    "optimal_financial_cost": null,
+    "minimum_feasible_financial_cost": null,
+    "optimal_objective": null,
+    "optimal_plans": [],
+    "optimal_scopes": [],
+    "feasible_plan_count": 0,
+    "feasible_recovery_losses": [],
+    "feasible_objectives": []
+  },
+  "workstation-a": {
+    "feasible": true,
+    "optimal_recovery_loss": 0,
+    "optimal_financial_cost": 1850,
+    "minimum_feasible_financial_cost": 1700,
+    "optimal_objective": [
+      0,
+      1850,
+      0,
+      1
+    ],
+    "optimal_plans": [
+      [
+        {
+          "action": "book",
+          "args": {
+            "option_id": "UNIVERSAL-ADAPTER-DOCK"
+          }
+        }
+      ]
+    ],
+    "optimal_scopes": [
+      {
+        "ORD-LAPTOP": "KEEP",
+        "ORD-MONITOR": "KEEP"
+      }
+    ],
+    "feasible_plan_count": 2,
+    "feasible_recovery_losses": [
+      0,
+      300
+    ],
+    "feasible_objectives": [
+      [
+        0,
+        1850,
+        0,
+        1
+      ],
+      [
+        300,
+        1700,
+        1,
+        3
+      ]
+    ]
+  },
+  "workstation-b": {
+    "feasible": true,
+    "optimal_recovery_loss": 40,
+    "optimal_financial_cost": 1740,
+    "minimum_feasible_financial_cost": 1700,
+    "optimal_objective": [
+      40,
+      1740,
+      1,
+      2
+    ],
+    "optimal_plans": [
+      [
+        {
+          "action": "modify",
+          "args": {
+            "commitment_id": "ORD-LAPTOP",
+            "to_option_id": "PROBOOK-14"
+          }
+        },
+        {
+          "action": "book",
+          "args": {
+            "option_id": "PROBOOK-DOCK-V2"
+          }
+        }
+      ]
+    ],
+    "optimal_scopes": [
+      {
+        "ORD-LAPTOP": "MODIFY",
+        "ORD-MONITOR": "KEEP"
+      }
+    ],
+    "feasible_plan_count": 2,
+    "feasible_recovery_losses": [
+      40,
+      300
+    ],
+    "feasible_objectives": [
+      [
+        40,
+        1740,
+        1,
+        2
+      ],
+      [
+        300,
+        1700,
+        1,
+        3
+      ]
+    ]
+  },
+  "workstation-c": {
+    "feasible": true,
+    "optimal_recovery_loss": 100,
+    "optimal_financial_cost": 1500,
+    "minimum_feasible_financial_cost": 1500,
+    "optimal_objective": [
+      100,
+      1500,
+      1,
+      3
+    ],
+    "optimal_plans": [
+      [
+        {
+          "action": "cancel",
+          "args": {
+            "commitment_id": "ORD-LAPTOP"
+          }
+        },
+        {
+          "action": "book",
+          "args": {
+            "option_id": "PROBOOK-14"
+          }
+        },
+        {
+          "action": "book",
+          "args": {
+            "option_id": "PROBOOK-DOCK-V2"
+          }
+        }
+      ]
+    ],
+    "optimal_scopes": [
+      {
+        "ORD-LAPTOP": "REPLACE",
+        "ORD-MONITOR": "KEEP"
+      }
+    ],
+    "feasible_plan_count": 2,
+    "feasible_recovery_losses": [
+      100,
+      400
+    ],
+    "feasible_objectives": [
+      [
+        100,
+        1500,
+        1,
+        3
+      ],
+      [
+        400,
+        2100,
+        1,
+        2
+      ]
+    ]
+  },
+  "workstation-d": {
+    "feasible": false,
+    "optimal_recovery_loss": null,
+    "optimal_financial_cost": null,
+    "minimum_feasible_financial_cost": null,
+    "optimal_objective": null,
+    "optimal_plans": [],
+    "optimal_scopes": [],
+    "feasible_plan_count": 0,
+    "feasible_recovery_losses": [],
+    "feasible_objectives": []
+  },
+  "travel-package-a-keep-commitments": {
     "feasible": true,
     "optimal_recovery_loss": 0,
     "optimal_financial_cost": 900,
@@ -22,18 +522,36 @@
     ],
     "optimal_scopes": [
       {
-        "C-FLIGHT-OUT": "KEEP",
-        "C-FLIGHT-RETURN": "KEEP",
-        "C-HOTEL-UNION": "KEEP"
+        "BK-OUT": "KEEP",
+        "BK-RETURN": "KEEP",
+        "HR-DEN": "KEEP"
       }
     ],
-    "feasible_plan_count": 1
+    "feasible_plan_count": 2,
+    "feasible_recovery_losses": [
+      0,
+      200
+    ],
+    "feasible_objectives": [
+      [
+        0,
+        900,
+        0,
+        1
+      ],
+      [
+        200,
+        1001,
+        1,
+        3
+      ]
+    ]
   },
   "travel-package-b-replace-hotel": {
     "feasible": true,
     "optimal_recovery_loss": 0,
     "optimal_financial_cost": 880,
-    "minimum_feasible_financial_cost": 880,
+    "minimum_feasible_financial_cost": 800,
     "optimal_objective": [
       0,
       880,
@@ -45,7 +563,7 @@
         {
           "action": "cancel",
           "args": {
-            "commitment_id": "C-HOTEL-UNION"
+            "commitment_id": "HR-DEN"
           }
         },
         {
@@ -64,31 +582,60 @@
     ],
     "optimal_scopes": [
       {
-        "C-FLIGHT-OUT": "KEEP",
-        "C-FLIGHT-RETURN": "KEEP",
-        "C-HOTEL-UNION": "REPLACE"
+        "BK-OUT": "KEEP",
+        "BK-RETURN": "KEEP",
+        "HR-DEN": "REPLACE"
       }
     ],
-    "feasible_plan_count": 1
-  },
-  "travel-package-c-modify-flight": {
-    "feasible": true,
-    "optimal_recovery_loss": 0,
-    "optimal_financial_cost": 899,
-    "minimum_feasible_financial_cost": 899,
-    "optimal_objective": [
+    "feasible_plan_count": 3,
+    "feasible_recovery_losses": [
       0,
-      899,
+      100
+    ],
+    "feasible_objectives": [
+      [
+        0,
+        880,
+        1,
+        3
+      ],
+      [
+        100,
+        800,
+        2,
+        5
+      ],
+      [
+        100,
+        899,
+        1,
+        3
+      ]
+    ]
+  },
+  "travel-package-c-replace-flight": {
+    "feasible": true,
+    "optimal_recovery_loss": 50,
+    "optimal_financial_cost": 849,
+    "minimum_feasible_financial_cost": 849,
+    "optimal_objective": [
+      50,
+      849,
       1,
-      2
+      3
     ],
     "optimal_plans": [
       [
         {
-          "action": "modify",
+          "action": "cancel",
           "args": {
-            "commitment_id": "C-FLIGHT-OUT",
-            "to_option_id": "UA-DEN-OUT-SAVER"
+            "commitment_id": "BK-OUT"
+          }
+        },
+        {
+          "action": "book",
+          "args": {
+            "option_id": "UA-DEN-OUT-SAVER"
           }
         },
         {
@@ -101,12 +648,30 @@
     ],
     "optimal_scopes": [
       {
-        "C-FLIGHT-OUT": "MODIFY",
-        "C-FLIGHT-RETURN": "KEEP",
-        "C-HOTEL-UNION": "KEEP"
+        "BK-OUT": "REPLACE",
+        "BK-RETURN": "KEEP",
+        "HR-DEN": "KEEP"
       }
     ],
-    "feasible_plan_count": 1
+    "feasible_plan_count": 2,
+    "feasible_recovery_losses": [
+      50,
+      150
+    ],
+    "feasible_objectives": [
+      [
+        50,
+        849,
+        1,
+        3
+      ],
+      [
+        150,
+        850,
+        2,
+        5
+      ]
+    ]
   },
   "travel-package-d-infeasible": {
     "feasible": false,
@@ -116,330 +681,8 @@
     "optimal_objective": null,
     "optimal_plans": [],
     "optimal_scopes": [],
-    "feasible_plan_count": 0
-  },
-  "destination-hotel-a": {
-    "feasible": true,
-    "optimal_recovery_loss": 0,
-    "optimal_financial_cost": 855,
-    "minimum_feasible_financial_cost": 855,
-    "optimal_objective": [
-      0,
-      855,
-      1,
-      2
-    ],
-    "optimal_plans": [
-      [
-        {
-          "action": "cancel",
-          "args": {
-            "commitment_id": "C-HOTEL-LAX"
-          }
-        },
-        {
-          "action": "book",
-          "args": {
-            "option_id": "HOTEL-OAK-ALT"
-          }
-        }
-      ]
-    ],
-    "optimal_scopes": [
-      {
-        "C-FLIGHT-SFO": "KEEP",
-        "C-HOTEL-LAX": "REPLACE"
-      }
-    ],
-    "feasible_plan_count": 1
-  },
-  "destination-hotel-b": {
-    "feasible": true,
-    "optimal_recovery_loss": 0,
-    "optimal_financial_cost": 855,
-    "minimum_feasible_financial_cost": 855,
-    "optimal_objective": [
-      0,
-      855,
-      1,
-      2
-    ],
-    "optimal_plans": [
-      [
-        {
-          "action": "cancel",
-          "args": {
-            "commitment_id": "C-HOTEL-LAX"
-          }
-        },
-        {
-          "action": "book",
-          "args": {
-            "option_id": "HOTEL-OAK-ALT"
-          }
-        }
-      ]
-    ],
-    "optimal_scopes": [
-      {
-        "C-FLIGHT-SFO": "KEEP",
-        "C-HOTEL-LAX": "REPLACE"
-      }
-    ],
-    "feasible_plan_count": 2
-  },
-  "destination-hotel-c": {
-    "feasible": true,
-    "optimal_recovery_loss": 0,
-    "optimal_financial_cost": 1035,
-    "minimum_feasible_financial_cost": 1035,
-    "optimal_objective": [
-      0,
-      1035,
-      1,
-      2
-    ],
-    "optimal_plans": [
-      [
-        {
-          "action": "cancel",
-          "args": {
-            "commitment_id": "C-HOTEL-LAX"
-          }
-        },
-        {
-          "action": "book",
-          "args": {
-            "option_id": "HOTEL-SFO-ALT"
-          }
-        }
-      ]
-    ],
-    "optimal_scopes": [
-      {
-        "C-FLIGHT-SFO": "KEEP",
-        "C-HOTEL-LAX": "REPLACE"
-      }
-    ],
-    "feasible_plan_count": 1
-  },
-  "destination-hotel-d": {
-    "feasible": false,
-    "optimal_recovery_loss": null,
-    "optimal_financial_cost": null,
-    "minimum_feasible_financial_cost": null,
-    "optimal_objective": null,
-    "optimal_plans": [],
-    "optimal_scopes": [],
-    "feasible_plan_count": 0
-  },
-  "short-trip-a-keep-extra-day": {
-    "feasible": true,
-    "optimal_recovery_loss": 0,
-    "optimal_financial_cost": 1090,
-    "minimum_feasible_financial_cost": 1090,
-    "optimal_objective": [
-      0,
-      1090,
-      0,
-      0
-    ],
-    "optimal_plans": [
-      []
-    ],
-    "optimal_scopes": [
-      {
-        "C-FLIGHT-SEA": "KEEP",
-        "C-HOTEL-SEA": "KEEP",
-        "C-CAR-LONG": "KEEP"
-      }
-    ],
-    "feasible_plan_count": 1
-  },
-  "short-trip-b-replace-car": {
-    "feasible": true,
-    "optimal_recovery_loss": 0,
-    "optimal_financial_cost": 1020,
-    "minimum_feasible_financial_cost": 1020,
-    "optimal_objective": [
-      0,
-      1020,
-      1,
-      2
-    ],
-    "optimal_plans": [
-      [
-        {
-          "action": "cancel",
-          "args": {
-            "commitment_id": "C-CAR-LONG"
-          }
-        },
-        {
-          "action": "book",
-          "args": {
-            "option_id": "CAR-SEA-SHORT"
-          }
-        }
-      ]
-    ],
-    "optimal_scopes": [
-      {
-        "C-FLIGHT-SEA": "KEEP",
-        "C-HOTEL-SEA": "KEEP",
-        "C-CAR-LONG": "REPLACE"
-      }
-    ],
-    "feasible_plan_count": 1
-  },
-  "short-trip-c-modify-car": {
-    "feasible": true,
-    "optimal_recovery_loss": 30,
-    "optimal_financial_cost": 1120,
-    "minimum_feasible_financial_cost": 1120,
-    "optimal_objective": [
-      30,
-      1120,
-      1,
-      1
-    ],
-    "optimal_plans": [
-      [
-        {
-          "action": "modify",
-          "args": {
-            "commitment_id": "C-CAR-LONG",
-            "to_option_id": "CAR-SEA-SHORT"
-          }
-        }
-      ]
-    ],
-    "optimal_scopes": [
-      {
-        "C-FLIGHT-SEA": "KEEP",
-        "C-HOTEL-SEA": "KEEP",
-        "C-CAR-LONG": "MODIFY"
-      }
-    ],
-    "feasible_plan_count": 2
-  },
-  "short-trip-d-infeasible": {
-    "feasible": false,
-    "optimal_recovery_loss": null,
-    "optimal_financial_cost": null,
-    "minimum_feasible_financial_cost": null,
-    "optimal_objective": null,
-    "optimal_plans": [],
-    "optimal_scopes": [],
-    "feasible_plan_count": 0
-  },
-  "workstation-a": {
-    "feasible": true,
-    "optimal_recovery_loss": 0,
-    "optimal_financial_cost": 1780,
-    "minimum_feasible_financial_cost": 1780,
-    "optimal_objective": [
-      0,
-      1780,
-      0,
-      1
-    ],
-    "optimal_plans": [
-      [
-        {
-          "action": "book",
-          "args": {
-            "option_id": "CREATOR-DOCK"
-          }
-        }
-      ]
-    ],
-    "optimal_scopes": [
-      {
-        "C-LAPTOP": "KEEP",
-        "C-MONITOR": "KEEP"
-      }
-    ],
-    "feasible_plan_count": 1
-  },
-  "workstation-b": {
-    "feasible": true,
-    "optimal_recovery_loss": 0,
-    "optimal_financial_cost": 1400,
-    "minimum_feasible_financial_cost": 1400,
-    "optimal_objective": [
-      0,
-      1400,
-      1,
-      3
-    ],
-    "optimal_plans": [
-      [
-        {
-          "action": "cancel",
-          "args": {
-            "commitment_id": "C-LAPTOP"
-          }
-        },
-        {
-          "action": "book",
-          "args": {
-            "option_id": "PROBOOK-14"
-          }
-        },
-        {
-          "action": "book",
-          "args": {
-            "option_id": "PROBOOK-DOCK-V2"
-          }
-        }
-      ]
-    ],
-    "optimal_scopes": [
-      {
-        "C-LAPTOP": "REPLACE",
-        "C-MONITOR": "KEEP"
-      }
-    ],
-    "feasible_plan_count": 1
-  },
-  "workstation-c": {
-    "feasible": true,
-    "optimal_recovery_loss": 0,
-    "optimal_financial_cost": 1850,
-    "minimum_feasible_financial_cost": 1850,
-    "optimal_objective": [
-      0,
-      1850,
-      0,
-      1
-    ],
-    "optimal_plans": [
-      [
-        {
-          "action": "book",
-          "args": {
-            "option_id": "UNIVERSAL-ADAPTER-DOCK"
-          }
-        }
-      ]
-    ],
-    "optimal_scopes": [
-      {
-        "C-LAPTOP": "KEEP",
-        "C-MONITOR": "KEEP"
-      }
-    ],
-    "feasible_plan_count": 2
-  },
-  "workstation-d": {
-    "feasible": false,
-    "optimal_recovery_loss": null,
-    "optimal_financial_cost": null,
-    "minimum_feasible_financial_cost": null,
-    "optimal_objective": null,
-    "optimal_plans": [],
-    "optimal_scopes": [],
-    "feasible_plan_count": 0
+    "feasible_plan_count": 0,
+    "feasible_recovery_losses": [],
+    "feasible_objectives": []
   }
 }

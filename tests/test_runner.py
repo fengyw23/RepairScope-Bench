@@ -7,6 +7,7 @@ from tempfile import TemporaryDirectory
 from repairscope_bench.loader import load_task
 from repairscope_bench.providers.base import ModelTurn, ToolCall
 from repairscope_bench.runner import (
+    SYSTEM_PROMPTS,
     build_user_prompt,
     run_episode,
     run_suite,
@@ -22,9 +23,10 @@ class ScriptedAdapter:
     provider = "fake"
     model = "scripted"
 
-    def start_session(self, system_prompt, user_prompt):
+    def start_session(self, system_prompt, user_prompt, tool_definitions=None):
         self.system_prompt = system_prompt
         self.user_prompt = user_prompt
+        self.tool_definitions = tool_definitions
         return ScriptedSession()
 
 
@@ -37,7 +39,7 @@ class ScriptedSession:
         if self.index == 1:
             return ModelTurn(
                 "",
-                [ToolCall("c1", "list_commitments", {})],
+                [ToolCall("c1", "get_user_reservations", {})],
                 {"input_tokens": 10, "output_tokens": 2},
             )
         return ModelTurn(
@@ -49,21 +51,32 @@ class ScriptedSession:
 
 class RunnerTest(unittest.TestCase):
     def test_runner_executes_tool_loop_and_scores(self) -> None:
-        task = load_task(DATA / "short-trip-a-keep-extra-day.json")
+        task = load_task(DATA / "short-trip-c-keep-extra-day.json")
         adapter = ScriptedAdapter()
         record = run_episode(task, adapter)
         self.assertEqual(record["status"], "completed")
         self.assertTrue(record["score"]["optimal_repair"])
         self.assertEqual(record["usage"]["input_tokens"], 21)
         self.assertEqual(record["score"]["action_count"], 2)
+        tool_names = {item["name"] for item in adapter.tool_definitions}
+        self.assertIn("get_user_reservations", tool_names)
+        self.assertIn("preview_cancellation", tool_names)
+        self.assertNotIn("get_cost_summary", tool_names)
+        self.assertNotIn("list_commitments", tool_names)
+        self.assertEqual(record["harness_config"]["max_turns"], 15)
 
     def test_model_prompt_excludes_gold_and_evaluator_internals(self) -> None:
-        task = load_task(DATA / "short-trip-a-keep-extra-day.json")
+        task = load_task(DATA / "short-trip-c-keep-extra-day.json")
         prompt = build_user_prompt(task)
         self.assertNotIn("optimal_plans", prompt)
         self.assertNotIn('"constraints"', prompt)
         self.assertNotIn('"catalog"', prompt)
-        self.assertIn("failure_observation", prompt)
+        self.assertIn("latest_tool_result", prompt)
+        self.assertNotIn(
+            "minimize additional irreversible",
+            SYSTEM_PROMPTS["travel"].lower(),
+        )
+        self.assertNotIn("lexicographic", SYSTEM_PROMPTS["travel"].lower())
         self.assertNotIn("fully refundable", prompt)
         self.assertNotIn("available for", prompt)
 
@@ -73,20 +86,20 @@ class RunnerTest(unittest.TestCase):
                 load_task(DATA / f"travel-package-{suffix}.json")
             )
             for suffix in [
-                "a-local-car",
+                "a-keep-commitments",
                 "b-replace-hotel",
-                "c-modify-flight",
+                "c-replace-flight",
                 "d-infeasible",
             ]
         ]
         for prompt in prompts:
-            self.assertIn("inventory_changed", prompt)
+            self.assertIn("inventory changed", prompt)
             self.assertNotIn("refundable", prompt)
             self.assertNotIn("replacement car", prompt)
             self.assertNotIn("saver change", prompt)
 
     def test_suite_writes_jsonl_summary_and_refuses_silent_mix(self) -> None:
-        task = load_task(DATA / "short-trip-a-keep-extra-day.json")
+        task = load_task(DATA / "short-trip-c-keep-extra-day.json")
         with TemporaryDirectory() as directory:
             summary = run_suite([task], ScriptedAdapter(), directory)
             self.assertEqual(summary["run_count"], 1)

@@ -168,3 +168,17 @@ reports:
 
 One-run results are smoke tests and must not be presented as headline model
 performance.
+
+## v0.4.0 corrective implementation
+
+The v0.4.0 release implements the audit recommendations:
+
+- plain travel/shopping customer-service prompts replace the explicit
+  evaluator-objective instruction;
+- models receive domain-specific STATE-style operations and at most 15 turns;
+- global cost summaries and model-visible `irrecoverable_loss` are removed;
+- cancellation/return previews expose only paid amount, refund, and fee;
+- all 12 feasible cases have at least two goal-satisfying repairs with
+  different recovery-loss values;
+- dataset validation rejects any future `loss_sensitive` task that fails that
+  competition requirement.

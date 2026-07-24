@@ -11,7 +11,7 @@ Every model receives the same instruction, public pre-failure tool trace,
 failure observation, and executable tools. It is not a static classifier: the
 agent must query and mutate persistent state.
 
-> Status: **research pilot, v0.3.2**. The release contains 16 counterfactual
+> Status: **research pilot, v0.4.0**. The release contains 16 counterfactual
 > tasks in two domains. It establishes the protocol and executable harness; it
 > is not yet large enough for a leaderboard claim.
 
@@ -25,7 +25,7 @@ agent must query and mutate persistent state.
 > fails, can an agent satisfy the goal while preserving useful commitments and
 > avoiding objectively measurable extra loss?
 
-The protocol has four defining properties:
+The protocol has five defining properties:
 
 1. **Fixed failure boundary.** Every model starts from identical state.
 2. **Real post-boundary mutations.** Calls cancel, book, modify, and verify
@@ -36,7 +36,7 @@ The protocol has four defining properties:
    deadlines, or availability change the optimal repair scope.
 5. **Tool-mediated discovery.** The initial failure message is the raw failed
    call, not a prose diagnosis. Refunds, alternatives, modification quotes,
-   compatibility, and current cost must be discovered through targeted tools.
+   compatibility, and prices must be discovered through targeted domain tools.
 
 This is a conditional recovery track. It intentionally does not score planning
 and execution before the failure boundary; a later end-to-end track can add
@@ -47,12 +47,19 @@ those stages.
 The pilot uses newly authored counterfactuals inspired by coordination
 structures in four STATE-Bench cases.
 
+For travel, the model-facing layer retains STATE-Bench's split between flight
+bookings, hotel reservations, car rentals, and their corresponding
+list/detail/search operations. RepairScope-Bench adds targeted refund/change
+previews and an independent transaction ledger because post-commit loss is not
+represented by the upstream task objective. The upstream runtime is not
+vendored or silently modified.
+
 | Family | Fixed failure boundary | Counterfactual outcomes |
 |---|---|---|
-| Denver package | flights and hotel confirmed; car fails | book car only; replace hotel; modify flight; infeasible |
-| Destination change | SFO flight confirmed; requested hotel sells out | replace old hotel; keep it when allowed; use another SFO hotel; infeasible |
-| Shortened trip | final hotel night removed; car date change fails | keep extra rental day; replace car; modify car; infeasible |
-| Workstation | laptop and monitor ordered; dock order voided | add dock; replace laptop and dock; use adapter-dock; infeasible |
+| Denver package | flights and hotel confirmed; car fails | keep prior bookings; replace hotel; replace flight; infeasible |
+| Destination change | SFO flight confirmed; requested hotel sells out | keep old hotel; cancel/rebook; change in place; infeasible |
+| Shortened trip | trip shortened; car date change fails | modify car; cancel/rebook; keep extra day; infeasible |
+| Workstation | laptop and monitor ordered; dock order voided | add adapter; exchange laptop; return/rebuy laptop; infeasible |
 
 Public files in `data/pilot` contain no expected answer. Evaluator-only gold is
 stored separately in `data/gold/pilot.json` and is recomputed by
@@ -103,10 +110,10 @@ Expected implementation-check summary:
 
 | Baseline | Success | Optimal |
 |---|---:|---:|
-| No repair | 2 / 16 | 1 / 16 |
-| Repair only the missing slot | 4 / 16 | 3 / 16 |
-| Repair declared affected slots | 7 / 16 | 5 / 16 |
-| Greedy full rollback | 8 / 16 | 0 / 16 |
+| No repair | 2 / 16 | 2 / 16 |
+| Repair only the missing slot | 2 / 16 | 2 / 16 |
+| Repair declared affected slots | 0 / 16 | 0 / 16 |
+| Greedy full rollback | 0 / 16 | 0 / 16 |
 | Exhaustive oracle | 16 / 16 | 16 / 16 |
 
 These are regression checks, not language-model results.
@@ -150,7 +157,7 @@ On PowerShell, replace `export NAME=...` with `$env:NAME="..."`.
 A single episode uses:
 
 ```bash
-repairscope run-model data/pilot/short-trip-a-keep-extra-day.json \
+repairscope run-model data/pilot/short-trip-a-modify-car.json \
   --provider openai --model gpt-5.6-sol --output run.json
 ```
 
@@ -163,39 +170,47 @@ experiment.
 
 ## Model-visible protocol
 
-The prompt is constructed from an allowlist:
+The prompt is constructed from an allowlist and a plain customer-service role:
 
 - `instruction`;
 - `failure_observation`;
 - public `pre_failure_trace`;
 - the tool interface.
 
-It excludes evaluator constraints, catalog internals, gold scopes, and oracle
-plans. Options and authoritative state must be obtained through tools.
+It excludes evaluator constraints, catalog internals, gold scopes, the
+lexicographic objective, and oracle plans. The model is not told to optimize an
+evaluator tuple. Customer requests only ask naturally to avoid wasting money
+or undoing useful arrangements.
 
 ```text
-list_commitments()
-get_commitment_details(commitment_id)
-get_cancellation_quote(commitment_id)
-search_options(slot)
-get_modification_quote(commitment_id, to_option_id)
-check_compatibility(left_option_id, right_option_id)
-get_cost_summary()
-cancel(commitment_id)
-book(option_id)
-modify(commitment_id, to_option_id)
-finish()
-report_infeasible(reason)
+Travel:
+  get_user_reservations()
+  get_booking(...) / get_hotel_reservation(...) / get_car_rental(...)
+  search_flights(...) / search_hotels() / search_car_rentals()
+  preview_cancellation(...) / get_change_quote(...)
+  check_travel_compatibility(...)
+  cancel_reservation(...) / book_travel_option(...) / change_reservation(...)
+
+Shopping:
+  get_customer_orders() / get_product_order(...)
+  search_products(...)
+  get_return_quote(...) / get_exchange_quote(...)
+  check_product_compatibility(...)
+  return_product(...) / purchase_product(...) / exchange_product(...)
+
+Both:
+  finish() / report_infeasible(...)
 ```
 
 Every run uses a fresh deep copy. Side-effecting calls are serialized, actions
-after termination are rejected, and action/turn budgets are enforced.
+after termination are rejected, and every model receives at most 15 turns.
 
-The read tools are intentionally separated. `list_commitments` does not expose
-refund policies or modification rules, `search_options` returns only currently
-available alternatives for the requested slot, and quotes are revealed only
-for the requested commitment or target. The evaluator's constraints, oracle,
-and loss calculations remain inaccessible to the model.
+The read tools are intentionally separated. Reservation/order details do not
+expose refund policies, search returns only currently available domain
+inventory, and quotes are revealed only for the requested record or target.
+Cancellation previews expose paid amount, refund, and fee—never the evaluator's
+`recovery_loss`. There is no model-visible global cost summary. The agent must
+join records, policy previews, inventory, compatibility, and prices itself.
 
 ## Repository layout
 
@@ -210,6 +225,8 @@ docs/                        data card, protocol, research positioning
 
 ## Scope and limitations
 
+- All 12 feasible pilot tasks contain at least two goal-satisfying repairs with
+  different objectively computed recovery losses.
 - 16 tasks are sufficient for protocol debugging, not broad empirical claims.
 - The oracle currently enumerates a finite single-commitment-per-slot search
   space.

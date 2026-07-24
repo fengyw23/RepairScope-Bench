@@ -44,7 +44,12 @@ class ModelAdapter(Protocol):
     provider: str
     model: str
 
-    def start_session(self, system_prompt: str, user_prompt: str) -> ModelSession:
+    def start_session(
+        self,
+        system_prompt: str,
+        user_prompt: str,
+        tool_definitions: list[dict[str, Any]] | None = None,
+    ) -> ModelSession:
         ...
 
 

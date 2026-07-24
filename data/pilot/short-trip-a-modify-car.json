@@ -1,47 +1,48 @@
 {
-  "schema_version": "0.3",
-  "task_id": "short-trip-c-modify-car",
+  "schema_version": "0.4",
+  "task_id": "short-trip-a-modify-car",
   "family_id": "shortened-trip-car-change-failure",
-  "variant_id": "C",
+  "variant_id": "A",
   "domain": "travel",
+  "evaluation_class": "loss_sensitive",
   "source_inspiration": {
     "benchmark": "STATE-Bench",
     "case_id": "122",
-    "url": "https://github.com/microsoft/STATE-Bench/blob/main/state_bench/domains/travel/tasks/122-shortened_trip_cancel_hotel_replace_car_dates.json",
-    "transformation": "Newly authored post-failure counterfactual. It preserves the source task's coordination structure but uses a fixed failure snapshot, explicit financial policies, new text, and a solver-derived repair oracle."
+    "url": "https://github.com/microsoft/STATE-Bench/tree/main/state_bench/domains/travel",
+    "transformation": "Fixed post-failure state with STATE-style domain operations, new inventory and policy counterfactuals, and ledger-derived gold."
   },
-  "instruction": "Complete the Seattle trip with one flight, one hotel checking out September 12, and one car that must be returned by September 12.",
-  "failure_observation": "change_car_dates(rental_id=CR-184, dropoff=2026-09-12) failed: rate_plan_not_changeable",
+  "instruction": "The Seattle trip now ends on September 12. Keep the flight and hotel coherent and make sure the car is returned no later than 2026-09-12. Please sort this out without wasting money or undoing arrangements that still help with the trip.",
+  "failure_observation": "change_reservation(CR-184, CAR-SEA-SHORT) failed because the old rate plan closed.",
   "pre_failure_trace": [
     {
       "step": 1,
-      "tool": "cancel_hotel_night",
+      "tool": "change_reservation",
       "arguments": {
-        "reservation_id": "HR-184",
-        "night": "2026-09-12"
+        "reservation_id": "HR-SEA",
+        "to_option_id": "HOTEL-SEA-2N"
       },
       "result": {
-        "status": "cancelled",
-        "refund": 190
+        "status": "confirmed",
+        "check_out": "2026-09-12"
       }
     },
     {
       "step": 2,
-      "tool": "change_car_dates",
+      "tool": "change_reservation",
       "arguments": {
-        "rental_id": "CR-184",
-        "dropoff": "2026-09-12"
+        "reservation_id": "CR-184",
+        "to_option_id": "CAR-SEA-SHORT"
       },
       "result": {
         "status": "failed",
-        "error": "rate_plan_not_changeable"
+        "error": "old_rate_plan_closed"
       }
     }
   ],
   "failure_snapshot": {
     "commitments": [
       {
-        "commitment_id": "C-FLIGHT-SEA",
+        "commitment_id": "BK-SEA",
         "slot": "flight",
         "option_id": "FLIGHT-SEA-BUNDLE",
         "status": "confirmed",
@@ -52,7 +53,7 @@
         }
       },
       {
-        "commitment_id": "C-HOTEL-SEA",
+        "commitment_id": "HR-SEA",
         "slot": "hotel",
         "option_id": "HOTEL-SEA-2N",
         "status": "confirmed",
@@ -63,18 +64,19 @@
         }
       },
       {
-        "commitment_id": "C-CAR-LONG",
+        "commitment_id": "CR-184",
         "slot": "car",
         "option_id": "CAR-SEA-LONG",
         "status": "confirmed",
         "price_paid": 210,
         "refund_if_cancelled": 0,
         "attributes": {
-          "dropoff": "2026-09-13"
+          "dropoff": "2026-09-13",
+          "pickup_city": "SEA"
         }
       }
     ],
-    "note": "Every evaluated model starts from this authoritative state. The trace is evidence of how the state was produced, not a model-generated chain of thought."
+    "note": "Authoritative state immediately after the failed operation."
   },
   "failure": {
     "affected_slots": [
@@ -89,7 +91,28 @@
       "price": 140,
       "available": true,
       "attributes": {
-        "dropoff": "2026-09-12"
+        "dropoff": "2026-09-12",
+        "pickup_city": "SEA"
+      }
+    },
+    {
+      "option_id": "CAR-SEA-LATE",
+      "slot": "car",
+      "price": 100,
+      "available": true,
+      "attributes": {
+        "dropoff": "2026-09-13",
+        "pickup_city": "SEA"
+      }
+    },
+    {
+      "option_id": "CAR-PDX-DECOY",
+      "slot": "car",
+      "price": 90,
+      "available": true,
+      "attributes": {
+        "dropoff": "2026-09-12",
+        "pickup_city": "PDX"
       }
     },
     {
@@ -101,7 +124,7 @@
       "attributes": {
         "trip_end": "2026-09-12"
       },
-      "provenance": "failure_snapshot_rebook_option"
+      "provenance": "existing_record"
     },
     {
       "option_id": "HOTEL-SEA-2N",
@@ -112,7 +135,7 @@
       "attributes": {
         "check_out": "2026-09-12"
       },
-      "provenance": "failure_snapshot_rebook_option"
+      "provenance": "existing_record"
     },
     {
       "option_id": "CAR-SEA-LONG",
@@ -121,21 +144,21 @@
       "available": true,
       "refund_if_cancelled_after_booking": 0,
       "attributes": {
-        "dropoff": "2026-09-13"
+        "dropoff": "2026-09-13",
+        "pickup_city": "SEA"
       },
-      "provenance": "failure_snapshot_rebook_option"
+      "provenance": "existing_record"
     }
   ],
   "modification_rules": [
     {
-      "commitment_id": "C-CAR-LONG",
+      "commitment_id": "CR-184",
       "from_option_id": "CAR-SEA-LONG",
       "to_option_id": "CAR-SEA-SHORT",
       "fee": 30,
       "net_cash_delta": 30,
       "cash_components": {
-        "change_fee": 30,
-        "fare_difference": 0
+        "rate_change_fee": 30
       },
       "available": true
     }
@@ -166,6 +189,13 @@
       "attribute": "dropoff",
       "op": "le",
       "value": "2026-09-12"
+    },
+    {
+      "type": "slot_attribute",
+      "slot": "car",
+      "attribute": "pickup_city",
+      "op": "eq",
+      "value": "SEA"
     }
   ],
   "objective": {
@@ -175,9 +205,7 @@
       "financial_cost",
       "mutated_prior_commitments",
       "state_changing_actions"
-    ],
-    "recovery_loss_definition": "unrefunded value of cancelled prior commitments + non-refunded post-failure purchases that are later cancelled + positive net cash paid for in-place modifications",
-    "financial_cost_definition": "pre-failure spend + post-failure charges and modification cash deltas - refunds; all amounts are deterministic ledger values"
+    ]
   },
-  "max_actions": 30
+  "max_actions": 20
 }

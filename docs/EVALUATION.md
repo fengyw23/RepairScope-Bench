@@ -5,7 +5,8 @@
 1. Reset to the public `failure_snapshot`.
 2. Give the agent only the instruction, failure observation, public
    pre-failure trace, and tools.
-3. Serialize side-effecting tool calls and enforce `max_actions`.
+3. Serialize side-effecting tool calls and enforce `max_actions` and the
+   15-turn model budget.
 4. Stop on `finish`, `report_infeasible`, or a budget.
 5. Recompute terminal constraints, financial ledgers, scope, and oracle.
 
@@ -63,7 +64,12 @@ allowed in-place modification, and booking into an empty slot. It replays the
 Cartesian product in fresh environments and rejects tool errors and hard-goal
 violations.
 
-The task declares a lexicographic objective. Pilot v0.3.2 uses:
+Every task labeled `loss_sensitive` must expose at least two goal-satisfying
+repairs with at least two distinct evaluator-computed recovery-loss values.
+Dataset validation rejects tasks that collapse to a unique feasible path or a
+pure lifecycle-cost tie.
+
+The evaluator declares a lexicographic objective. Pilot v0.4.0 uses:
 
 ```text
 (recovery_loss,
@@ -119,11 +125,12 @@ allowlist and never serializes the full task. `repairscope validate` recomputes
 the gold from public mechanics and checks the checked-in file for drift.
 
 The raw failure observation identifies what call failed, but not how to repair
-it. The agent must separately inspect commitments, request cancellation or
-modification quotes, search alternatives, check relevant compatibility, and
-read the current cash total. Read calls do not mutate state. This separation
-prevents a single state dump from revealing the solution while keeping every
-fact deterministic and objectively auditable.
+it. The agent must separately inspect domain reservations or orders, request
+cancellation/return or change quotes, search inventory, and check relevant
+compatibility. Read calls do not mutate state. Quotes expose source financial
+facts, never `recovery_loss`, the global evaluator tuple, or an aggregate cost
+summary. This separation prevents a single state dump from revealing the
+solution while keeping every fact deterministic and objectively auditable.
 
 ## Provider fairness
 

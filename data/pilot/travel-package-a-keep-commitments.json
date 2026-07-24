@@ -1,54 +1,55 @@
 {
-  "schema_version": "0.3",
-  "task_id": "travel-package-c-modify-flight",
+  "schema_version": "0.4",
+  "task_id": "travel-package-a-keep-commitments",
   "family_id": "travel-package-car-failure",
-  "variant_id": "C",
+  "variant_id": "A",
   "domain": "travel",
+  "evaluation_class": "loss_sensitive",
   "source_inspiration": {
     "benchmark": "STATE-Bench",
     "case_id": "124",
-    "url": "https://github.com/microsoft/STATE-Bench/blob/main/state_bench/domains/travel/tasks/124-cross_plan_trip_budget_with_preference_floor.json",
-    "transformation": "Newly authored post-failure counterfactual. It preserves the source task's coordination structure but uses a fixed failure snapshot, explicit financial policies, new text, and a solver-derived repair oracle."
+    "url": "https://github.com/microsoft/STATE-Bench/tree/main/state_bench/domains/travel",
+    "transformation": "Fixed post-failure state with STATE-style domain operations, new inventory and policy counterfactuals, and ledger-derived gold."
   },
-  "instruction": "Complete the Denver trip with one outbound flight, one return flight, one hotel, and one car for June 23-26. Every arrangement must be in Denver, and total trip spending must not exceed $900.",
-  "failure_observation": "book_car(option_id=CAR-DEN-ORIGINAL) failed: inventory_changed",
+  "instruction": "Complete the Denver trip with an outbound flight, return flight, hotel, and car for June 23-26. All arrangements must be in Denver and final trip spending must stay within $1050. Please sort this out without wasting money or undoing arrangements that still help with the trip.",
+  "failure_observation": "book_travel_option(CAR-DEN-ORIGINAL) failed because inventory changed.",
   "pre_failure_trace": [
     {
       "step": 1,
-      "tool": "book_flight",
+      "tool": "book_travel_option",
       "arguments": {
         "option_id": "UA-DEN-OUT"
       },
       "result": {
         "status": "confirmed",
-        "commitment_id": "C-FLIGHT-OUT"
+        "reservation_id": "BK-OUT"
       }
     },
     {
       "step": 2,
-      "tool": "book_flight",
+      "tool": "book_travel_option",
       "arguments": {
         "option_id": "UA-DEN-RETURN"
       },
       "result": {
         "status": "confirmed",
-        "commitment_id": "C-FLIGHT-RETURN"
+        "reservation_id": "BK-RETURN"
       }
     },
     {
       "step": 3,
-      "tool": "book_hotel",
+      "tool": "book_travel_option",
       "arguments": {
         "option_id": "HOTEL-UNION"
       },
       "result": {
         "status": "confirmed",
-        "commitment_id": "C-HOTEL-UNION"
+        "reservation_id": "HR-DEN"
       }
     },
     {
       "step": 4,
-      "tool": "book_car",
+      "tool": "book_travel_option",
       "arguments": {
         "option_id": "CAR-DEN-ORIGINAL"
       },
@@ -61,7 +62,7 @@
   "failure_snapshot": {
     "commitments": [
       {
-        "commitment_id": "C-FLIGHT-OUT",
+        "commitment_id": "BK-OUT",
         "slot": "outbound",
         "option_id": "UA-DEN-OUT",
         "status": "confirmed",
@@ -73,7 +74,7 @@
         }
       },
       {
-        "commitment_id": "C-FLIGHT-RETURN",
+        "commitment_id": "BK-RETURN",
         "slot": "return",
         "option_id": "UA-DEN-RETURN",
         "status": "confirmed",
@@ -85,12 +86,12 @@
         }
       },
       {
-        "commitment_id": "C-HOTEL-UNION",
+        "commitment_id": "HR-DEN",
         "slot": "hotel",
         "option_id": "HOTEL-UNION",
         "status": "confirmed",
         "price_paid": 279,
-        "refund_if_cancelled": 0,
+        "refund_if_cancelled": 79,
         "attributes": {
           "trip_city": "DEN",
           "check_in": "2026-06-23",
@@ -98,7 +99,7 @@
         }
       }
     ],
-    "note": "Every evaluated model starts from this authoritative state. The trace is evidence of how the state was produced, not a model-generated chain of thought."
+    "note": "Authoritative state immediately after the failed operation."
   },
   "failure": {
     "affected_slots": [
@@ -110,7 +111,7 @@
     {
       "option_id": "CAR-DEN-ALT",
       "slot": "car",
-      "price": 210,
+      "price": 131,
       "available": true,
       "attributes": {
         "trip_city": "DEN",
@@ -119,13 +120,46 @@
       }
     },
     {
-      "option_id": "UA-DEN-OUT-SAVER",
+      "option_id": "CAR-COS-DECOY",
+      "slot": "car",
+      "price": 80,
+      "available": true,
+      "attributes": {
+        "trip_city": "COS",
+        "pickup": "2026-06-23",
+        "dropoff": "2026-06-26"
+      }
+    },
+    {
+      "option_id": "HOTEL-COS-DECOY",
+      "slot": "hotel",
+      "price": 120,
+      "available": true,
+      "attributes": {
+        "trip_city": "COS",
+        "check_in": "2026-06-23",
+        "check_out": "2026-06-26"
+      }
+    },
+    {
+      "option_id": "UA-COS-OUT-DECOY",
       "slot": "outbound",
-      "price": 160,
+      "price": 90,
+      "available": true,
+      "attributes": {
+        "trip_city": "COS",
+        "date": "2026-06-23"
+      }
+    },
+    {
+      "option_id": "HOTEL-DEN-BUDGET",
+      "slot": "hotel",
+      "price": 180,
       "available": true,
       "attributes": {
         "trip_city": "DEN",
-        "date": "2026-06-23"
+        "check_in": "2026-06-23",
+        "check_out": "2026-06-26"
       }
     },
     {
@@ -138,7 +172,7 @@
         "trip_city": "DEN",
         "date": "2026-06-23"
       },
-      "provenance": "failure_snapshot_rebook_option"
+      "provenance": "existing_record"
     },
     {
       "option_id": "UA-DEN-RETURN",
@@ -150,7 +184,7 @@
         "trip_city": "DEN",
         "date": "2026-06-26"
       },
-      "provenance": "failure_snapshot_rebook_option"
+      "provenance": "existing_record"
     },
     {
       "option_id": "HOTEL-UNION",
@@ -163,23 +197,10 @@
         "check_in": "2026-06-23",
         "check_out": "2026-06-26"
       },
-      "provenance": "failure_snapshot_rebook_option"
+      "provenance": "existing_record"
     }
   ],
-  "modification_rules": [
-    {
-      "commitment_id": "C-FLIGHT-OUT",
-      "from_option_id": "UA-DEN-OUT",
-      "to_option_id": "UA-DEN-OUT-SAVER",
-      "fee": 20,
-      "net_cash_delta": -80,
-      "cash_components": {
-        "change_fee": 20,
-        "fare_credit": -100
-      },
-      "available": true
-    }
-  ],
+  "modification_rules": [],
   "required_slots": [
     "outbound",
     "return",
@@ -217,7 +238,7 @@
     },
     {
       "type": "max_lifecycle_cost",
-      "value": 900
+      "value": 1050
     }
   ],
   "objective": {
@@ -227,9 +248,7 @@
       "financial_cost",
       "mutated_prior_commitments",
       "state_changing_actions"
-    ],
-    "recovery_loss_definition": "unrefunded value of cancelled prior commitments + non-refunded post-failure purchases that are later cancelled + positive net cash paid for in-place modifications",
-    "financial_cost_definition": "pre-failure spend + post-failure charges and modification cash deltas - refunds; all amounts are deterministic ledger values"
+    ]
   },
-  "max_actions": 30
+  "max_actions": 20
 }

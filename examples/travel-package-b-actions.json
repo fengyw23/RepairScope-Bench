@@ -1,34 +1,8 @@
 [
   {
-    "action": "list_commitments",
-    "args": {}
-  },
-  {
-    "action": "get_cost_summary",
-    "args": {}
-  },
-  {
-    "action": "search_options",
-    "args": {
-      "slot": "car"
-    }
-  },
-  {
-    "action": "get_cancellation_quote",
-    "args": {
-      "commitment_id": "C-HOTEL-UNION"
-    }
-  },
-  {
-    "action": "search_options",
-    "args": {
-      "slot": "hotel"
-    }
-  },
-  {
     "action": "cancel",
     "args": {
-      "commitment_id": "C-HOTEL-UNION"
+      "commitment_id": "HR-DEN"
     }
   },
   {

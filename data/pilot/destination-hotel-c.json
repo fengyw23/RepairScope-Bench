@@ -1,33 +1,33 @@
 {
-  "schema_version": "0.3",
+  "schema_version": "0.4",
   "task_id": "destination-hotel-c",
   "family_id": "destination-change-hotel-failure",
   "variant_id": "C",
   "domain": "travel",
+  "evaluation_class": "loss_sensitive",
   "source_inspiration": {
     "benchmark": "STATE-Bench",
     "case_id": "121",
-    "url": "https://github.com/microsoft/STATE-Bench/blob/main/state_bench/domains/travel/tasks/121-change_flight_cascade_replace_hotel.json",
-    "transformation": "Newly authored post-failure counterfactual. It preserves the source task's coordination structure but uses a fixed failure snapshot, explicit financial policies, new text, and a solver-derived repair oracle."
+    "url": "https://github.com/microsoft/STATE-Bench/tree/main/state_bench/domains/travel",
+    "transformation": "Fixed post-failure state with STATE-style domain operations, new inventory and policy counterfactuals, and ledger-derived gold."
   },
-  "instruction": "Complete the San Francisco meeting trip with one flight arriving in SFO and one hotel for August 10-13. The hotel commute to the meeting must be at most 30 minutes.",
-  "failure_observation": "book_hotel(option_id=HOTEL-SFO-183) failed: sold_out",
+  "instruction": "Keep the San Francisco meeting trip workable with a flight arriving in SFO and a hotel for August 10-13. The hotel commute to the meeting must be no more than 60 minutes. Please sort this out without wasting money or undoing arrangements that still help with the trip.",
+  "failure_observation": "book_travel_option(HOTEL-SFO-183) failed because the room sold out.",
   "pre_failure_trace": [
     {
       "step": 1,
-      "tool": "change_flight",
+      "tool": "change_reservation",
       "arguments": {
-        "booking_id": "BK-183",
-        "to": "UA183SFO"
+        "reservation_id": "BK-183",
+        "to_option_id": "UA183SFO"
       },
       "result": {
-        "status": "confirmed",
-        "commitment_id": "C-FLIGHT-SFO"
+        "status": "confirmed"
       }
     },
     {
       "step": 2,
-      "tool": "book_hotel",
+      "tool": "book_travel_option",
       "arguments": {
         "option_id": "HOTEL-SFO-183"
       },
@@ -40,7 +40,7 @@
   "failure_snapshot": {
     "commitments": [
       {
-        "commitment_id": "C-FLIGHT-SFO",
+        "commitment_id": "BK-183",
         "slot": "flight",
         "option_id": "UA183SFO",
         "status": "confirmed",
@@ -52,12 +52,12 @@
         }
       },
       {
-        "commitment_id": "C-HOTEL-LAX",
+        "commitment_id": "HR-183",
         "slot": "hotel",
         "option_id": "HOTEL-LAX-OLD",
         "status": "confirmed",
         "price_paid": 525,
-        "refund_if_cancelled": 525,
+        "refund_if_cancelled": 325,
         "attributes": {
           "commute_to_meeting_minutes": 330,
           "check_in": "2026-08-10",
@@ -65,7 +65,7 @@
         }
       }
     ],
-    "note": "Every evaluated model starts from this authoritative state. The trace is evidence of how the state was produced, not a model-generated chain of thought."
+    "note": "Authoritative state immediately after the failed operation."
   },
   "failure": {
     "affected_slots": [
@@ -78,7 +78,7 @@
       "option_id": "HOTEL-OAK-ALT",
       "slot": "hotel",
       "price": 420,
-      "available": false,
+      "available": true,
       "attributes": {
         "commute_to_meeting_minutes": 45,
         "check_in": "2026-08-10",
@@ -86,24 +86,24 @@
       }
     },
     {
-      "option_id": "HOTEL-SFO-ALT",
+      "option_id": "HOTEL-SJC-DECOY",
       "slot": "hotel",
-      "price": 600,
+      "price": 300,
       "available": true,
       "attributes": {
-        "commute_to_meeting_minutes": 15,
+        "commute_to_meeting_minutes": 95,
         "check_in": "2026-08-10",
         "check_out": "2026-08-13"
       }
     },
     {
-      "option_id": "HOTEL-SFO-183",
+      "option_id": "HOTEL-SFO-WRONG-DATES",
       "slot": "hotel",
-      "price": 555,
-      "available": false,
+      "price": 280,
+      "available": true,
       "attributes": {
-        "commute_to_meeting_minutes": 10,
-        "check_in": "2026-08-10",
+        "commute_to_meeting_minutes": 20,
+        "check_in": "2026-08-11",
         "check_out": "2026-08-13"
       }
     },
@@ -117,7 +117,7 @@
         "arrival_city": "SFO",
         "date": "2026-08-10"
       },
-      "provenance": "failure_snapshot_rebook_option"
+      "provenance": "existing_record"
     },
     {
       "option_id": "HOTEL-LAX-OLD",
@@ -130,10 +130,22 @@
         "check_in": "2026-08-10",
         "check_out": "2026-08-13"
       },
-      "provenance": "failure_snapshot_rebook_option"
+      "provenance": "existing_record"
     }
   ],
-  "modification_rules": [],
+  "modification_rules": [
+    {
+      "commitment_id": "HR-183",
+      "from_option_id": "HOTEL-LAX-OLD",
+      "to_option_id": "HOTEL-OAK-ALT",
+      "fee": 50,
+      "net_cash_delta": 50,
+      "cash_components": {
+        "hotel_change_fee": 50
+      },
+      "available": true
+    }
+  ],
   "required_slots": [
     "flight",
     "hotel"
@@ -151,7 +163,21 @@
       "slot": "hotel",
       "attribute": "commute_to_meeting_minutes",
       "op": "le",
-      "value": 30
+      "value": 60
+    },
+    {
+      "type": "slot_attribute",
+      "slot": "hotel",
+      "attribute": "check_in",
+      "op": "eq",
+      "value": "2026-08-10"
+    },
+    {
+      "type": "slot_attribute",
+      "slot": "hotel",
+      "attribute": "check_out",
+      "op": "eq",
+      "value": "2026-08-13"
     }
   ],
   "objective": {
@@ -161,9 +187,7 @@
       "financial_cost",
       "mutated_prior_commitments",
       "state_changing_actions"
-    ],
-    "recovery_loss_definition": "unrefunded value of cancelled prior commitments + non-refunded post-failure purchases that are later cancelled + positive net cash paid for in-place modifications",
-    "financial_cost_definition": "pre-failure spend + post-failure charges and modification cash deltas - refunds; all amounts are deterministic ledger values"
+    ]
   },
-  "max_actions": 30
+  "max_actions": 20
 }

@@ -6,6 +6,7 @@ from pathlib import Path
 from typing import Any
 
 from .baselines import make_actions
+from .domain_tools import tool_definitions_for_task
 from .evaluator import evaluate_actions
 from .loader import load_task, load_tasks
 from .oracle import solve_task
@@ -70,18 +71,7 @@ def main(argv: list[str] | None = None) -> int:
                 "failure_observation": task["failure_observation"],
                 "failure_snapshot": task["failure_snapshot"],
                 "available_tools": [
-                    "list_commitments",
-                    "get_commitment_details",
-                    "get_cancellation_quote",
-                    "search_options",
-                    "get_modification_quote",
-                    "check_compatibility",
-                    "get_cost_summary",
-                    "cancel",
-                    "book",
-                    "modify",
-                    "finish",
-                    "report_infeasible",
+                    item["name"] for item in tool_definitions_for_task(task)
                 ],
             }
         )
@@ -193,7 +183,7 @@ def _add_provider_arguments(parser: argparse.ArgumentParser) -> None:
     parser.add_argument("--base-url")
     parser.add_argument("--timeout", type=float, default=120)
     parser.add_argument("--max-retries", type=int, default=3)
-    parser.add_argument("--max-turns", type=int, default=30)
+    parser.add_argument("--max-turns", type=int, default=15)
     parser.add_argument("--max-output-tokens", type=int, default=4096)
     parser.add_argument(
         "--reasoning-effort",

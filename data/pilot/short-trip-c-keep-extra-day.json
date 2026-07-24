@@ -1,8 +1,8 @@
 {
   "schema_version": "0.4",
-  "task_id": "short-trip-b-replace-car",
+  "task_id": "short-trip-c-keep-extra-day",
   "family_id": "shortened-trip-car-change-failure",
-  "variant_id": "B",
+  "variant_id": "C",
   "domain": "travel",
   "evaluation_class": "loss_sensitive",
   "source_inspiration": {
@@ -11,7 +11,7 @@
     "url": "https://github.com/microsoft/STATE-Bench/tree/main/state_bench/domains/travel",
     "transformation": "Fixed post-failure state with STATE-style domain operations, new inventory and policy counterfactuals, and ledger-derived gold."
   },
-  "instruction": "The Seattle trip now ends on September 12. Keep the flight and hotel coherent and make sure the car is returned no later than 2026-09-12. Please sort this out without wasting money or undoing arrangements that still help with the trip.",
+  "instruction": "The Seattle trip now ends on September 12. Keep the flight and hotel coherent and make sure the car is returned no later than 2026-09-13. Please sort this out without wasting money or undoing arrangements that still help with the trip.",
   "failure_observation": "change_reservation(CR-184, CAR-SEA-SHORT) failed because the old rate plan closed.",
   "pre_failure_trace": [
     {
@@ -155,10 +155,10 @@
       "commitment_id": "CR-184",
       "from_option_id": "CAR-SEA-LONG",
       "to_option_id": "CAR-SEA-SHORT",
-      "fee": 120,
-      "net_cash_delta": 120,
+      "fee": 30,
+      "net_cash_delta": 30,
       "cash_components": {
-        "rate_change_fee": 120
+        "rate_change_fee": 30
       },
       "available": true
     }
@@ -188,7 +188,7 @@
       "slot": "car",
       "attribute": "dropoff",
       "op": "le",
-      "value": "2026-09-12"
+      "value": "2026-09-13"
     },
     {
       "type": "slot_attribute",

@@ -41,9 +41,14 @@ class ChatCompletionsAdapter:
         self.transport = transport
 
     def start_session(
-        self, system_prompt: str, user_prompt: str
+        self,
+        system_prompt: str,
+        user_prompt: str,
+        tool_definitions: list[dict[str, Any]] | None = None,
     ) -> "ChatCompletionsSession":
-        return ChatCompletionsSession(self, system_prompt, user_prompt)
+        return ChatCompletionsSession(
+            self, system_prompt, user_prompt, tool_definitions
+        )
 
 
 class ChatCompletionsSession:
@@ -52,8 +57,10 @@ class ChatCompletionsSession:
         adapter: ChatCompletionsAdapter,
         system_prompt: str,
         user_prompt: str,
+        tool_definitions: list[dict[str, Any]] | None,
     ):
         self.adapter = adapter
+        self.tool_definitions = tool_definitions
         self.messages: list[dict[str, Any]] = [
             {"role": "system", "content": system_prompt},
             {"role": "user", "content": user_prompt},
@@ -72,7 +79,7 @@ class ChatCompletionsSession:
         payload: dict[str, Any] = {
             "model": self.adapter.model,
             "messages": deepcopy(self.messages),
-            "tools": chat_tools(),
+            "tools": chat_tools(self.tool_definitions),
             "tool_choice": "auto",
             "parallel_tool_calls": False,
             "max_tokens": self.adapter.max_output_tokens,

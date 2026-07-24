@@ -8,29 +8,35 @@ import time
 from typing import Any
 from uuid import uuid4
 
+from .domain_tools import DomainToolRouter, tool_definitions_for_task
 from .environment import ActionResult, RepairEnvironment
 from .evaluator import evaluate_environment
 from .providers.base import ModelAdapter, ToolResult
 
 
-SYSTEM_PROMPT = """You can interact with a transactional environment through tools.
-Continue the task described by the user. Tool calls may read or change the
-environment. Base decisions on tool results. Among successful continuations,
-first minimize additional irreversible financial loss, then minimize total
-lifecycle cost. If still tied, change fewer prior commitments and use fewer
-state-changing actions."""
+SYSTEM_PROMPTS = {
+    "travel": """You are a customer service agent for a travel company.
+Use the available reservation, inventory, policy-preview, and booking tools to
+resolve the customer's request. Inspect authoritative records before changing
+them, do not invent identifiers or tool results, and verify the resulting
+arrangements before declaring completion.""",
+    "shopping": """You are a shopping assistant for an online store.
+Use the available order, product-search, return-preview, compatibility, and
+purchase tools to resolve the customer's request. Inspect authoritative
+records before changing them, do not invent identifiers or tool results, and
+verify the resulting order before declaring completion.""",
+}
 
 
 def build_user_prompt(task: dict[str, Any]) -> str:
     """Build the model-visible context without evaluator constraints or gold."""
     public = {
-        "task_id": task["task_id"],
-        "instruction": task["instruction"],
-        "failure_observation": task["failure_observation"],
-        "pre_failure_tool_trace": task["pre_failure_trace"],
+        "customer_request": task["instruction"],
+        "latest_tool_result": task["failure_observation"],
+        "earlier_tool_activity": task["pre_failure_trace"],
     }
     return (
-        "Continue the task below using the available tools.\n\n"
+        "Continue helping the customer from the current point.\n\n"
         + json.dumps(public, ensure_ascii=False, indent=2)
     )
 
@@ -39,12 +45,16 @@ def run_episode(
     task: dict[str, Any],
     adapter: ModelAdapter,
     *,
-    max_turns: int = 30,
+    max_turns: int = 15,
     run_id: str | None = None,
 ) -> dict[str, Any]:
     environment = RepairEnvironment(task)
+    router = DomainToolRouter(environment)
     user_prompt = build_user_prompt(task)
-    session = adapter.start_session(SYSTEM_PROMPT, user_prompt)
+    system_prompt = SYSTEM_PROMPTS[task["domain"]]
+    session = adapter.start_session(
+        system_prompt, user_prompt, tool_definitions_for_task(task)
+    )
     episode_id = run_id or uuid4().hex
     model_trace: list[dict[str, Any]] = []
     total_usage: dict[str, int | float] = {}
@@ -83,9 +93,7 @@ def run_episode(
             elif call.arguments is None:
                 result = ActionResult(False, "Missing tool arguments")
             else:
-                result = environment.execute(
-                    {"action": call.name, "args": call.arguments}
-                )
+                result = router.execute(call.name, call.arguments)
             pending_results.append(
                 ToolResult(call.call_id, call.name, result.as_dict())
             )
@@ -126,7 +134,7 @@ def run_episode(
             "reasoning_effort": getattr(adapter, "reasoning_effort", None),
         },
         "model_input": {
-            "system": SYSTEM_PROMPT,
+            "system": system_prompt,
             "user": user_prompt,
         },
         "usage": total_usage,
@@ -157,7 +165,7 @@ def run_suite(
     output_dir: str | Path,
     *,
     repeats: int = 1,
-    max_turns: int = 30,
+    max_turns: int = 15,
     overwrite: bool = False,
 ) -> dict[str, Any]:
     root = Path(output_dir)

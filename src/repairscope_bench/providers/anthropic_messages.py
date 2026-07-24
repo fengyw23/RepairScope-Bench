@@ -39,9 +39,14 @@ class AnthropicMessagesAdapter:
         self.transport = transport
 
     def start_session(
-        self, system_prompt: str, user_prompt: str
+        self,
+        system_prompt: str,
+        user_prompt: str,
+        tool_definitions: list[dict[str, Any]] | None = None,
     ) -> "AnthropicMessagesSession":
-        return AnthropicMessagesSession(self, system_prompt, user_prompt)
+        return AnthropicMessagesSession(
+            self, system_prompt, user_prompt, tool_definitions
+        )
 
 
 class AnthropicMessagesSession:
@@ -50,8 +55,10 @@ class AnthropicMessagesSession:
         adapter: AnthropicMessagesAdapter,
         system_prompt: str,
         user_prompt: str,
+        tool_definitions: list[dict[str, Any]] | None,
     ):
         self.adapter = adapter
+        self.tool_definitions = tool_definitions
         self.system_prompt = system_prompt
         self.messages: list[dict[str, Any]] = [
             {"role": "user", "content": user_prompt}
@@ -76,7 +83,7 @@ class AnthropicMessagesSession:
             "model": self.adapter.model,
             "system": self.system_prompt,
             "messages": deepcopy(self.messages),
-            "tools": anthropic_tools(),
+            "tools": anthropic_tools(self.tool_definitions),
             "tool_choice": {"type": "auto"},
             "max_tokens": self.adapter.max_output_tokens,
         }

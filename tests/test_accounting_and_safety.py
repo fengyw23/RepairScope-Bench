@@ -5,6 +5,7 @@ import unittest
 from pathlib import Path
 
 from repairscope_bench.environment import RepairEnvironment
+from repairscope_bench.domain_tools import DomainToolRouter, tool_definitions_for_task
 from repairscope_bench.evaluator import evaluate_actions
 from repairscope_bench.loader import load_task
 from repairscope_bench.oracle import solve_task
@@ -16,35 +17,34 @@ DATA = ROOT / "data" / "pilot"
 
 class AccountingAndSafetyTest(unittest.TestCase):
     def test_modification_uses_full_net_cash_delta(self) -> None:
-        task = load_task(DATA / "travel-package-c-modify-flight.json")
+        task = load_task(DATA / "short-trip-a-modify-car.json")
         score = evaluate_actions(
             task,
             [
                 {
                     "action": "modify",
                     "args": {
-                        "commitment_id": "C-FLIGHT-OUT",
-                        "to_option_id": "UA-DEN-OUT-SAVER",
+                        "commitment_id": "CR-184",
+                        "to_option_id": "CAR-SEA-SHORT",
                     },
                 },
-                {"action": "book", "args": {"option_id": "CAR-DEN-ALT"}},
                 {"action": "finish", "args": {}},
             ],
         )
-        self.assertEqual(score["financial_delta"], 130)
-        self.assertEqual(score["lifecycle_cost"], 899)
-        self.assertEqual(score["recovery_loss"], 0)
+        self.assertEqual(score["financial_delta"], 30)
+        self.assertEqual(score["lifecycle_cost"], 1120)
+        self.assertEqual(score["recovery_loss"], 30)
         self.assertTrue(score["optimal_repair"])
 
     def test_positive_modification_cash_is_recovery_loss(self) -> None:
-        task = load_task(DATA / "short-trip-c-modify-car.json")
+        task = load_task(DATA / "short-trip-a-modify-car.json")
         score = evaluate_actions(
             task,
             [
                 {
                     "action": "modify",
                     "args": {
-                        "commitment_id": "C-CAR-LONG",
+                        "commitment_id": "CR-184",
                         "to_option_id": "CAR-SEA-SHORT",
                     },
                 },
@@ -72,40 +72,46 @@ class AccountingAndSafetyTest(unittest.TestCase):
         self.assertNotEqual(score["financial_delta"], 0)
 
     def test_actions_after_terminal_are_rejected(self) -> None:
-        task = load_task(DATA / "short-trip-a-keep-extra-day.json")
+        task = load_task(DATA / "short-trip-c-keep-extra-day.json")
         environment = RepairEnvironment(task)
         self.assertTrue(environment.finish().ok)
         result = environment.execute(
-            {"action": "cancel", "args": {"commitment_id": "C-CAR-LONG"}}
+            {"action": "cancel", "args": {"commitment_id": "CR-184"}}
         )
         self.assertFalse(result.ok)
         self.assertTrue(environment.state_matches_failure_boundary())
 
     def test_policies_require_targeted_queries(self) -> None:
-        task = load_task(DATA / "travel-package-c-modify-flight.json")
+        task = load_task(DATA / "short-trip-a-modify-car.json")
         environment = RepairEnvironment(task)
-        commitments = environment.list_commitments().data
-        assert isinstance(commitments, list)
-        self.assertEqual(
-            set(commitments[0]),
-            {"commitment_id", "slot", "option_id", "status"},
-        )
-        quote = environment.get_modification_quote(
-            "C-FLIGHT-OUT", "UA-DEN-OUT-SAVER"
+        router = DomainToolRouter(environment)
+        quote = router.execute(
+            "get_change_quote",
+            {"reservation_id": "CR-184", "to_option_id": "CAR-SEA-SHORT"},
         )
         assert isinstance(quote.data, dict)
         self.assertTrue(quote.data["available"])
-        self.assertEqual(quote.data["net_cash_delta"], -80)
+        self.assertEqual(quote.data["net_cash_delta"], 30)
+        cancellation = router.execute(
+            "preview_cancellation", {"reservation_id": "CR-184"}
+        )
+        assert isinstance(cancellation.data, dict)
+        self.assertNotIn("irrecoverable_loss", cancellation.data)
+        self.assertNotIn(
+            "get_cost_summary",
+            {item["name"] for item in tool_definitions_for_task(task)},
+        )
 
     def test_search_hides_unavailable_options(self) -> None:
         task = load_task(DATA / "workstation-b.json")
         environment = RepairEnvironment(task)
         options = environment.search_options("dock").data
         assert isinstance(options, list)
-        self.assertEqual(
-            [item["option_id"] for item in options],
-            ["PROBOOK-DOCK-V2"],
-        )
+        option_ids = {item["option_id"] for item in options}
+        self.assertIn("PROBOOK-DOCK-V2", option_ids)
+        self.assertIn("LEGACY-USB-A-DOCK", option_ids)
+        self.assertIn("PROBOOK-DOCK-LATE", option_ids)
+        self.assertNotIn("PROBOOK-DOCK-SOLD-OUT", option_ids)
 
     def test_compatibility_must_be_checked_for_specific_options(self) -> None:
         task = load_task(DATA / "workstation-b.json")
@@ -121,14 +127,14 @@ class AccountingAndSafetyTest(unittest.TestCase):
         self.assertFalse(incompatible.data["compatible"])
         self.assertTrue(compatible.data["compatible"])
 
-    def test_lower_cost_beats_preservation_when_recovery_loss_ties(self) -> None:
+    def test_full_refund_replacement_beats_costly_change(self) -> None:
         task = load_task(DATA / "destination-hotel-b.json")
         score = evaluate_actions(
             task,
             [
                 {
                     "action": "cancel",
-                    "args": {"commitment_id": "C-HOTEL-LAX"},
+                    "args": {"commitment_id": "HR-183"},
                 },
                 {"action": "book", "args": {"option_id": "HOTEL-OAK-ALT"}},
                 {"action": "finish", "args": {}},
@@ -141,25 +147,25 @@ class AccountingAndSafetyTest(unittest.TestCase):
         self.assertEqual(score["over_repair"], [])
 
     def test_extra_loss_is_oracle_relative_and_nonnegative(self) -> None:
-        task = load_task(DATA / "destination-hotel-b.json")
+        task = load_task(DATA / "destination-hotel-a.json")
         score = evaluate_actions(
             task,
             [
                 {
                     "action": "cancel",
-                    "args": {"commitment_id": "C-FLIGHT-SFO"},
+                    "args": {"commitment_id": "HR-183"},
                 },
-                {"action": "book", "args": {"option_id": "UA183SFO"}},
+                {"action": "book", "args": {"option_id": "HOTEL-OAK-ALT"}},
                 {"action": "finish", "args": {}},
             ],
         )
         self.assertTrue(score["success"])
-        self.assertEqual(score["cancellation_loss"], 100)
+        self.assertEqual(score["cancellation_loss"], 300)
         self.assertEqual(score["optimal_recovery_loss"], 0)
-        self.assertEqual(score["extra_loss"], 100)
+        self.assertEqual(score["extra_loss"], 300)
 
     def test_action_budget_cannot_be_bypassed_with_late_finish(self) -> None:
-        task = load_task(DATA / "short-trip-a-keep-extra-day.json")
+        task = load_task(DATA / "short-trip-c-keep-extra-day.json")
         actions = [
             {"action": "list_commitments", "args": {}}
         ] * task["max_actions"]
@@ -169,12 +175,12 @@ class AccountingAndSafetyTest(unittest.TestCase):
         self.assertFalse(score["success"])
 
     def test_same_modification_cannot_be_applied_twice(self) -> None:
-        task = load_task(DATA / "short-trip-c-modify-car.json")
+        task = load_task(DATA / "short-trip-a-modify-car.json")
         environment = RepairEnvironment(task)
         action = {
             "action": "modify",
             "args": {
-                "commitment_id": "C-CAR-LONG",
+                "commitment_id": "CR-184",
                 "to_option_id": "CAR-SEA-SHORT",
             },
         }
@@ -184,7 +190,7 @@ class AccountingAndSafetyTest(unittest.TestCase):
 
     def test_oracle_treats_modification_availability_separately(self) -> None:
         task = deepcopy(
-            load_task(DATA / "short-trip-c-modify-car.json")
+            load_task(DATA / "short-trip-a-modify-car.json")
         )
         for option in task["catalog"]:
             if option["option_id"] == "CAR-SEA-SHORT":
@@ -192,7 +198,7 @@ class AccountingAndSafetyTest(unittest.TestCase):
         oracle = solve_task(task)
         self.assertTrue(oracle.feasible)
         self.assertEqual(
-            oracle.optimal_scopes[0]["C-CAR-LONG"], "MODIFY"
+            oracle.optimal_scopes[0]["CR-184"], "MODIFY"
         )
 
 

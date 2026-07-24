@@ -41,9 +41,14 @@ class OpenAIResponsesAdapter:
         self.transport = transport
 
     def start_session(
-        self, system_prompt: str, user_prompt: str
+        self,
+        system_prompt: str,
+        user_prompt: str,
+        tool_definitions: list[dict[str, Any]] | None = None,
     ) -> "OpenAIResponsesSession":
-        return OpenAIResponsesSession(self, system_prompt, user_prompt)
+        return OpenAIResponsesSession(
+            self, system_prompt, user_prompt, tool_definitions
+        )
 
 
 class OpenAIResponsesSession:
@@ -52,8 +57,10 @@ class OpenAIResponsesSession:
         adapter: OpenAIResponsesAdapter,
         system_prompt: str,
         user_prompt: str,
+        tool_definitions: list[dict[str, Any]] | None,
     ):
         self.adapter = adapter
+        self.tool_definitions = tool_definitions
         self.instructions = system_prompt
         self.input_items: list[dict[str, Any]] = [
             {"role": "user", "content": user_prompt}
@@ -72,7 +79,7 @@ class OpenAIResponsesSession:
             "model": self.adapter.model,
             "instructions": self.instructions,
             "input": deepcopy(self.input_items),
-            "tools": responses_tools(),
+            "tools": responses_tools(self.tool_definitions),
             "parallel_tool_calls": False,
             "max_output_tokens": self.adapter.max_output_tokens,
             "store": False,

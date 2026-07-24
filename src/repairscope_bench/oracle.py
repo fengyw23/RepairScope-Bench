@@ -19,6 +19,8 @@ class OracleResult:
     optimal_plans: list[list[dict[str, Any]]]
     optimal_scopes: list[dict[str, str]]
     feasible_plan_count: int
+    feasible_recovery_losses: list[int | float]
+    feasible_objectives: list[tuple[int | float, ...]]
 
     def as_dict(self) -> dict[str, Any]:
         return {
@@ -32,6 +34,10 @@ class OracleResult:
             "optimal_plans": self.optimal_plans,
             "optimal_scopes": self.optimal_scopes,
             "feasible_plan_count": self.feasible_plan_count,
+            "feasible_recovery_losses": self.feasible_recovery_losses,
+            "feasible_objectives": [
+                list(objective) for objective in self.feasible_objectives
+            ],
         }
 
 
@@ -67,7 +73,7 @@ def solve_task(task: dict[str, Any]) -> OracleResult:
         )
 
     if not feasible:
-        return OracleResult(False, None, None, None, None, [], [], 0)
+        return OracleResult(False, None, None, None, None, [], [], 0, [], [])
 
     feasible.sort(key=lambda item: item[0])
     best = feasible[0][0]
@@ -83,6 +89,8 @@ def solve_task(task: dict[str, Any]) -> OracleResult:
         unique_plans,
         unique_scopes,
         len(feasible),
+        sorted({item[3] for item in feasible}),
+        sorted({item[0] for item in feasible}),
     )
 
 
