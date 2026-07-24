@@ -529,26 +529,6 @@
       "value": 3900
     }
   ],
-  "search_contexts": {
-    "laptop": {
-      "use_case": "radiology-workstation"
-    },
-    "monitor": {
-      "use_case": "radiology-workstation"
-    },
-    "dock": {
-      "use_case": "radiology-workstation"
-    },
-    "security_key": {
-      "use_case": "radiology-workstation"
-    },
-    "warranty": {
-      "use_case": "radiology-workstation"
-    },
-    "software": {
-      "use_case": "radiology-workstation"
-    }
-  },
   "objective": {
     "mode": "lexicographic",
     "terms": [

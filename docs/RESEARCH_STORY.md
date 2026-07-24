@@ -99,7 +99,7 @@ No single tool returns the answer. The model must combine:
 
 - what is already confirmed;
 - exact paid amounts and dates;
-- live parameterized inventory;
+- live category-filtered inventory;
 - cancellation or exchange terms;
 - cross-option compatibility;
 - linked settlement consequences.
@@ -146,7 +146,7 @@ still needs:
 - human checks for linguistic clarity and realism, without human voting on
   the gold;
 - broad multi-model results with five runs per task;
-- ablations for linked terms, parameterized search, state visibility, and
+- ablations for linked terms, inventory visibility, state visibility, and
   objective-demand prompts;
 - an auxiliary end-to-end or no-failure control track.
 

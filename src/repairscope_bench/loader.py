@@ -227,7 +227,6 @@ def validate_task(task: dict[str, Any]) -> None:
             "evaluation_track",
             "mechanism",
             "split",
-            "search_contexts",
             "challenge_requirements",
         }
         missing_metadata = required_metadata - task.keys()
@@ -239,10 +238,6 @@ def validate_task(task: dict[str, Any]) -> None:
         if task["evaluation_track"] not in {"goal", "loss_aware"}:
             raise TaskValidationError(
                 f"{task['task_id']}: invalid evaluation_track"
-            )
-        if set(task["search_contexts"]) != required_slots:
-            raise TaskValidationError(
-                f"{task['task_id']}: search_contexts must cover required_slots"
             )
 
 

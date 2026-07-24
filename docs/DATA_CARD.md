@@ -20,7 +20,7 @@ Each task contains:
 - authoritative persistent commitments;
 - live option catalog and in-place modification rules;
 - linked settlement rules;
-- parameterized search contexts;
+- live inventory partitioned by public domain categories;
 - required slots and executable hard constraints;
 - evaluator objective and automatic challenge thresholds;
 - pair, mechanism, and split metadata;
@@ -65,7 +65,6 @@ The paired `goal` task has the same graph as its `loss_aware` twin.
 | `pre_failure_trace` | public evidence of earlier persistent effects | yes |
 | `failure_snapshot` | executable initial state | through record tools |
 | `catalog` | live and unavailable options | available matches through search |
-| `search_contexts` | authoritative search keys | no; values must be inferred from request |
 | `modification_rules` | possible in-place changes | through targeted quote |
 | `linked_loss_rules` | non-local settlement consequences | through targeted linked-term lookup |
 | `constraints` | deterministic terminal checks | no |
@@ -92,7 +91,8 @@ Automated tests verify:
 
 - public files load under the versioned schema;
 - every linked loss references real prior commitments and is charged once;
-- parameterized searches return no inventory for stale/wrong context;
+- category searches expose every live option in the requested public category
+  and require no hidden phrase;
 - model-facing schemas remain domain-native and contain no generic evaluator
   operations;
 - every loss-aware graph meets all four minimum thresholds;
@@ -100,7 +100,7 @@ Automated tests verify:
 - Oracle replay passes every task;
 - full rollback completes every task but is never optimal;
 - a final-cost-only solver completes every task but is optimal on only half;
-- read-only exploration cannot block a correct terminal call;
+- natural model termination cannot invalidate an otherwise correct final state;
 - provider tool loops retain state across OpenAI, Anthropic, Qwen, and
   DeepSeek-compatible protocols.
 

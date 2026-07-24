@@ -100,7 +100,6 @@ def paired_tasks(
     catalog: list[dict[str, Any]],
     required_slots: list[str],
     constraints: list[dict[str, Any]],
-    search_contexts: dict[str, dict[str, str]],
     linked_loss_rules: list[dict[str, Any]],
     modification_rules: list[dict[str, Any]] | None = None,
     source_case: str,
@@ -163,7 +162,6 @@ def paired_tasks(
         "linked_loss_rules": deepcopy(linked_loss_rules),
         "required_slots": required_slots,
         "constraints": constraints,
-        "search_contexts": search_contexts,
         "objective": {"mode": "lexicographic", "terms": OBJECTIVE},
         "mechanism": mechanism,
         "split": split,
@@ -194,15 +192,6 @@ def conference_family() -> list[dict[str, Any]]:
         "conference_pass",
         "dinner",
     ]
-    context = {
-        slot: {
-            "city": "Shanghai",
-            "start_date": "2026-09-14",
-            "end_date": "2026-09-16",
-        }
-        for slot in slots
-    }
-
     def make(variant: str, dinner_at_original: bool, hotel_refund: int) -> list[dict[str, Any]]:
         commitments = [
             commitment(
@@ -295,7 +284,6 @@ def conference_family() -> list[dict[str, Any]]:
             catalog=catalog,
             required_slots=slots,
             constraints=constraints,
-            search_contexts=context,
             linked_loss_rules=[
                 {
                     "rule_id": "AIR-HOTEL-PACKAGE",
@@ -316,8 +304,6 @@ def conference_family() -> list[dict[str, Any]]:
 
 def workstation_family() -> list[dict[str, Any]]:
     slots = ["laptop", "monitor", "dock", "security_key", "warranty", "software"]
-    context = {slot: {"use_case": "radiology-workstation"} for slot in slots}
-
     def make(variant: str, universal_available: bool) -> list[dict[str, Any]]:
         commitments = [
             commitment("WS-LAP", "laptop", "LAP-CREATOR", 1400, 950, arrival_day=2, approved=True),
@@ -423,7 +409,6 @@ def workstation_family() -> list[dict[str, Any]]:
             catalog=catalog,
             required_slots=slots,
             constraints=constraints,
-            search_contexts=context,
             linked_loss_rules=[
                 {
                     "rule_id": "WORKSTATION-REBATE",
@@ -451,8 +436,6 @@ def cold_chain_family() -> list[dict[str, Any]]:
         "service_plan",
         "installation",
     ]
-    context = {slot: {"use_case": "clinic-cold-chain"} for slot in slots}
-
     def make(variant: str, legacy_battery_available: bool) -> list[dict[str, Any]]:
         commitments = [
             commitment("CC-FRZ", "freezer", "FRZ-LEGACY", 2400, 1700, arrival_day=3, certified=True),
@@ -558,7 +541,6 @@ def cold_chain_family() -> list[dict[str, Any]]:
             catalog=catalog,
             required_slots=slots,
             constraints=constraints,
-            search_contexts=context,
             linked_loss_rules=[
                 {
                     "rule_id": "CALIBRATION-CREDIT",

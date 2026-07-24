@@ -529,26 +529,6 @@
       "value": 7200
     }
   ],
-  "search_contexts": {
-    "freezer": {
-      "use_case": "clinic-cold-chain"
-    },
-    "sensor": {
-      "use_case": "clinic-cold-chain"
-    },
-    "battery": {
-      "use_case": "clinic-cold-chain"
-    },
-    "gateway": {
-      "use_case": "clinic-cold-chain"
-    },
-    "service_plan": {
-      "use_case": "clinic-cold-chain"
-    },
-    "installation": {
-      "use_case": "clinic-cold-chain"
-    }
-  },
   "objective": {
     "mode": "lexicographic",
     "terms": [

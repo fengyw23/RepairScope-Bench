@@ -10,7 +10,7 @@ package credits. RepairScope-Bench evaluates whether the agent explores the
 current environment, executes a valid repair, and selects the
 minimum-additional-loss repair scope.
 
-> Status: **v0.5.0 research challenge set**. The repository contains the
+> Status: **v0.5.1 research challenge set**. The repository contains the
 > original 16-task protocol pilot and a new 12-task paired challenge set.
 > This remains a research artifact, not a leaderboard-scale dataset.
 
@@ -28,15 +28,15 @@ minimum-additional-loss repair scope.
 - **Non-local loss:** cancelling or changing one record can forfeit a package
   credit, product rebate, license, or service term attached to another record.
 - **Distributed discovery:** the model must separately inspect records,
-  parameterized inventory searches, refund/exchange quotes, compatibility, and
-  linked settlement terms.
+  category-filtered live inventory, refund/exchange quotes, compatibility, and
+  linked settlement terms. Search never depends on a hidden exact-match phrase.
 - **Mechanism splits:** package breakage is development data, compatibility
   cascade is test data, and service-contract cascade is a held-out mechanism.
 - **Correct budget semantics:** the official limit is 15 model turns. Read
-  calls no longer consume an arbitrary action budget, and `finish()` is never
-  blocked merely because the model investigated the state.
+  calls do not consume a mutation budget. v0.5 exposes no `finish()` tool:
+  feasible tasks are scored from the resulting environment state.
 - **Optimization gap:** reports now include
-  `Goal Pass - Optimal Pass`, exposing agents that finish successfully but
+  `Goal Pass - Optimal Pass`, exposing agents that complete the goal but
   choose a dominated repair scope.
 
 ## Scientific target

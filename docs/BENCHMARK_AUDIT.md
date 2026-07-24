@@ -187,7 +187,7 @@ The v0.4.0 release implements the audit recommendations:
 - dataset validation rejects any future `loss_sensitive` task that fails that
   competition requirement.
 
-## v0.5.0 challenge implementation
+## v0.5.1 challenge implementation
 
 The next audit found that v0.4 was still too easy: most tasks had small repair
 graphs, decisive facts were concentrated, and a 20-call limit counted harmless
@@ -198,11 +198,11 @@ reads. v0.5 implements:
   4–30 loss levels per loss-aware task;
 - automatic minimum gates for all four quantities;
 - non-local package, rebate, and service-contract losses;
-- parameterized search and targeted linked-term lookup;
+- public category search and targeted linked-term lookup;
 - goal-only versus natural loss-aware prompt pairs;
 - mechanism-level development, test, and held-out splits;
 - 15 model turns as the main limit, while reads do not consume mutation
-  safety accounting and `finish()` remains available;
+  safety accounting and feasible-task scoring ignores termination syntax;
 - `Scope-Optimization Gap = Goal Pass - Optimal Pass`;
 - cached exact Oracle results for tractable validation.
 

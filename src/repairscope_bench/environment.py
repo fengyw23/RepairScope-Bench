@@ -167,16 +167,15 @@ class RepairEnvironment:
             },
         )
 
-    def search_options(
-        self, slot: str, query: dict[str, Any] | None = None
-    ) -> ActionResult:
-        expected_query = self.task.get("search_contexts", {}).get(slot)
-        if expected_query is not None and query != expected_query:
-            return ActionResult(
-                True,
-                f"No inventory matched the supplied search context for {slot}.",
-                [],
-            )
+    def search_options(self, slot: str) -> ActionResult:
+        """Return live inventory for a public, structured category.
+
+        The category is the hard filter.  Earlier challenge versions also
+        compared a free-form model string against a hidden literal stored in
+        the task.  That made semantically equivalent searches return different
+        inventories and measured prompt guessing rather than environment
+        exploration.
+        """
         options = [
             {
                 "option_id": option["option_id"],
@@ -412,7 +411,7 @@ class RepairEnvironment:
             elif name == "get_cancellation_quote":
                 result = self.get_cancellation_quote(args["commitment_id"])
             elif name == "search_options":
-                result = self.search_options(args["slot"], args.get("query"))
+                result = self.search_options(args["slot"])
             elif name == "get_linked_loss_quote":
                 result = self.get_linked_loss_quote(args["commitment_id"])
             elif name == "get_modification_quote":

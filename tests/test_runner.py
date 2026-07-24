@@ -8,6 +8,7 @@ from repairscope_bench.loader import load_task
 from repairscope_bench.providers.base import ModelTurn, ToolCall
 from repairscope_bench.runner import (
     SYSTEM_PROMPTS,
+    V05_SYSTEM_PROMPTS,
     build_user_prompt,
     run_episode,
     run_suite,
@@ -87,6 +88,13 @@ class RunnerTest(unittest.TestCase):
         self.assertIn("call report_infeasible", shopping_system)
         self.assertNotIn("fully refundable", prompt)
         self.assertNotIn("available for", prompt)
+
+    def test_v05_prompt_has_no_finish_protocol(self) -> None:
+        for prompt in V05_SYSTEM_PROMPTS.values():
+            normalized = " ".join(prompt.lower().split())
+            self.assertNotIn("finish", normalized)
+            self.assertIn("stop when no further tool action is needed", normalized)
+            self.assertIn("report_infeasible", normalized)
 
     def test_counterfactual_family_does_not_narrate_hidden_solution(self) -> None:
         prompts = [

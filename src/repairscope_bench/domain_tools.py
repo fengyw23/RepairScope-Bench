@@ -128,14 +128,9 @@ TRAVEL_V05_TOOLS = [
     ),
     _schema(
         "search_travel_options",
-        "Search live inventory for one category using the trip city and service dates. All fields must match the intended trip.",
-        {
-            "category": {"type": "string"},
-            "city": {"type": "string"},
-            "start_date": {"type": "string"},
-            "end_date": {"type": "string"},
-        },
-        ["category", "city", "start_date", "end_date"],
+        "Search all currently available travel or local-service options in one category. Returned records include their city and dates for the agent to check.",
+        {"category": {"type": "string"}},
+        ["category"],
     ),
     _schema(
         "preview_cancellation",
@@ -188,7 +183,6 @@ TRAVEL_V05_TOOLS = [
         },
         ["reservation_id", "to_option_id"],
     ),
-    _schema("finish", "Declare that the customer's request is complete."),
     _schema(
         "report_infeasible",
         "Report that the request cannot be completed from the current state.",
@@ -287,12 +281,9 @@ SHOPPING_V05_TOOLS = [
     ),
     _schema(
         "search_products",
-        "Search live inventory for one category and intended use case.",
-        {
-            "category": {"type": "string"},
-            "use_case": {"type": "string"},
-        },
-        ["category", "use_case"],
+        "Search all currently available products or services in one category. Returned records include their delivery and approval attributes for the agent to check.",
+        {"category": {"type": "string"}},
+        ["category"],
     ),
     _schema(
         "get_return_quote",
@@ -345,7 +336,6 @@ SHOPPING_V05_TOOLS = [
         },
         ["order_id", "to_product_id"],
     ),
-    _schema("finish", "Declare that the customer's request is complete."),
     _schema(
         "report_infeasible",
         "Report that the request cannot be completed from the current state.",
@@ -449,10 +439,8 @@ class DomainToolRouter:
             True, f"Found {len(candidates)} available option(s).", candidates
         )
 
-    def _search_with_context(
-        self, slot: str, query: dict[str, Any]
-    ) -> ActionResult:
-        raw = self._generic("search_options", {"slot": slot, "query": query})
+    def _search_category(self, slot: str) -> ActionResult:
+        raw = self._generic("search_options", {"slot": slot})
         if not raw.ok:
             return raw
         candidates = [
@@ -533,14 +521,7 @@ class DomainToolRouter:
                 id_name="reservation_id",
             )
         if name == "search_travel_options":
-            return self._search_with_context(
-                args["category"],
-                {
-                    "city": args["city"],
-                    "start_date": args["start_date"],
-                    "end_date": args["end_date"],
-                },
-            )
+            return self._search_category(args["category"])
         if name == "search_flights":
             return self._search(
                 {"flight", "outbound", "return"}, args.get("journey")
@@ -600,9 +581,7 @@ class DomainToolRouter:
             )
         if name == "search_products":
             if self.environment.task["schema_version"] == "0.5":
-                return self._search_with_context(
-                    args["category"], {"use_case": args["use_case"]}
-                )
+                return self._search_category(args["category"])
             return self._search({args["category"]})
         if name == "get_return_quote":
             return self._quote(args["order_id"], id_name="order_id")

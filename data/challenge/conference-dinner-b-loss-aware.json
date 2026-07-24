@@ -464,38 +464,6 @@
       "value": 3800
     }
   ],
-  "search_contexts": {
-    "outbound": {
-      "city": "Shanghai",
-      "start_date": "2026-09-14",
-      "end_date": "2026-09-16"
-    },
-    "return": {
-      "city": "Shanghai",
-      "start_date": "2026-09-14",
-      "end_date": "2026-09-16"
-    },
-    "hotel": {
-      "city": "Shanghai",
-      "start_date": "2026-09-14",
-      "end_date": "2026-09-16"
-    },
-    "airport_transfer": {
-      "city": "Shanghai",
-      "start_date": "2026-09-14",
-      "end_date": "2026-09-16"
-    },
-    "conference_pass": {
-      "city": "Shanghai",
-      "start_date": "2026-09-14",
-      "end_date": "2026-09-16"
-    },
-    "dinner": {
-      "city": "Shanghai",
-      "start_date": "2026-09-14",
-      "end_date": "2026-09-16"
-    }
-  },
   "objective": {
     "mode": "lexicographic",
     "terms": [

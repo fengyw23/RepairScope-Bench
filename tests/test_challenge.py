@@ -39,12 +39,7 @@ class ChallengeScriptedSession:
                     ToolCall(
                         "c1",
                         "search_travel_options",
-                        {
-                            "category": "dinner",
-                            "city": "Shanghai",
-                            "start_date": "2026-09-14",
-                            "end_date": "2026-09-16",
-                        },
+                        {"category": "dinner"},
                     )
                 ],
                 {},
@@ -61,7 +56,7 @@ class ChallengeScriptedSession:
                 ],
                 {},
             )
-        return ModelTurn("", [ToolCall("c3", "finish", {})], {})
+        return ModelTurn("The requested trip is now complete.", [], {})
 
 
 class ChallengeDatasetTest(unittest.TestCase):
@@ -130,33 +125,20 @@ class ChallengeDatasetTest(unittest.TestCase):
         )
         self.assertEqual(environment.linked_loss, 180)
 
-    def test_parameterized_search_rejects_stale_context(self) -> None:
+    def test_search_uses_public_category_without_hidden_literal(self) -> None:
         task = next(
             item
             for item in self.tasks
             if item["task_id"] == "conference-dinner-a-loss-aware"
         )
         router = DomainToolRouter(RepairEnvironment(task))
-        wrong = router.execute(
-            "search_travel_options",
-            {
-                "category": "dinner",
-                "city": "Beijing",
-                "start_date": "2026-09-14",
-                "end_date": "2026-09-16",
-            },
+        result = router.execute(
+            "search_travel_options", {"category": "dinner"}
         )
-        right = router.execute(
-            "search_travel_options",
-            {
-                "category": "dinner",
-                "city": "Shanghai",
-                "start_date": "2026-09-14",
-                "end_date": "2026-09-16",
-            },
+        self.assertGreater(len(result.data), 0)
+        self.assertTrue(
+            all(item["type"] == "dinner" for item in result.data)
         )
-        self.assertEqual(wrong.data, [])
-        self.assertGreater(len(right.data), 0)
 
     def test_v05_tool_schema_is_domain_native_and_dynamic(self) -> None:
         shopping = next(task for task in self.tasks if task["domain"] == "shopping")
@@ -164,6 +146,9 @@ class ChallengeDatasetTest(unittest.TestCase):
         search = next(item for item in tools if item["name"] == "search_products")
         categories = search["parameters"]["properties"]["category"]["enum"]
         self.assertEqual(set(categories), set(shopping["required_slots"]))
+        self.assertEqual(search["parameters"]["required"], ["category"])
+        self.assertNotIn("use_case", search["parameters"]["properties"])
+        self.assertNotIn("finish", {item["name"] for item in tools})
         self.assertNotIn("search_options", {item["name"] for item in tools})
 
     def test_v05_model_tool_loop_reaches_oracle_state(self) -> None:
@@ -173,10 +158,53 @@ class ChallengeDatasetTest(unittest.TestCase):
             if item["task_id"] == "conference-dinner-a-loss-aware"
         )
         record = run_episode(task, ChallengeScriptedAdapter())
-        self.assertEqual(record["status"], "completed")
+        self.assertEqual(record["status"], "model_stopped")
         self.assertTrue(record["score"]["optimal_repair"])
+        self.assertFalse(record["score"]["finish_called"])
         self.assertEqual(record["harness_config"]["max_turns"], 15)
         self.assertEqual(record["harness_config"]["max_mutations"], 14)
+
+    def test_feasible_state_passes_without_finish_action(self) -> None:
+        task = next(
+            item
+            for item in self.tasks
+            if item["task_id"] == "conference-dinner-a-loss-aware"
+        )
+        score = evaluate_actions(
+            task,
+            [
+                {
+                    "action": "book",
+                    "args": {"option_id": "DINNER-HUANGPU"},
+                }
+            ],
+        )
+        self.assertTrue(score["success"])
+        self.assertTrue(score["optimal_repair"])
+        self.assertFalse(score["finish_called"])
+
+    def test_wrong_infeasibility_report_still_fails(self) -> None:
+        task = next(
+            item
+            for item in self.tasks
+            if item["task_id"] == "conference-dinner-a-loss-aware"
+        )
+        score = evaluate_actions(
+            task,
+            [
+                {
+                    "action": "book",
+                    "args": {"option_id": "DINNER-HUANGPU"},
+                },
+                {
+                    "action": "report_infeasible",
+                    "args": {"reason": "No repair exists."},
+                },
+            ],
+        )
+        self.assertTrue(score["goal_pass"])
+        self.assertTrue(score["reported_infeasible"])
+        self.assertFalse(score["success"])
 
     def test_oracle_passes_but_loss_blind_baseline_does_not_optimize(self) -> None:
         oracle_passes = 0

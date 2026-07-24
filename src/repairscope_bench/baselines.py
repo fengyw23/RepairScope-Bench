@@ -16,9 +16,9 @@ def make_actions(task: dict[str, Any], strategy: str) -> list[dict[str, Any]]:
                     "args": {"reason": "No constraint-satisfying repair exists."},
                 }
             ]
-        return oracle.optimal_plans[0] + [{"action": "finish", "args": {}}]
+        return oracle.optimal_plans[0] + _completion_actions(task)
     if strategy == "no_repair":
-        return [{"action": "finish", "args": {}}]
+        return _completion_actions(task)
     if strategy == "local_repair":
         return _local_repair(task)
     if strategy == "full_rollback":
@@ -41,7 +41,7 @@ def make_actions(task: dict[str, Any], strategy: str) -> list[dict[str, Any]]:
                     "args": {"reason": "No constraint-satisfying repair exists."},
                 }
             ]
-        return oracle.optimal_plans[0] + [{"action": "finish", "args": {}}]
+        return oracle.optimal_plans[0] + _completion_actions(task)
     raise ValueError(f"Unknown baseline strategy: {strategy}")
 
 
@@ -58,7 +58,7 @@ def _local_repair(task: dict[str, Any]) -> list[dict[str, Any]]:
         option = _cheapest_available(task, slot)
         if option is not None:
             actions.append({"action": "book", "args": {"option_id": option["option_id"]}})
-    actions.append({"action": "finish", "args": {}})
+    actions.extend(_completion_actions(task))
     return actions
 
 
@@ -75,7 +75,7 @@ def _full_rollback(task: dict[str, Any]) -> list[dict[str, Any]]:
         option = _cheapest_available(task, slot)
         if option is not None:
             actions.append({"action": "book", "args": {"option_id": option["option_id"]}})
-    actions.append({"action": "finish", "args": {}})
+    actions.extend(_completion_actions(task))
     return actions
 
 
@@ -101,8 +101,15 @@ def _dependency_repair(task: dict[str, Any]) -> list[dict[str, Any]]:
         option = _cheapest_available(task, slot)
         if option is not None:
             actions.append({"action": "book", "args": {"option_id": option["option_id"]}})
-    actions.append({"action": "finish", "args": {}})
+    actions.extend(_completion_actions(task))
     return actions
+
+
+def _completion_actions(task: dict[str, Any]) -> list[dict[str, Any]]:
+    """Keep the legacy pilot protocol without adding it to v0.5 traces."""
+    if task["schema_version"] == "0.5":
+        return []
+    return [{"action": "finish", "args": {}}]
 
 
 def _cheapest_available(

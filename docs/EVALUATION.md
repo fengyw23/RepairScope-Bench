@@ -5,15 +5,16 @@
 1. Reset an executable environment to the public failure snapshot.
 2. Give the model only the customer request, public pre-failure trace, latest
    failed tool result, and domain tools.
-3. Require the model to investigate, decide, execute, verify, and call
-   `finish`; `report_infeasible` is valid only when no hard-goal repair exists.
+3. Require the model to investigate, decide, execute, verify, and stop when no
+   further action is needed. `report_infeasible` is valid only when no
+   hard-goal repair exists.
 4. Serialize mutations and stop after at most 15 model turns.
 5. Recompute terminal constraints, transaction ledgers, scope, and exact
    Oracle objective.
 
 Every repetition receives a fresh deep copy. Read-only calls do not consume a
-separate action budget. A task may set a high mutation safety cap, but
-`finish()` is never blocked merely because the model performed many queries.
+separate action budget. A task may set a high mutation safety cap. The v0.5
+model-facing tools contain no benchmark-specific `finish()` action.
 
 The official protocol runs each task five independent times. Provider errors
 count as failed episodes in pass rates and are also reported separately.
@@ -25,8 +26,12 @@ A feasible task passes only when:
 - exactly one active commitment exists in every required slot;
 - every slot, cross-slot, deadline, compatibility, and lifecycle-budget
   constraint holds;
-- the model called `finish`;
+- the model did not incorrectly report the feasible task as infeasible;
 - no protocol budget was exceeded.
+
+Natural model termination is not part of the task score. The evaluator reads
+the external state after the tool loop stops, so a correct repair cannot fail
+merely because a provider produced prose instead of a `finish()` call.
 
 For an objectively infeasible task, the exact failure-boundary state and cash
 ledger must remain pristine and the model must call `report_infeasible`.
@@ -151,7 +156,7 @@ Public task JSON contains no expected feasibility, optimal scope, optimal
 plan, or objective result. `data/gold/*.json` is evaluator-only.
 `build_user_prompt` serializes an explicit allowlist rather than the task.
 
-The agent must join facts from record details, parameterized inventory
+The agent must join facts from record details, category-filtered live inventory
 searches, cancellation/exchange previews, compatibility checks, and linked
 terms. No tool returns the evaluator's global recovery loss or solution.
 

@@ -35,6 +35,27 @@ then call finish. If and only if the request is objectively impossible, call
 report_infeasible.""",
 }
 
+V05_SYSTEM_PROMPTS = {
+    "travel": """You are a customer service agent for a travel company.
+Use the available reservation, inventory, policy-preview, and booking tools to
+resolve the customer's request. Inspect authoritative records before changing
+them and do not invent identifiers or tool results. The request and tool
+environment contain enough information for you to decide: do not ask the
+customer to choose among alternatives or ask a follow-up question. Make and
+execute the best supported decision yourself. Verify the resulting
+arrangements and stop when no further tool action is needed. If and only if
+the request is objectively impossible, call report_infeasible.""",
+    "shopping": """You are a shopping assistant for an online store.
+Use the available order, product-search, return-preview, compatibility, and
+purchase tools to resolve the customer's request. Inspect authoritative
+records and do not invent identifiers or tool results. The request and tool
+environment contain enough information for you to decide: do not ask the
+customer to choose among alternatives or ask a follow-up question. Make and
+execute the best supported decision yourself. Verify the resulting order and
+stop when no further tool action is needed. If and only if the request is
+objectively impossible, call report_infeasible.""",
+}
+
 
 def build_user_prompt(task: dict[str, Any]) -> str:
     """Build the model-visible context without evaluator constraints or gold."""
@@ -59,7 +80,8 @@ def run_episode(
     environment = RepairEnvironment(task)
     router = DomainToolRouter(environment)
     user_prompt = build_user_prompt(task)
-    system_prompt = SYSTEM_PROMPTS[task["domain"]]
+    prompts = V05_SYSTEM_PROMPTS if task["schema_version"] == "0.5" else SYSTEM_PROMPTS
+    system_prompt = prompts[task["domain"]]
     session = adapter.start_session(
         system_prompt, user_prompt, tool_definitions_for_task(task)
     )
@@ -88,7 +110,7 @@ def run_episode(
             status = (
                 "completed"
                 if environment.terminal_mode is not None
-                else "model_stopped_without_terminal_action"
+                else "model_stopped"
             )
             break
 

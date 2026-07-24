@@ -49,7 +49,10 @@ def evaluate_environment(
     observed_objective = environment.objective_tuple()
 
     if oracle.feasible:
-        terminal_correct = environment.terminal_mode == "finish"
+        # A feasible episode is judged by its external state, not by whether
+        # the model emitted a benchmark-specific finish token.  An explicit
+        # infeasibility report is still a substantive, incorrect decision.
+        terminal_correct = environment.terminal_mode != "infeasible"
         success = bool(goal_pass and terminal_correct and not action_budget_exceeded)
         optimal = bool(success and observed_objective == oracle.optimal_objective)
         extra_loss = (
@@ -96,6 +99,8 @@ def evaluate_environment(
         "oracle_feasible": oracle.feasible,
         "goal_pass": goal_pass,
         "terminal_correct": terminal_correct,
+        "finish_called": environment.terminal_mode == "finish",
+        "reported_infeasible": environment.terminal_mode == "infeasible",
         "success": success,
         "optimal_repair": optimal,
         "observed_objective": list(observed_objective),
