@@ -11,7 +11,7 @@ Every model receives the same instruction, public pre-failure tool trace,
 failure observation, and executable tools. It is not a static classifier: the
 agent must query and mutate persistent state.
 
-> Status: **research pilot, v0.3**. The release contains 16 counterfactual
+> Status: **research pilot, v0.3.1**. The release contains 16 counterfactual
 > tasks in two domains. It establishes the protocol and executable harness; it
 > is not yet large enough for a leaderboard claim.
 
@@ -74,13 +74,15 @@ minimum feasible recovery loss. After hard constraints, current tasks minimize:
 
 ```text
 (recovery_loss,
- mutated_prior_commitments,
  lifecycle_cost,
+ mutated_prior_commitments,
  state_changing_actions)
 ```
 
-This is an unweighted lexicographic rule. All plans tied on the complete tuple
-are accepted. The evaluator also reports scope distance, over-repair,
+This is an unweighted lexicographic rule: irreversible loss comes first,
+followed by total lifecycle cost; commitment preservation is only a later
+tie-breaker. All plans tied on the complete tuple are accepted. The evaluator
+also reports scope distance, over-repair,
 under-repair, tool errors, and correct infeasibility. An infeasibility report
 receives credit only if no successful state-changing action has damaged the
 failure-boundary state.
@@ -101,9 +103,9 @@ Expected implementation-check summary:
 
 | Baseline | Success | Optimal |
 |---|---:|---:|
-| No repair | 2 / 16 | 2 / 16 |
-| Repair only the missing slot | 4 / 16 | 4 / 16 |
-| Repair declared affected slots | 7 / 16 | 4 / 16 |
+| No repair | 2 / 16 | 1 / 16 |
+| Repair only the missing slot | 4 / 16 | 3 / 16 |
+| Repair declared affected slots | 7 / 16 | 5 / 16 |
 | Greedy full rollback | 8 / 16 | 0 / 16 |
 | Exhaustive oracle | 16 / 16 | 16 / 16 |
 

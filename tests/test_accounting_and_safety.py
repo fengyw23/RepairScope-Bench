@@ -121,7 +121,7 @@ class AccountingAndSafetyTest(unittest.TestCase):
         self.assertFalse(incompatible.data["compatible"])
         self.assertTrue(compatible.data["compatible"])
 
-    def test_full_lexicographic_objective_is_checked(self) -> None:
+    def test_lower_cost_beats_preservation_when_recovery_loss_ties(self) -> None:
         task = load_task(DATA / "destination-hotel-b.json")
         score = evaluate_actions(
             task,
@@ -136,8 +136,9 @@ class AccountingAndSafetyTest(unittest.TestCase):
         )
         self.assertTrue(score["success"])
         self.assertEqual(score["extra_loss"], 0)
-        self.assertFalse(score["optimal_repair"])
-        self.assertEqual(score["over_repair"], ["C-HOTEL-LAX"])
+        self.assertTrue(score["optimal_repair"])
+        self.assertEqual(score["financial_regret"], 0)
+        self.assertEqual(score["over_repair"], [])
 
     def test_extra_loss_is_oracle_relative_and_nonnegative(self) -> None:
         task = load_task(DATA / "destination-hotel-b.json")

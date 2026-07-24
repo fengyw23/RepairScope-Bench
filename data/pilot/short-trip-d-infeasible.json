@@ -150,8 +150,8 @@
     "mode": "lexicographic",
     "terms": [
       "recovery_loss",
-      "mutated_prior_commitments",
       "financial_cost",
+      "mutated_prior_commitments",
       "state_changing_actions"
     ],
     "recovery_loss_definition": "unrefunded value of cancelled prior commitments + non-refunded post-failure purchases that are later cancelled + positive net cash paid for in-place modifications",

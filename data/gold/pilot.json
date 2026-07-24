@@ -6,8 +6,8 @@
     "minimum_feasible_financial_cost": 900,
     "optimal_objective": [
       0,
-      0,
       900,
+      0,
       1
     ],
     "optimal_plans": [
@@ -36,8 +36,8 @@
     "minimum_feasible_financial_cost": 880,
     "optimal_objective": [
       0,
-      1,
       880,
+      1,
       3
     ],
     "optimal_plans": [
@@ -78,8 +78,8 @@
     "minimum_feasible_financial_cost": 899,
     "optimal_objective": [
       0,
-      1,
       899,
+      1,
       2
     ],
     "optimal_plans": [
@@ -125,8 +125,8 @@
     "minimum_feasible_financial_cost": 855,
     "optimal_objective": [
       0,
-      1,
       855,
+      1,
       2
     ],
     "optimal_plans": [
@@ -156,21 +156,34 @@
   "destination-hotel-b": {
     "feasible": true,
     "optimal_recovery_loss": 0,
-    "optimal_financial_cost": 960,
+    "optimal_financial_cost": 855,
     "minimum_feasible_financial_cost": 855,
     "optimal_objective": [
       0,
-      0,
-      960,
-      0
+      855,
+      1,
+      2
     ],
     "optimal_plans": [
-      []
+      [
+        {
+          "action": "cancel",
+          "args": {
+            "commitment_id": "C-HOTEL-LAX"
+          }
+        },
+        {
+          "action": "book",
+          "args": {
+            "option_id": "HOTEL-OAK-ALT"
+          }
+        }
+      ]
     ],
     "optimal_scopes": [
       {
         "C-FLIGHT-SFO": "KEEP",
-        "C-HOTEL-LAX": "KEEP"
+        "C-HOTEL-LAX": "REPLACE"
       }
     ],
     "feasible_plan_count": 2
@@ -182,8 +195,8 @@
     "minimum_feasible_financial_cost": 1035,
     "optimal_objective": [
       0,
-      1,
       1035,
+      1,
       2
     ],
     "optimal_plans": [
@@ -227,8 +240,8 @@
     "minimum_feasible_financial_cost": 1090,
     "optimal_objective": [
       0,
-      0,
       1090,
+      0,
       0
     ],
     "optimal_plans": [
@@ -250,8 +263,8 @@
     "minimum_feasible_financial_cost": 1020,
     "optimal_objective": [
       0,
-      1,
       1020,
+      1,
       2
     ],
     "optimal_plans": [
@@ -286,8 +299,8 @@
     "minimum_feasible_financial_cost": 1120,
     "optimal_objective": [
       30,
-      1,
       1120,
+      1,
       1
     ],
     "optimal_plans": [
@@ -327,8 +340,8 @@
     "minimum_feasible_financial_cost": 1780,
     "optimal_objective": [
       0,
-      0,
       1780,
+      0,
       1
     ],
     "optimal_plans": [
@@ -356,8 +369,8 @@
     "minimum_feasible_financial_cost": 1400,
     "optimal_objective": [
       0,
-      1,
       1400,
+      1,
       3
     ],
     "optimal_plans": [
@@ -397,8 +410,8 @@
     "minimum_feasible_financial_cost": 1850,
     "optimal_objective": [
       0,
-      0,
       1850,
+      0,
       1
     ],
     "optimal_plans": [

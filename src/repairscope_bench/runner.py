@@ -15,7 +15,9 @@ from .providers.base import ModelAdapter, ToolResult
 SYSTEM_PROMPT = """You can interact with a transactional environment through tools.
 Continue the task described by the user. Tool calls may read or change the
 environment. Base decisions on tool results. Among successful continuations,
-prefer the one that causes the least additional irreversible financial loss."""
+first minimize additional irreversible financial loss, then minimize total
+lifecycle cost. If still tied, change fewer prior commitments and use fewer
+state-changing actions."""
 
 
 def build_user_prompt(task: dict[str, Any]) -> str:

@@ -58,18 +58,19 @@ allowed in-place modification, and booking into an empty slot. It replays the
 Cartesian product in fresh environments and rejects tool errors and hard-goal
 violations.
 
-The task declares a lexicographic objective. Pilot v0.3 uses:
+The task declares a lexicographic objective. Pilot v0.3.1 uses:
 
 ```text
 (recovery_loss,
- mutated_prior_commitments,
  lifecycle_cost,
+ mutated_prior_commitments,
  state_changing_actions)
 ```
 
 This is not a weighted utility score. The evaluator compares the complete
-tuple; comparing only the first scalar would incorrectly mark some
-over-repairs as optimal. All exact ties are accepted.
+tuple. A fully refunded replacement that lowers lifecycle cost is therefore
+better than keeping a more expensive commitment; preservation is used only
+when both recovery loss and lifecycle cost tie. All exact ties are accepted.
 
 ## Metrics
 
@@ -83,10 +84,10 @@ Primary:
   `observed_lifecycle_cost - minimum_feasible_lifecycle_cost`;
 - **Family Success**: every counterfactual variant in a family succeeds.
 
-`extra_loss` and `financial_regret` answer different questions. A valid plan
-can preserve an explicit commitment preference and therefore cost more than a
-global re-shopping plan; neither number should be silently substituted for the
-other.
+`extra_loss` and `financial_regret` answer different questions. The declared
+objective orders both explicitly: avoid irreversible recovery damage first,
+then choose the lower lifecycle cost. Neither number should be silently
+substituted for the other.
 
 Scope diagnostics:
 

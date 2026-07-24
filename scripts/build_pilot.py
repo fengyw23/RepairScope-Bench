@@ -128,8 +128,8 @@ def base_task(
             "mode": "lexicographic",
             "terms": [
                 "recovery_loss",
-                "mutated_prior_commitments",
                 "financial_cost",
+                "mutated_prior_commitments",
                 "state_changing_actions",
             ],
             "recovery_loss_definition": (

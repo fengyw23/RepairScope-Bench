@@ -61,14 +61,24 @@ def validate_dataset(
     for family_id, members in families.items():
         if len(members) < 2:
             errors.append(f"{family_id}: counterfactual family has <2 variants")
-        scopes = {
-            tuple(sorted(gold[task["task_id"]]["optimal_scopes"][0].items()))
-            for task in members
+        recovery_outcomes = {
+            (
+                "feasible",
+                tuple(
+                    sorted(
+                        gold[task["task_id"]]["optimal_scopes"][0].items()
+                    )
+                ),
+            )
             if gold[task["task_id"]]["optimal_scopes"]
+            else ("infeasible", ())
+            for task in members
         }
         feasible_values = {gold[task["task_id"]]["feasible"] for task in members}
-        if len(scopes) < 2:
-            errors.append(f"{family_id}: expected scope never changes")
+        if len(recovery_outcomes) < 2:
+            errors.append(
+                f"{family_id}: expected recovery outcome never changes"
+            )
         if len(feasible_values) < 2:
             errors.append(f"{family_id}: no feasible/infeasible contrast")
 

@@ -1,7 +1,7 @@
 cff-version: 1.2.0
 message: "If you use this research pilot, please cite the repository."
 title: "RepairScope-Bench: A Controlled Benchmark for Post-Commit Agent Recovery"
-version: 0.3.0
+version: 0.3.1
 date-released: 2026-07-24
 license: MIT
 type: software
