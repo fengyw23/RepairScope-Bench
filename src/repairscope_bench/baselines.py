@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from copy import deepcopy
 from typing import Any
 
 from .oracle import solve_task
@@ -24,6 +25,23 @@ def make_actions(task: dict[str, Any], strategy: str) -> list[dict[str, Any]]:
         return _full_rollback(task)
     if strategy == "dependency_repair":
         return _dependency_repair(task)
+    if strategy == "global_cost":
+        cost_task = deepcopy(task)
+        cost_task["objective"]["terms"] = [
+            "financial_cost",
+            "recovery_loss",
+            "mutated_prior_commitments",
+            "state_changing_actions",
+        ]
+        oracle = solve_task(cost_task)
+        if not oracle.feasible:
+            return [
+                {
+                    "action": "report_infeasible",
+                    "args": {"reason": "No constraint-satisfying repair exists."},
+                }
+            ]
+        return oracle.optimal_plans[0] + [{"action": "finish", "args": {}}]
     raise ValueError(f"Unknown baseline strategy: {strategy}")
 
 
@@ -96,4 +114,3 @@ def _cheapest_available(
         if option["slot"] == slot and option.get("available", False)
     ]
     return min(options, key=lambda option: option["price"]) if options else None
-

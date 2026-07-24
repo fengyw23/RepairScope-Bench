@@ -1,0 +1,576 @@
+{
+  "schema_version": "0.5",
+  "family_id": "radiology-dock-failure",
+  "domain": "shopping",
+  "source_inspiration": {
+    "benchmark": "STATE-Bench",
+    "case_id": "105",
+    "url": "https://github.com/microsoft/STATE-Bench",
+    "transformation": "New fixed post-commit failure state, enlarged inventory, paired objective demand, linked settlement terms, and solver-derived repair gold; no upstream answer is reused."
+  },
+  "failure_observation": "purchase_product(DOCK-ORIGINAL) failed after the compatibility service rejected the item.",
+  "pre_failure_trace": [
+    {
+      "step": 1,
+      "tool": "purchase_product",
+      "arguments": {
+        "product_id": "LAP-CREATOR"
+      },
+      "result": {
+        "status": "confirmed",
+        "order_id": "WS-LAP"
+      }
+    },
+    {
+      "step": 2,
+      "tool": "purchase_product",
+      "arguments": {
+        "product_id": "MON-4K"
+      },
+      "result": {
+        "status": "confirmed",
+        "order_id": "WS-MON"
+      }
+    },
+    {
+      "step": 3,
+      "tool": "purchase_product",
+      "arguments": {
+        "product_id": "KEY-FIPS"
+      },
+      "result": {
+        "status": "confirmed",
+        "order_id": "WS-KEY"
+      }
+    },
+    {
+      "step": 4,
+      "tool": "purchase_product",
+      "arguments": {
+        "product_id": "WAR-CREATOR"
+      },
+      "result": {
+        "status": "confirmed",
+        "order_id": "WS-WAR"
+      }
+    },
+    {
+      "step": 5,
+      "tool": "purchase_product",
+      "arguments": {
+        "product_id": "SOFT-CREATOR"
+      },
+      "result": {
+        "status": "confirmed",
+        "order_id": "WS-SOFT"
+      }
+    },
+    {
+      "step": 6,
+      "tool": "purchase_product",
+      "arguments": {
+        "product_id": "DOCK-ORIGINAL"
+      },
+      "result": {
+        "status": "failed",
+        "error": "inventory_changed"
+      }
+    }
+  ],
+  "failure_snapshot": {
+    "commitments": [
+      {
+        "commitment_id": "WS-LAP",
+        "slot": "laptop",
+        "option_id": "LAP-CREATOR",
+        "status": "confirmed",
+        "price_paid": 1400,
+        "refund_if_cancelled": 950,
+        "attributes": {
+          "arrival_day": 2,
+          "approved": true
+        }
+      },
+      {
+        "commitment_id": "WS-MON",
+        "slot": "monitor",
+        "option_id": "MON-4K",
+        "status": "confirmed",
+        "price_paid": 520,
+        "refund_if_cancelled": 390,
+        "attributes": {
+          "arrival_day": 2,
+          "approved": true
+        }
+      },
+      {
+        "commitment_id": "WS-KEY",
+        "slot": "security_key",
+        "option_id": "KEY-FIPS",
+        "status": "confirmed",
+        "price_paid": 90,
+        "refund_if_cancelled": 20,
+        "attributes": {
+          "arrival_day": 1,
+          "approved": true
+        }
+      },
+      {
+        "commitment_id": "WS-WAR",
+        "slot": "warranty",
+        "option_id": "WAR-CREATOR",
+        "status": "confirmed",
+        "price_paid": 180,
+        "refund_if_cancelled": 0,
+        "attributes": {
+          "arrival_day": 1,
+          "approved": true
+        }
+      },
+      {
+        "commitment_id": "WS-SOFT",
+        "slot": "software",
+        "option_id": "SOFT-CREATOR",
+        "status": "confirmed",
+        "price_paid": 260,
+        "refund_if_cancelled": 60,
+        "attributes": {
+          "arrival_day": 1,
+          "approved": true
+        }
+      }
+    ],
+    "note": "Authoritative persistent state immediately after the failed call."
+  },
+  "failure": {
+    "affected_slots": [
+      "dock"
+    ],
+    "side_effect_on_failed_call": "none"
+  },
+  "catalog": [
+    {
+      "option_id": "LAP-PRO",
+      "slot": "laptop",
+      "price": 700,
+      "available": true,
+      "refund_if_cancelled_after_booking": 0,
+      "attributes": {
+        "arrival_day": 3,
+        "approved": true
+      }
+    },
+    {
+      "option_id": "LAP-MED",
+      "slot": "laptop",
+      "price": 1250,
+      "available": true,
+      "refund_if_cancelled_after_booking": 0,
+      "attributes": {
+        "arrival_day": 2,
+        "approved": true
+      }
+    },
+    {
+      "option_id": "MON-4K-B",
+      "slot": "monitor",
+      "price": 470,
+      "available": true,
+      "refund_if_cancelled_after_booking": 0,
+      "attributes": {
+        "arrival_day": 3,
+        "approved": true
+      }
+    },
+    {
+      "option_id": "MON-4K-C",
+      "slot": "monitor",
+      "price": 560,
+      "available": true,
+      "refund_if_cancelled_after_booking": 0,
+      "attributes": {
+        "arrival_day": 1,
+        "approved": true
+      }
+    },
+    {
+      "option_id": "DOCK-UNIVERSAL",
+      "slot": "dock",
+      "price": 260,
+      "available": false,
+      "refund_if_cancelled_after_booking": 0,
+      "attributes": {
+        "arrival_day": 2,
+        "approved": true
+      }
+    },
+    {
+      "option_id": "DOCK-PRO",
+      "slot": "dock",
+      "price": 130,
+      "available": true,
+      "refund_if_cancelled_after_booking": 0,
+      "attributes": {
+        "arrival_day": 2,
+        "approved": true
+      }
+    },
+    {
+      "option_id": "DOCK-MED",
+      "slot": "dock",
+      "price": 170,
+      "available": true,
+      "refund_if_cancelled_after_booking": 0,
+      "attributes": {
+        "arrival_day": 1,
+        "approved": true
+      }
+    },
+    {
+      "option_id": "KEY-FIPS-B",
+      "slot": "security_key",
+      "price": 75,
+      "available": true,
+      "refund_if_cancelled_after_booking": 0,
+      "attributes": {
+        "arrival_day": 2,
+        "approved": true
+      }
+    },
+    {
+      "option_id": "KEY-FIPS-C",
+      "slot": "security_key",
+      "price": 110,
+      "available": true,
+      "refund_if_cancelled_after_booking": 0,
+      "attributes": {
+        "arrival_day": 1,
+        "approved": true
+      }
+    },
+    {
+      "option_id": "WAR-PRO",
+      "slot": "warranty",
+      "price": 50,
+      "available": true,
+      "refund_if_cancelled_after_booking": 0,
+      "attributes": {
+        "arrival_day": 1,
+        "approved": true
+      }
+    },
+    {
+      "option_id": "WAR-MED",
+      "slot": "warranty",
+      "price": 160,
+      "available": true,
+      "refund_if_cancelled_after_booking": 0,
+      "attributes": {
+        "arrival_day": 1,
+        "approved": true
+      }
+    },
+    {
+      "option_id": "SOFT-PRO",
+      "slot": "software",
+      "price": 80,
+      "available": true,
+      "refund_if_cancelled_after_booking": 0,
+      "attributes": {
+        "arrival_day": 1,
+        "approved": true
+      }
+    },
+    {
+      "option_id": "SOFT-MED",
+      "slot": "software",
+      "price": 230,
+      "available": true,
+      "refund_if_cancelled_after_booking": 0,
+      "attributes": {
+        "arrival_day": 1,
+        "approved": true
+      }
+    },
+    {
+      "option_id": "LAP-CREATOR",
+      "slot": "laptop",
+      "price": 1400,
+      "available": true,
+      "refund_if_cancelled_after_booking": 0,
+      "attributes": {
+        "arrival_day": 2,
+        "approved": true
+      },
+      "provenance": "existing_record"
+    },
+    {
+      "option_id": "MON-4K",
+      "slot": "monitor",
+      "price": 520,
+      "available": true,
+      "refund_if_cancelled_after_booking": 0,
+      "attributes": {
+        "arrival_day": 2,
+        "approved": true
+      },
+      "provenance": "existing_record"
+    },
+    {
+      "option_id": "KEY-FIPS",
+      "slot": "security_key",
+      "price": 90,
+      "available": true,
+      "refund_if_cancelled_after_booking": 0,
+      "attributes": {
+        "arrival_day": 1,
+        "approved": true
+      },
+      "provenance": "existing_record"
+    },
+    {
+      "option_id": "WAR-CREATOR",
+      "slot": "warranty",
+      "price": 180,
+      "available": true,
+      "refund_if_cancelled_after_booking": 0,
+      "attributes": {
+        "arrival_day": 1,
+        "approved": true
+      },
+      "provenance": "existing_record"
+    },
+    {
+      "option_id": "SOFT-CREATOR",
+      "slot": "software",
+      "price": 260,
+      "available": true,
+      "refund_if_cancelled_after_booking": 0,
+      "attributes": {
+        "arrival_day": 1,
+        "approved": true
+      },
+      "provenance": "existing_record"
+    }
+  ],
+  "modification_rules": [],
+  "linked_loss_rules": [
+    {
+      "rule_id": "WORKSTATION-REBATE",
+      "description": "Changing or returning the original laptop or monitor reverses a $140 workstation bundle rebate.",
+      "trigger": "any_changed",
+      "commitment_ids": [
+        "WS-LAP",
+        "WS-MON"
+      ],
+      "amount": 140
+    }
+  ],
+  "required_slots": [
+    "laptop",
+    "monitor",
+    "dock",
+    "security_key",
+    "warranty",
+    "software"
+  ],
+  "constraints": [
+    {
+      "type": "slot_attribute",
+      "slot": "laptop",
+      "attribute": "arrival_day",
+      "op": "le",
+      "value": 3
+    },
+    {
+      "type": "slot_attribute",
+      "slot": "monitor",
+      "attribute": "arrival_day",
+      "op": "le",
+      "value": 3
+    },
+    {
+      "type": "slot_attribute",
+      "slot": "dock",
+      "attribute": "arrival_day",
+      "op": "le",
+      "value": 3
+    },
+    {
+      "type": "slot_attribute",
+      "slot": "security_key",
+      "attribute": "arrival_day",
+      "op": "le",
+      "value": 3
+    },
+    {
+      "type": "slot_attribute",
+      "slot": "warranty",
+      "attribute": "arrival_day",
+      "op": "le",
+      "value": 3
+    },
+    {
+      "type": "slot_attribute",
+      "slot": "software",
+      "attribute": "arrival_day",
+      "op": "le",
+      "value": 3
+    },
+    {
+      "type": "slot_attribute",
+      "slot": "laptop",
+      "attribute": "approved",
+      "op": "eq",
+      "value": true
+    },
+    {
+      "type": "slot_attribute",
+      "slot": "monitor",
+      "attribute": "approved",
+      "op": "eq",
+      "value": true
+    },
+    {
+      "type": "slot_attribute",
+      "slot": "dock",
+      "attribute": "approved",
+      "op": "eq",
+      "value": true
+    },
+    {
+      "type": "slot_attribute",
+      "slot": "security_key",
+      "attribute": "approved",
+      "op": "eq",
+      "value": true
+    },
+    {
+      "type": "slot_attribute",
+      "slot": "warranty",
+      "attribute": "approved",
+      "op": "eq",
+      "value": true
+    },
+    {
+      "type": "slot_attribute",
+      "slot": "software",
+      "attribute": "approved",
+      "op": "eq",
+      "value": true
+    },
+    {
+      "type": "allowed_pairs",
+      "left_slot": "laptop",
+      "right_slot": "dock",
+      "pairs": [
+        [
+          "LAP-CREATOR",
+          "DOCK-UNIVERSAL"
+        ],
+        [
+          "LAP-PRO",
+          "DOCK-PRO"
+        ],
+        [
+          "LAP-PRO",
+          "DOCK-UNIVERSAL"
+        ],
+        [
+          "LAP-MED",
+          "DOCK-MED"
+        ],
+        [
+          "LAP-MED",
+          "DOCK-UNIVERSAL"
+        ]
+      ]
+    },
+    {
+      "type": "allowed_pairs",
+      "left_slot": "laptop",
+      "right_slot": "warranty",
+      "pairs": [
+        [
+          "LAP-CREATOR",
+          "WAR-CREATOR"
+        ],
+        [
+          "LAP-PRO",
+          "WAR-PRO"
+        ],
+        [
+          "LAP-MED",
+          "WAR-MED"
+        ]
+      ]
+    },
+    {
+      "type": "allowed_pairs",
+      "left_slot": "laptop",
+      "right_slot": "software",
+      "pairs": [
+        [
+          "LAP-CREATOR",
+          "SOFT-CREATOR"
+        ],
+        [
+          "LAP-PRO",
+          "SOFT-PRO"
+        ],
+        [
+          "LAP-MED",
+          "SOFT-MED"
+        ]
+      ]
+    },
+    {
+      "type": "max_lifecycle_cost",
+      "value": 3900
+    }
+  ],
+  "search_contexts": {
+    "laptop": {
+      "use_case": "radiology-workstation"
+    },
+    "monitor": {
+      "use_case": "radiology-workstation"
+    },
+    "dock": {
+      "use_case": "radiology-workstation"
+    },
+    "security_key": {
+      "use_case": "radiology-workstation"
+    },
+    "warranty": {
+      "use_case": "radiology-workstation"
+    },
+    "software": {
+      "use_case": "radiology-workstation"
+    }
+  },
+  "objective": {
+    "mode": "lexicographic",
+    "terms": [
+      "recovery_loss",
+      "financial_cost",
+      "mutated_prior_commitments",
+      "state_changing_actions"
+    ]
+  },
+  "mechanism": "compatibility_cascade",
+  "split": "test",
+  "challenge_requirements": {
+    "min_raw_plans": 100,
+    "min_feasible_plans": 8,
+    "min_feasible_scopes": 4,
+    "min_loss_levels": 3
+  },
+  "max_mutations": 14,
+  "task_id": "radiology-dock-b-loss-aware",
+  "variant_id": "B-loss_aware",
+  "pair_id": "radiology-dock-b",
+  "evaluation_track": "loss_aware",
+  "evaluation_class": "loss_sensitive",
+  "instruction": "Complete the approved radiology workstation by day 3 with one laptop, 4K monitor, compatible dock, FIPS security key, matching warranty, and matching software. Keep total retained spending within $3,900. Avoid unnecessary returns, forfeited licenses, and bundle charges while completing it."
+}

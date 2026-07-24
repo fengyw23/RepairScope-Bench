@@ -13,10 +13,21 @@ def evaluate_actions(
     max_actions: int | None = None,
 ) -> dict[str, Any]:
     environment = RepairEnvironment(task)
-    action_limit = max_actions or task.get("max_actions", 30)
-    for action in actions[:action_limit]:
+    action_limit = max_actions or task.get("max_mutations")
+    for action in actions:
+        if (
+            action_limit is not None
+            and action.get("action") in {"cancel", "book", "modify"}
+            and environment.state_changing_actions() >= action_limit
+        ):
+            break
         environment.execute(action)
-    action_budget_exceeded = len(actions) > action_limit
+    requested_mutations = sum(
+        action.get("action") in {"cancel", "book", "modify"} for action in actions
+    )
+    action_budget_exceeded = (
+        action_limit is not None and requested_mutations > action_limit
+    )
 
     return evaluate_environment(
         task, environment, action_budget_exceeded, action_limit
@@ -29,6 +40,9 @@ def evaluate_environment(
     action_budget_exceeded: bool = False,
     action_limit: int | None = None,
 ) -> dict[str, Any]:
+    effective_action_limit = (
+        action_limit if action_limit is not None else task.get("max_mutations")
+    )
     oracle = solve_task(task)
     goal_pass, constraint_failures = check_constraints(task, environment)
     dispositions = environment.dispositions()
@@ -99,6 +113,7 @@ def evaluate_environment(
         "extra_loss": extra_loss,
         "cancellation_loss": environment.cancellation_loss,
         "post_failure_waste": environment.post_failure_waste,
+        "linked_loss": environment.linked_loss,
         "rollback_damage": environment.rollback_damage,
         "scope": dispositions,
         "optimal_scopes": oracle.optimal_scopes,
@@ -107,7 +122,7 @@ def evaluate_environment(
         "under_repair": under_repair,
         "constraint_failures": constraint_failures,
         "action_count": len(environment.event_log),
-        "action_limit": action_limit or task.get("max_actions", 30),
+        "action_limit": effective_action_limit,
         "action_budget_exceeded": action_budget_exceeded,
         "tool_errors": [
             event for event in environment.event_log if not event["result"]["ok"]

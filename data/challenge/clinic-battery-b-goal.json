@@ -1,0 +1,576 @@
+{
+  "schema_version": "0.5",
+  "family_id": "clinic-battery-failure",
+  "domain": "shopping",
+  "source_inspiration": {
+    "benchmark": "STATE-Bench",
+    "case_id": "121/122",
+    "url": "https://github.com/microsoft/STATE-Bench",
+    "transformation": "New fixed post-commit failure state, enlarged inventory, paired objective demand, linked settlement terms, and solver-derived repair gold; no upstream answer is reused."
+  },
+  "failure_observation": "purchase_product(BATTERY-ORIGINAL) failed because the supplier reported zero remaining stock.",
+  "pre_failure_trace": [
+    {
+      "step": 1,
+      "tool": "purchase_product",
+      "arguments": {
+        "product_id": "FRZ-LEGACY"
+      },
+      "result": {
+        "status": "confirmed",
+        "order_id": "CC-FRZ"
+      }
+    },
+    {
+      "step": 2,
+      "tool": "purchase_product",
+      "arguments": {
+        "product_id": "SEN-LORA"
+      },
+      "result": {
+        "status": "confirmed",
+        "order_id": "CC-SEN"
+      }
+    },
+    {
+      "step": 3,
+      "tool": "purchase_product",
+      "arguments": {
+        "product_id": "GATE-LORA"
+      },
+      "result": {
+        "status": "confirmed",
+        "order_id": "CC-GATE"
+      }
+    },
+    {
+      "step": 4,
+      "tool": "purchase_product",
+      "arguments": {
+        "product_id": "SVC-LEGACY"
+      },
+      "result": {
+        "status": "confirmed",
+        "order_id": "CC-SVC"
+      }
+    },
+    {
+      "step": 5,
+      "tool": "purchase_product",
+      "arguments": {
+        "product_id": "INST-STANDARD"
+      },
+      "result": {
+        "status": "confirmed",
+        "order_id": "CC-INST"
+      }
+    },
+    {
+      "step": 6,
+      "tool": "purchase_product",
+      "arguments": {
+        "product_id": "BATTERY-ORIGINAL"
+      },
+      "result": {
+        "status": "failed",
+        "error": "inventory_changed"
+      }
+    }
+  ],
+  "failure_snapshot": {
+    "commitments": [
+      {
+        "commitment_id": "CC-FRZ",
+        "slot": "freezer",
+        "option_id": "FRZ-LEGACY",
+        "status": "confirmed",
+        "price_paid": 2400,
+        "refund_if_cancelled": 1700,
+        "attributes": {
+          "arrival_day": 3,
+          "certified": true
+        }
+      },
+      {
+        "commitment_id": "CC-SEN",
+        "slot": "sensor",
+        "option_id": "SEN-LORA",
+        "status": "confirmed",
+        "price_paid": 260,
+        "refund_if_cancelled": 180,
+        "attributes": {
+          "arrival_day": 2,
+          "certified": true
+        }
+      },
+      {
+        "commitment_id": "CC-GATE",
+        "slot": "gateway",
+        "option_id": "GATE-LORA",
+        "status": "confirmed",
+        "price_paid": 430,
+        "refund_if_cancelled": 210,
+        "attributes": {
+          "arrival_day": 2,
+          "certified": true
+        }
+      },
+      {
+        "commitment_id": "CC-SVC",
+        "slot": "service_plan",
+        "option_id": "SVC-LEGACY",
+        "status": "confirmed",
+        "price_paid": 360,
+        "refund_if_cancelled": 0,
+        "attributes": {
+          "arrival_day": 1,
+          "certified": true
+        }
+      },
+      {
+        "commitment_id": "CC-INST",
+        "slot": "installation",
+        "option_id": "INST-STANDARD",
+        "status": "confirmed",
+        "price_paid": 500,
+        "refund_if_cancelled": 100,
+        "attributes": {
+          "arrival_day": 4,
+          "certified": true
+        }
+      }
+    ],
+    "note": "Authoritative persistent state immediately after the failed call."
+  },
+  "failure": {
+    "affected_slots": [
+      "battery"
+    ],
+    "side_effect_on_failed_call": "none"
+  },
+  "catalog": [
+    {
+      "option_id": "FRZ-MODERN",
+      "slot": "freezer",
+      "price": 1200,
+      "available": true,
+      "refund_if_cancelled_after_booking": 0,
+      "attributes": {
+        "arrival_day": 4,
+        "certified": true
+      }
+    },
+    {
+      "option_id": "FRZ-PREMIUM",
+      "slot": "freezer",
+      "price": 2700,
+      "available": true,
+      "refund_if_cancelled_after_booking": 0,
+      "attributes": {
+        "arrival_day": 2,
+        "certified": true
+      }
+    },
+    {
+      "option_id": "SEN-LORA-B",
+      "slot": "sensor",
+      "price": 220,
+      "available": true,
+      "refund_if_cancelled_after_booking": 0,
+      "attributes": {
+        "arrival_day": 3,
+        "certified": true
+      }
+    },
+    {
+      "option_id": "SEN-CELL",
+      "slot": "sensor",
+      "price": 310,
+      "available": true,
+      "refund_if_cancelled_after_booking": 0,
+      "attributes": {
+        "arrival_day": 2,
+        "certified": true
+      }
+    },
+    {
+      "option_id": "BAT-LEGACY",
+      "slot": "battery",
+      "price": 280,
+      "available": false,
+      "refund_if_cancelled_after_booking": 0,
+      "attributes": {
+        "arrival_day": 2,
+        "certified": true
+      }
+    },
+    {
+      "option_id": "BAT-MODERN",
+      "slot": "battery",
+      "price": 190,
+      "available": true,
+      "refund_if_cancelled_after_booking": 0,
+      "attributes": {
+        "arrival_day": 3,
+        "certified": true
+      }
+    },
+    {
+      "option_id": "BAT-PREMIUM",
+      "slot": "battery",
+      "price": 240,
+      "available": true,
+      "refund_if_cancelled_after_booking": 0,
+      "attributes": {
+        "arrival_day": 1,
+        "certified": true
+      }
+    },
+    {
+      "option_id": "GATE-LORA-B",
+      "slot": "gateway",
+      "price": 390,
+      "available": true,
+      "refund_if_cancelled_after_booking": 0,
+      "attributes": {
+        "arrival_day": 3,
+        "certified": true
+      }
+    },
+    {
+      "option_id": "GATE-CELL",
+      "slot": "gateway",
+      "price": 470,
+      "available": true,
+      "refund_if_cancelled_after_booking": 0,
+      "attributes": {
+        "arrival_day": 2,
+        "certified": true
+      }
+    },
+    {
+      "option_id": "SVC-MODERN",
+      "slot": "service_plan",
+      "price": 100,
+      "available": true,
+      "refund_if_cancelled_after_booking": 0,
+      "attributes": {
+        "arrival_day": 1,
+        "certified": true
+      }
+    },
+    {
+      "option_id": "SVC-PREMIUM",
+      "slot": "service_plan",
+      "price": 420,
+      "available": true,
+      "refund_if_cancelled_after_booking": 0,
+      "attributes": {
+        "arrival_day": 1,
+        "certified": true
+      }
+    },
+    {
+      "option_id": "INST-FAST",
+      "slot": "installation",
+      "price": 650,
+      "available": true,
+      "refund_if_cancelled_after_booking": 0,
+      "attributes": {
+        "arrival_day": 2,
+        "certified": true
+      }
+    },
+    {
+      "option_id": "INST-PARTNER",
+      "slot": "installation",
+      "price": 420,
+      "available": true,
+      "refund_if_cancelled_after_booking": 0,
+      "attributes": {
+        "arrival_day": 4,
+        "certified": true
+      }
+    },
+    {
+      "option_id": "FRZ-LEGACY",
+      "slot": "freezer",
+      "price": 2400,
+      "available": true,
+      "refund_if_cancelled_after_booking": 0,
+      "attributes": {
+        "arrival_day": 3,
+        "certified": true
+      },
+      "provenance": "existing_record"
+    },
+    {
+      "option_id": "SEN-LORA",
+      "slot": "sensor",
+      "price": 260,
+      "available": true,
+      "refund_if_cancelled_after_booking": 0,
+      "attributes": {
+        "arrival_day": 2,
+        "certified": true
+      },
+      "provenance": "existing_record"
+    },
+    {
+      "option_id": "GATE-LORA",
+      "slot": "gateway",
+      "price": 430,
+      "available": true,
+      "refund_if_cancelled_after_booking": 0,
+      "attributes": {
+        "arrival_day": 2,
+        "certified": true
+      },
+      "provenance": "existing_record"
+    },
+    {
+      "option_id": "SVC-LEGACY",
+      "slot": "service_plan",
+      "price": 360,
+      "available": true,
+      "refund_if_cancelled_after_booking": 0,
+      "attributes": {
+        "arrival_day": 1,
+        "certified": true
+      },
+      "provenance": "existing_record"
+    },
+    {
+      "option_id": "INST-STANDARD",
+      "slot": "installation",
+      "price": 500,
+      "available": true,
+      "refund_if_cancelled_after_booking": 0,
+      "attributes": {
+        "arrival_day": 4,
+        "certified": true
+      },
+      "provenance": "existing_record"
+    }
+  ],
+  "modification_rules": [],
+  "linked_loss_rules": [
+    {
+      "rule_id": "CALIBRATION-CREDIT",
+      "description": "Changing or returning the original freezer or installation forfeits a prepaid $220 calibration credit.",
+      "trigger": "any_changed",
+      "commitment_ids": [
+        "CC-FRZ",
+        "CC-INST"
+      ],
+      "amount": 220
+    }
+  ],
+  "required_slots": [
+    "freezer",
+    "sensor",
+    "battery",
+    "gateway",
+    "service_plan",
+    "installation"
+  ],
+  "constraints": [
+    {
+      "type": "slot_attribute",
+      "slot": "freezer",
+      "attribute": "arrival_day",
+      "op": "le",
+      "value": 4
+    },
+    {
+      "type": "slot_attribute",
+      "slot": "sensor",
+      "attribute": "arrival_day",
+      "op": "le",
+      "value": 4
+    },
+    {
+      "type": "slot_attribute",
+      "slot": "battery",
+      "attribute": "arrival_day",
+      "op": "le",
+      "value": 4
+    },
+    {
+      "type": "slot_attribute",
+      "slot": "gateway",
+      "attribute": "arrival_day",
+      "op": "le",
+      "value": 4
+    },
+    {
+      "type": "slot_attribute",
+      "slot": "service_plan",
+      "attribute": "arrival_day",
+      "op": "le",
+      "value": 4
+    },
+    {
+      "type": "slot_attribute",
+      "slot": "installation",
+      "attribute": "arrival_day",
+      "op": "le",
+      "value": 4
+    },
+    {
+      "type": "slot_attribute",
+      "slot": "freezer",
+      "attribute": "certified",
+      "op": "eq",
+      "value": true
+    },
+    {
+      "type": "slot_attribute",
+      "slot": "sensor",
+      "attribute": "certified",
+      "op": "eq",
+      "value": true
+    },
+    {
+      "type": "slot_attribute",
+      "slot": "battery",
+      "attribute": "certified",
+      "op": "eq",
+      "value": true
+    },
+    {
+      "type": "slot_attribute",
+      "slot": "gateway",
+      "attribute": "certified",
+      "op": "eq",
+      "value": true
+    },
+    {
+      "type": "slot_attribute",
+      "slot": "service_plan",
+      "attribute": "certified",
+      "op": "eq",
+      "value": true
+    },
+    {
+      "type": "slot_attribute",
+      "slot": "installation",
+      "attribute": "certified",
+      "op": "eq",
+      "value": true
+    },
+    {
+      "type": "allowed_pairs",
+      "left_slot": "freezer",
+      "right_slot": "battery",
+      "pairs": [
+        [
+          "FRZ-LEGACY",
+          "BAT-LEGACY"
+        ],
+        [
+          "FRZ-MODERN",
+          "BAT-MODERN"
+        ],
+        [
+          "FRZ-PREMIUM",
+          "BAT-PREMIUM"
+        ]
+      ]
+    },
+    {
+      "type": "allowed_pairs",
+      "left_slot": "freezer",
+      "right_slot": "service_plan",
+      "pairs": [
+        [
+          "FRZ-LEGACY",
+          "SVC-LEGACY"
+        ],
+        [
+          "FRZ-MODERN",
+          "SVC-MODERN"
+        ],
+        [
+          "FRZ-PREMIUM",
+          "SVC-PREMIUM"
+        ]
+      ]
+    },
+    {
+      "type": "allowed_pairs",
+      "left_slot": "sensor",
+      "right_slot": "gateway",
+      "pairs": [
+        [
+          "SEN-LORA",
+          "GATE-LORA"
+        ],
+        [
+          "SEN-LORA",
+          "GATE-LORA-B"
+        ],
+        [
+          "SEN-LORA-B",
+          "GATE-LORA"
+        ],
+        [
+          "SEN-LORA-B",
+          "GATE-LORA-B"
+        ],
+        [
+          "SEN-CELL",
+          "GATE-CELL"
+        ]
+      ]
+    },
+    {
+      "type": "max_lifecycle_cost",
+      "value": 7200
+    }
+  ],
+  "search_contexts": {
+    "freezer": {
+      "use_case": "clinic-cold-chain"
+    },
+    "sensor": {
+      "use_case": "clinic-cold-chain"
+    },
+    "battery": {
+      "use_case": "clinic-cold-chain"
+    },
+    "gateway": {
+      "use_case": "clinic-cold-chain"
+    },
+    "service_plan": {
+      "use_case": "clinic-cold-chain"
+    },
+    "installation": {
+      "use_case": "clinic-cold-chain"
+    }
+  },
+  "objective": {
+    "mode": "lexicographic",
+    "terms": [
+      "recovery_loss",
+      "financial_cost",
+      "mutated_prior_commitments",
+      "state_changing_actions"
+    ]
+  },
+  "mechanism": "service_contract_cascade",
+  "split": "heldout",
+  "challenge_requirements": {
+    "min_raw_plans": 100,
+    "min_feasible_plans": 8,
+    "min_feasible_scopes": 4,
+    "min_loss_levels": 3
+  },
+  "max_mutations": 14,
+  "task_id": "clinic-battery-b-goal",
+  "variant_id": "B-goal",
+  "pair_id": "clinic-battery-b",
+  "evaluation_track": "goal",
+  "evaluation_class": "feasibility",
+  "instruction": "Complete the certified clinic cold-chain kit by day 4 with one freezer, sensor, compatible backup battery, gateway, matching service plan, and installation. Keep total retained spending within $7,200."
+}

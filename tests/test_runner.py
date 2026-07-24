@@ -115,6 +115,7 @@ class RunnerTest(unittest.TestCase):
             self.assertEqual(summary["goal_pass^k"], 1.0)
             self.assertEqual(summary["goal_pass^1"], 1.0)
             self.assertEqual(summary["optimal_pass@1"], 1.0)
+            self.assertEqual(summary["scope_optimization_gap@1"], 0.0)
             self.assertEqual(summary["optimal_pass^k"], 1.0)
             self.assertEqual(summary["optimal_pass^1"], 1.0)
             self.assertTrue((Path(directory) / "runs.jsonl").exists())
@@ -154,6 +155,7 @@ class RunnerTest(unittest.TestCase):
         self.assertEqual(summary["goal_pass^k"], 0.5)
         self.assertEqual(summary["optimal_pass@1"], 0.5)
         self.assertEqual(summary["optimal_pass^k"], 0.0)
+        self.assertEqual(summary["scope_optimization_gap@1"], 0.25)
 
 
 if __name__ == "__main__":

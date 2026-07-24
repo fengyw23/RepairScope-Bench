@@ -2,8 +2,8 @@
 
 ## STATE-Bench
 
-The task structures in this pilot were inspired by the following STATE-Bench
-tasks:
+The task structures in the pilot and challenge set were inspired by the
+following STATE-Bench tasks:
 
 - Case 105: `105-hard_compat_dock_wrong_laptop`
 - Case 121: `121-change_flight_cascade_replace_hotel`
@@ -42,6 +42,8 @@ SOFTWARE.
 RepairScope-Bench does not copy the STATE-Bench runtime. Its travel-facing
 adapter preserves the upstream partition into flight bookings, hotel
 reservations, and car rentals and the corresponding list/detail/search API
-pattern. The pilot tasks use new text, fixed post-failure states, new policies
-and prices, counterfactual variants, and an independently implemented
-transaction ledger and oracle. Each JSON task retains its source case and URL.
+pattern. All RepairScope-Bench tasks use new text, fixed post-failure states,
+new policies and prices, counterfactual variants, and an independently
+implemented transaction ledger and oracle. The v0.5 challenge further adds
+paired objective-demand prompts, linked settlement rules, parameterized
+search, and mechanism splits. Each JSON task retains its source case and URL.

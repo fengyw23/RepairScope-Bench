@@ -93,7 +93,20 @@ def run_episode(
             break
 
         for call in turn.tool_calls:
-            if len(environment.event_log) >= task.get("max_actions", 30):
+            mutation_limit = task.get("max_mutations")
+            mutation_call = call.name in {
+                "cancel_reservation",
+                "book_travel_option",
+                "change_reservation",
+                "return_product",
+                "purchase_product",
+                "exchange_product",
+            }
+            if (
+                mutation_limit is not None
+                and mutation_call
+                and environment.state_changing_actions() >= mutation_limit
+            ):
                 status = "action_budget_exceeded"
                 break
             if call.parse_error:
@@ -132,12 +145,16 @@ def run_episode(
         "task_id": task["task_id"],
         "family_id": task.get("family_id"),
         "variant_id": task.get("variant_id"),
+        "pair_id": task.get("pair_id"),
+        "evaluation_track": task.get("evaluation_track"),
+        "mechanism": task.get("mechanism"),
+        "split": task.get("split"),
         "task_schema_version": task["schema_version"],
         "status": status,
         "elapsed_seconds": round(time.monotonic() - started, 3),
         "harness_config": {
             "max_turns": max_turns,
-            "max_actions": task.get("max_actions", 30),
+            "max_mutations": task.get("max_mutations"),
             "max_output_tokens": getattr(adapter, "max_output_tokens", None),
             "reasoning_effort": getattr(adapter, "reasoning_effort", None),
         },
@@ -200,6 +217,12 @@ def run_suite(
                         "provider": adapter.provider,
                         "model": adapter.model,
                         "task_id": task["task_id"],
+                        "family_id": task.get("family_id"),
+                        "variant_id": task.get("variant_id"),
+                        "pair_id": task.get("pair_id"),
+                        "evaluation_track": task.get("evaluation_track"),
+                        "mechanism": task.get("mechanism"),
+                        "split": task.get("split"),
                         "status": "provider_error",
                         "error": f"{type(error).__name__}: {error}",
                     }
@@ -254,7 +277,7 @@ def summarize_runs(
         for score in scored
         if score.get("financial_regret") is not None
     ]
-    return {
+    summary = {
         "provider": records[0].get("provider") if records else None,
         "model": records[0].get("model") if records else None,
         "run_count": count,
@@ -267,8 +290,18 @@ def summarize_runs(
         "goal_pass^k": goal_pass_at_k,
         f"goal_pass^{repeats}": goal_pass_at_k,
         "optimal_pass@1": optimal_pass_at_1,
+        "scope_optimization_gap@1": (
+            goal_pass_at_1 - optimal_pass_at_1
+            if goal_pass_at_1 is not None and optimal_pass_at_1 is not None
+            else None
+        ),
         "optimal_pass@1_stddev": _population_stddev(optimal_repeat_rates),
         "optimal_pass^k": optimal_pass_at_k,
+        "scope_optimization_gap^k": (
+            goal_pass_at_k - optimal_pass_at_k
+            if goal_pass_at_k is not None and optimal_pass_at_k is not None
+            else None
+        ),
         f"optimal_pass^{repeats}": optimal_pass_at_k,
         # Backward-compatible aliases. Unlike the pre-v0.3.2 implementation,
         # provider errors are now failures in these primary rates rather than
@@ -285,6 +318,28 @@ def summarize_runs(
             ]
         ),
     }
+    track_groups: dict[str, list[dict[str, Any]]] = {}
+    for record in records:
+        track = record.get("evaluation_track")
+        if track is not None:
+            track_groups.setdefault(str(track), []).append(record)
+    if track_groups:
+        summary["by_evaluation_track"] = {
+            track: {
+                "run_count": len(group),
+                "goal_pass@1": _record_rate(group, "success"),
+                "optimal_pass@1": _record_rate(group, "optimal_repair"),
+                "scope_optimization_gap@1": _rate_gap(group),
+            }
+            for track, group in track_groups.items()
+        }
+    return summary
+
+
+def _rate_gap(records: list[dict[str, Any]]) -> float | None:
+    goal = _record_rate(records, "success")
+    optimal = _record_rate(records, "optimal_repair")
+    return goal - optimal if goal is not None and optimal is not None else None
 
 
 def _record_rate(records: list[dict[str, Any]], key: str) -> float | None:

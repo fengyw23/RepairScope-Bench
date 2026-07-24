@@ -3,6 +3,7 @@ from __future__ import annotations
 from copy import deepcopy
 from dataclasses import dataclass
 from itertools import product
+import json
 from typing import Any
 
 from .constraints import check_constraints
@@ -19,6 +20,8 @@ class OracleResult:
     optimal_plans: list[list[dict[str, Any]]]
     optimal_scopes: list[dict[str, str]]
     feasible_plan_count: int
+    feasible_scope_count: int
+    raw_plan_count: int
     feasible_recovery_losses: list[int | float]
     feasible_objectives: list[tuple[int | float, ...]]
 
@@ -34,6 +37,8 @@ class OracleResult:
             "optimal_plans": self.optimal_plans,
             "optimal_scopes": self.optimal_scopes,
             "feasible_plan_count": self.feasible_plan_count,
+            "feasible_scope_count": self.feasible_scope_count,
+            "raw_plan_count": self.raw_plan_count,
             "feasible_recovery_losses": self.feasible_recovery_losses,
             "feasible_objectives": [
                 list(objective) for objective in self.feasible_objectives
@@ -41,8 +46,23 @@ class OracleResult:
         }
 
 
+_ORACLE_CACHE: dict[str, OracleResult] = {}
+
+
 def solve_task(task: dict[str, Any]) -> OracleResult:
+    """Solve a task exactly, reusing results across evaluator and baselines."""
+    public_task = {key: value for key, value in task.items() if not key.startswith("_")}
+    cache_key = json.dumps(public_task, sort_keys=True, separators=(",", ":"))
+    if cache_key not in _ORACLE_CACHE:
+        _ORACLE_CACHE[cache_key] = _solve_task(public_task)
+    return deepcopy(_ORACLE_CACHE[cache_key])
+
+
+def _solve_task(task: dict[str, Any]) -> OracleResult:
     slot_choices = [_choices_for_slot(task, slot) for slot in task["required_slots"]]
+    raw_plan_count = 1
+    for choices in slot_choices:
+        raw_plan_count *= len(choices)
     feasible: list[
         tuple[
             tuple[int | float, ...],
@@ -73,7 +93,9 @@ def solve_task(task: dict[str, Any]) -> OracleResult:
         )
 
     if not feasible:
-        return OracleResult(False, None, None, None, None, [], [], 0, [], [])
+        return OracleResult(
+            False, None, None, None, None, [], [], 0, 0, raw_plan_count, [], []
+        )
 
     feasible.sort(key=lambda item: item[0])
     best = feasible[0][0]
@@ -89,6 +111,8 @@ def solve_task(task: dict[str, Any]) -> OracleResult:
         unique_plans,
         unique_scopes,
         len(feasible),
+        len(_deduplicate([item[2] for item in feasible])),
+        raw_plan_count,
         sorted({item[3] for item in feasible}),
         sorted({item[0] for item in feasible}),
     )

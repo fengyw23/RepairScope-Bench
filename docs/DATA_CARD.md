@@ -1,100 +1,120 @@
 # Data Card
 
-## Summary
+## Releases
 
-RepairScope-Bench v0.4.0 contains 16 executable post-failure recovery tasks:
-four counterfactual families, two domains, 12 feasible cases, and four
-infeasible cases. It is a protocol pilot rather than a statistically broad
-leaderboard dataset.
+| Set | Schema | Tasks | Purpose |
+|---|---:|---:|---|
+| `data/pilot` | 0.4 | 16 | protocol, accounting, infeasibility, and provider-loop regression |
+| `data/challenge` | 0.5 | 12 | paired scope optimization with larger repair graphs and linked losses |
+
+The challenge set contains six unique failure states. Each has a `goal` and
+`loss_aware` prompt, producing 12 episodes. There are three counterfactual
+families, two domains, and three causal mechanisms.
 
 ## Unit of evaluation
 
-Each public task contains:
+Each task contains:
 
-- original user instruction;
-- public pre-failure tool trace;
-- authoritative failure snapshot with persistent commitments;
-- failure observation;
-- available catalog and modification rules;
+- natural customer instruction;
+- successful pre-failure tool trace and failed call;
+- authoritative persistent commitments;
+- live option catalog and in-place modification rules;
+- linked settlement rules;
+- parameterized search contexts;
 - required slots and executable hard constraints;
-- an unweighted lexicographic objective;
-- an evaluation class (`loss_sensitive` or `infeasible_control`);
-- a maximum action budget;
-- source inspiration and transformation disclosure.
+- evaluator objective and automatic challenge thresholds;
+- pair, mechanism, and split metadata;
+- provenance and transformation disclosure.
 
-Public tasks intentionally omit expected feasibility, optimal actions, scopes,
-and costs. Evaluator-only solver output is stored in `data/gold/pilot.json`.
+The prompt exposes only instruction, public trace, failed result, and tools.
+Gold and evaluator mechanics are not serialized to the model.
+
+## Challenge families
+
+| Family | Mechanism | Split | A variant | B variant |
+|---|---|---|---|---|
+| Shanghai conference dinner | package breakage | dev | compatible dinner exists near current hotel | current hotel has no compatible dinner |
+| Radiology workstation dock | compatibility cascade | test | universal dock is available | laptop change forces warranty/software changes |
+| Clinic cold-chain battery | service-contract cascade | heldout | legacy-compatible battery is available | freezer and service plan must change |
+
+All variants remain feasible. This is intentional: the challenge measures
+which feasible repair scope is chosen, not only whether the model recognizes
+impossibility.
+
+## Repair-graph statistics
+
+Across the six loss-aware tasks:
+
+| Statistic | Minimum | Maximum |
+|---|---:|---:|
+| Raw candidate plans | 486 | 729 |
+| Goal-satisfying plans | 18 | 235 |
+| Feasible scope patterns | 4 | 30 |
+| Recovery-loss levels | 4 | 30 |
+| Persistent prior commitments | 5 | 5 |
+| Required final slots | 6 | 6 |
+
+The paired `goal` task has the same graph as its `loss_aware` twin.
+
+## Important fields
+
+| Field | Meaning | Directly model-visible |
+|---|---|---:|
+| `instruction` | hard goal and natural objective demand | yes |
+| `failure_observation` | raw latest failed call | yes |
+| `pre_failure_trace` | public evidence of earlier persistent effects | yes |
+| `failure_snapshot` | executable initial state | through record tools |
+| `catalog` | live and unavailable options | available matches through search |
+| `search_contexts` | authoritative search keys | no; values must be inferred from request |
+| `modification_rules` | possible in-place changes | through targeted quote |
+| `linked_loss_rules` | non-local settlement consequences | through targeted linked-term lookup |
+| `constraints` | deterministic terminal checks | no |
+| `objective` | Oracle ordering | no |
+| `pair_id` | matched-pair identity | no |
+| `evaluation_track` | goal or loss-aware analysis track | no |
+| `mechanism`, `split` | causal grouping | no |
 
 ## Construction
 
-The four coordination structures were inspired by STATE-Bench travel and
-shopping cases. Wording, failure boundaries, prices, refund policies,
-counterfactual variants, executable state, and oracle are newly authored.
-Provenance appears in every task and `THIRD_PARTY_NOTICES.md`.
+`scripts/build_challenge.py` deterministically generates public tasks and
+solver-derived evaluator gold. The scenarios are newly authored around
+coordination structures inspired by STATE-Bench cases 105, 121, and 122; no
+upstream answer or runtime is reused.
 
-The travel adapter preserves the upstream domain partition (flight bookings,
-hotel reservations, and car rentals) and the core list/detail/search operation
-pattern. It does not vendor the STATE-Bench runtime. Targeted policy previews,
-post-failure mutation accounting, and the solver are RepairScope-Bench
-extensions required by this benchmark's recovery-loss question.
+The generator creates two counterfactual variants per family and two prompt
+tracks per state. It then invokes the same Oracle used by evaluation.
+`repairscope validate data/challenge` independently recomputes gold, checks
+scope flips, applies challenge thresholds, and replays baseline policies.
 
-`scripts/build_pilot.py` deterministically regenerates public tasks, solves
-them, and writes evaluator gold. `repairscope validate` independently solves
-the public mechanics and detects drift.
+## Quality controls
 
-## Fields
+Automated tests verify:
 
-| Field | Purpose | Model visible directly |
-|---|---|---:|
-| `instruction` | User goal and stated constraints | yes |
-| `failure_observation` | Latest failed operation | yes |
-| `pre_failure_trace` | Auditable successful/failed prefix | yes |
-| `failure_snapshot` | Initial executable state | one commitment at a time through read tools |
-| `catalog` | Options, availability, prices | only available entries through domain search tools |
-| `modification_rules` | Allowed in-place changes and cash effects | only for a requested commitment-target quote |
-| `constraints` | Executable evaluator checks | no |
-| `objective` | Scoring declaration | no |
-| `max_actions` | Action budget | enforced by harness |
-
-The prompt is generated from a field allowlist, never by dumping the task JSON.
-`failure_observation` contains only the raw failed call and error. It must not
-summarize refunds, alternatives, compatibility, the required repair scope, or
-whether the task is feasible. Counterfactual variants in one family therefore
-share the same failure text even when their hidden environment facts differ.
-
-## Quality checks
-
-The test suite verifies:
-
-- every gold plan executes and the oracle passes all 16 tasks;
-- every loss-sensitive task has at least two goal-satisfying repairs and at
-  least two distinct recovery-loss values;
-- public tasks contain no gold fields;
-- failed and terminal calls do not silently mutate state;
-- an infeasibility report cannot hide earlier successful damage;
-- positive and negative modification cash changes are accounted exactly;
-- the complete lexicographic objective is checked;
-- the prompt does not narrate counterfactual policies or solutions;
-- reservation/order listing does not expose refunds or modification rules;
-- unavailable options remain hidden from search;
-- compatibility and modification facts require targeted queries;
-- OpenAI, Anthropic, Qwen/DeepSeek protocol loops preserve tool-call state;
-- a scripted model can complete the full model → tool → model loop.
+- public files load under the versioned schema;
+- every linked loss references real prior commitments and is charged once;
+- parameterized searches return no inventory for stale/wrong context;
+- model-facing schemas remain domain-native and contain no generic evaluator
+  operations;
+- every loss-aware graph meets all four minimum thresholds;
+- A/B variants change the optimal disposition of prior commitments;
+- Oracle replay passes every task;
+- full rollback completes every task but is never optimal;
+- a final-cost-only solver completes every task but is optimal on only half;
+- read-only exploration cannot block a correct terminal call;
+- provider tool loops retain state across OpenAI, Anthropic, Qwen, and
+  DeepSeek-compatible protocols.
 
 ## Limitations
 
-The v0.4 harness additionally verifies that model-visible tools are
-domain-specific, exclude global cost/loss summaries, and run under a 15-turn
-budget.
-
-- only 16 cases and two domains;
-- finite, enumerated options and at most one active commitment per slot;
-- deterministic monetary units, with no taxes or exchange-rate changes;
-- no clarification/user-simulation tasks;
-- no pre-failure end-to-end execution track;
-- source-inspired structures are not evidence of coverage of the source
-  benchmark.
-
-The next defensible release should expand independent domain templates,
-separate development/test mechanics, add adversarial accounting cases, and
-report human verification of scenario clarity without human voting on gold.
+- Six unique failure states are enough to test mechanisms, not enough for
+  leaderboard-scale statistical claims.
+- The option space is finite and deterministic.
+- Each slot supports at most one active commitment.
+- Losses use dollar-like deterministic units; taxes, exchange rates, and
+  uncertain future value are excluded.
+- There is no simulated clarification user because current tasks are
+  deliberately decision-complete.
+- The main track starts after the failure boundary and therefore does not
+  score pre-failure planning.
+- The current Oracle should be cross-checked by an independent solver before
+  a paper-scale release.

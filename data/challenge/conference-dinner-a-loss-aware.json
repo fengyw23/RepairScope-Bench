@@ -1,0 +1,527 @@
+{
+  "schema_version": "0.5",
+  "family_id": "conference-dinner-failure",
+  "domain": "travel",
+  "source_inspiration": {
+    "benchmark": "STATE-Bench",
+    "case_id": "121/122",
+    "url": "https://github.com/microsoft/STATE-Bench",
+    "transformation": "New fixed post-commit failure state, enlarged inventory, paired objective demand, linked settlement terms, and solver-derived repair gold; no upstream answer is reused."
+  },
+  "failure_observation": "book_travel_option(DINNER-ORIGINAL) failed: the restaurant no longer has inventory.",
+  "pre_failure_trace": [
+    {
+      "step": 1,
+      "tool": "book_travel_option",
+      "arguments": {
+        "option_id": "OUT-SHA-ORIG"
+      },
+      "result": {
+        "status": "confirmed",
+        "reservation_id": "TR-OUT"
+      }
+    },
+    {
+      "step": 2,
+      "tool": "book_travel_option",
+      "arguments": {
+        "option_id": "RET-SHA-ORIG"
+      },
+      "result": {
+        "status": "confirmed",
+        "reservation_id": "TR-RET"
+      }
+    },
+    {
+      "step": 3,
+      "tool": "book_travel_option",
+      "arguments": {
+        "option_id": "HOTEL-BUND-ORIG"
+      },
+      "result": {
+        "status": "confirmed",
+        "reservation_id": "TR-HOTEL"
+      }
+    },
+    {
+      "step": 4,
+      "tool": "book_travel_option",
+      "arguments": {
+        "option_id": "XFER-ORIG"
+      },
+      "result": {
+        "status": "confirmed",
+        "reservation_id": "TR-XFER"
+      }
+    },
+    {
+      "step": 5,
+      "tool": "book_travel_option",
+      "arguments": {
+        "option_id": "PASS-ORIG"
+      },
+      "result": {
+        "status": "confirmed",
+        "reservation_id": "TR-PASS"
+      }
+    },
+    {
+      "step": 6,
+      "tool": "book_travel_option",
+      "arguments": {
+        "option_id": "DINNER-ORIGINAL"
+      },
+      "result": {
+        "status": "failed",
+        "error": "inventory_changed"
+      }
+    }
+  ],
+  "failure_snapshot": {
+    "commitments": [
+      {
+        "commitment_id": "TR-OUT",
+        "slot": "outbound",
+        "option_id": "OUT-SHA-ORIG",
+        "status": "confirmed",
+        "price_paid": 520,
+        "refund_if_cancelled": 100,
+        "attributes": {
+          "city": "Shanghai",
+          "date": "2026-09-14",
+          "arrives_by": "12:00"
+        }
+      },
+      {
+        "commitment_id": "TR-RET",
+        "slot": "return",
+        "option_id": "RET-SHA-ORIG",
+        "status": "confirmed",
+        "price_paid": 480,
+        "refund_if_cancelled": 80,
+        "attributes": {
+          "city": "Shanghai",
+          "date": "2026-09-16",
+          "departs_after": "18:00"
+        }
+      },
+      {
+        "commitment_id": "TR-HOTEL",
+        "slot": "hotel",
+        "option_id": "HOTEL-BUND-ORIG",
+        "status": "confirmed",
+        "price_paid": 900,
+        "refund_if_cancelled": 700,
+        "attributes": {
+          "city": "Shanghai",
+          "check_in": "2026-09-14",
+          "check_out": "2026-09-16",
+          "area": "Huangpu"
+        }
+      },
+      {
+        "commitment_id": "TR-XFER",
+        "slot": "airport_transfer",
+        "option_id": "XFER-ORIG",
+        "status": "confirmed",
+        "price_paid": 160,
+        "refund_if_cancelled": 0,
+        "attributes": {
+          "city": "Shanghai",
+          "date": "2026-09-14",
+          "area": "Huangpu"
+        }
+      },
+      {
+        "commitment_id": "TR-PASS",
+        "slot": "conference_pass",
+        "option_id": "PASS-ORIG",
+        "status": "confirmed",
+        "price_paid": 300,
+        "refund_if_cancelled": 0,
+        "attributes": {
+          "city": "Shanghai",
+          "valid_through": "2026-09-16"
+        }
+      }
+    ],
+    "note": "Authoritative persistent state immediately after the failed call."
+  },
+  "failure": {
+    "affected_slots": [
+      "dinner"
+    ],
+    "side_effect_on_failed_call": "none"
+  },
+  "catalog": [
+    {
+      "option_id": "OUT-SHA-EARLY",
+      "slot": "outbound",
+      "price": 490,
+      "available": true,
+      "refund_if_cancelled_after_booking": 0,
+      "attributes": {
+        "city": "Shanghai",
+        "date": "2026-09-14",
+        "arrives_by": "10:30"
+      }
+    },
+    {
+      "option_id": "OUT-SHA-FLEX",
+      "slot": "outbound",
+      "price": 560,
+      "available": true,
+      "refund_if_cancelled_after_booking": 0,
+      "attributes": {
+        "city": "Shanghai",
+        "date": "2026-09-14",
+        "arrives_by": "11:00"
+      }
+    },
+    {
+      "option_id": "RET-SHA-VALUE",
+      "slot": "return",
+      "price": 450,
+      "available": true,
+      "refund_if_cancelled_after_booking": 0,
+      "attributes": {
+        "city": "Shanghai",
+        "date": "2026-09-16",
+        "departs_after": "19:00"
+      }
+    },
+    {
+      "option_id": "RET-SHA-FLEX",
+      "slot": "return",
+      "price": 530,
+      "available": true,
+      "refund_if_cancelled_after_booking": 0,
+      "attributes": {
+        "city": "Shanghai",
+        "date": "2026-09-16",
+        "departs_after": "20:00"
+      }
+    },
+    {
+      "option_id": "HOTEL-RIVER",
+      "slot": "hotel",
+      "price": 750,
+      "available": true,
+      "refund_if_cancelled_after_booking": 0,
+      "attributes": {
+        "city": "Shanghai",
+        "check_in": "2026-09-14",
+        "check_out": "2026-09-16",
+        "area": "Lujiazui"
+      }
+    },
+    {
+      "option_id": "HOTEL-BUDGET",
+      "slot": "hotel",
+      "price": 620,
+      "available": true,
+      "refund_if_cancelled_after_booking": 0,
+      "attributes": {
+        "city": "Shanghai",
+        "check_in": "2026-09-14",
+        "check_out": "2026-09-16",
+        "area": "JingAn"
+      }
+    },
+    {
+      "option_id": "XFER-METRO",
+      "slot": "airport_transfer",
+      "price": 120,
+      "available": true,
+      "refund_if_cancelled_after_booking": 0,
+      "attributes": {
+        "city": "Shanghai",
+        "date": "2026-09-14",
+        "area": "any"
+      }
+    },
+    {
+      "option_id": "XFER-FLEX",
+      "slot": "airport_transfer",
+      "price": 200,
+      "available": true,
+      "refund_if_cancelled_after_booking": 0,
+      "attributes": {
+        "city": "Shanghai",
+        "date": "2026-09-14",
+        "area": "any"
+      }
+    },
+    {
+      "option_id": "PASS-DIGITAL",
+      "slot": "conference_pass",
+      "price": 280,
+      "available": true,
+      "refund_if_cancelled_after_booking": 0,
+      "attributes": {
+        "city": "Shanghai",
+        "valid_through": "2026-09-16"
+      }
+    },
+    {
+      "option_id": "PASS-FLEX",
+      "slot": "conference_pass",
+      "price": 350,
+      "available": true,
+      "refund_if_cancelled_after_booking": 0,
+      "attributes": {
+        "city": "Shanghai",
+        "valid_through": "2026-09-16"
+      }
+    },
+    {
+      "option_id": "DINNER-HUANGPU",
+      "slot": "dinner",
+      "price": 320,
+      "available": true,
+      "refund_if_cancelled_after_booking": 0,
+      "attributes": {
+        "city": "Shanghai",
+        "date": "2026-09-14",
+        "area": "Huangpu"
+      }
+    },
+    {
+      "option_id": "DINNER-RIVER",
+      "slot": "dinner",
+      "price": 160,
+      "available": true,
+      "refund_if_cancelled_after_booking": 0,
+      "attributes": {
+        "city": "Shanghai",
+        "date": "2026-09-14",
+        "area": "Lujiazui"
+      }
+    },
+    {
+      "option_id": "DINNER-JINGAN",
+      "slot": "dinner",
+      "price": 100,
+      "available": true,
+      "refund_if_cancelled_after_booking": 0,
+      "attributes": {
+        "city": "Shanghai",
+        "date": "2026-09-14",
+        "area": "JingAn"
+      }
+    },
+    {
+      "option_id": "OUT-SHA-ORIG",
+      "slot": "outbound",
+      "price": 520,
+      "available": true,
+      "refund_if_cancelled_after_booking": 0,
+      "attributes": {
+        "city": "Shanghai",
+        "date": "2026-09-14",
+        "arrives_by": "12:00"
+      },
+      "provenance": "existing_record"
+    },
+    {
+      "option_id": "RET-SHA-ORIG",
+      "slot": "return",
+      "price": 480,
+      "available": true,
+      "refund_if_cancelled_after_booking": 0,
+      "attributes": {
+        "city": "Shanghai",
+        "date": "2026-09-16",
+        "departs_after": "18:00"
+      },
+      "provenance": "existing_record"
+    },
+    {
+      "option_id": "HOTEL-BUND-ORIG",
+      "slot": "hotel",
+      "price": 900,
+      "available": true,
+      "refund_if_cancelled_after_booking": 0,
+      "attributes": {
+        "city": "Shanghai",
+        "check_in": "2026-09-14",
+        "check_out": "2026-09-16",
+        "area": "Huangpu"
+      },
+      "provenance": "existing_record"
+    },
+    {
+      "option_id": "XFER-ORIG",
+      "slot": "airport_transfer",
+      "price": 160,
+      "available": true,
+      "refund_if_cancelled_after_booking": 0,
+      "attributes": {
+        "city": "Shanghai",
+        "date": "2026-09-14",
+        "area": "Huangpu"
+      },
+      "provenance": "existing_record"
+    },
+    {
+      "option_id": "PASS-ORIG",
+      "slot": "conference_pass",
+      "price": 300,
+      "available": true,
+      "refund_if_cancelled_after_booking": 0,
+      "attributes": {
+        "city": "Shanghai",
+        "valid_through": "2026-09-16"
+      },
+      "provenance": "existing_record"
+    }
+  ],
+  "modification_rules": [],
+  "linked_loss_rules": [
+    {
+      "rule_id": "AIR-HOTEL-PACKAGE",
+      "description": "Changing or cancelling either the original outbound flight or hotel forfeits a prepaid package credit.",
+      "trigger": "any_changed",
+      "commitment_ids": [
+        "TR-OUT",
+        "TR-HOTEL"
+      ],
+      "amount": 180
+    }
+  ],
+  "required_slots": [
+    "outbound",
+    "return",
+    "hotel",
+    "airport_transfer",
+    "conference_pass",
+    "dinner"
+  ],
+  "constraints": [
+    {
+      "type": "slot_attribute",
+      "slot": "outbound",
+      "attribute": "city",
+      "op": "eq",
+      "value": "Shanghai"
+    },
+    {
+      "type": "slot_attribute",
+      "slot": "return",
+      "attribute": "city",
+      "op": "eq",
+      "value": "Shanghai"
+    },
+    {
+      "type": "slot_attribute",
+      "slot": "hotel",
+      "attribute": "city",
+      "op": "eq",
+      "value": "Shanghai"
+    },
+    {
+      "type": "slot_attribute",
+      "slot": "airport_transfer",
+      "attribute": "city",
+      "op": "eq",
+      "value": "Shanghai"
+    },
+    {
+      "type": "slot_attribute",
+      "slot": "conference_pass",
+      "attribute": "city",
+      "op": "eq",
+      "value": "Shanghai"
+    },
+    {
+      "type": "slot_attribute",
+      "slot": "dinner",
+      "attribute": "city",
+      "op": "eq",
+      "value": "Shanghai"
+    },
+    {
+      "type": "allowed_pairs",
+      "left_slot": "hotel",
+      "right_slot": "dinner",
+      "pairs": [
+        [
+          "HOTEL-RIVER",
+          "DINNER-RIVER"
+        ],
+        [
+          "HOTEL-RIVER",
+          "DINNER-JINGAN"
+        ],
+        [
+          "HOTEL-BUDGET",
+          "DINNER-JINGAN"
+        ],
+        [
+          "HOTEL-BUND-ORIG",
+          "DINNER-HUANGPU"
+        ]
+      ]
+    },
+    {
+      "type": "max_lifecycle_cost",
+      "value": 3800
+    }
+  ],
+  "search_contexts": {
+    "outbound": {
+      "city": "Shanghai",
+      "start_date": "2026-09-14",
+      "end_date": "2026-09-16"
+    },
+    "return": {
+      "city": "Shanghai",
+      "start_date": "2026-09-14",
+      "end_date": "2026-09-16"
+    },
+    "hotel": {
+      "city": "Shanghai",
+      "start_date": "2026-09-14",
+      "end_date": "2026-09-16"
+    },
+    "airport_transfer": {
+      "city": "Shanghai",
+      "start_date": "2026-09-14",
+      "end_date": "2026-09-16"
+    },
+    "conference_pass": {
+      "city": "Shanghai",
+      "start_date": "2026-09-14",
+      "end_date": "2026-09-16"
+    },
+    "dinner": {
+      "city": "Shanghai",
+      "start_date": "2026-09-14",
+      "end_date": "2026-09-16"
+    }
+  },
+  "objective": {
+    "mode": "lexicographic",
+    "terms": [
+      "recovery_loss",
+      "financial_cost",
+      "mutated_prior_commitments",
+      "state_changing_actions"
+    ]
+  },
+  "mechanism": "package_breakage",
+  "split": "dev",
+  "challenge_requirements": {
+    "min_raw_plans": 100,
+    "min_feasible_plans": 8,
+    "min_feasible_scopes": 4,
+    "min_loss_levels": 3
+  },
+  "max_mutations": 14,
+  "task_id": "conference-dinner-a-loss-aware",
+  "variant_id": "A-loss_aware",
+  "pair_id": "conference-dinner-a",
+  "evaluation_track": "loss_aware",
+  "evaluation_class": "loss_sensitive",
+  "instruction": "Complete my Shanghai conference trip for September 14-16. I need the flights, hotel, airport transfer, conference pass, and a dinner reservation in the same area as the hotel; keep the final trip within $3,800. Resolve it without wasting non-refundable payments or needlessly breaking package terms."
+}

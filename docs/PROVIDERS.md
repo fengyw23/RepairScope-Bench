@@ -32,7 +32,7 @@ does not incorrectly claim that the request went directly to a model vendor:
 
 ```bash
 export OPENAI_COMPATIBLE_API_KEY=...
-repairscope run-suite data/pilot \
+repairscope run-suite data/challenge \
   --provider openai-compatible \
   --model YOUR_GATEWAY_MODEL_ID \
   --base-url https://gateway.example/v1 \

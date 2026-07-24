@@ -115,6 +115,88 @@ TRAVEL_TOOLS = [
     ),
 ]
 
+TRAVEL_V05_TOOLS = [
+    _schema(
+        "get_user_reservations",
+        "List every active reservation and service commitment for this trip.",
+    ),
+    _schema(
+        "get_reservation_details",
+        "Retrieve one reservation or service commitment, including its paid amount, schedule, location, and status.",
+        {"reservation_id": {"type": "string"}},
+        ["reservation_id"],
+    ),
+    _schema(
+        "search_travel_options",
+        "Search live inventory for one category using the trip city and service dates. All fields must match the intended trip.",
+        {
+            "category": {"type": "string"},
+            "city": {"type": "string"},
+            "start_date": {"type": "string"},
+            "end_date": {"type": "string"},
+        },
+        ["category", "city", "start_date", "end_date"],
+    ),
+    _schema(
+        "preview_cancellation",
+        "Preview the refund and cancellation fee for one active reservation. No state is changed.",
+        {"reservation_id": {"type": "string"}},
+        ["reservation_id"],
+    ),
+    _schema(
+        "get_change_quote",
+        "Check whether a reservation can be changed to a specific option and return the quoted cash components.",
+        {
+            "reservation_id": {"type": "string"},
+            "to_option_id": {"type": "string"},
+        },
+        ["reservation_id", "to_option_id"],
+    ),
+    _schema(
+        "get_package_change_impact",
+        "Retrieve settlement charges that would be triggered by changing or cancelling this reservation.",
+        {"reservation_id": {"type": "string"}},
+        ["reservation_id"],
+    ),
+    _schema(
+        "check_travel_compatibility",
+        "Check whether two specific travel options satisfy configured cross-booking rules.",
+        {
+            "left_option_id": {"type": "string"},
+            "right_option_id": {"type": "string"},
+        },
+        ["left_option_id", "right_option_id"],
+    ),
+    _schema(
+        "cancel_reservation",
+        "Cancel one active reservation and apply its refund and any linked settlement terms.",
+        {"reservation_id": {"type": "string"}},
+        ["reservation_id"],
+    ),
+    _schema(
+        "book_travel_option",
+        "Book one currently available travel or local-service option.",
+        {"option_id": {"type": "string"}},
+        ["option_id"],
+    ),
+    _schema(
+        "change_reservation",
+        "Apply an available in-place change to one reservation.",
+        {
+            "reservation_id": {"type": "string"},
+            "to_option_id": {"type": "string"},
+        },
+        ["reservation_id", "to_option_id"],
+    ),
+    _schema("finish", "Declare that the customer's request is complete."),
+    _schema(
+        "report_infeasible",
+        "Report that the request cannot be completed from the current state.",
+        {"reason": {"type": "string"}},
+        ["reason"],
+    ),
+]
+
 
 SHOPPING_TOOLS = [
     _schema(
@@ -192,8 +274,102 @@ SHOPPING_TOOLS = [
     ),
 ]
 
+SHOPPING_V05_TOOLS = [
+    _schema(
+        "get_customer_orders",
+        "List every active product and service order in this purchase.",
+    ),
+    _schema(
+        "get_product_order",
+        "Retrieve one order, including its paid amount, product attributes, and status.",
+        {"order_id": {"type": "string"}},
+        ["order_id"],
+    ),
+    _schema(
+        "search_products",
+        "Search live inventory for one category and intended use case.",
+        {
+            "category": {"type": "string"},
+            "use_case": {"type": "string"},
+        },
+        ["category", "use_case"],
+    ),
+    _schema(
+        "get_return_quote",
+        "Preview the refund and return fee for one purchased product. No state is changed.",
+        {"order_id": {"type": "string"}},
+        ["order_id"],
+    ),
+    _schema(
+        "get_exchange_quote",
+        "Check whether an order can be exchanged for a specific product and return the cash components.",
+        {
+            "order_id": {"type": "string"},
+            "to_product_id": {"type": "string"},
+        },
+        ["order_id", "to_product_id"],
+    ),
+    _schema(
+        "get_bundle_change_impact",
+        "Retrieve rebates, licenses, or service charges triggered by changing or returning this order.",
+        {"order_id": {"type": "string"}},
+        ["order_id"],
+    ),
+    _schema(
+        "check_product_compatibility",
+        "Check whether two specific products are compatible.",
+        {
+            "left_product_id": {"type": "string"},
+            "right_product_id": {"type": "string"},
+        },
+        ["left_product_id", "right_product_id"],
+    ),
+    _schema(
+        "return_product",
+        "Return one active purchased product and apply its refund and any linked settlement terms.",
+        {"order_id": {"type": "string"}},
+        ["order_id"],
+    ),
+    _schema(
+        "purchase_product",
+        "Purchase one currently available product or service.",
+        {"product_id": {"type": "string"}},
+        ["product_id"],
+    ),
+    _schema(
+        "exchange_product",
+        "Apply an available in-place exchange to one purchased product.",
+        {
+            "order_id": {"type": "string"},
+            "to_product_id": {"type": "string"},
+        },
+        ["order_id", "to_product_id"],
+    ),
+    _schema("finish", "Declare that the customer's request is complete."),
+    _schema(
+        "report_infeasible",
+        "Report that the request cannot be completed from the current state.",
+        {"reason": {"type": "string"}},
+        ["reason"],
+    ),
+]
+
 
 def tool_definitions_for_task(task: dict[str, Any]) -> list[dict[str, Any]]:
+    if task["schema_version"] == "0.5":
+        tools = TRAVEL_V05_TOOLS if task["domain"] == "travel" else SHOPPING_V05_TOOLS
+        result = deepcopy(tools)
+        search_name = (
+            "search_travel_options"
+            if task["domain"] == "travel"
+            else "search_products"
+        )
+        for tool in result:
+            if tool["name"] == search_name:
+                tool["parameters"]["properties"]["category"]["enum"] = sorted(
+                    task["required_slots"]
+                )
+        return result
     return deepcopy(TRAVEL_TOOLS if task["domain"] == "travel" else SHOPPING_TOOLS)
 
 
@@ -273,6 +449,25 @@ class DomainToolRouter:
             True, f"Found {len(candidates)} available option(s).", candidates
         )
 
+    def _search_with_context(
+        self, slot: str, query: dict[str, Any]
+    ) -> ActionResult:
+        raw = self._generic("search_options", {"slot": slot, "query": query})
+        if not raw.ok:
+            return raw
+        candidates = [
+            {
+                "option_id": option["option_id"],
+                "type": option["slot"],
+                "price": option["price"],
+                **deepcopy(option.get("attributes", {})),
+            }
+            for option in raw.data or []
+        ]
+        return ActionResult(
+            True, f"Found {len(candidates)} matching live option(s).", candidates
+        )
+
     def _quote(self, identifier: str, *, id_name: str) -> ActionResult:
         raw = self._generic(
             "get_cancellation_quote", {"commitment_id": identifier}
@@ -331,6 +526,21 @@ class DomainToolRouter:
             return self._details(
                 args["reservation_id"], {"car"}, id_name="reservation_id"
             )
+        if name == "get_reservation_details":
+            return self._details(
+                args["reservation_id"],
+                set(self.environment.task["required_slots"]),
+                id_name="reservation_id",
+            )
+        if name == "search_travel_options":
+            return self._search_with_context(
+                args["category"],
+                {
+                    "city": args["city"],
+                    "start_date": args["start_date"],
+                    "end_date": args["end_date"],
+                },
+            )
         if name == "search_flights":
             return self._search(
                 {"flight", "outbound", "return"}, args.get("journey")
@@ -347,6 +557,11 @@ class DomainToolRouter:
                 args["to_option_id"],
                 id_name="reservation_id",
                 target_name="to_option_id",
+            )
+        if name == "get_package_change_impact":
+            return self._generic(
+                "get_linked_loss_quote",
+                {"commitment_id": args["reservation_id"]},
             )
         if name == "check_travel_compatibility":
             return self._generic(
@@ -380,10 +595,14 @@ class DomainToolRouter:
         if name == "get_product_order":
             return self._details(
                 args["order_id"],
-                {"laptop", "monitor", "dock"},
+                set(self.environment.task["required_slots"]),
                 id_name="order_id",
             )
         if name == "search_products":
+            if self.environment.task["schema_version"] == "0.5":
+                return self._search_with_context(
+                    args["category"], {"use_case": args["use_case"]}
+                )
             return self._search({args["category"]})
         if name == "get_return_quote":
             return self._quote(args["order_id"], id_name="order_id")
@@ -393,6 +612,11 @@ class DomainToolRouter:
                 args["to_product_id"],
                 id_name="order_id",
                 target_name="to_product_id",
+            )
+        if name == "get_bundle_change_impact":
+            return self._generic(
+                "get_linked_loss_quote",
+                {"commitment_id": args["order_id"]},
             )
         if name == "check_product_compatibility":
             return self._generic(

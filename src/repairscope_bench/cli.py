@@ -87,6 +87,7 @@ def main(argv: list[str] | None = None) -> int:
             "local_repair",
             "dependency_repair",
             "full_rollback",
+            "global_cost",
             "oracle",
         ]:
             scores = [

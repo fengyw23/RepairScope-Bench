@@ -1,5 +1,9 @@
 # Benchmark Mechanism Audit
 
+> Historical note: references below to the “current pilot” describe the
+> pre-v0.4 implementation that this audit evaluated. The v0.5 status appears
+> in the final section.
+
 This note records a code-level comparison performed against the public
 STT-Arena and STATE-Bench repositories on 2026-07-24. It separates what the
 papers intend from what their released evaluators actually enforce.
@@ -182,3 +186,32 @@ The v0.4.0 release implements the audit recommendations:
   different recovery-loss values;
 - dataset validation rejects any future `loss_sensitive` task that fails that
   competition requirement.
+
+## v0.5.0 challenge implementation
+
+The next audit found that v0.4 was still too easy: most tasks had small repair
+graphs, decisive facts were concentrated, and a 20-call limit counted harmless
+reads. v0.5 implements:
+
+- six unique failure states and 12 paired tasks;
+- 486–729 raw candidates, 18–235 feasible plans, 4–30 scope patterns, and
+  4–30 loss levels per loss-aware task;
+- automatic minimum gates for all four quantities;
+- non-local package, rebate, and service-contract losses;
+- parameterized search and targeted linked-term lookup;
+- goal-only versus natural loss-aware prompt pairs;
+- mechanism-level development, test, and held-out splits;
+- 15 model turns as the main limit, while reads do not consume mutation
+  safety accounting and `finish()` remains available;
+- `Scope-Optimization Gap = Goal Pass - Optimal Pass`;
+- cached exact Oracle results for tractable validation.
+
+The scripted controls now separate task completion from scope quality:
+
+```text
+Full rollback:        Goal 12/12, Optimal 0/12
+Final-cost-only plan: Goal 12/12, Optimal 6/12
+Loss-aware Oracle:    Goal 12/12, Optimal 12/12
+```
+
+These are mechanism regression tests, not language-model results.

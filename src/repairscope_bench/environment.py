@@ -58,6 +58,7 @@ class RepairEnvironment:
         return (
             self.new_charges
             + self.modification_net_cash
+            + self.linked_loss
             - self.original_refunds
             - self.new_refunds
         )
@@ -97,7 +98,24 @@ class RepairEnvironment:
             self.cancellation_loss
             + self.post_failure_waste
             + max(0, self.modification_net_cash)
+            + self.linked_loss
         )
+
+    @property
+    def linked_loss(self) -> int | float:
+        """Objective settlement loss caused by breaking a prior bundle/commitment."""
+        dispositions = self.dispositions()
+        total: int | float = 0
+        for rule in self.task.get("linked_loss_rules", []):
+            changed = [
+                dispositions.get(identifier, "KEEP") != "KEEP"
+                for identifier in rule["commitment_ids"]
+            ]
+            trigger = rule.get("trigger", "any_changed")
+            applies = any(changed) if trigger == "any_changed" else all(changed)
+            if applies:
+                total += rule["amount"]
+        return total
 
     def active_commitments(self, slot: str | None = None) -> list[dict[str, Any]]:
         active = [item for item in self.commitments if item["status"] == "confirmed"]
@@ -149,7 +167,16 @@ class RepairEnvironment:
             },
         )
 
-    def search_options(self, slot: str) -> ActionResult:
+    def search_options(
+        self, slot: str, query: dict[str, Any] | None = None
+    ) -> ActionResult:
+        expected_query = self.task.get("search_contexts", {}).get(slot)
+        if expected_query is not None and query != expected_query:
+            return ActionResult(
+                True,
+                f"No inventory matched the supplied search context for {slot}.",
+                [],
+            )
         options = [
             {
                 "option_id": option["option_id"],
@@ -167,6 +194,27 @@ class RepairEnvironment:
             True,
             f"Found {len(options)} currently available option(s) for {slot}.",
             options,
+        )
+
+    def get_linked_loss_quote(self, commitment_id: str) -> ActionResult:
+        self._get_active(commitment_id)
+        rules = []
+        for rule in self.task.get("linked_loss_rules", []):
+            if commitment_id not in rule["commitment_ids"]:
+                continue
+            rules.append(
+                {
+                    "rule_id": rule["rule_id"],
+                    "description": rule["description"],
+                    "trigger": rule.get("trigger", "any_changed"),
+                    "linked_commitment_ids": deepcopy(rule["commitment_ids"]),
+                    "settlement_charge": rule["amount"],
+                }
+            )
+        return ActionResult(
+            True,
+            f"Found {len(rules)} linked term(s) for {commitment_id}.",
+            rules,
         )
 
     def get_modification_quote(
@@ -364,7 +412,9 @@ class RepairEnvironment:
             elif name == "get_cancellation_quote":
                 result = self.get_cancellation_quote(args["commitment_id"])
             elif name == "search_options":
-                result = self.search_options(args["slot"])
+                result = self.search_options(args["slot"], args.get("query"))
+            elif name == "get_linked_loss_quote":
+                result = self.get_linked_loss_quote(args["commitment_id"])
             elif name == "get_modification_quote":
                 result = self.get_modification_quote(
                     args["commitment_id"], args["to_option_id"]
@@ -400,6 +450,7 @@ class RepairEnvironment:
             "lifecycle_cost": self.lifecycle_cost,
             "cancellation_loss": self.cancellation_loss,
             "post_failure_waste": self.post_failure_waste,
+            "linked_loss": self.linked_loss,
             "recovery_loss": self.recovery_loss,
             "rollback_damage": self.rollback_damage,
             "terminal_mode": self.terminal_mode,

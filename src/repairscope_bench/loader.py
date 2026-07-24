@@ -20,7 +20,6 @@ REQUIRED_TOP_LEVEL_FIELDS = {
     "required_slots",
     "constraints",
     "objective",
-    "max_actions",
 }
 
 
@@ -34,15 +33,18 @@ def validate_task(task: dict[str, Any]) -> None:
         raise TaskValidationError(
             f"{task.get('task_id', '<unknown>')}: missing fields {sorted(missing)}"
         )
-    if task["schema_version"] != "0.4":
+    if task["schema_version"] not in {"0.4", "0.5"}:
         raise TaskValidationError(
             f"{task['task_id']}: unsupported schema_version {task['schema_version']!r}"
         )
     if not task["required_slots"]:
         raise TaskValidationError(f"{task['task_id']}: required_slots cannot be empty")
-    if not isinstance(task["max_actions"], int) or task["max_actions"] <= 0:
+    if task.get("max_mutations") is not None and (
+        not isinstance(task["max_mutations"], int)
+        or task["max_mutations"] <= 0
+    ):
         raise TaskValidationError(
-            f"{task['task_id']}: max_actions must be a positive integer"
+            f"{task['task_id']}: max_mutations must be a positive integer"
         )
     supported_terms = {
         "financial_cost",
@@ -198,6 +200,50 @@ def validate_task(task: dict[str, Any]) -> None:
                     f"{task['task_id']}: modification cash components do not sum "
                     "to net_cash_delta"
                 )
+
+    known_commitments = set(commitment_ids)
+    linked_rule_ids: set[str] = set()
+    for rule in task.get("linked_loss_rules", []):
+        if rule.get("rule_id") in linked_rule_ids:
+            raise TaskValidationError(
+                f"{task['task_id']}: duplicate linked loss rule_id"
+            )
+        linked_rule_ids.add(rule.get("rule_id"))
+        if (
+            not rule.get("rule_id")
+            or rule.get("trigger", "any_changed") not in {"any_changed", "all_changed"}
+            or not isinstance(rule.get("amount"), (int, float))
+            or rule["amount"] < 0
+            or not rule.get("description")
+            or not set(rule.get("commitment_ids", [])).issubset(known_commitments)
+        ):
+            raise TaskValidationError(
+                f"{task['task_id']}: invalid linked loss rule {rule!r}"
+            )
+
+    if task["schema_version"] == "0.5":
+        required_metadata = {
+            "pair_id",
+            "evaluation_track",
+            "mechanism",
+            "split",
+            "search_contexts",
+            "challenge_requirements",
+        }
+        missing_metadata = required_metadata - task.keys()
+        if missing_metadata:
+            raise TaskValidationError(
+                f"{task['task_id']}: missing v0.5 metadata "
+                f"{sorted(missing_metadata)}"
+            )
+        if task["evaluation_track"] not in {"goal", "loss_aware"}:
+            raise TaskValidationError(
+                f"{task['task_id']}: invalid evaluation_track"
+            )
+        if set(task["search_contexts"]) != required_slots:
+            raise TaskValidationError(
+                f"{task['task_id']}: search_contexts must cover required_slots"
+            )
 
 
 def load_task(path: str | Path) -> dict[str, Any]:
