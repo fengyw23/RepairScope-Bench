@@ -1,7 +1,9 @@
 from __future__ import annotations
 
 import unittest
+from unittest.mock import patch
 
+from repairscope_bench.providers import create_adapter
 from repairscope_bench.providers.anthropic_messages import AnthropicMessagesAdapter
 from repairscope_bench.providers.base import ToolResult
 from repairscope_bench.providers.chat_completions import ChatCompletionsAdapter
@@ -27,6 +29,23 @@ class SequenceTransport:
 
 
 class ProviderProtocolTest(unittest.TestCase):
+    def test_generic_openai_compatible_gateway_factory(self) -> None:
+        with patch.dict(
+            "os.environ",
+            {"OPENAI_COMPATIBLE_API_KEY": "secret"},
+            clear=False,
+        ):
+            adapter = create_adapter(
+                "openai-compatible",
+                "gateway-model",
+                base_url="https://gateway.example/v1",
+            )
+        self.assertIsInstance(adapter, ChatCompletionsAdapter)
+        self.assertEqual(adapter.provider, "openai-compatible")
+        self.assertEqual(
+            adapter.endpoint, "https://gateway.example/v1/chat/completions"
+        )
+
     def test_openai_replays_reasoning_and_function_output(self) -> None:
         transport = SequenceTransport(
             [

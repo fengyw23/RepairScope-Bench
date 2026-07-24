@@ -132,6 +132,12 @@ repairscope run-suite data/pilot --provider qwen --model qwen3.7-plus \
 export DEEPSEEK_API_KEY=...
 repairscope run-suite data/pilot --provider deepseek --model deepseek-chat \
   --output-dir results/deepseek
+
+# Any OpenAI-compatible gateway
+export OPENAI_COMPATIBLE_API_KEY=...
+repairscope run-suite data/pilot --provider openai-compatible \
+  --model YOUR_MODEL_ID --base-url https://gateway.example/v1 \
+  --output-dir results/gateway-model
 ```
 
 On PowerShell, replace `export NAME=...` with `$env:NAME="..."`.

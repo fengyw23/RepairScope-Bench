@@ -21,10 +21,23 @@ protocols:
 | Anthropic | `ANTHROPIC_API_KEY` | `ANTHROPIC_BASE_URL` | `https://api.anthropic.com/v1` |
 | Qwen | `DASHSCOPE_API_KEY` | `DASHSCOPE_BASE_URL` | `https://dashscope.aliyuncs.com/compatible-mode/v1` |
 | DeepSeek | `DEEPSEEK_API_KEY` | `DEEPSEEK_BASE_URL` | `https://api.deepseek.com` |
+| Any OpenAI-compatible gateway | `OPENAI_COMPATIBLE_API_KEY` | `OPENAI_COMPATIBLE_BASE_URL` | no default; required |
 
 `--base-url` overrides the environment variable. This is useful for another
 DashScope region or an organization gateway. Keys are placed only in request
 headers and never copied to experiment records.
+
+For a third-party gateway, use the generic provider label so the run record
+does not incorrectly claim that the request went directly to a model vendor:
+
+```bash
+export OPENAI_COMPATIBLE_API_KEY=...
+repairscope run-suite data/pilot \
+  --provider openai-compatible \
+  --model YOUR_GATEWAY_MODEL_ID \
+  --base-url https://gateway.example/v1 \
+  --output-dir results/gateway-model
+```
 
 ## Protocol differences handled by the adapter
 

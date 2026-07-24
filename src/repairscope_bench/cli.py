@@ -168,7 +168,13 @@ def _add_provider_arguments(parser: argparse.ArgumentParser) -> None:
     parser.add_argument(
         "--provider",
         required=True,
-        choices=["openai", "anthropic", "qwen", "deepseek"],
+        choices=[
+            "openai",
+            "anthropic",
+            "qwen",
+            "deepseek",
+            "openai-compatible",
+        ],
     )
     parser.add_argument("--model", required=True)
     parser.add_argument("--base-url")

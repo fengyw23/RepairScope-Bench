@@ -30,6 +30,11 @@ PROVIDER_DEFAULTS = {
         "base_env": "DEEPSEEK_BASE_URL",
         "base_url": "https://api.deepseek.com",
     },
+    "openai-compatible": {
+        "key_env": "OPENAI_COMPATIBLE_API_KEY",
+        "base_env": "OPENAI_COMPATIBLE_BASE_URL",
+        "base_url": None,
+    },
 }
 
 
@@ -60,6 +65,11 @@ def create_adapter(
         or os.getenv(config["base_env"])
         or config["base_url"]
     )
+    if not resolved_base:
+        raise ProviderError(
+            f"No base URL configured for {name}; pass --base-url or set "
+            f"{config['base_env']}"
+        )
     common: dict[str, Any] = {
         "model": model,
         "api_key": api_key,
