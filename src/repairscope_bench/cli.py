@@ -45,7 +45,15 @@ def main(argv: list[str] | None = None) -> int:
     suite_parser.add_argument("data")
     _add_provider_arguments(suite_parser)
     suite_parser.add_argument("--output-dir", required=True)
-    suite_parser.add_argument("--repeats", type=int, default=1)
+    suite_parser.add_argument(
+        "--repeats",
+        type=int,
+        default=5,
+        help=(
+            "Independent runs per task. The official protocol uses 5 and "
+            "reports both average pass@1 and strict pass^5."
+        ),
+    )
     suite_parser.add_argument("--overwrite", action="store_true")
 
     args = parser.parse_args(argv)

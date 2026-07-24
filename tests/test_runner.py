@@ -10,6 +10,7 @@ from repairscope_bench.runner import (
     build_user_prompt,
     run_episode,
     run_suite,
+    summarize_runs,
 )
 
 
@@ -89,10 +90,49 @@ class RunnerTest(unittest.TestCase):
         with TemporaryDirectory() as directory:
             summary = run_suite([task], ScriptedAdapter(), directory)
             self.assertEqual(summary["run_count"], 1)
+            self.assertEqual(summary["goal_pass@1"], 1.0)
+            self.assertEqual(summary["goal_pass^k"], 1.0)
+            self.assertEqual(summary["goal_pass^1"], 1.0)
+            self.assertEqual(summary["optimal_pass@1"], 1.0)
+            self.assertEqual(summary["optimal_pass^k"], 1.0)
+            self.assertEqual(summary["optimal_pass^1"], 1.0)
             self.assertTrue((Path(directory) / "runs.jsonl").exists())
             self.assertTrue((Path(directory) / "summary.json").exists())
             with self.assertRaises(FileExistsError):
                 run_suite([task], ScriptedAdapter(), directory)
+
+    def test_strict_rates_count_provider_errors_as_failures(self) -> None:
+        records = [
+            {
+                "task_id": "a",
+                "provider": "fake",
+                "model": "scripted",
+                "score": {"success": True, "optimal_repair": True},
+            },
+            {
+                "task_id": "a",
+                "provider": "fake",
+                "model": "scripted",
+                "status": "provider_error",
+            },
+            {
+                "task_id": "b",
+                "provider": "fake",
+                "model": "scripted",
+                "score": {"success": True, "optimal_repair": False},
+            },
+            {
+                "task_id": "b",
+                "provider": "fake",
+                "model": "scripted",
+                "score": {"success": True, "optimal_repair": True},
+            },
+        ]
+        summary = summarize_runs(records, expected_repeats=2)
+        self.assertEqual(summary["goal_pass@1"], 0.75)
+        self.assertEqual(summary["goal_pass^k"], 0.5)
+        self.assertEqual(summary["optimal_pass@1"], 0.5)
+        self.assertEqual(summary["optimal_pass^k"], 0.0)
 
 
 if __name__ == "__main__":

@@ -3,6 +3,7 @@ from __future__ import annotations
 from datetime import datetime, timezone
 import json
 from pathlib import Path
+from statistics import pstdev
 import time
 from typing import Any
 from uuid import uuid4
@@ -113,6 +114,8 @@ def run_episode(
         "provider": adapter.provider,
         "model": adapter.model,
         "task_id": task["task_id"],
+        "family_id": task.get("family_id"),
+        "variant_id": task.get("variant_id"),
         "task_schema_version": task["schema_version"],
         "status": status,
         "elapsed_seconds": round(time.monotonic() - started, 3),
@@ -184,10 +187,11 @@ def run_suite(
                         "status": "provider_error",
                         "error": f"{type(error).__name__}: {error}",
                     }
+                record["repeat_index"] = repeat + 1
                 records.append(record)
                 handle.write(json.dumps(record, ensure_ascii=False) + "\n")
                 handle.flush()
-    summary = summarize_runs(records)
+    summary = summarize_runs(records, expected_repeats=repeats)
     (root / "summary.json").write_text(
         json.dumps(summary, ensure_ascii=False, indent=2) + "\n",
         encoding="utf-8",
@@ -195,17 +199,44 @@ def run_suite(
     return summary
 
 
-def summarize_runs(records: list[dict[str, Any]]) -> dict[str, Any]:
+def summarize_runs(
+    records: list[dict[str, Any]], *, expected_repeats: int | None = None
+) -> dict[str, Any]:
     scored = [record["score"] for record in records if "score" in record]
     count = len(records)
     scored_count = len(scored)
+    task_groups = _group_records(records, "task_id")
+    repeats = expected_repeats or max(
+        (len(group) for group in task_groups.values()), default=0
+    )
+    repeat_groups = _group_records(records, "repeat_index")
+    goal_pass_at_1 = _record_rate(records, "success")
+    optimal_pass_at_1 = _record_rate(records, "optimal_repair")
+    goal_pass_at_k = _all_repeats_rate(
+        task_groups, "success", expected_repeats=repeats
+    )
+    optimal_pass_at_k = _all_repeats_rate(
+        task_groups, "optimal_repair", expected_repeats=repeats
+    )
+    goal_repeat_rates = [
+        rate
+        for group in repeat_groups.values()
+        if (rate := _record_rate(group, "success")) is not None
+    ]
+    optimal_repeat_rates = [
+        rate
+        for group in repeat_groups.values()
+        if (rate := _record_rate(group, "optimal_repair")) is not None
+    ]
     numeric_extra = [
-        score["extra_loss"] for score in scored if score["extra_loss"] is not None
+        score.get("extra_loss")
+        for score in scored
+        if score.get("extra_loss") is not None
     ]
     numeric_financial = [
-        score["financial_regret"]
+        score.get("financial_regret")
         for score in scored
-        if score["financial_regret"] is not None
+        if score.get("financial_regret") is not None
     ]
     return {
         "provider": records[0].get("provider") if records else None,
@@ -213,23 +244,74 @@ def summarize_runs(records: list[dict[str, Any]]) -> dict[str, Any]:
         "run_count": count,
         "scored_run_count": scored_count,
         "provider_error_count": count - scored_count,
-        "success_rate": _rate(scored, "success"),
-        "optimal_repair_rate": _rate(scored, "optimal_repair"),
+        "task_count": len(task_groups),
+        "repeats_per_task": repeats,
+        "goal_pass@1": goal_pass_at_1,
+        "goal_pass@1_stddev": _population_stddev(goal_repeat_rates),
+        "goal_pass^k": goal_pass_at_k,
+        f"goal_pass^{repeats}": goal_pass_at_k,
+        "optimal_pass@1": optimal_pass_at_1,
+        "optimal_pass@1_stddev": _population_stddev(optimal_repeat_rates),
+        "optimal_pass^k": optimal_pass_at_k,
+        f"optimal_pass^{repeats}": optimal_pass_at_k,
+        # Backward-compatible aliases. Unlike the pre-v0.3.2 implementation,
+        # provider errors are now failures in these primary rates rather than
+        # silently disappearing from the denominator.
+        "success_rate": _record_rate(records, "success"),
+        "optimal_repair_rate": _record_rate(records, "optimal_repair"),
         "mean_extra_loss_on_completed_feasible": _mean(numeric_extra),
         "mean_financial_regret_on_completed_feasible": _mean(numeric_financial),
         "mean_scope_distance": _mean(
             [
-                score["scope_distance"]
+                score.get("scope_distance")
                 for score in scored
-                if score["scope_distance"] is not None
+                if score.get("scope_distance") is not None
             ]
         ),
     }
 
 
-def _rate(scores: list[dict[str, Any]], key: str) -> float | None:
-    return sum(bool(score[key]) for score in scores) / len(scores) if scores else None
+def _record_rate(records: list[dict[str, Any]], key: str) -> float | None:
+    if not records:
+        return None
+    return sum(
+        bool(record.get("score", {}).get(key, False)) for record in records
+    ) / len(records)
+
+
+def _group_records(
+    records: list[dict[str, Any]], key: str
+) -> dict[str, list[dict[str, Any]]]:
+    groups: dict[str, list[dict[str, Any]]] = {}
+    for record in records:
+        value = record.get(key)
+        if value is None:
+            continue
+        groups.setdefault(str(value), []).append(record)
+    return groups
+
+
+def _all_repeats_rate(
+    groups: dict[str, list[dict[str, Any]]],
+    key: str,
+    *,
+    expected_repeats: int,
+) -> float | None:
+    if not groups:
+        return None
+    passed = 0
+    for records in groups.values():
+        complete = len(records) == expected_repeats
+        all_passed = all(
+            bool(record.get("score", {}).get(key, False)) for record in records
+        )
+        passed += int(complete and all_passed)
+    return passed / len(groups)
 
 
 def _mean(values: list[int | float]) -> float | None:
     return sum(values) / len(values) if values else None
+
+
+def _population_stddev(values: list[int | float]) -> float | None:
+    return pstdev(values) if values else None

@@ -11,6 +11,11 @@
 
 Each repetition uses a fresh deep copy. No state is shared across runs.
 
+The official protocol runs every task five independent times. It reports both
+the average success rate across all runs (`pass@1`) and the percentage of tasks
+that pass on all five runs (`pass^5`). Provider failures count as failed runs;
+they are also reported separately for diagnosis.
+
 ## Hard goal
 
 A feasible task requires exactly one active commitment per required slot, all
@@ -58,7 +63,7 @@ allowed in-place modification, and booking into an empty slot. It replays the
 Cartesian product in fresh environments and rejects tool errors and hard-goal
 violations.
 
-The task declares a lexicographic objective. Pilot v0.3.1 uses:
+The task declares a lexicographic objective. Pilot v0.3.2 uses:
 
 ```text
 (recovery_loss,
@@ -76,8 +81,14 @@ when both recovery loss and lifecycle cost tie. All exact ties are accepted.
 
 Primary:
 
-- **Goal Pass@1**: correct final state and terminal mode;
-- **Optimal Repair Rate**: goal pass plus exact oracle objective;
+- **Goal Pass@1**: average rate of correct final state and terminal mode across
+  five runs;
+- **Goal Pass^5**: percentage of tasks that achieve goal pass on all five
+  runs;
+- **Optimal Pass@1**: goal pass plus exact oracle objective, averaged across
+  five runs;
+- **Optimal Pass^5**: percentage of tasks that achieve optimal repair on all
+  five runs;
 - **Extra Loss**:
   `observed_recovery_loss - minimum_feasible_recovery_loss`;
 - **Financial Regret**:
@@ -121,6 +132,7 @@ fact deterministic and objectively auditable.
 - force sequential tool calls because operations have side effects;
 - record every model tool call and tool result;
 - report provider failures separately from task failures;
+- count provider failures as failed episodes in pass metrics;
 - retain raw per-episode JSONL and aggregate only afterward.
 
 The checked-in provider protocol tests use deterministic mock HTTP responses.

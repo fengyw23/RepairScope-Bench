@@ -11,7 +11,7 @@ Every model receives the same instruction, public pre-failure tool trace,
 failure observation, and executable tools. It is not a static classifier: the
 agent must query and mutate persistent state.
 
-> Status: **research pilot, v0.3.1**. The release contains 16 counterfactual
+> Status: **research pilot, v0.3.2**. The release contains 16 counterfactual
 > tasks in two domains. It establishes the protocol and executable harness; it
 > is not yet large enough for a leaderboard claim.
 
@@ -154,9 +154,12 @@ repairscope run-model data/pilot/short-trip-a-keep-extra-day.json \
   --provider openai --model gpt-5.6-sol --output run.json
 ```
 
-Batch execution writes one auditable record per episode to `runs.jsonl` and an
-aggregate `summary.json`. Model IDs are explicit so vendor alias changes cannot
-silently alter an experiment.
+Batch execution uses five independent runs per task by default, writes one
+auditable record per episode to `runs.jsonl`, and writes an aggregate
+`summary.json` containing Goal/Optimal Pass@1 and strict Pass^5. Provider
+errors count as failed episodes. Use `--repeats 1` only for a smoke test.
+Model IDs are explicit so vendor alias changes cannot silently alter an
+experiment.
 
 ## Model-visible protocol
 

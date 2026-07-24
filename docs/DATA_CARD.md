@@ -2,7 +2,7 @@
 
 ## Summary
 
-RepairScope-Bench v0.3.1 contains 16 executable post-failure recovery tasks:
+RepairScope-Bench v0.3.2 contains 16 executable post-failure recovery tasks:
 four counterfactual families, two domains, 12 feasible cases, and four
 infeasible cases. It is a protocol pilot rather than a statistically broad
 leaderboard dataset.
