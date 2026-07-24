@@ -5,10 +5,13 @@
 1. Reset to the public `failure_snapshot`.
 2. Give the agent only the instruction, failure observation, public
    pre-failure trace, and tools.
-3. Serialize side-effecting tool calls and enforce `max_actions` and the
+3. Tell the agent that the supplied request and tools are decision-complete:
+   it must choose and execute a repair itself rather than asking the customer
+   to select an alternative.
+4. Serialize side-effecting tool calls and enforce `max_actions` and the
    15-turn model budget.
-4. Stop on `finish`, `report_infeasible`, or a budget.
-5. Recompute terminal constraints, financial ledgers, scope, and oracle.
+5. Stop on `finish`, `report_infeasible`, or a budget.
+6. Recompute terminal constraints, financial ledgers, scope, and oracle.
 
 Each repetition uses a fresh deep copy. No state is shared across runs.
 
@@ -131,6 +134,11 @@ compatibility. Read calls do not mutate state. Quotes expose source financial
 facts, never `recovery_loss`, the global evaluator tuple, or an aggregate cost
 summary. This separation prevents a single state dump from revealing the
 solution while keeping every fact deterministic and objectively auditable.
+
+No task in the current release requires a clarification turn. A natural
+language question that delegates the choice back to the customer is therefore
+not a valid terminal action. This keeps clarification policy from confounding
+the benchmark's intended autonomous repair decision.
 
 ## Provider fairness
 

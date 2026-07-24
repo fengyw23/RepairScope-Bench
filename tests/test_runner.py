@@ -68,15 +68,23 @@ class RunnerTest(unittest.TestCase):
     def test_model_prompt_excludes_gold_and_evaluator_internals(self) -> None:
         task = load_task(DATA / "short-trip-c-keep-extra-day.json")
         prompt = build_user_prompt(task)
+        travel_system = " ".join(SYSTEM_PROMPTS["travel"].lower().split())
+        shopping_system = " ".join(SYSTEM_PROMPTS["shopping"].lower().split())
         self.assertNotIn("optimal_plans", prompt)
         self.assertNotIn('"constraints"', prompt)
         self.assertNotIn('"catalog"', prompt)
         self.assertIn("latest_tool_result", prompt)
         self.assertNotIn(
             "minimize additional irreversible",
-            SYSTEM_PROMPTS["travel"].lower(),
+            travel_system,
         )
-        self.assertNotIn("lexicographic", SYSTEM_PROMPTS["travel"].lower())
+        self.assertNotIn("lexicographic", travel_system)
+        self.assertIn(
+            "do not ask the customer to choose",
+            travel_system,
+        )
+        self.assertIn("then call finish", travel_system)
+        self.assertIn("call report_infeasible", shopping_system)
         self.assertNotIn("fully refundable", prompt)
         self.assertNotIn("available for", prompt)
 

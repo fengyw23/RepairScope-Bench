@@ -180,7 +180,11 @@ The prompt is constructed from an allowlist and a plain customer-service role:
 It excludes evaluator constraints, catalog internals, gold scopes, the
 lexicographic objective, and oracle plans. The model is not told to optimize an
 evaluator tuple. Customer requests only ask naturally to avoid wasting money
-or undoing useful arrangements.
+or undoing useful arrangements. Because the benchmark evaluates autonomous
+repair-scope selection rather than clarification policy, the system role says
+that the provided request and tools are sufficient: the agent must make and
+execute the decision itself, then terminate with `finish` or
+`report_infeasible` instead of asking the customer to choose.
 
 ```text
 Travel:
