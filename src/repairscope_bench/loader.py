@@ -105,12 +105,40 @@ V11_REQUIRED_FIELDS = {
     "max_turns",
 }
 
+V2_REQUIRED_FIELDS = {
+    "schema_version",
+    "task_id",
+    "domain",
+    "environment_type",
+    "split",
+    "now",
+    "instruction",
+    "initial_snapshot",
+    "initial_snapshot_sha256",
+    "failure_snapshot",
+    "snapshot_sha256",
+    "pre_failure_trace",
+    "prefix_ledger",
+    "latest_failure",
+    "boundary_commitments",
+    "inventory",
+    "policies",
+    "contracts",
+    "compatibility_rules",
+    "hard_goals",
+    "construction",
+    "max_turns",
+}
+
 
 class TaskValidationError(ValueError):
     """Raised when a benchmark task violates the public schema."""
 
 
 def validate_task(task: dict[str, Any]) -> None:
+    if task.get("schema_version") == "2.0":
+        _validate_v2_task(task)
+        return
     if task.get("schema_version") == "1.1":
         _validate_v11_task(task)
         return
@@ -715,7 +743,9 @@ def load_task(path: str | Path) -> dict[str, Any]:
         task = json.load(handle)
     validate_task(task)
     task["_path"] = str(task_path.resolve())
-    if task.get("schema_version") == "1.1":
+    if task.get("schema_version") == "2.0":
+        _attach_versioned_metadata(task, task_path, "v2")
+    elif task.get("schema_version") == "1.1":
         _attach_v11_metadata(task, task_path)
     return task
 
@@ -745,3 +775,133 @@ def _attach_v11_metadata(task: dict[str, Any], task_path: Path) -> None:
         if record is not None:
             task["_benchmark_metadata"] = record.get("metadata", {})
         return
+
+
+def _attach_versioned_metadata(
+    task: dict[str, Any], task_path: Path, version: str
+) -> None:
+    candidates = [
+        task_path.parent.parent / "gold" / f"{version}.json",
+        task_path.parent.parent.parent / "gold" / f"{version}.json",
+        task_path.parent / f"{version}.gold.json",
+    ]
+    for candidate in candidates:
+        if not candidate.exists():
+            continue
+        resolved = candidate.resolve()
+        if resolved not in _V11_GOLD_CACHE:
+            with resolved.open("r", encoding="utf-8") as handle:
+                _V11_GOLD_CACHE[resolved] = json.load(handle)
+        record = _V11_GOLD_CACHE[resolved].get(task["task_id"])
+        if record is not None:
+            task["_benchmark_metadata"] = record.get("metadata", {})
+            if version == "v2":
+                task["_benchmark_gold"] = record
+        return
+
+
+def _validate_v2_task(task: dict[str, Any]) -> None:
+    from .v2_environment import DOMAIN_INTERFACES, snapshot_hash
+
+    missing = V2_REQUIRED_FIELDS - task.keys()
+    if missing:
+        raise TaskValidationError(
+            f"{task.get('task_id', '<unknown>')}: missing v2 fields "
+            f"{sorted(missing)}"
+        )
+    if task["domain"] not in DOMAIN_INTERFACES:
+        raise TaskValidationError(
+            f"{task['task_id']}: unsupported v2 domain {task['domain']!r}"
+        )
+    if task["max_turns"] != 15:
+        raise TaskValidationError(
+            f"{task['task_id']}: v2 requires exactly 15 turns"
+        )
+    if snapshot_hash(task["initial_snapshot"]) != task["initial_snapshot_sha256"]:
+        raise TaskValidationError(
+            f"{task['task_id']}: initial snapshot hash mismatch"
+        )
+    if snapshot_hash(task["failure_snapshot"]) != task["snapshot_sha256"]:
+        raise TaskValidationError(
+            f"{task['task_id']}: failure snapshot hash mismatch"
+        )
+    if len(task["boundary_commitments"]) < 4:
+        raise TaskValidationError(
+            f"{task['task_id']}: v2 pilot requires at least four commitments"
+        )
+    if len(task["pre_failure_trace"]) != len(task["boundary_commitments"]):
+        raise TaskValidationError(
+            f"{task['task_id']}: prefix writes do not match commitments"
+        )
+    if any(
+        not item.get("result", {}).get("ok", False)
+        for item in task["pre_failure_trace"]
+    ):
+        raise TaskValidationError(
+            f"{task['task_id']}: prefix contains a failed write"
+        )
+    if task["latest_failure"].get("result", {}).get("ok", True):
+        raise TaskValidationError(
+            f"{task['task_id']}: latest operation must be a real failure"
+        )
+    if not task["construction"].get("necessary_action_order_invariant", False):
+        raise TaskValidationError(
+            f"{task['task_id']}: sequence-dependent economics are forbidden"
+        )
+
+    policy_ids = [item["policy_id"] for item in task["policies"]]
+    if len(policy_ids) != len(set(policy_ids)):
+        raise TaskValidationError(f"{task['task_id']}: duplicate policy ID")
+    known_policies = set(policy_ids)
+    option_ids = [item["option_id"] for item in task["inventory"]]
+    if len(option_ids) != len(set(option_ids)):
+        raise TaskValidationError(f"{task['task_id']}: duplicate option ID")
+    boundary_ids = [item["entity_id"] for item in task["boundary_commitments"]]
+    if len(boundary_ids) != len(set(boundary_ids)):
+        raise TaskValidationError(f"{task['task_id']}: duplicate boundary ID")
+
+    forbidden_tokens = {
+        "local",
+        "bridge",
+        "decoy",
+        "wrong-site",
+        "late",
+        "failed",
+        "dominated",
+        "alt1",
+        "alt2",
+        "alt3",
+    }
+    for item in task["inventory"]:
+        policy_id = item.get("refund_policy_id")
+        if policy_id is not None and policy_id not in known_policies:
+            raise TaskValidationError(
+                f"{task['task_id']}: unknown option refund policy"
+            )
+        exposed = f"{item['option_id']} {item.get('name', '')}".lower()
+        if any(token in exposed for token in forbidden_tokens):
+            raise TaskValidationError(
+                f"{task['task_id']}: answer-revealing option label"
+            )
+        if any(
+            not isinstance(value, int) or value < 0
+            for value in [
+                item["upfront_cents"],
+                item.get("monthly_cents", 0),
+                item.get("horizon_months", 0),
+            ]
+        ):
+            raise TaskValidationError(
+                f"{task['task_id']}: invalid option price"
+            )
+    for item in task["failure_snapshot"]["commitments"]:
+        if item["refund_policy_id"] not in known_policies:
+            raise TaskValidationError(
+                f"{task['task_id']}: unknown commitment refund policy"
+            )
+    if {
+        item["entity_id"] for item in task["failure_snapshot"]["commitments"]
+    } != set(boundary_ids):
+        raise TaskValidationError(
+            f"{task['task_id']}: boundary and failure snapshot disagree"
+        )

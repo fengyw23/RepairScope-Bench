@@ -346,6 +346,10 @@ SHOPPING_V05_TOOLS = [
 
 
 def tool_definitions_for_task(task: dict[str, Any]) -> list[dict[str, Any]]:
+    if task["schema_version"] == "2.0":
+        from .v2_environment import tool_definitions_v2
+
+        return tool_definitions_v2(task)
     if task["schema_version"] in {"1.0", "1.1"}:
         from .v1_environment import tool_definitions_v1
 

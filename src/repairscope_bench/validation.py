@@ -15,6 +15,8 @@ def validate_dataset(
     path: str | Path, gold_path: str | Path | None = None
 ) -> dict[str, Any]:
     tasks = load_tasks(path)
+    if tasks and tasks[0]["schema_version"] == "2.0":
+        return _validate_v2_dataset(tasks, path, gold_path)
     if tasks and tasks[0]["schema_version"] == "1.1":
         return _validate_v11_dataset(tasks, path, gold_path)
     if tasks and tasks[0]["schema_version"] == "1.0":
@@ -174,6 +176,293 @@ def _infer_gold_path(path: str | Path) -> Path:
     else:
         data_root = parent
     return data_root / "gold" / f"{dataset_name}.json"
+
+
+def _validate_v2_dataset(
+    tasks: list[dict[str, Any]],
+    path: str | Path,
+    gold_path: str | Path | None,
+) -> dict[str, Any]:
+    from copy import deepcopy
+
+    from .difficulty import build_complexity_profile, coverage_matrix
+    from .v1_environment import EconomicVector
+    from .v2_oracle import frontier_signature, solve_task_v2
+
+    source = Path(path)
+    gold_file = (
+        Path(gold_path)
+        if gold_path is not None
+        else (
+            source.parents[1] / "gold" / "v2.json"
+            if source.is_dir() and source.parent.name == "v2"
+            else _infer_gold_path(path)
+        )
+    )
+    with gold_file.open("r", encoding="utf-8") as handle:
+        gold: dict[str, dict[str, Any]] = json.load(handle)
+    errors: list[str] = []
+    pairs: dict[str, list[dict[str, Any]]] = defaultdict(list)
+    loss_trap_tasks = 0
+    outlay_trap_tasks = 0
+    both_trap_tasks = 0
+    multi_frontier_tasks = 0
+    positive_loss_gold_tasks = 0
+    multi_step_gold_tasks = 0
+
+    for task in tasks:
+        expected = gold.get(task["task_id"])
+        if expected is None:
+            errors.append(f"{task['task_id']}: missing v2 gold")
+            continue
+        metadata = expected["metadata"]
+        pairs[metadata["pair_id"]].append(task)
+        oracle = solve_task_v2(task)
+        if not oracle.feasible or oracle.feasible_scope_count < 4:
+            errors.append(f"{task['task_id']}: insufficient feasible recovery space")
+        if len(oracle.frontier) >= oracle.feasible_terminal_count:
+            errors.append(f"{task['task_id']}: no dominated terminal")
+        if frontier_signature(oracle.frontier) != frontier_signature(
+            oracle.replay_frontier
+        ):
+            errors.append(f"{task['task_id']}: dual Oracles disagree")
+        if frontier_signature(oracle.frontier) != frontier_signature(
+            expected["oracle"]["frontier"]
+        ):
+            errors.append(f"{task['task_id']}: frozen frontier is stale")
+        multi_frontier_tasks += len(oracle.frontier) > 1
+        positive_loss_gold_tasks += any(
+            int(item["scope_economic_vector"]["irreversible_loss"]) > 0
+            for item in oracle.frontier
+        )
+        observed_profile = build_complexity_profile(task, oracle, metadata)
+        if observed_profile != metadata.get("complexity_profile"):
+            errors.append(f"{task['task_id']}: complexity profile is stale")
+        multi_step_gold_tasks += observed_profile["minimum_mutations"] >= 3
+        if not _replay_v2_boundary(task):
+            errors.append(
+                f"{task['task_id']}: public writes do not reproduce boundary"
+            )
+
+        frontier_vectors = [
+            EconomicVector(
+                int(item["scope_economic_vector"]["irreversible_loss"]),
+                int(item["scope_economic_vector"]["net_recovery_outlay"]),
+            )
+            for item in oracle.frontier
+        ]
+        has_loss = has_outlay = has_both = False
+        for terminal in oracle.feasible_terminals:
+            observed = EconomicVector(
+                int(terminal["scope_economic_vector"]["irreversible_loss"]),
+                int(terminal["scope_economic_vector"]["net_recovery_outlay"]),
+            )
+            for accepted in frontier_vectors:
+                if not accepted.dominates(observed):
+                    continue
+                loss_improvement = (
+                    observed.irreversible_loss - accepted.irreversible_loss
+                )
+                outlay_improvement = (
+                    observed.net_recovery_outlay
+                    - accepted.net_recovery_outlay
+                )
+                has_loss |= loss_improvement > 0
+                has_outlay |= outlay_improvement > 0
+                has_both |= loss_improvement > 0 and outlay_improvement > 0
+        loss_trap_tasks += has_loss
+        outlay_trap_tasks += has_outlay
+        both_trap_tasks += has_both
+
+    for pair_id, members in pairs.items():
+        if len(members) != 2:
+            errors.append(f"{pair_id}: expected two variants")
+            continue
+        members.sort(
+            key=lambda item: gold[item["task_id"]]["metadata"]["variant_role"]
+        )
+        left, right = members
+        left_meta = gold[left["task_id"]]["metadata"]
+        right_meta = gold[right["task_id"]]["metadata"]
+        if (
+            left_meta["intervention"]["json_pointer"]
+            != right_meta["intervention"]["json_pointer"]
+        ):
+            errors.append(f"{pair_id}: variants change different facts")
+        normalized_left = deepcopy(
+            {key: value for key, value in left.items() if not key.startswith("_")}
+        )
+        normalized_right = deepcopy(
+            {key: value for key, value in right.items() if not key.startswith("_")}
+        )
+        normalized_left["task_id"] = normalized_right["task_id"] = "<opaque>"
+        differences: list[str] = []
+        _v2_diff(normalized_left, normalized_right, "", differences)
+        if differences != [left_meta["intervention"]["json_pointer"]]:
+            errors.append(
+                f"{pair_id}: expected one source fact, found {differences}"
+            )
+        left_scopes = {
+            item["scope_key"]
+            for item in gold[left["task_id"]]["oracle"]["frontier"]
+        }
+        right_scopes = {
+            item["scope_key"]
+            for item in gold[right["task_id"]]["oracle"]["frontier"]
+        }
+        if left_scopes & right_scopes:
+            errors.append(f"{pair_id}: counterfactual gold scopes overlap")
+
+    if len(tasks) != 24 or len(pairs) != 12:
+        errors.append("v2 pilot requires 24 tasks in 12 pairs")
+    domain_counts = Counter(task["domain"] for task in tasks)
+    if set(domain_counts.values()) != {6} or len(domain_counts) != 4:
+        errors.append(f"v2 pilot domains are unbalanced: {domain_counts}")
+    if multi_frontier_tasks < 3:
+        errors.append("v2 pilot requires at least three multi-point frontiers")
+    if positive_loss_gold_tasks < 3:
+        errors.append("v2 pilot requires positive-loss accepted outcomes")
+    if multi_step_gold_tasks < len(tasks) / 2:
+        errors.append("fewer than half the pilot tasks require three mutations")
+
+    strategies = [
+        "no_repair",
+        "local_repair",
+        "dependency_repair",
+        "full_rollback",
+        "sticker_price",
+        "refund_only",
+        "min_changes",
+        "loss_only",
+        "outlay_only",
+        "pareto_oracle",
+    ]
+    baselines: dict[str, dict[str, int | float]] = {}
+    for strategy in strategies:
+        scores = [
+            evaluate_actions(task, make_actions(task, strategy)) for task in tasks
+        ]
+        baselines[strategy] = {
+            "goal_pass": sum(item["goal_pass"] for item in scores),
+            "scope_pass": sum(
+                item["scope_non_dominated_pass"] for item in scores
+            ),
+            "realized_pass": sum(
+                item["realized_non_dominated_pass"] for item in scores
+            ),
+            "scope_rate": sum(
+                item["scope_non_dominated_pass"] for item in scores
+            )
+            / len(scores),
+        }
+    if baselines["pareto_oracle"]["realized_pass"] != len(tasks):
+        errors.append("v2 Pareto Oracle does not pass every task")
+    for strategy in [
+        "local_repair",
+        "dependency_repair",
+        "full_rollback",
+        "sticker_price",
+        "refund_only",
+        "min_changes",
+    ]:
+        if baselines[strategy]["scope_rate"] >= 0.60:
+            errors.append(f"{strategy}: exceeds the 60% pilot ceiling")
+
+    return {
+        "valid": not errors,
+        "schema_version": "2.0",
+        "track": "strict-pilot",
+        "task_count": len(tasks),
+        "counterfactual_pair_count": len(pairs),
+        "domain_counts": dict(domain_counts),
+        "construction_strata": dict(
+            Counter(
+                record["metadata"]["construction_stratum"]
+                for record in gold.values()
+            )
+        ),
+        "loss_trap_task_count": loss_trap_tasks,
+        "outlay_trap_task_count": outlay_trap_tasks,
+        "both_trap_task_count": both_trap_tasks,
+        "multi_frontier_task_count": multi_frontier_tasks,
+        "positive_loss_gold_task_count": positive_loss_gold_tasks,
+        "three_plus_mutation_gold_task_count": multi_step_gold_tasks,
+        "coverage_matrix": coverage_matrix(gold),
+        "errors": errors,
+        "gold_path": str(gold_file.resolve()),
+        "baselines": baselines,
+    }
+
+
+def _v2_diff(left: Any, right: Any, path: str, result: list[str]) -> None:
+    if type(left) is not type(right):
+        result.append(path)
+        return
+    if isinstance(left, dict):
+        for key in sorted(set(left) | set(right)):
+            next_path = f"{path}/{key}"
+            if key not in left or key not in right:
+                result.append(next_path)
+            else:
+                _v2_diff(left[key], right[key], next_path, result)
+        return
+    if isinstance(left, list):
+        if len(left) != len(right):
+            result.append(path)
+            return
+        for index, (left_item, right_item) in enumerate(
+            zip(left, right, strict=True)
+        ):
+            _v2_diff(left_item, right_item, f"{path}/{index}", result)
+        return
+    if left != right:
+        result.append(path)
+
+
+def _replay_v2_boundary(task: dict[str, Any]) -> bool:
+    from copy import deepcopy
+
+    from .v2_environment import DomainRecoveryEnvironmentV2
+
+    replay_task = deepcopy(
+        {key: value for key, value in task.items() if not key.startswith("_")}
+    )
+    replay_task["failure_snapshot"] = deepcopy(task["initial_snapshot"])
+    replay_task["boundary_commitments"] = []
+    boundary_options = {
+        item["option_id"] for item in task["boundary_commitments"]
+    }
+    for option in replay_task["inventory"]:
+        if option["option_id"] in boundary_options:
+            option["available"] = True
+    environment = DomainRecoveryEnvironmentV2(replay_task)
+    for expected in task["pre_failure_trace"]:
+        result = environment.execute_tool(
+            expected["tool"], expected["arguments"]
+        )
+        if result.as_dict() != expected["result"]:
+            return False
+    failure = task["latest_failure"]
+    result = environment.execute_tool(failure["tool"], failure["arguments"])
+    replayed = sorted(
+        environment.active_commitments(),
+        key=lambda item: item["entity_id"],
+    )
+    for item in replayed:
+        item.pop("refund_cents", None)
+        source = next(
+            option
+            for option in task["inventory"]
+            if option["option_id"] == item["option_id"]
+        )
+        item["refund_policy_id"] = source["refund_policy_id"]
+        item["created_after_boundary"] = False
+    return (
+        not result.ok
+        and result.as_dict() == failure["result"]
+        and {"commitments": replayed} == task["failure_snapshot"]
+        and environment.ledger == task["prefix_ledger"]
+    )
 
 
 def _validate_v11_dataset(

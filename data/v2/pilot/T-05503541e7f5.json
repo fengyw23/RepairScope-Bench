@@ -1,0 +1,617 @@
+{
+  "schema_version": "2.0",
+  "task_id": "T-05503541e7f5",
+  "domain": "travel",
+  "environment_type": "repairscope.travel.state.v2",
+  "split": "dev",
+  "now": "2026-09-01T09:00:00+08:00",
+  "max_turns": 15,
+  "instruction": "Complete the clinical collaboration visit at Hangzhou for the traveller. The activity log contains commitments that are already paid and active, but the most recent Yulan Dining Service operation failed. Keep the required primary arrangement, support, access, shared service, and dining coverage valid at Hangzhou by day 4. Investigate the authoritative records and execute the best supported recovery without asking me to choose.",
+  "initial_snapshot": {
+    "commitments": []
+  },
+  "initial_snapshot_sha256": "dbc26b7f61e91d0529291823abb38756f52a36dc52e819cf0a83abddfe598124",
+  "failure_snapshot": {
+    "commitments": [
+      {
+        "entity_id": "E-38237536d888",
+        "option_id": "O-b1dfef840e1d",
+        "name": "Harbor View Hotel",
+        "kind": "hotel",
+        "status": "active",
+        "paid_cents": 100000,
+        "refund_policy_id": "P-b1dfef840e1d",
+        "provides": {
+          "F03-primary": 1
+        },
+        "attributes": {
+          "city": "Hangzhou",
+          "service_day": 2
+        },
+        "created_after_boundary": false
+      },
+      {
+        "entity_id": "E-a8ff48233904",
+        "option_id": "O-83f8d43b01a2",
+        "name": "Congress Admission",
+        "kind": "event_pass",
+        "status": "active",
+        "paid_cents": 30000,
+        "refund_policy_id": "P-83f8d43b01a2",
+        "provides": {
+          "F03-access": 1
+        },
+        "attributes": {
+          "city": "Hangzhou",
+          "service_day": 2
+        },
+        "created_after_boundary": false
+      },
+      {
+        "entity_id": "E-bdc16c730d07",
+        "option_id": "O-36a82e67ff29",
+        "name": "Riverside Meeting Room",
+        "kind": "workspace",
+        "status": "active",
+        "paid_cents": 20000,
+        "refund_policy_id": "P-36a82e67ff29",
+        "provides": {
+          "F03-shared": 1
+        },
+        "attributes": {
+          "city": "Hangzhou",
+          "service_day": 2
+        },
+        "created_after_boundary": false
+      },
+      {
+        "entity_id": "E-f4b53aa8a8e2",
+        "option_id": "O-9b48facb7ed1",
+        "name": "MetroLink Transfer",
+        "kind": "transfer",
+        "status": "active",
+        "paid_cents": 40000,
+        "refund_policy_id": "P-9b48facb7ed1",
+        "provides": {
+          "F03-support": 1
+        },
+        "attributes": {
+          "city": "Hangzhou",
+          "service_day": 2
+        },
+        "created_after_boundary": false
+      }
+    ]
+  },
+  "snapshot_sha256": "8502ca9dccb10e3a7ee9e57535849b4bc14c7d4a3fb04ec4e8d152ac4f98f8be",
+  "pre_failure_trace": [
+    {
+      "step": 1,
+      "tool": "reserve_travel_option",
+      "arguments": {
+        "travel_option_id": "O-b1dfef840e1d"
+      },
+      "result": {
+        "ok": true,
+        "message": "New commitment created.",
+        "data": {
+          "entity_id": "E-38237536d888",
+          "option_id": "O-b1dfef840e1d",
+          "charge_cents": 100000,
+          "contract_charges_applied": []
+        }
+      }
+    },
+    {
+      "step": 2,
+      "tool": "reserve_travel_option",
+      "arguments": {
+        "travel_option_id": "O-9b48facb7ed1"
+      },
+      "result": {
+        "ok": true,
+        "message": "New commitment created.",
+        "data": {
+          "entity_id": "E-f4b53aa8a8e2",
+          "option_id": "O-9b48facb7ed1",
+          "charge_cents": 40000,
+          "contract_charges_applied": []
+        }
+      }
+    },
+    {
+      "step": 3,
+      "tool": "reserve_travel_option",
+      "arguments": {
+        "travel_option_id": "O-83f8d43b01a2"
+      },
+      "result": {
+        "ok": true,
+        "message": "New commitment created.",
+        "data": {
+          "entity_id": "E-a8ff48233904",
+          "option_id": "O-83f8d43b01a2",
+          "charge_cents": 30000,
+          "contract_charges_applied": []
+        }
+      }
+    },
+    {
+      "step": 4,
+      "tool": "reserve_travel_option",
+      "arguments": {
+        "travel_option_id": "O-36a82e67ff29"
+      },
+      "result": {
+        "ok": true,
+        "message": "New commitment created.",
+        "data": {
+          "entity_id": "E-bdc16c730d07",
+          "option_id": "O-36a82e67ff29",
+          "charge_cents": 20000,
+          "contract_charges_applied": []
+        }
+      }
+    }
+  ],
+  "prefix_ledger": [
+    {
+      "event_index": 1,
+      "tool": "book_trip_option",
+      "entity_id": "E-38237536d888",
+      "contract_id": null,
+      "charge_cents": 100000,
+      "refund_cents": 0,
+      "irreversible_loss_delta": 0,
+      "net_outlay_delta": 100000
+    },
+    {
+      "event_index": 2,
+      "tool": "book_trip_option",
+      "entity_id": "E-f4b53aa8a8e2",
+      "contract_id": null,
+      "charge_cents": 40000,
+      "refund_cents": 0,
+      "irreversible_loss_delta": 0,
+      "net_outlay_delta": 40000
+    },
+    {
+      "event_index": 3,
+      "tool": "book_trip_option",
+      "entity_id": "E-a8ff48233904",
+      "contract_id": null,
+      "charge_cents": 30000,
+      "refund_cents": 0,
+      "irreversible_loss_delta": 0,
+      "net_outlay_delta": 30000
+    },
+    {
+      "event_index": 4,
+      "tool": "book_trip_option",
+      "entity_id": "E-bdc16c730d07",
+      "contract_id": null,
+      "charge_cents": 20000,
+      "refund_cents": 0,
+      "irreversible_loss_delta": 0,
+      "net_outlay_delta": 20000
+    }
+  ],
+  "latest_failure": {
+    "tool": "reserve_travel_option",
+    "arguments": {
+      "travel_option_id": "O-18b5131909da"
+    },
+    "result": {
+      "ok": false,
+      "message": "The selected option is unavailable.",
+      "data": null
+    }
+  },
+  "boundary_commitments": [
+    {
+      "entity_id": "E-38237536d888",
+      "option_id": "O-b1dfef840e1d",
+      "name": "Harbor View Hotel",
+      "kind": "hotel",
+      "status": "active",
+      "paid_cents": 100000,
+      "refund_policy_id": "P-b1dfef840e1d",
+      "provides": {
+        "F03-primary": 1
+      },
+      "attributes": {
+        "city": "Hangzhou",
+        "service_day": 2
+      },
+      "created_after_boundary": false,
+      "primary_capability": "F03-primary"
+    },
+    {
+      "entity_id": "E-a8ff48233904",
+      "option_id": "O-83f8d43b01a2",
+      "name": "Congress Admission",
+      "kind": "event_pass",
+      "status": "active",
+      "paid_cents": 30000,
+      "refund_policy_id": "P-83f8d43b01a2",
+      "provides": {
+        "F03-access": 1
+      },
+      "attributes": {
+        "city": "Hangzhou",
+        "service_day": 2
+      },
+      "created_after_boundary": false,
+      "primary_capability": "F03-access"
+    },
+    {
+      "entity_id": "E-bdc16c730d07",
+      "option_id": "O-36a82e67ff29",
+      "name": "Riverside Meeting Room",
+      "kind": "workspace",
+      "status": "active",
+      "paid_cents": 20000,
+      "refund_policy_id": "P-36a82e67ff29",
+      "provides": {
+        "F03-shared": 1
+      },
+      "attributes": {
+        "city": "Hangzhou",
+        "service_day": 2
+      },
+      "created_after_boundary": false,
+      "primary_capability": "F03-shared"
+    },
+    {
+      "entity_id": "E-f4b53aa8a8e2",
+      "option_id": "O-9b48facb7ed1",
+      "name": "MetroLink Transfer",
+      "kind": "transfer",
+      "status": "active",
+      "paid_cents": 40000,
+      "refund_policy_id": "P-9b48facb7ed1",
+      "provides": {
+        "F03-support": 1
+      },
+      "attributes": {
+        "city": "Hangzhou",
+        "service_day": 2
+      },
+      "created_after_boundary": false,
+      "primary_capability": "F03-support"
+    }
+  ],
+  "inventory": [
+    {
+      "option_id": "O-b1dfef840e1d",
+      "name": "Harbor View Hotel",
+      "kind": "hotel",
+      "available": false,
+      "upfront_cents": 100000,
+      "monthly_cents": 0,
+      "horizon_months": 0,
+      "refund_policy_id": "P-b1dfef840e1d",
+      "provides": {
+        "F03-primary": 1
+      },
+      "attributes": {
+        "city": "Hangzhou",
+        "service_day": 2
+      },
+      "entity_id_on_purchase": "E-38237536d888"
+    },
+    {
+      "option_id": "O-9b48facb7ed1",
+      "name": "MetroLink Transfer",
+      "kind": "transfer",
+      "available": false,
+      "upfront_cents": 40000,
+      "monthly_cents": 0,
+      "horizon_months": 0,
+      "refund_policy_id": "P-9b48facb7ed1",
+      "provides": {
+        "F03-support": 1
+      },
+      "attributes": {
+        "city": "Hangzhou",
+        "service_day": 2
+      },
+      "entity_id_on_purchase": "E-f4b53aa8a8e2"
+    },
+    {
+      "option_id": "O-83f8d43b01a2",
+      "name": "Congress Admission",
+      "kind": "event_pass",
+      "available": false,
+      "upfront_cents": 30000,
+      "monthly_cents": 0,
+      "horizon_months": 0,
+      "refund_policy_id": "P-83f8d43b01a2",
+      "provides": {
+        "F03-access": 1
+      },
+      "attributes": {
+        "city": "Hangzhou",
+        "service_day": 2
+      },
+      "entity_id_on_purchase": "E-a8ff48233904"
+    },
+    {
+      "option_id": "O-36a82e67ff29",
+      "name": "Riverside Meeting Room",
+      "kind": "workspace",
+      "available": false,
+      "upfront_cents": 20000,
+      "monthly_cents": 0,
+      "horizon_months": 0,
+      "refund_policy_id": "P-36a82e67ff29",
+      "provides": {
+        "F03-shared": 1
+      },
+      "attributes": {
+        "city": "Hangzhou",
+        "service_day": 2
+      },
+      "entity_id_on_purchase": "E-bdc16c730d07"
+    },
+    {
+      "option_id": "O-93364b0b409d",
+      "name": "Yulan Dining Service",
+      "kind": "dining",
+      "available": true,
+      "upfront_cents": 20000,
+      "monthly_cents": 0,
+      "horizon_months": 0,
+      "refund_policy_id": "P-198782781a9e",
+      "provides": {
+        "F03-gap": 1
+      },
+      "attributes": {
+        "city": "Hangzhou",
+        "service_day": 2
+      },
+      "entity_id_on_purchase": "E-faff3da9e923"
+    },
+    {
+      "option_id": "O-8c17edd54105",
+      "name": "Jinhai Hospitality Package",
+      "kind": "dining_package",
+      "available": true,
+      "upfront_cents": 300000,
+      "monthly_cents": 0,
+      "horizon_months": 0,
+      "refund_policy_id": "P-198782781a9e",
+      "provides": {
+        "F03-primary": 1,
+        "F03-gap": 1
+      },
+      "attributes": {
+        "city": "Hangzhou",
+        "service_day": 2
+      },
+      "entity_id_on_purchase": "E-641dd567445b"
+    },
+    {
+      "option_id": "O-4ab4da2a2acc",
+      "name": "Mingyuan Dining Service",
+      "kind": "dining",
+      "available": true,
+      "upfront_cents": 70000,
+      "monthly_cents": 0,
+      "horizon_months": 0,
+      "refund_policy_id": "P-198782781a9e",
+      "provides": {
+        "F03-gap": 1
+      },
+      "attributes": {
+        "city": "Hangzhou",
+        "service_day": 2
+      },
+      "entity_id_on_purchase": "E-72b86bb6a650"
+    },
+    {
+      "option_id": "O-b63c3294c9a8",
+      "name": "Huating Conference Package",
+      "kind": "continuity_package",
+      "available": true,
+      "upfront_cents": 600000,
+      "monthly_cents": 0,
+      "horizon_months": 0,
+      "refund_policy_id": "P-198782781a9e",
+      "provides": {
+        "F03-primary": 1,
+        "F03-support": 1,
+        "F03-access": 1,
+        "F03-shared": 1,
+        "F03-gap": 1
+      },
+      "attributes": {
+        "city": "Hangzhou",
+        "service_day": 3
+      },
+      "entity_id_on_purchase": "E-6f92af0142c6"
+    },
+    {
+      "option_id": "O-a6f7540ab295",
+      "name": "Lanting Coordination Service",
+      "kind": "coordination_service",
+      "available": true,
+      "upfront_cents": 10000,
+      "monthly_cents": 0,
+      "horizon_months": 0,
+      "refund_policy_id": "P-198782781a9e",
+      "provides": {
+        "F03-gap-companion": 1
+      },
+      "attributes": {
+        "city": "Hangzhou",
+        "service_day": 2
+      },
+      "entity_id_on_purchase": "E-0be8de0c0839"
+    },
+    {
+      "option_id": "O-c73185dfce36",
+      "name": "Qinghe Dining Service",
+      "kind": "transfer",
+      "available": true,
+      "upfront_cents": 10000,
+      "monthly_cents": 0,
+      "horizon_months": 0,
+      "refund_policy_id": "P-198782781a9e",
+      "provides": {
+        "F03-gap-auxiliary": 1
+      },
+      "attributes": {
+        "city": "Hangzhou",
+        "service_day": 2
+      },
+      "entity_id_on_purchase": "E-6a1559f2365f"
+    },
+    {
+      "option_id": "O-36096bacc3c9",
+      "name": "Rivermark Service",
+      "kind": "dining",
+      "available": true,
+      "upfront_cents": 4000,
+      "monthly_cents": 0,
+      "horizon_months": 0,
+      "refund_policy_id": "P-198782781a9e",
+      "provides": {
+        "F03-gap": 1
+      },
+      "attributes": {
+        "city": "Other Hangzhou",
+        "service_day": 2
+      },
+      "entity_id_on_purchase": "E-c0152568d257"
+    },
+    {
+      "option_id": "O-9a4755e275fc",
+      "name": "Cypress Service",
+      "kind": "dining",
+      "available": true,
+      "upfront_cents": 3000,
+      "monthly_cents": 0,
+      "horizon_months": 0,
+      "refund_policy_id": "P-198782781a9e",
+      "provides": {
+        "F03-gap": 1
+      },
+      "attributes": {
+        "city": "Hangzhou",
+        "service_day": 9
+      },
+      "entity_id_on_purchase": "E-462d606330de"
+    },
+    {
+      "option_id": "O-18b5131909da",
+      "name": "Yulan Dining Service",
+      "kind": "dining",
+      "available": false,
+      "upfront_cents": 18000,
+      "monthly_cents": 0,
+      "horizon_months": 0,
+      "refund_policy_id": "P-198782781a9e",
+      "provides": {
+        "F03-gap": 1
+      },
+      "attributes": {
+        "city": "Hangzhou",
+        "service_day": 2
+      },
+      "entity_id_on_purchase": "E-ace790a53436"
+    }
+  ],
+  "policies": [
+    {
+      "policy_id": "P-b1dfef840e1d",
+      "type": "refund",
+      "description": "The stated refund applies if the linked commitment is changed now.",
+      "refund_cents": 100000
+    },
+    {
+      "policy_id": "P-9b48facb7ed1",
+      "type": "refund",
+      "description": "The stated refund applies if the linked commitment is changed now.",
+      "refund_cents": 10000
+    },
+    {
+      "policy_id": "P-83f8d43b01a2",
+      "type": "refund",
+      "description": "The stated refund applies if the linked commitment is changed now.",
+      "refund_cents": 0
+    },
+    {
+      "policy_id": "P-36a82e67ff29",
+      "type": "refund",
+      "description": "The stated refund applies if the linked commitment is changed now.",
+      "refund_cents": 0
+    },
+    {
+      "policy_id": "P-198782781a9e",
+      "type": "refund",
+      "description": "The stated refund applies if the linked commitment is changed now.",
+      "refund_cents": 0
+    }
+  ],
+  "contracts": [],
+  "compatibility_rules": [
+    {
+      "type": "requires_all",
+      "if_option_id": "O-93364b0b409d",
+      "all_option_ids": [
+        "O-a6f7540ab295",
+        "O-c73185dfce36"
+      ]
+    }
+  ],
+  "hard_goals": {
+    "capabilities": [
+      {
+        "capability": "F03-primary",
+        "min": 1,
+        "max": 1
+      },
+      {
+        "capability": "F03-support",
+        "min": 1,
+        "max": 1
+      },
+      {
+        "capability": "F03-access",
+        "min": 1,
+        "max": 1
+      },
+      {
+        "capability": "F03-shared",
+        "min": 1,
+        "max": 1
+      },
+      {
+        "capability": "F03-gap",
+        "min": 1,
+        "max": 1
+      }
+    ],
+    "attribute_requirements": [
+      {
+        "capability": "F03-gap",
+        "attribute": "city",
+        "op": "eq",
+        "value": "Hangzhou"
+      },
+      {
+        "capability": "F03-gap",
+        "attribute": "service_day",
+        "op": "le",
+        "value": 4
+      }
+    ]
+  },
+  "construction": {
+    "prefix_generated_by_public_tools": true,
+    "failure_generated_by_public_tool": true,
+    "normalized_policy_source": true,
+    "necessary_action_order_invariant": true
+  }
+}

@@ -1,0 +1,626 @@
+{
+  "schema_version": "2.0",
+  "task_id": "T-3c378f299d23",
+  "domain": "after_sales",
+  "environment_type": "repairscope.after_sales.state.v2",
+  "split": "dev",
+  "now": "2026-09-01T09:00:00+08:00",
+  "max_turns": 15,
+  "instruction": "Complete the pathology imaging station at Pathology Lab for the procurement team. The activity log contains commitments that are already paid and active, but the most recent Orchid Interface Unit operation failed. Keep the required primary arrangement, support, access, shared service, and accessory coverage valid at Pathology Lab by day 4. Investigate the authoritative records and execute the best supported recovery without asking me to choose.",
+  "initial_snapshot": {
+    "commitments": []
+  },
+  "initial_snapshot_sha256": "dbc26b7f61e91d0529291823abb38756f52a36dc52e819cf0a83abddfe598124",
+  "failure_snapshot": {
+    "commitments": [
+      {
+        "entity_id": "E-05f66519eba6",
+        "option_id": "O-ba4711686434",
+        "name": "Northstar Service Cover",
+        "kind": "warranty",
+        "status": "active",
+        "paid_cents": 40000,
+        "refund_policy_id": "P-ba4711686434",
+        "provides": {
+          "F06-support": 1
+        },
+        "attributes": {
+          "delivery_site": "Pathology Lab",
+          "delivery_day": 2
+        },
+        "created_after_boundary": false
+      },
+      {
+        "entity_id": "E-61ef751d18d5",
+        "option_id": "O-cabe6a7f20eb",
+        "name": "Meridian Clinical Licence",
+        "kind": "software",
+        "status": "active",
+        "paid_cents": 30000,
+        "refund_policy_id": "P-cabe6a7f20eb",
+        "provides": {
+          "F06-access": 1
+        },
+        "attributes": {
+          "delivery_site": "Pathology Lab",
+          "delivery_day": 2
+        },
+        "created_after_boundary": false
+      },
+      {
+        "entity_id": "E-9d97a2c0bd88",
+        "option_id": "O-ba67840815f6",
+        "name": "Aster Workstation",
+        "kind": "core_device",
+        "status": "active",
+        "paid_cents": 100000,
+        "refund_policy_id": "P-ba67840815f6",
+        "provides": {
+          "F06-primary": 1,
+          "F06-secondary": 1
+        },
+        "attributes": {
+          "delivery_site": "Pathology Lab",
+          "delivery_day": 2
+        },
+        "created_after_boundary": false
+      },
+      {
+        "entity_id": "E-dcab304e1615",
+        "option_id": "O-01951b03aa01",
+        "name": "Helios Reference Display",
+        "kind": "display",
+        "status": "active",
+        "paid_cents": 20000,
+        "refund_policy_id": "P-01951b03aa01",
+        "provides": {
+          "F06-shared": 1
+        },
+        "attributes": {
+          "delivery_site": "Pathology Lab",
+          "delivery_day": 2
+        },
+        "created_after_boundary": false
+      }
+    ]
+  },
+  "snapshot_sha256": "da0591685dcd8874870eec84c376dd3860be583c039403887a247bd4723a47d1",
+  "pre_failure_trace": [
+    {
+      "step": 1,
+      "tool": "purchase_product_option",
+      "arguments": {
+        "product_option_id": "O-ba67840815f6"
+      },
+      "result": {
+        "ok": true,
+        "message": "New commitment created.",
+        "data": {
+          "entity_id": "E-9d97a2c0bd88",
+          "option_id": "O-ba67840815f6",
+          "charge_cents": 100000,
+          "contract_charges_applied": []
+        }
+      }
+    },
+    {
+      "step": 2,
+      "tool": "purchase_product_option",
+      "arguments": {
+        "product_option_id": "O-ba4711686434"
+      },
+      "result": {
+        "ok": true,
+        "message": "New commitment created.",
+        "data": {
+          "entity_id": "E-05f66519eba6",
+          "option_id": "O-ba4711686434",
+          "charge_cents": 40000,
+          "contract_charges_applied": []
+        }
+      }
+    },
+    {
+      "step": 3,
+      "tool": "purchase_product_option",
+      "arguments": {
+        "product_option_id": "O-cabe6a7f20eb"
+      },
+      "result": {
+        "ok": true,
+        "message": "New commitment created.",
+        "data": {
+          "entity_id": "E-61ef751d18d5",
+          "option_id": "O-cabe6a7f20eb",
+          "charge_cents": 30000,
+          "contract_charges_applied": []
+        }
+      }
+    },
+    {
+      "step": 4,
+      "tool": "purchase_product_option",
+      "arguments": {
+        "product_option_id": "O-01951b03aa01"
+      },
+      "result": {
+        "ok": true,
+        "message": "New commitment created.",
+        "data": {
+          "entity_id": "E-dcab304e1615",
+          "option_id": "O-01951b03aa01",
+          "charge_cents": 20000,
+          "contract_charges_applied": []
+        }
+      }
+    }
+  ],
+  "prefix_ledger": [
+    {
+      "event_index": 1,
+      "tool": "purchase_product",
+      "entity_id": "E-9d97a2c0bd88",
+      "contract_id": null,
+      "charge_cents": 100000,
+      "refund_cents": 0,
+      "irreversible_loss_delta": 0,
+      "net_outlay_delta": 100000
+    },
+    {
+      "event_index": 2,
+      "tool": "purchase_product",
+      "entity_id": "E-05f66519eba6",
+      "contract_id": null,
+      "charge_cents": 40000,
+      "refund_cents": 0,
+      "irreversible_loss_delta": 0,
+      "net_outlay_delta": 40000
+    },
+    {
+      "event_index": 3,
+      "tool": "purchase_product",
+      "entity_id": "E-61ef751d18d5",
+      "contract_id": null,
+      "charge_cents": 30000,
+      "refund_cents": 0,
+      "irreversible_loss_delta": 0,
+      "net_outlay_delta": 30000
+    },
+    {
+      "event_index": 4,
+      "tool": "purchase_product",
+      "entity_id": "E-dcab304e1615",
+      "contract_id": null,
+      "charge_cents": 20000,
+      "refund_cents": 0,
+      "irreversible_loss_delta": 0,
+      "net_outlay_delta": 20000
+    }
+  ],
+  "latest_failure": {
+    "tool": "purchase_product_option",
+    "arguments": {
+      "product_option_id": "O-ed1a9c3f0bd0"
+    },
+    "result": {
+      "ok": false,
+      "message": "The selected option is unavailable.",
+      "data": null
+    }
+  },
+  "boundary_commitments": [
+    {
+      "entity_id": "E-05f66519eba6",
+      "option_id": "O-ba4711686434",
+      "name": "Northstar Service Cover",
+      "kind": "warranty",
+      "status": "active",
+      "paid_cents": 40000,
+      "refund_policy_id": "P-ba4711686434",
+      "provides": {
+        "F06-support": 1
+      },
+      "attributes": {
+        "delivery_site": "Pathology Lab",
+        "delivery_day": 2
+      },
+      "created_after_boundary": false,
+      "primary_capability": "F06-support"
+    },
+    {
+      "entity_id": "E-61ef751d18d5",
+      "option_id": "O-cabe6a7f20eb",
+      "name": "Meridian Clinical Licence",
+      "kind": "software",
+      "status": "active",
+      "paid_cents": 30000,
+      "refund_policy_id": "P-cabe6a7f20eb",
+      "provides": {
+        "F06-access": 1
+      },
+      "attributes": {
+        "delivery_site": "Pathology Lab",
+        "delivery_day": 2
+      },
+      "created_after_boundary": false,
+      "primary_capability": "F06-access"
+    },
+    {
+      "entity_id": "E-9d97a2c0bd88",
+      "option_id": "O-ba67840815f6",
+      "name": "Aster Workstation",
+      "kind": "core_device",
+      "status": "active",
+      "paid_cents": 100000,
+      "refund_policy_id": "P-ba67840815f6",
+      "provides": {
+        "F06-primary": 1,
+        "F06-secondary": 1
+      },
+      "attributes": {
+        "delivery_site": "Pathology Lab",
+        "delivery_day": 2
+      },
+      "created_after_boundary": false,
+      "primary_capability": "F06-primary"
+    },
+    {
+      "entity_id": "E-dcab304e1615",
+      "option_id": "O-01951b03aa01",
+      "name": "Helios Reference Display",
+      "kind": "display",
+      "status": "active",
+      "paid_cents": 20000,
+      "refund_policy_id": "P-01951b03aa01",
+      "provides": {
+        "F06-shared": 1
+      },
+      "attributes": {
+        "delivery_site": "Pathology Lab",
+        "delivery_day": 2
+      },
+      "created_after_boundary": false,
+      "primary_capability": "F06-shared"
+    }
+  ],
+  "inventory": [
+    {
+      "option_id": "O-ba67840815f6",
+      "name": "Aster Workstation",
+      "kind": "core_device",
+      "available": false,
+      "upfront_cents": 100000,
+      "monthly_cents": 0,
+      "horizon_months": 0,
+      "refund_policy_id": "P-ba67840815f6",
+      "provides": {
+        "F06-primary": 1,
+        "F06-secondary": 1
+      },
+      "attributes": {
+        "delivery_site": "Pathology Lab",
+        "delivery_day": 2
+      },
+      "entity_id_on_purchase": "E-9d97a2c0bd88"
+    },
+    {
+      "option_id": "O-ba4711686434",
+      "name": "Northstar Service Cover",
+      "kind": "warranty",
+      "available": false,
+      "upfront_cents": 40000,
+      "monthly_cents": 0,
+      "horizon_months": 0,
+      "refund_policy_id": "P-ba4711686434",
+      "provides": {
+        "F06-support": 1
+      },
+      "attributes": {
+        "delivery_site": "Pathology Lab",
+        "delivery_day": 2
+      },
+      "entity_id_on_purchase": "E-05f66519eba6"
+    },
+    {
+      "option_id": "O-cabe6a7f20eb",
+      "name": "Meridian Clinical Licence",
+      "kind": "software",
+      "available": false,
+      "upfront_cents": 30000,
+      "monthly_cents": 0,
+      "horizon_months": 0,
+      "refund_policy_id": "P-cabe6a7f20eb",
+      "provides": {
+        "F06-access": 1
+      },
+      "attributes": {
+        "delivery_site": "Pathology Lab",
+        "delivery_day": 2
+      },
+      "entity_id_on_purchase": "E-61ef751d18d5"
+    },
+    {
+      "option_id": "O-01951b03aa01",
+      "name": "Helios Reference Display",
+      "kind": "display",
+      "available": false,
+      "upfront_cents": 20000,
+      "monthly_cents": 0,
+      "horizon_months": 0,
+      "refund_policy_id": "P-01951b03aa01",
+      "provides": {
+        "F06-shared": 1
+      },
+      "attributes": {
+        "delivery_site": "Pathology Lab",
+        "delivery_day": 2
+      },
+      "entity_id_on_purchase": "E-dcab304e1615"
+    },
+    {
+      "option_id": "O-905e06489860",
+      "name": "Orchid Interface Unit",
+      "kind": "accessory",
+      "available": true,
+      "upfront_cents": 70000,
+      "monthly_cents": 0,
+      "horizon_months": 0,
+      "refund_policy_id": "P-69fa77a4ec84",
+      "provides": {
+        "F06-gap": 1
+      },
+      "attributes": {
+        "delivery_site": "Pathology Lab",
+        "delivery_day": 2
+      },
+      "entity_id_on_purchase": "E-5494ae026c08"
+    },
+    {
+      "option_id": "O-8890ed724aaf",
+      "name": "Aster Integration Set",
+      "kind": "accessory_package",
+      "available": true,
+      "upfront_cents": 50000,
+      "monthly_cents": 0,
+      "horizon_months": 0,
+      "refund_policy_id": "P-69fa77a4ec84",
+      "provides": {
+        "F06-primary": 1,
+        "F06-gap": 1,
+        "F06-secondary": 1
+      },
+      "attributes": {
+        "delivery_site": "Pathology Lab",
+        "delivery_day": 2
+      },
+      "entity_id_on_purchase": "E-e5a48c7a4ffb"
+    },
+    {
+      "option_id": "O-c5e80c3f1e20",
+      "name": "Cedar Interface Unit",
+      "kind": "accessory",
+      "available": true,
+      "upfront_cents": 120000,
+      "monthly_cents": 0,
+      "horizon_months": 0,
+      "refund_policy_id": "P-69fa77a4ec84",
+      "provides": {
+        "F06-gap": 1
+      },
+      "attributes": {
+        "delivery_site": "Pathology Lab",
+        "delivery_day": 2
+      },
+      "entity_id_on_purchase": "E-ad83fe8571d6"
+    },
+    {
+      "option_id": "O-84c1a3da8439",
+      "name": "Meridian Deployment Set",
+      "kind": "continuity_package",
+      "available": true,
+      "upfront_cents": 600000,
+      "monthly_cents": 0,
+      "horizon_months": 0,
+      "refund_policy_id": "P-69fa77a4ec84",
+      "provides": {
+        "F06-primary": 1,
+        "F06-support": 1,
+        "F06-access": 1,
+        "F06-shared": 1,
+        "F06-gap": 1,
+        "F06-secondary": 1
+      },
+      "attributes": {
+        "delivery_site": "Pathology Lab",
+        "delivery_day": 3
+      },
+      "entity_id_on_purchase": "E-38ff50847b72"
+    },
+    {
+      "option_id": "O-06856d362208",
+      "name": "Juniper Certification Service",
+      "kind": "coordination_service",
+      "available": true,
+      "upfront_cents": 10000,
+      "monthly_cents": 0,
+      "horizon_months": 0,
+      "refund_policy_id": "P-69fa77a4ec84",
+      "provides": {
+        "F06-gap-companion": 1
+      },
+      "attributes": {
+        "delivery_site": "Pathology Lab",
+        "delivery_day": 2
+      },
+      "entity_id_on_purchase": "E-820826a85401"
+    },
+    {
+      "option_id": "O-eae207a84077",
+      "name": "Pine Interface Unit",
+      "kind": "warranty",
+      "available": true,
+      "upfront_cents": 80000,
+      "monthly_cents": 0,
+      "horizon_months": 0,
+      "refund_policy_id": "P-69fa77a4ec84",
+      "provides": {
+        "F06-secondary": 1
+      },
+      "attributes": {
+        "delivery_site": "Pathology Lab",
+        "delivery_day": 2
+      },
+      "entity_id_on_purchase": "E-299b6e4d76bc"
+    },
+    {
+      "option_id": "O-afc8c3f966a5",
+      "name": "Rivermark Service",
+      "kind": "accessory",
+      "available": true,
+      "upfront_cents": 4000,
+      "monthly_cents": 0,
+      "horizon_months": 0,
+      "refund_policy_id": "P-69fa77a4ec84",
+      "provides": {
+        "F06-gap": 1
+      },
+      "attributes": {
+        "delivery_site": "Other Pathology Lab",
+        "delivery_day": 2
+      },
+      "entity_id_on_purchase": "E-b99af5d64357"
+    },
+    {
+      "option_id": "O-f47cca8e889e",
+      "name": "Cypress Service",
+      "kind": "accessory",
+      "available": true,
+      "upfront_cents": 3000,
+      "monthly_cents": 0,
+      "horizon_months": 0,
+      "refund_policy_id": "P-69fa77a4ec84",
+      "provides": {
+        "F06-gap": 1
+      },
+      "attributes": {
+        "delivery_site": "Pathology Lab",
+        "delivery_day": 9
+      },
+      "entity_id_on_purchase": "E-6422fcd783db"
+    },
+    {
+      "option_id": "O-ed1a9c3f0bd0",
+      "name": "Orchid Interface Unit",
+      "kind": "accessory",
+      "available": false,
+      "upfront_cents": 18000,
+      "monthly_cents": 0,
+      "horizon_months": 0,
+      "refund_policy_id": "P-69fa77a4ec84",
+      "provides": {
+        "F06-gap": 1
+      },
+      "attributes": {
+        "delivery_site": "Pathology Lab",
+        "delivery_day": 2
+      },
+      "entity_id_on_purchase": "E-50c6803dbed8"
+    }
+  ],
+  "policies": [
+    {
+      "policy_id": "P-ba67840815f6",
+      "type": "refund",
+      "description": "The stated refund applies if the linked commitment is changed now.",
+      "refund_cents": 100000
+    },
+    {
+      "policy_id": "P-ba4711686434",
+      "type": "refund",
+      "description": "The stated refund applies if the linked commitment is changed now.",
+      "refund_cents": 10000
+    },
+    {
+      "policy_id": "P-cabe6a7f20eb",
+      "type": "refund",
+      "description": "The stated refund applies if the linked commitment is changed now.",
+      "refund_cents": 0
+    },
+    {
+      "policy_id": "P-01951b03aa01",
+      "type": "refund",
+      "description": "The stated refund applies if the linked commitment is changed now.",
+      "refund_cents": 0
+    },
+    {
+      "policy_id": "P-69fa77a4ec84",
+      "type": "refund",
+      "description": "The stated refund applies if the linked commitment is changed now.",
+      "refund_cents": 0
+    }
+  ],
+  "contracts": [],
+  "compatibility_rules": [
+    {
+      "type": "requires_all",
+      "if_option_id": "O-8890ed724aaf",
+      "all_option_ids": [
+        "O-06856d362208"
+      ]
+    }
+  ],
+  "hard_goals": {
+    "capabilities": [
+      {
+        "capability": "F06-primary",
+        "min": 1,
+        "max": 1
+      },
+      {
+        "capability": "F06-support",
+        "min": 1,
+        "max": 1
+      },
+      {
+        "capability": "F06-access",
+        "min": 1,
+        "max": 1
+      },
+      {
+        "capability": "F06-shared",
+        "min": 1,
+        "max": 1
+      },
+      {
+        "capability": "F06-gap",
+        "min": 1,
+        "max": 1
+      },
+      {
+        "capability": "F06-secondary",
+        "min": 1,
+        "max": 1
+      }
+    ],
+    "attribute_requirements": [
+      {
+        "capability": "F06-gap",
+        "attribute": "delivery_site",
+        "op": "eq",
+        "value": "Pathology Lab"
+      },
+      {
+        "capability": "F06-gap",
+        "attribute": "delivery_day",
+        "op": "le",
+        "value": 4
+      }
+    ]
+  },
+  "construction": {
+    "prefix_generated_by_public_tools": true,
+    "failure_generated_by_public_tool": true,
+    "normalized_policy_source": true,
+    "necessary_action_order_invariant": true
+  }
+}

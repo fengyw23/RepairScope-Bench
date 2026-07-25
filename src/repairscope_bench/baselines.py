@@ -7,6 +7,8 @@ from .oracle import solve_task
 
 
 def make_actions(task: dict[str, Any], strategy: str) -> list[dict[str, Any]]:
+    if task.get("schema_version") == "2.0":
+        return _make_v2_calls(task, strategy)
     if task.get("schema_version") in {"1.0", "1.1"}:
         return _make_v1_calls(task, strategy)
     if task.get("schema_version") == "0.6":
@@ -47,6 +49,104 @@ def make_actions(task: dict[str, Any], strategy: str) -> list[dict[str, Any]]:
             ]
         return oracle.optimal_plans[0] + _completion_actions(task)
     raise ValueError(f"Unknown baseline strategy: {strategy}")
+
+
+def _make_v2_calls(
+    task: dict[str, Any], strategy: str
+) -> list[dict[str, Any]]:
+    from .v2_oracle import solve_task_v2
+
+    oracle = solve_task_v2(task)
+    if strategy == "no_repair":
+        return []
+    candidates = deepcopy(oracle.feasible_terminals)
+    if not candidates:
+        return []
+    if strategy in {"oracle", "pareto_oracle"}:
+        return deepcopy(oracle.frontier[0]["tool_calls"])
+    if strategy in {"local_repair", "dependency_repair", "min_changes"}:
+        selected = min(
+            candidates,
+            key=lambda item: (
+                len(item["changed_boundary_entities"]),
+                len(item["tool_calls"]),
+            ),
+        )
+    elif strategy == "full_rollback":
+        selected = max(
+            candidates,
+            key=lambda item: (
+                len(item["changed_boundary_entities"]),
+                len(item["tool_calls"]),
+            ),
+        )
+    elif strategy in {"sticker_price", "global_cost"}:
+        prices = {
+            item["option_id"]: int(item["upfront_cents"])
+            + int(item.get("monthly_cents", 0))
+            * int(item.get("horizon_months", 0))
+            for item in task["inventory"]
+        }
+        boundary_options = {
+            item["option_id"] for item in task["boundary_commitments"]
+        }
+        selected = min(
+            candidates,
+            key=lambda item: (
+                min(
+                    (
+                        int(
+                            next(
+                                option
+                                for option in task["inventory"]
+                                if option["option_id"] == option_id
+                            )["upfront_cents"]
+                        )
+                        for option_id in item["active_option_ids"]
+                        if option_id not in boundary_options
+                    ),
+                    default=0,
+                ),
+                sum(
+                    prices[option_id]
+                    for option_id in item["active_option_ids"]
+                    if option_id not in boundary_options
+                ),
+            ),
+        )
+    elif strategy == "refund_only":
+        policies = {item["policy_id"]: item for item in task["policies"]}
+        boundary = {
+            item["entity_id"]: item for item in task["boundary_commitments"]
+        }
+        selected = max(
+            candidates,
+            key=lambda item: sum(
+                int(
+                    policies[
+                        boundary[entity_id]["refund_policy_id"]
+                    ]["refund_cents"]
+                )
+                for entity_id in item["changed_boundary_entities"]
+            ),
+        )
+    elif strategy == "loss_only":
+        selected = min(
+            candidates,
+            key=lambda item: item["scope_economic_vector"][
+                "irreversible_loss"
+            ],
+        )
+    elif strategy == "outlay_only":
+        selected = min(
+            candidates,
+            key=lambda item: item["scope_economic_vector"][
+                "net_recovery_outlay"
+            ],
+        )
+    else:
+        raise ValueError(f"Unknown v2 baseline strategy: {strategy}")
+    return deepcopy(selected["tool_calls"])
 
 
 def _make_v1_calls(

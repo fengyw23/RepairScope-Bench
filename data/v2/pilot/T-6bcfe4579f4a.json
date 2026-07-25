@@ -1,0 +1,629 @@
+{
+  "schema_version": "2.0",
+  "task_id": "T-6bcfe4579f4a",
+  "domain": "saas",
+  "environment_type": "repairscope.saas.state.v2",
+  "split": "dev",
+  "now": "2026-09-01T09:00:00+08:00",
+  "max_turns": 15,
+  "instruction": "Complete the customer-support platform at APAC-1 for the enterprise administrator. The activity log contains commitments that are already paid and active, but the most recent Orchid Integration Service operation failed. Keep the required primary arrangement, support, access, shared service, and integration coverage valid at APAC-1 by day 4. Investigate the authoritative records and execute the best supported recovery without asking me to choose.",
+  "initial_snapshot": {
+    "commitments": []
+  },
+  "initial_snapshot_sha256": "dbc26b7f61e91d0529291823abb38756f52a36dc52e819cf0a83abddfe598124",
+  "failure_snapshot": {
+    "commitments": [
+      {
+        "entity_id": "E-1b01f521e42b",
+        "option_id": "O-9c14fb07c192",
+        "name": "Sentinel Security Service",
+        "kind": "security",
+        "status": "active",
+        "paid_cents": 40000,
+        "refund_policy_id": "P-9c14fb07c192",
+        "provides": {
+          "F08-support": 1
+        },
+        "attributes": {
+          "tenant_region": "APAC-1",
+          "activation_day": 2
+        },
+        "created_after_boundary": false
+      },
+      {
+        "entity_id": "E-30cd6988a302",
+        "option_id": "O-8a7d5cd98c65",
+        "name": "Meridian Data Connector",
+        "kind": "connector",
+        "status": "active",
+        "paid_cents": 30000,
+        "refund_policy_id": "P-8a7d5cd98c65",
+        "provides": {
+          "F08-access": 1
+        },
+        "attributes": {
+          "tenant_region": "APAC-1",
+          "activation_day": 2
+        },
+        "created_after_boundary": false
+      },
+      {
+        "entity_id": "E-5f1818f6fba2",
+        "option_id": "O-4993e3a45b8f",
+        "name": "Beacon Audit Archive",
+        "kind": "audit",
+        "status": "active",
+        "paid_cents": 20000,
+        "refund_policy_id": "P-4993e3a45b8f",
+        "provides": {
+          "F08-shared": 1
+        },
+        "attributes": {
+          "tenant_region": "APAC-1",
+          "activation_day": 2
+        },
+        "created_after_boundary": false
+      },
+      {
+        "entity_id": "E-caf8cc0e8d37",
+        "option_id": "O-a0c02cc15e07",
+        "name": "Atlas Core Subscription",
+        "kind": "subscription",
+        "status": "active",
+        "paid_cents": 100000,
+        "refund_policy_id": "P-a0c02cc15e07",
+        "provides": {
+          "F08-primary": 1
+        },
+        "attributes": {
+          "tenant_region": "APAC-1",
+          "activation_day": 2
+        },
+        "created_after_boundary": false
+      }
+    ]
+  },
+  "snapshot_sha256": "3f8e46226b9c7e426417ac60b266106773f71e87a89975f92e807b87966c6a34",
+  "pre_failure_trace": [
+    {
+      "step": 1,
+      "tool": "activate_service_option",
+      "arguments": {
+        "service_option_id": "O-a0c02cc15e07"
+      },
+      "result": {
+        "ok": true,
+        "message": "New commitment created.",
+        "data": {
+          "entity_id": "E-caf8cc0e8d37",
+          "option_id": "O-a0c02cc15e07",
+          "charge_cents": 100000,
+          "contract_charges_applied": []
+        }
+      }
+    },
+    {
+      "step": 2,
+      "tool": "activate_service_option",
+      "arguments": {
+        "service_option_id": "O-9c14fb07c192"
+      },
+      "result": {
+        "ok": true,
+        "message": "New commitment created.",
+        "data": {
+          "entity_id": "E-1b01f521e42b",
+          "option_id": "O-9c14fb07c192",
+          "charge_cents": 40000,
+          "contract_charges_applied": []
+        }
+      }
+    },
+    {
+      "step": 3,
+      "tool": "activate_service_option",
+      "arguments": {
+        "service_option_id": "O-8a7d5cd98c65"
+      },
+      "result": {
+        "ok": true,
+        "message": "New commitment created.",
+        "data": {
+          "entity_id": "E-30cd6988a302",
+          "option_id": "O-8a7d5cd98c65",
+          "charge_cents": 30000,
+          "contract_charges_applied": []
+        }
+      }
+    },
+    {
+      "step": 4,
+      "tool": "activate_service_option",
+      "arguments": {
+        "service_option_id": "O-4993e3a45b8f"
+      },
+      "result": {
+        "ok": true,
+        "message": "New commitment created.",
+        "data": {
+          "entity_id": "E-5f1818f6fba2",
+          "option_id": "O-4993e3a45b8f",
+          "charge_cents": 20000,
+          "contract_charges_applied": []
+        }
+      }
+    }
+  ],
+  "prefix_ledger": [
+    {
+      "event_index": 1,
+      "tool": "activate_service_option",
+      "entity_id": "E-caf8cc0e8d37",
+      "contract_id": null,
+      "charge_cents": 100000,
+      "refund_cents": 0,
+      "irreversible_loss_delta": 0,
+      "net_outlay_delta": 100000
+    },
+    {
+      "event_index": 2,
+      "tool": "activate_service_option",
+      "entity_id": "E-1b01f521e42b",
+      "contract_id": null,
+      "charge_cents": 40000,
+      "refund_cents": 0,
+      "irreversible_loss_delta": 0,
+      "net_outlay_delta": 40000
+    },
+    {
+      "event_index": 3,
+      "tool": "activate_service_option",
+      "entity_id": "E-30cd6988a302",
+      "contract_id": null,
+      "charge_cents": 30000,
+      "refund_cents": 0,
+      "irreversible_loss_delta": 0,
+      "net_outlay_delta": 30000
+    },
+    {
+      "event_index": 4,
+      "tool": "activate_service_option",
+      "entity_id": "E-5f1818f6fba2",
+      "contract_id": null,
+      "charge_cents": 20000,
+      "refund_cents": 0,
+      "irreversible_loss_delta": 0,
+      "net_outlay_delta": 20000
+    }
+  ],
+  "latest_failure": {
+    "tool": "activate_service_option",
+    "arguments": {
+      "service_option_id": "O-8d7503d71d94"
+    },
+    "result": {
+      "ok": false,
+      "message": "The selected option is unavailable.",
+      "data": null
+    }
+  },
+  "boundary_commitments": [
+    {
+      "entity_id": "E-1b01f521e42b",
+      "option_id": "O-9c14fb07c192",
+      "name": "Sentinel Security Service",
+      "kind": "security",
+      "status": "active",
+      "paid_cents": 40000,
+      "refund_policy_id": "P-9c14fb07c192",
+      "provides": {
+        "F08-support": 1
+      },
+      "attributes": {
+        "tenant_region": "APAC-1",
+        "activation_day": 2
+      },
+      "created_after_boundary": false,
+      "primary_capability": "F08-support"
+    },
+    {
+      "entity_id": "E-30cd6988a302",
+      "option_id": "O-8a7d5cd98c65",
+      "name": "Meridian Data Connector",
+      "kind": "connector",
+      "status": "active",
+      "paid_cents": 30000,
+      "refund_policy_id": "P-8a7d5cd98c65",
+      "provides": {
+        "F08-access": 1
+      },
+      "attributes": {
+        "tenant_region": "APAC-1",
+        "activation_day": 2
+      },
+      "created_after_boundary": false,
+      "primary_capability": "F08-access"
+    },
+    {
+      "entity_id": "E-5f1818f6fba2",
+      "option_id": "O-4993e3a45b8f",
+      "name": "Beacon Audit Archive",
+      "kind": "audit",
+      "status": "active",
+      "paid_cents": 20000,
+      "refund_policy_id": "P-4993e3a45b8f",
+      "provides": {
+        "F08-shared": 1
+      },
+      "attributes": {
+        "tenant_region": "APAC-1",
+        "activation_day": 2
+      },
+      "created_after_boundary": false,
+      "primary_capability": "F08-shared"
+    },
+    {
+      "entity_id": "E-caf8cc0e8d37",
+      "option_id": "O-a0c02cc15e07",
+      "name": "Atlas Core Subscription",
+      "kind": "subscription",
+      "status": "active",
+      "paid_cents": 100000,
+      "refund_policy_id": "P-a0c02cc15e07",
+      "provides": {
+        "F08-primary": 1
+      },
+      "attributes": {
+        "tenant_region": "APAC-1",
+        "activation_day": 2
+      },
+      "created_after_boundary": false,
+      "primary_capability": "F08-primary"
+    }
+  ],
+  "inventory": [
+    {
+      "option_id": "O-a0c02cc15e07",
+      "name": "Atlas Core Subscription",
+      "kind": "subscription",
+      "available": false,
+      "upfront_cents": 100000,
+      "monthly_cents": 0,
+      "horizon_months": 0,
+      "refund_policy_id": "P-a0c02cc15e07",
+      "provides": {
+        "F08-primary": 1
+      },
+      "attributes": {
+        "tenant_region": "APAC-1",
+        "activation_day": 2
+      },
+      "entity_id_on_purchase": "E-caf8cc0e8d37"
+    },
+    {
+      "option_id": "O-9c14fb07c192",
+      "name": "Sentinel Security Service",
+      "kind": "security",
+      "available": false,
+      "upfront_cents": 40000,
+      "monthly_cents": 0,
+      "horizon_months": 0,
+      "refund_policy_id": "P-9c14fb07c192",
+      "provides": {
+        "F08-support": 1
+      },
+      "attributes": {
+        "tenant_region": "APAC-1",
+        "activation_day": 2
+      },
+      "entity_id_on_purchase": "E-1b01f521e42b"
+    },
+    {
+      "option_id": "O-8a7d5cd98c65",
+      "name": "Meridian Data Connector",
+      "kind": "connector",
+      "available": false,
+      "upfront_cents": 30000,
+      "monthly_cents": 0,
+      "horizon_months": 0,
+      "refund_policy_id": "P-8a7d5cd98c65",
+      "provides": {
+        "F08-access": 1
+      },
+      "attributes": {
+        "tenant_region": "APAC-1",
+        "activation_day": 2
+      },
+      "entity_id_on_purchase": "E-30cd6988a302"
+    },
+    {
+      "option_id": "O-4993e3a45b8f",
+      "name": "Beacon Audit Archive",
+      "kind": "audit",
+      "available": false,
+      "upfront_cents": 20000,
+      "monthly_cents": 0,
+      "horizon_months": 0,
+      "refund_policy_id": "P-4993e3a45b8f",
+      "provides": {
+        "F08-shared": 1
+      },
+      "attributes": {
+        "tenant_region": "APAC-1",
+        "activation_day": 2
+      },
+      "entity_id_on_purchase": "E-5f1818f6fba2"
+    },
+    {
+      "option_id": "O-e73dff6b3ece",
+      "name": "Orchid Integration Service",
+      "kind": "integration",
+      "available": true,
+      "upfront_cents": 70000,
+      "monthly_cents": 0,
+      "horizon_months": 0,
+      "refund_policy_id": "P-95bc610cbe6d",
+      "provides": {
+        "F08-gap": 1
+      },
+      "attributes": {
+        "tenant_region": "APAC-1",
+        "activation_day": 2
+      },
+      "entity_id_on_purchase": "E-d691654e69e7"
+    },
+    {
+      "option_id": "O-acbbb3f20148",
+      "name": "Atlas Managed Workspace",
+      "kind": "integration_package",
+      "available": true,
+      "upfront_cents": 120000,
+      "monthly_cents": 0,
+      "horizon_months": 0,
+      "refund_policy_id": "P-95bc610cbe6d",
+      "provides": {
+        "F08-primary": 1,
+        "F08-gap": 1
+      },
+      "attributes": {
+        "tenant_region": "APAC-1",
+        "activation_day": 2
+      },
+      "entity_id_on_purchase": "E-97578d1ffe77"
+    },
+    {
+      "option_id": "O-fcb2cc59a08d",
+      "name": "Cedar Integration Service",
+      "kind": "integration",
+      "available": true,
+      "upfront_cents": 30000,
+      "monthly_cents": 0,
+      "horizon_months": 0,
+      "refund_policy_id": "P-95bc610cbe6d",
+      "provides": {
+        "F08-gap": 1
+      },
+      "attributes": {
+        "tenant_region": "APAC-1",
+        "activation_day": 2
+      },
+      "entity_id_on_purchase": "E-87f3778dc89b"
+    },
+    {
+      "option_id": "O-8cb168c314fa",
+      "name": "Meridian Migration Service",
+      "kind": "continuity_package",
+      "available": true,
+      "upfront_cents": 600000,
+      "monthly_cents": 0,
+      "horizon_months": 0,
+      "refund_policy_id": "P-95bc610cbe6d",
+      "provides": {
+        "F08-primary": 1,
+        "F08-support": 1,
+        "F08-access": 1,
+        "F08-shared": 1,
+        "F08-gap": 1
+      },
+      "attributes": {
+        "tenant_region": "APAC-1",
+        "activation_day": 3
+      },
+      "entity_id_on_purchase": "E-32fec50bce55"
+    },
+    {
+      "option_id": "O-beb72426db74",
+      "name": "Juniper Compatibility Service",
+      "kind": "coordination_service",
+      "available": true,
+      "upfront_cents": 10000,
+      "monthly_cents": 0,
+      "horizon_months": 0,
+      "refund_policy_id": "P-95bc610cbe6d",
+      "provides": {
+        "F08-gap-companion": 1
+      },
+      "attributes": {
+        "tenant_region": "APAC-1",
+        "activation_day": 2
+      },
+      "entity_id_on_purchase": "E-5f9df155ff99"
+    },
+    {
+      "option_id": "O-dd48b5f59958",
+      "name": "Pine Integration Service",
+      "kind": "security",
+      "available": false,
+      "upfront_cents": 150000,
+      "monthly_cents": 0,
+      "horizon_months": 0,
+      "refund_policy_id": "P-95bc610cbe6d",
+      "provides": {
+        "F08-support": 1
+      },
+      "attributes": {
+        "tenant_region": "APAC-1",
+        "activation_day": 2
+      },
+      "entity_id_on_purchase": "E-2748ea023961"
+    },
+    {
+      "option_id": "O-61c28a6f347b",
+      "name": "Rivermark Service",
+      "kind": "integration",
+      "available": true,
+      "upfront_cents": 4000,
+      "monthly_cents": 0,
+      "horizon_months": 0,
+      "refund_policy_id": "P-95bc610cbe6d",
+      "provides": {
+        "F08-gap": 1
+      },
+      "attributes": {
+        "tenant_region": "Other APAC-1",
+        "activation_day": 2
+      },
+      "entity_id_on_purchase": "E-2c5603a08cc1"
+    },
+    {
+      "option_id": "O-cfc9d360c13d",
+      "name": "Cypress Service",
+      "kind": "integration",
+      "available": true,
+      "upfront_cents": 3000,
+      "monthly_cents": 0,
+      "horizon_months": 0,
+      "refund_policy_id": "P-95bc610cbe6d",
+      "provides": {
+        "F08-gap": 1
+      },
+      "attributes": {
+        "tenant_region": "APAC-1",
+        "activation_day": 9
+      },
+      "entity_id_on_purchase": "E-58c812aa66b0"
+    },
+    {
+      "option_id": "O-8d7503d71d94",
+      "name": "Orchid Integration Service",
+      "kind": "integration",
+      "available": false,
+      "upfront_cents": 18000,
+      "monthly_cents": 0,
+      "horizon_months": 0,
+      "refund_policy_id": "P-95bc610cbe6d",
+      "provides": {
+        "F08-gap": 1
+      },
+      "attributes": {
+        "tenant_region": "APAC-1",
+        "activation_day": 2
+      },
+      "entity_id_on_purchase": "E-ea5236ea0ffd"
+    }
+  ],
+  "policies": [
+    {
+      "policy_id": "P-a0c02cc15e07",
+      "type": "refund",
+      "description": "The stated refund applies if the linked commitment is changed now.",
+      "refund_cents": 80000
+    },
+    {
+      "policy_id": "P-9c14fb07c192",
+      "type": "refund",
+      "description": "The stated refund applies if the linked commitment is changed now.",
+      "refund_cents": 10000
+    },
+    {
+      "policy_id": "P-8a7d5cd98c65",
+      "type": "refund",
+      "description": "The stated refund applies if the linked commitment is changed now.",
+      "refund_cents": 0
+    },
+    {
+      "policy_id": "P-4993e3a45b8f",
+      "type": "refund",
+      "description": "The stated refund applies if the linked commitment is changed now.",
+      "refund_cents": 0
+    },
+    {
+      "policy_id": "P-95bc610cbe6d",
+      "type": "refund",
+      "description": "The stated refund applies if the linked commitment is changed now.",
+      "refund_cents": 0
+    }
+  ],
+  "contracts": [
+    {
+      "contract_id": "C-985372ffc919",
+      "description": "A service-specific settlement applies when the linked option is activated.",
+      "trigger": {
+        "type": "active_any",
+        "option_ids": [
+          "O-fcb2cc59a08d"
+        ],
+        "entity_ids": []
+      },
+      "charge_cents": 100000
+    }
+  ],
+  "compatibility_rules": [
+    {
+      "type": "requires_all",
+      "if_option_id": "O-acbbb3f20148",
+      "all_option_ids": [
+        "O-beb72426db74"
+      ]
+    }
+  ],
+  "hard_goals": {
+    "capabilities": [
+      {
+        "capability": "F08-primary",
+        "min": 1,
+        "max": 1
+      },
+      {
+        "capability": "F08-support",
+        "min": 1,
+        "max": 1
+      },
+      {
+        "capability": "F08-access",
+        "min": 1,
+        "max": 1
+      },
+      {
+        "capability": "F08-shared",
+        "min": 1,
+        "max": 1
+      },
+      {
+        "capability": "F08-gap",
+        "min": 1,
+        "max": 1
+      }
+    ],
+    "attribute_requirements": [
+      {
+        "capability": "F08-gap",
+        "attribute": "tenant_region",
+        "op": "eq",
+        "value": "APAC-1"
+      },
+      {
+        "capability": "F08-gap",
+        "attribute": "activation_day",
+        "op": "le",
+        "value": 4
+      }
+    ]
+  },
+  "construction": {
+    "prefix_generated_by_public_tools": true,
+    "failure_generated_by_public_tool": true,
+    "normalized_policy_source": true,
+    "necessary_action_order_invariant": true
+  }
+}

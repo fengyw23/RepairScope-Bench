@@ -1,0 +1,111 @@
+[
+  {
+    "card_id": "MC-SUNK",
+    "name": "Sunk versus marginal recovery cost",
+    "causal_pattern": "A historical payment is fixed; only recoverable value and post-boundary cash flows distinguish repairs.",
+    "required_evidence": [
+      "paid amount",
+      "refund policy",
+      "replacement price"
+    ],
+    "common_failure": "Compare historical total prices instead of marginal recovery consequences."
+  },
+  {
+    "card_id": "MC-MULTIHOP",
+    "name": "Multi-hop economic propagation",
+    "causal_pattern": "Changing one commitment changes a dependency, which changes another contract or required purchase.",
+    "required_evidence": [
+      "dependency relation",
+      "linked terms",
+      "downstream replacement"
+    ],
+    "common_failure": "Stop propagation after the first affected record."
+  },
+  {
+    "card_id": "MC-SHARED",
+    "name": "Shared commitment protection",
+    "causal_pattern": "One existing commitment supports more than one hard goal.",
+    "required_evidence": [
+      "all provided functions",
+      "replacement coverage"
+    ],
+    "common_failure": "Cancel a commitment after considering only the failed branch."
+  },
+  {
+    "card_id": "MC-THRESHOLD",
+    "name": "Non-linear threshold",
+    "causal_pattern": "Crossing a retained-value or quantity threshold triggers a discontinuous charge.",
+    "required_evidence": [
+      "threshold",
+      "retained total",
+      "charge"
+    ],
+    "common_failure": "Add item-level prices without testing the threshold."
+  },
+  {
+    "card_id": "MC-CONDITION",
+    "name": "Conditional contract",
+    "causal_pattern": "A Boolean or count condition determines whether a linked charge applies.",
+    "required_evidence": [
+      "trigger condition",
+      "linked entities",
+      "charge"
+    ],
+    "common_failure": "Treat every linked term as always active."
+  },
+  {
+    "card_id": "MC-QUANTITY",
+    "name": "Partial quantity repair",
+    "causal_pattern": "The missing requirement has quantity and can be satisfied by different subsets.",
+    "required_evidence": [
+      "required quantity",
+      "option quantities",
+      "bundle prices"
+    ],
+    "common_failure": "Replace the entire set when only a subset is missing."
+  },
+  {
+    "card_id": "MC-BRIDGE",
+    "name": "Bridge versus replacement",
+    "causal_pattern": "A bridge component can preserve an upstream commitment but has its own cost.",
+    "required_evidence": [
+      "bridge requirement",
+      "bridge price",
+      "replacement path"
+    ],
+    "common_failure": "Compare the failed component and replacement without the bridge."
+  },
+  {
+    "card_id": "MC-JOINT",
+    "name": "Joint bundle selection",
+    "causal_pattern": "Options must be compared as complete compatible combinations.",
+    "required_evidence": [
+      "companion requirements",
+      "compatibility",
+      "combined charge"
+    ],
+    "common_failure": "Choose the cheapest item independently."
+  },
+  {
+    "card_id": "MC-HORIZON",
+    "name": "Explicit-horizon recurring cost",
+    "causal_pattern": "Upfront and recurring charges must be aggregated over a stated horizon.",
+    "required_evidence": [
+      "upfront charge",
+      "monthly charge",
+      "horizon"
+    ],
+    "common_failure": "Compare only upfront or first-month price."
+  },
+  {
+    "card_id": "MC-CUT",
+    "name": "Selective dependency cut",
+    "causal_pattern": "A dependency change requires replacing a precise subset rather than the full prefix or only the failed step.",
+    "required_evidence": [
+      "dependency alternatives",
+      "retained commitments",
+      "replacement closure"
+    ],
+    "common_failure": "Apply full rollback or one-step local repair."
+  }
+]

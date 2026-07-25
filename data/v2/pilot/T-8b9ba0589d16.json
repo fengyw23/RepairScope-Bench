@@ -1,0 +1,629 @@
+{
+  "schema_version": "2.0",
+  "task_id": "T-8b9ba0589d16",
+  "domain": "event_logistics",
+  "environment_type": "repairscope.event_logistics.state.v2",
+  "split": "dev",
+  "now": "2026-09-01T09:00:00+08:00",
+  "max_turns": 15,
+  "instruction": "Complete the mobile screening programme at County West for the event coordinator. The activity log contains commitments that are already paid and active, but the most recent Orchid Field Service operation failed. Keep the required primary arrangement, support, access, shared service, and vendor coverage valid at County West by day 4. Investigate the authoritative records and execute the best supported recovery without asking me to choose.",
+  "initial_snapshot": {
+    "commitments": []
+  },
+  "initial_snapshot_sha256": "dbc26b7f61e91d0529291823abb38756f52a36dc52e819cf0a83abddfe598124",
+  "failure_snapshot": {
+    "commitments": [
+      {
+        "entity_id": "E-73e86217974a",
+        "option_id": "O-b2db1254be3a",
+        "name": "Harbor Convention Hall",
+        "kind": "venue",
+        "status": "active",
+        "paid_cents": 100000,
+        "refund_policy_id": "P-b2db1254be3a",
+        "provides": {
+          "F12-primary": 1
+        },
+        "attributes": {
+          "service_area": "County West",
+          "service_day": 2
+        },
+        "created_after_boundary": false
+      },
+      {
+        "entity_id": "E-7730694245fd",
+        "option_id": "O-45ba58df77dc",
+        "name": "MetroLink Transport",
+        "kind": "transport",
+        "status": "active",
+        "paid_cents": 40000,
+        "refund_policy_id": "P-45ba58df77dc",
+        "provides": {
+          "F12-support": 1
+        },
+        "attributes": {
+          "service_area": "County West",
+          "service_day": 2
+        },
+        "created_after_boundary": false
+      },
+      {
+        "entity_id": "E-89b6e043bca8",
+        "option_id": "O-5d807a35ad46",
+        "name": "Northstar Storage Service",
+        "kind": "storage",
+        "status": "active",
+        "paid_cents": 30000,
+        "refund_policy_id": "P-5d807a35ad46",
+        "provides": {
+          "F12-access": 1
+        },
+        "attributes": {
+          "service_area": "County West",
+          "service_day": 2
+        },
+        "created_after_boundary": false
+      },
+      {
+        "entity_id": "E-b78fde387dc7",
+        "option_id": "O-79c67a0f8304",
+        "name": "Beacon Event Cover",
+        "kind": "coverage",
+        "status": "active",
+        "paid_cents": 20000,
+        "refund_policy_id": "P-79c67a0f8304",
+        "provides": {
+          "F12-shared": 1
+        },
+        "attributes": {
+          "service_area": "County West",
+          "service_day": 2
+        },
+        "created_after_boundary": false
+      }
+    ]
+  },
+  "snapshot_sha256": "c41e5c8a08422520296d5fb301dbf9947f39dddc9e82ac93027dd2f9ba56464e",
+  "pre_failure_trace": [
+    {
+      "step": 1,
+      "tool": "book_event_option",
+      "arguments": {
+        "event_option_id": "O-b2db1254be3a"
+      },
+      "result": {
+        "ok": true,
+        "message": "New commitment created.",
+        "data": {
+          "entity_id": "E-73e86217974a",
+          "option_id": "O-b2db1254be3a",
+          "charge_cents": 100000,
+          "contract_charges_applied": []
+        }
+      }
+    },
+    {
+      "step": 2,
+      "tool": "book_event_option",
+      "arguments": {
+        "event_option_id": "O-45ba58df77dc"
+      },
+      "result": {
+        "ok": true,
+        "message": "New commitment created.",
+        "data": {
+          "entity_id": "E-7730694245fd",
+          "option_id": "O-45ba58df77dc",
+          "charge_cents": 40000,
+          "contract_charges_applied": []
+        }
+      }
+    },
+    {
+      "step": 3,
+      "tool": "book_event_option",
+      "arguments": {
+        "event_option_id": "O-5d807a35ad46"
+      },
+      "result": {
+        "ok": true,
+        "message": "New commitment created.",
+        "data": {
+          "entity_id": "E-89b6e043bca8",
+          "option_id": "O-5d807a35ad46",
+          "charge_cents": 30000,
+          "contract_charges_applied": []
+        }
+      }
+    },
+    {
+      "step": 4,
+      "tool": "book_event_option",
+      "arguments": {
+        "event_option_id": "O-79c67a0f8304"
+      },
+      "result": {
+        "ok": true,
+        "message": "New commitment created.",
+        "data": {
+          "entity_id": "E-b78fde387dc7",
+          "option_id": "O-79c67a0f8304",
+          "charge_cents": 20000,
+          "contract_charges_applied": []
+        }
+      }
+    }
+  ],
+  "prefix_ledger": [
+    {
+      "event_index": 1,
+      "tool": "book_vendor_option",
+      "entity_id": "E-73e86217974a",
+      "contract_id": null,
+      "charge_cents": 100000,
+      "refund_cents": 0,
+      "irreversible_loss_delta": 0,
+      "net_outlay_delta": 100000
+    },
+    {
+      "event_index": 2,
+      "tool": "book_vendor_option",
+      "entity_id": "E-7730694245fd",
+      "contract_id": null,
+      "charge_cents": 40000,
+      "refund_cents": 0,
+      "irreversible_loss_delta": 0,
+      "net_outlay_delta": 40000
+    },
+    {
+      "event_index": 3,
+      "tool": "book_vendor_option",
+      "entity_id": "E-89b6e043bca8",
+      "contract_id": null,
+      "charge_cents": 30000,
+      "refund_cents": 0,
+      "irreversible_loss_delta": 0,
+      "net_outlay_delta": 30000
+    },
+    {
+      "event_index": 4,
+      "tool": "book_vendor_option",
+      "entity_id": "E-b78fde387dc7",
+      "contract_id": null,
+      "charge_cents": 20000,
+      "refund_cents": 0,
+      "irreversible_loss_delta": 0,
+      "net_outlay_delta": 20000
+    }
+  ],
+  "latest_failure": {
+    "tool": "book_event_option",
+    "arguments": {
+      "event_option_id": "O-01422ef4c880"
+    },
+    "result": {
+      "ok": false,
+      "message": "The selected option is unavailable.",
+      "data": null
+    }
+  },
+  "boundary_commitments": [
+    {
+      "entity_id": "E-73e86217974a",
+      "option_id": "O-b2db1254be3a",
+      "name": "Harbor Convention Hall",
+      "kind": "venue",
+      "status": "active",
+      "paid_cents": 100000,
+      "refund_policy_id": "P-b2db1254be3a",
+      "provides": {
+        "F12-primary": 1
+      },
+      "attributes": {
+        "service_area": "County West",
+        "service_day": 2
+      },
+      "created_after_boundary": false,
+      "primary_capability": "F12-primary"
+    },
+    {
+      "entity_id": "E-7730694245fd",
+      "option_id": "O-45ba58df77dc",
+      "name": "MetroLink Transport",
+      "kind": "transport",
+      "status": "active",
+      "paid_cents": 40000,
+      "refund_policy_id": "P-45ba58df77dc",
+      "provides": {
+        "F12-support": 1
+      },
+      "attributes": {
+        "service_area": "County West",
+        "service_day": 2
+      },
+      "created_after_boundary": false,
+      "primary_capability": "F12-support"
+    },
+    {
+      "entity_id": "E-89b6e043bca8",
+      "option_id": "O-5d807a35ad46",
+      "name": "Northstar Storage Service",
+      "kind": "storage",
+      "status": "active",
+      "paid_cents": 30000,
+      "refund_policy_id": "P-5d807a35ad46",
+      "provides": {
+        "F12-access": 1
+      },
+      "attributes": {
+        "service_area": "County West",
+        "service_day": 2
+      },
+      "created_after_boundary": false,
+      "primary_capability": "F12-access"
+    },
+    {
+      "entity_id": "E-b78fde387dc7",
+      "option_id": "O-79c67a0f8304",
+      "name": "Beacon Event Cover",
+      "kind": "coverage",
+      "status": "active",
+      "paid_cents": 20000,
+      "refund_policy_id": "P-79c67a0f8304",
+      "provides": {
+        "F12-shared": 1
+      },
+      "attributes": {
+        "service_area": "County West",
+        "service_day": 2
+      },
+      "created_after_boundary": false,
+      "primary_capability": "F12-shared"
+    }
+  ],
+  "inventory": [
+    {
+      "option_id": "O-b2db1254be3a",
+      "name": "Harbor Convention Hall",
+      "kind": "venue",
+      "available": false,
+      "upfront_cents": 100000,
+      "monthly_cents": 0,
+      "horizon_months": 0,
+      "refund_policy_id": "P-b2db1254be3a",
+      "provides": {
+        "F12-primary": 1
+      },
+      "attributes": {
+        "service_area": "County West",
+        "service_day": 2
+      },
+      "entity_id_on_purchase": "E-73e86217974a"
+    },
+    {
+      "option_id": "O-45ba58df77dc",
+      "name": "MetroLink Transport",
+      "kind": "transport",
+      "available": false,
+      "upfront_cents": 40000,
+      "monthly_cents": 0,
+      "horizon_months": 0,
+      "refund_policy_id": "P-45ba58df77dc",
+      "provides": {
+        "F12-support": 1
+      },
+      "attributes": {
+        "service_area": "County West",
+        "service_day": 2
+      },
+      "entity_id_on_purchase": "E-7730694245fd"
+    },
+    {
+      "option_id": "O-5d807a35ad46",
+      "name": "Northstar Storage Service",
+      "kind": "storage",
+      "available": false,
+      "upfront_cents": 30000,
+      "monthly_cents": 0,
+      "horizon_months": 0,
+      "refund_policy_id": "P-5d807a35ad46",
+      "provides": {
+        "F12-access": 1
+      },
+      "attributes": {
+        "service_area": "County West",
+        "service_day": 2
+      },
+      "entity_id_on_purchase": "E-89b6e043bca8"
+    },
+    {
+      "option_id": "O-79c67a0f8304",
+      "name": "Beacon Event Cover",
+      "kind": "coverage",
+      "available": false,
+      "upfront_cents": 20000,
+      "monthly_cents": 0,
+      "horizon_months": 0,
+      "refund_policy_id": "P-79c67a0f8304",
+      "provides": {
+        "F12-shared": 1
+      },
+      "attributes": {
+        "service_area": "County West",
+        "service_day": 2
+      },
+      "entity_id_on_purchase": "E-b78fde387dc7"
+    },
+    {
+      "option_id": "O-ce6b40707dad",
+      "name": "Orchid Field Service",
+      "kind": "vendor",
+      "available": true,
+      "upfront_cents": 70000,
+      "monthly_cents": 0,
+      "horizon_months": 0,
+      "refund_policy_id": "P-b608e7a13c2b",
+      "provides": {
+        "F12-gap": 1
+      },
+      "attributes": {
+        "service_area": "County West",
+        "service_day": 2
+      },
+      "entity_id_on_purchase": "E-2a1c0e0d3a31"
+    },
+    {
+      "option_id": "O-89875f4fb45d",
+      "name": "Harbor Integrated Package",
+      "kind": "vendor_package",
+      "available": true,
+      "upfront_cents": 120000,
+      "monthly_cents": 0,
+      "horizon_months": 0,
+      "refund_policy_id": "P-b608e7a13c2b",
+      "provides": {
+        "F12-primary": 1,
+        "F12-gap": 1
+      },
+      "attributes": {
+        "service_area": "County West",
+        "service_day": 2
+      },
+      "entity_id_on_purchase": "E-c26548e862d4"
+    },
+    {
+      "option_id": "O-694bc4d5a2ad",
+      "name": "Cedar Field Service",
+      "kind": "vendor",
+      "available": true,
+      "upfront_cents": 30000,
+      "monthly_cents": 0,
+      "horizon_months": 0,
+      "refund_policy_id": "P-b608e7a13c2b",
+      "provides": {
+        "F12-gap": 1
+      },
+      "attributes": {
+        "service_area": "County West",
+        "service_day": 2
+      },
+      "entity_id_on_purchase": "E-5a2ccc3966e3"
+    },
+    {
+      "option_id": "O-00f80e0f52e0",
+      "name": "Meridian Event Package",
+      "kind": "continuity_package",
+      "available": true,
+      "upfront_cents": 600000,
+      "monthly_cents": 0,
+      "horizon_months": 0,
+      "refund_policy_id": "P-b608e7a13c2b",
+      "provides": {
+        "F12-primary": 1,
+        "F12-support": 1,
+        "F12-access": 1,
+        "F12-shared": 1,
+        "F12-gap": 1
+      },
+      "attributes": {
+        "service_area": "County West",
+        "service_day": 3
+      },
+      "entity_id_on_purchase": "E-a775656b4699"
+    },
+    {
+      "option_id": "O-1f17e8081989",
+      "name": "Juniper Coordination Service",
+      "kind": "coordination_service",
+      "available": true,
+      "upfront_cents": 10000,
+      "monthly_cents": 0,
+      "horizon_months": 0,
+      "refund_policy_id": "P-b608e7a13c2b",
+      "provides": {
+        "F12-gap-companion": 1
+      },
+      "attributes": {
+        "service_area": "County West",
+        "service_day": 2
+      },
+      "entity_id_on_purchase": "E-3c99af5b3878"
+    },
+    {
+      "option_id": "O-c1ea31cc37df",
+      "name": "Pine Field Service",
+      "kind": "transport",
+      "available": false,
+      "upfront_cents": 150000,
+      "monthly_cents": 0,
+      "horizon_months": 0,
+      "refund_policy_id": "P-b608e7a13c2b",
+      "provides": {
+        "F12-support": 1
+      },
+      "attributes": {
+        "service_area": "County West",
+        "service_day": 2
+      },
+      "entity_id_on_purchase": "E-8adf5f19b891"
+    },
+    {
+      "option_id": "O-00749c5580af",
+      "name": "Rivermark Service",
+      "kind": "vendor",
+      "available": true,
+      "upfront_cents": 4000,
+      "monthly_cents": 0,
+      "horizon_months": 0,
+      "refund_policy_id": "P-b608e7a13c2b",
+      "provides": {
+        "F12-gap": 1
+      },
+      "attributes": {
+        "service_area": "Other County West",
+        "service_day": 2
+      },
+      "entity_id_on_purchase": "E-42747635b723"
+    },
+    {
+      "option_id": "O-b6dbf0db45a0",
+      "name": "Cypress Service",
+      "kind": "vendor",
+      "available": true,
+      "upfront_cents": 3000,
+      "monthly_cents": 0,
+      "horizon_months": 0,
+      "refund_policy_id": "P-b608e7a13c2b",
+      "provides": {
+        "F12-gap": 1
+      },
+      "attributes": {
+        "service_area": "County West",
+        "service_day": 9
+      },
+      "entity_id_on_purchase": "E-ae0f13bd2f69"
+    },
+    {
+      "option_id": "O-01422ef4c880",
+      "name": "Orchid Field Service",
+      "kind": "vendor",
+      "available": false,
+      "upfront_cents": 18000,
+      "monthly_cents": 0,
+      "horizon_months": 0,
+      "refund_policy_id": "P-b608e7a13c2b",
+      "provides": {
+        "F12-gap": 1
+      },
+      "attributes": {
+        "service_area": "County West",
+        "service_day": 2
+      },
+      "entity_id_on_purchase": "E-a6f901a9ffb4"
+    }
+  ],
+  "policies": [
+    {
+      "policy_id": "P-b2db1254be3a",
+      "type": "refund",
+      "description": "The stated refund applies if the linked commitment is changed now.",
+      "refund_cents": 80000
+    },
+    {
+      "policy_id": "P-45ba58df77dc",
+      "type": "refund",
+      "description": "The stated refund applies if the linked commitment is changed now.",
+      "refund_cents": 10000
+    },
+    {
+      "policy_id": "P-5d807a35ad46",
+      "type": "refund",
+      "description": "The stated refund applies if the linked commitment is changed now.",
+      "refund_cents": 0
+    },
+    {
+      "policy_id": "P-79c67a0f8304",
+      "type": "refund",
+      "description": "The stated refund applies if the linked commitment is changed now.",
+      "refund_cents": 0
+    },
+    {
+      "policy_id": "P-b608e7a13c2b",
+      "type": "refund",
+      "description": "The stated refund applies if the linked commitment is changed now.",
+      "refund_cents": 0
+    }
+  ],
+  "contracts": [
+    {
+      "contract_id": "C-9f64b327ae64",
+      "description": "A service-specific settlement applies when the linked option is activated.",
+      "trigger": {
+        "type": "active_any",
+        "option_ids": [
+          "O-694bc4d5a2ad"
+        ],
+        "entity_ids": []
+      },
+      "charge_cents": 100000
+    }
+  ],
+  "compatibility_rules": [
+    {
+      "type": "requires_all",
+      "if_option_id": "O-89875f4fb45d",
+      "all_option_ids": [
+        "O-1f17e8081989"
+      ]
+    }
+  ],
+  "hard_goals": {
+    "capabilities": [
+      {
+        "capability": "F12-primary",
+        "min": 1,
+        "max": 1
+      },
+      {
+        "capability": "F12-support",
+        "min": 1,
+        "max": 1
+      },
+      {
+        "capability": "F12-access",
+        "min": 1,
+        "max": 1
+      },
+      {
+        "capability": "F12-shared",
+        "min": 1,
+        "max": 1
+      },
+      {
+        "capability": "F12-gap",
+        "min": 1,
+        "max": 1
+      }
+    ],
+    "attribute_requirements": [
+      {
+        "capability": "F12-gap",
+        "attribute": "service_area",
+        "op": "eq",
+        "value": "County West"
+      },
+      {
+        "capability": "F12-gap",
+        "attribute": "service_day",
+        "op": "le",
+        "value": 4
+      }
+    ]
+  },
+  "construction": {
+    "prefix_generated_by_public_tools": true,
+    "failure_generated_by_public_tool": true,
+    "normalized_policy_source": true,
+    "necessary_action_order_invariant": true
+  }
+}

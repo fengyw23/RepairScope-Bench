@@ -1,0 +1,629 @@
+{
+  "schema_version": "2.0",
+  "task_id": "T-bf5c5bb971e8",
+  "domain": "travel",
+  "environment_type": "repairscope.travel.state.v2",
+  "split": "dev",
+  "now": "2026-09-01T09:00:00+08:00",
+  "max_turns": 15,
+  "instruction": "Complete the regional research workshop at Shenzhen for the traveller. The activity log contains commitments that are already paid and active, but the most recent Yulan Dining Service operation failed. Keep the required primary arrangement, support, access, shared service, and dining coverage valid at Shenzhen by day 4. Investigate the authoritative records and execute the best supported recovery without asking me to choose.",
+  "initial_snapshot": {
+    "commitments": []
+  },
+  "initial_snapshot_sha256": "dbc26b7f61e91d0529291823abb38756f52a36dc52e819cf0a83abddfe598124",
+  "failure_snapshot": {
+    "commitments": [
+      {
+        "entity_id": "E-17b240ddd371",
+        "option_id": "O-f7c8c08008ce",
+        "name": "Congress Admission",
+        "kind": "event_pass",
+        "status": "active",
+        "paid_cents": 30000,
+        "refund_policy_id": "P-f7c8c08008ce",
+        "provides": {
+          "F02-access": 1
+        },
+        "attributes": {
+          "city": "Shenzhen",
+          "service_day": 2
+        },
+        "created_after_boundary": false
+      },
+      {
+        "entity_id": "E-3a0f59ea419b",
+        "option_id": "O-39b4da5eb2d0",
+        "name": "MetroLink Transfer",
+        "kind": "transfer",
+        "status": "active",
+        "paid_cents": 40000,
+        "refund_policy_id": "P-39b4da5eb2d0",
+        "provides": {
+          "F02-support": 1
+        },
+        "attributes": {
+          "city": "Shenzhen",
+          "service_day": 2
+        },
+        "created_after_boundary": false
+      },
+      {
+        "entity_id": "E-3f50fc017618",
+        "option_id": "O-a3b2ff44830a",
+        "name": "Riverside Meeting Room",
+        "kind": "workspace",
+        "status": "active",
+        "paid_cents": 20000,
+        "refund_policy_id": "P-a3b2ff44830a",
+        "provides": {
+          "F02-shared": 1
+        },
+        "attributes": {
+          "city": "Shenzhen",
+          "service_day": 2
+        },
+        "created_after_boundary": false
+      },
+      {
+        "entity_id": "E-7d349288b16b",
+        "option_id": "O-e48c621315ce",
+        "name": "Harbor View Hotel",
+        "kind": "hotel",
+        "status": "active",
+        "paid_cents": 100000,
+        "refund_policy_id": "P-e48c621315ce",
+        "provides": {
+          "F02-primary": 1
+        },
+        "attributes": {
+          "city": "Shenzhen",
+          "service_day": 2
+        },
+        "created_after_boundary": false
+      }
+    ]
+  },
+  "snapshot_sha256": "7ef9dd42ea834f374c7e3bece2dbbdb01db33b27679fce59e40bc1a4f3aee99c",
+  "pre_failure_trace": [
+    {
+      "step": 1,
+      "tool": "reserve_travel_option",
+      "arguments": {
+        "travel_option_id": "O-e48c621315ce"
+      },
+      "result": {
+        "ok": true,
+        "message": "New commitment created.",
+        "data": {
+          "entity_id": "E-7d349288b16b",
+          "option_id": "O-e48c621315ce",
+          "charge_cents": 100000,
+          "contract_charges_applied": []
+        }
+      }
+    },
+    {
+      "step": 2,
+      "tool": "reserve_travel_option",
+      "arguments": {
+        "travel_option_id": "O-39b4da5eb2d0"
+      },
+      "result": {
+        "ok": true,
+        "message": "New commitment created.",
+        "data": {
+          "entity_id": "E-3a0f59ea419b",
+          "option_id": "O-39b4da5eb2d0",
+          "charge_cents": 40000,
+          "contract_charges_applied": []
+        }
+      }
+    },
+    {
+      "step": 3,
+      "tool": "reserve_travel_option",
+      "arguments": {
+        "travel_option_id": "O-f7c8c08008ce"
+      },
+      "result": {
+        "ok": true,
+        "message": "New commitment created.",
+        "data": {
+          "entity_id": "E-17b240ddd371",
+          "option_id": "O-f7c8c08008ce",
+          "charge_cents": 30000,
+          "contract_charges_applied": []
+        }
+      }
+    },
+    {
+      "step": 4,
+      "tool": "reserve_travel_option",
+      "arguments": {
+        "travel_option_id": "O-a3b2ff44830a"
+      },
+      "result": {
+        "ok": true,
+        "message": "New commitment created.",
+        "data": {
+          "entity_id": "E-3f50fc017618",
+          "option_id": "O-a3b2ff44830a",
+          "charge_cents": 20000,
+          "contract_charges_applied": []
+        }
+      }
+    }
+  ],
+  "prefix_ledger": [
+    {
+      "event_index": 1,
+      "tool": "book_trip_option",
+      "entity_id": "E-7d349288b16b",
+      "contract_id": null,
+      "charge_cents": 100000,
+      "refund_cents": 0,
+      "irreversible_loss_delta": 0,
+      "net_outlay_delta": 100000
+    },
+    {
+      "event_index": 2,
+      "tool": "book_trip_option",
+      "entity_id": "E-3a0f59ea419b",
+      "contract_id": null,
+      "charge_cents": 40000,
+      "refund_cents": 0,
+      "irreversible_loss_delta": 0,
+      "net_outlay_delta": 40000
+    },
+    {
+      "event_index": 3,
+      "tool": "book_trip_option",
+      "entity_id": "E-17b240ddd371",
+      "contract_id": null,
+      "charge_cents": 30000,
+      "refund_cents": 0,
+      "irreversible_loss_delta": 0,
+      "net_outlay_delta": 30000
+    },
+    {
+      "event_index": 4,
+      "tool": "book_trip_option",
+      "entity_id": "E-3f50fc017618",
+      "contract_id": null,
+      "charge_cents": 20000,
+      "refund_cents": 0,
+      "irreversible_loss_delta": 0,
+      "net_outlay_delta": 20000
+    }
+  ],
+  "latest_failure": {
+    "tool": "reserve_travel_option",
+    "arguments": {
+      "travel_option_id": "O-c470fb4da83e"
+    },
+    "result": {
+      "ok": false,
+      "message": "The selected option is unavailable.",
+      "data": null
+    }
+  },
+  "boundary_commitments": [
+    {
+      "entity_id": "E-17b240ddd371",
+      "option_id": "O-f7c8c08008ce",
+      "name": "Congress Admission",
+      "kind": "event_pass",
+      "status": "active",
+      "paid_cents": 30000,
+      "refund_policy_id": "P-f7c8c08008ce",
+      "provides": {
+        "F02-access": 1
+      },
+      "attributes": {
+        "city": "Shenzhen",
+        "service_day": 2
+      },
+      "created_after_boundary": false,
+      "primary_capability": "F02-access"
+    },
+    {
+      "entity_id": "E-3a0f59ea419b",
+      "option_id": "O-39b4da5eb2d0",
+      "name": "MetroLink Transfer",
+      "kind": "transfer",
+      "status": "active",
+      "paid_cents": 40000,
+      "refund_policy_id": "P-39b4da5eb2d0",
+      "provides": {
+        "F02-support": 1
+      },
+      "attributes": {
+        "city": "Shenzhen",
+        "service_day": 2
+      },
+      "created_after_boundary": false,
+      "primary_capability": "F02-support"
+    },
+    {
+      "entity_id": "E-3f50fc017618",
+      "option_id": "O-a3b2ff44830a",
+      "name": "Riverside Meeting Room",
+      "kind": "workspace",
+      "status": "active",
+      "paid_cents": 20000,
+      "refund_policy_id": "P-a3b2ff44830a",
+      "provides": {
+        "F02-shared": 1
+      },
+      "attributes": {
+        "city": "Shenzhen",
+        "service_day": 2
+      },
+      "created_after_boundary": false,
+      "primary_capability": "F02-shared"
+    },
+    {
+      "entity_id": "E-7d349288b16b",
+      "option_id": "O-e48c621315ce",
+      "name": "Harbor View Hotel",
+      "kind": "hotel",
+      "status": "active",
+      "paid_cents": 100000,
+      "refund_policy_id": "P-e48c621315ce",
+      "provides": {
+        "F02-primary": 1
+      },
+      "attributes": {
+        "city": "Shenzhen",
+        "service_day": 2
+      },
+      "created_after_boundary": false,
+      "primary_capability": "F02-primary"
+    }
+  ],
+  "inventory": [
+    {
+      "option_id": "O-e48c621315ce",
+      "name": "Harbor View Hotel",
+      "kind": "hotel",
+      "available": false,
+      "upfront_cents": 100000,
+      "monthly_cents": 0,
+      "horizon_months": 0,
+      "refund_policy_id": "P-e48c621315ce",
+      "provides": {
+        "F02-primary": 1
+      },
+      "attributes": {
+        "city": "Shenzhen",
+        "service_day": 2
+      },
+      "entity_id_on_purchase": "E-7d349288b16b"
+    },
+    {
+      "option_id": "O-39b4da5eb2d0",
+      "name": "MetroLink Transfer",
+      "kind": "transfer",
+      "available": false,
+      "upfront_cents": 40000,
+      "monthly_cents": 0,
+      "horizon_months": 0,
+      "refund_policy_id": "P-39b4da5eb2d0",
+      "provides": {
+        "F02-support": 1
+      },
+      "attributes": {
+        "city": "Shenzhen",
+        "service_day": 2
+      },
+      "entity_id_on_purchase": "E-3a0f59ea419b"
+    },
+    {
+      "option_id": "O-f7c8c08008ce",
+      "name": "Congress Admission",
+      "kind": "event_pass",
+      "available": false,
+      "upfront_cents": 30000,
+      "monthly_cents": 0,
+      "horizon_months": 0,
+      "refund_policy_id": "P-f7c8c08008ce",
+      "provides": {
+        "F02-access": 1
+      },
+      "attributes": {
+        "city": "Shenzhen",
+        "service_day": 2
+      },
+      "entity_id_on_purchase": "E-17b240ddd371"
+    },
+    {
+      "option_id": "O-a3b2ff44830a",
+      "name": "Riverside Meeting Room",
+      "kind": "workspace",
+      "available": false,
+      "upfront_cents": 20000,
+      "monthly_cents": 0,
+      "horizon_months": 0,
+      "refund_policy_id": "P-a3b2ff44830a",
+      "provides": {
+        "F02-shared": 1
+      },
+      "attributes": {
+        "city": "Shenzhen",
+        "service_day": 2
+      },
+      "entity_id_on_purchase": "E-3f50fc017618"
+    },
+    {
+      "option_id": "O-acacbc3c4142",
+      "name": "Yulan Dining Service",
+      "kind": "dining",
+      "available": true,
+      "upfront_cents": 70000,
+      "monthly_cents": 0,
+      "horizon_months": 0,
+      "refund_policy_id": "P-9c76362248a8",
+      "provides": {
+        "F02-gap": 1
+      },
+      "attributes": {
+        "city": "Shenzhen",
+        "service_day": 2
+      },
+      "entity_id_on_purchase": "E-a297ac47c247"
+    },
+    {
+      "option_id": "O-94c9ef0577c9",
+      "name": "Jinhai Hospitality Package",
+      "kind": "dining_package",
+      "available": true,
+      "upfront_cents": 50000,
+      "monthly_cents": 0,
+      "horizon_months": 0,
+      "refund_policy_id": "P-9c76362248a8",
+      "provides": {
+        "F02-primary": 1,
+        "F02-gap": 1
+      },
+      "attributes": {
+        "city": "Shenzhen",
+        "service_day": 2
+      },
+      "entity_id_on_purchase": "E-98f95de735b1"
+    },
+    {
+      "option_id": "O-b9cd308f25f7",
+      "name": "Mingyuan Dining Service",
+      "kind": "dining",
+      "available": true,
+      "upfront_cents": 120000,
+      "monthly_cents": 0,
+      "horizon_months": 0,
+      "refund_policy_id": "P-9c76362248a8",
+      "provides": {
+        "F02-gap": 1
+      },
+      "attributes": {
+        "city": "Shenzhen",
+        "service_day": 2
+      },
+      "entity_id_on_purchase": "E-3dbf090a1dff"
+    },
+    {
+      "option_id": "O-9942bf6408ab",
+      "name": "Huating Conference Package",
+      "kind": "continuity_package",
+      "available": true,
+      "upfront_cents": 600000,
+      "monthly_cents": 0,
+      "horizon_months": 0,
+      "refund_policy_id": "P-9c76362248a8",
+      "provides": {
+        "F02-primary": 1,
+        "F02-support": 1,
+        "F02-access": 1,
+        "F02-shared": 1,
+        "F02-gap": 1
+      },
+      "attributes": {
+        "city": "Shenzhen",
+        "service_day": 3
+      },
+      "entity_id_on_purchase": "E-20d99586f3ce"
+    },
+    {
+      "option_id": "O-e21779e0d5ad",
+      "name": "Lanting Coordination Service",
+      "kind": "coordination_service",
+      "available": true,
+      "upfront_cents": 10000,
+      "monthly_cents": 0,
+      "horizon_months": 0,
+      "refund_policy_id": "P-9c76362248a8",
+      "provides": {
+        "F02-gap-companion": 1
+      },
+      "attributes": {
+        "city": "Shenzhen",
+        "service_day": 2
+      },
+      "entity_id_on_purchase": "E-96f9fbb7b048"
+    },
+    {
+      "option_id": "O-da08644e6eaa",
+      "name": "Qinghe Dining Service",
+      "kind": "transfer",
+      "available": false,
+      "upfront_cents": 150000,
+      "monthly_cents": 0,
+      "horizon_months": 0,
+      "refund_policy_id": "P-9c76362248a8",
+      "provides": {
+        "F02-support": 1
+      },
+      "attributes": {
+        "city": "Shenzhen",
+        "service_day": 2
+      },
+      "entity_id_on_purchase": "E-f33b6ec6e646"
+    },
+    {
+      "option_id": "O-360dbb6365d6",
+      "name": "Rivermark Service",
+      "kind": "dining",
+      "available": true,
+      "upfront_cents": 4000,
+      "monthly_cents": 0,
+      "horizon_months": 0,
+      "refund_policy_id": "P-9c76362248a8",
+      "provides": {
+        "F02-gap": 1
+      },
+      "attributes": {
+        "city": "Other Shenzhen",
+        "service_day": 2
+      },
+      "entity_id_on_purchase": "E-41d65a1e9c94"
+    },
+    {
+      "option_id": "O-a00ed8670339",
+      "name": "Cypress Service",
+      "kind": "dining",
+      "available": true,
+      "upfront_cents": 3000,
+      "monthly_cents": 0,
+      "horizon_months": 0,
+      "refund_policy_id": "P-9c76362248a8",
+      "provides": {
+        "F02-gap": 1
+      },
+      "attributes": {
+        "city": "Shenzhen",
+        "service_day": 9
+      },
+      "entity_id_on_purchase": "E-b3ae4ff7823d"
+    },
+    {
+      "option_id": "O-c470fb4da83e",
+      "name": "Yulan Dining Service",
+      "kind": "dining",
+      "available": false,
+      "upfront_cents": 18000,
+      "monthly_cents": 0,
+      "horizon_months": 0,
+      "refund_policy_id": "P-9c76362248a8",
+      "provides": {
+        "F02-gap": 1
+      },
+      "attributes": {
+        "city": "Shenzhen",
+        "service_day": 2
+      },
+      "entity_id_on_purchase": "E-5a879216b91b"
+    }
+  ],
+  "policies": [
+    {
+      "policy_id": "P-e48c621315ce",
+      "type": "refund",
+      "description": "The stated refund applies if the linked commitment is changed now.",
+      "refund_cents": 100000
+    },
+    {
+      "policy_id": "P-39b4da5eb2d0",
+      "type": "refund",
+      "description": "The stated refund applies if the linked commitment is changed now.",
+      "refund_cents": 10000
+    },
+    {
+      "policy_id": "P-f7c8c08008ce",
+      "type": "refund",
+      "description": "The stated refund applies if the linked commitment is changed now.",
+      "refund_cents": 0
+    },
+    {
+      "policy_id": "P-a3b2ff44830a",
+      "type": "refund",
+      "description": "The stated refund applies if the linked commitment is changed now.",
+      "refund_cents": 0
+    },
+    {
+      "policy_id": "P-9c76362248a8",
+      "type": "refund",
+      "description": "The stated refund applies if the linked commitment is changed now.",
+      "refund_cents": 0
+    }
+  ],
+  "contracts": [
+    {
+      "contract_id": "C-d09f1c4799f8",
+      "description": "A retained-value threshold determines whether a package adjustment applies.",
+      "trigger": {
+        "type": "retained_paid_below",
+        "threshold_cents": 1,
+        "entity_ids": [
+          "E-7d349288b16b"
+        ]
+      },
+      "charge_cents": 150000
+    }
+  ],
+  "compatibility_rules": [
+    {
+      "type": "requires_all",
+      "if_option_id": "O-94c9ef0577c9",
+      "all_option_ids": [
+        "O-e21779e0d5ad"
+      ]
+    }
+  ],
+  "hard_goals": {
+    "capabilities": [
+      {
+        "capability": "F02-primary",
+        "min": 1,
+        "max": 1
+      },
+      {
+        "capability": "F02-support",
+        "min": 1,
+        "max": 1
+      },
+      {
+        "capability": "F02-access",
+        "min": 1,
+        "max": 1
+      },
+      {
+        "capability": "F02-shared",
+        "min": 1,
+        "max": 1
+      },
+      {
+        "capability": "F02-gap",
+        "min": 1,
+        "max": 1
+      }
+    ],
+    "attribute_requirements": [
+      {
+        "capability": "F02-gap",
+        "attribute": "city",
+        "op": "eq",
+        "value": "Shenzhen"
+      },
+      {
+        "capability": "F02-gap",
+        "attribute": "service_day",
+        "op": "le",
+        "value": 4
+      }
+    ]
+  },
+  "construction": {
+    "prefix_generated_by_public_tools": true,
+    "failure_generated_by_public_tool": true,
+    "normalized_policy_source": true,
+    "necessary_action_order_invariant": true
+  }
+}

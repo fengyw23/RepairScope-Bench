@@ -1,0 +1,616 @@
+{
+  "schema_version": "2.0",
+  "task_id": "T-21073fd44981",
+  "domain": "after_sales",
+  "environment_type": "repairscope.after_sales.state.v2",
+  "split": "dev",
+  "now": "2026-09-01T09:00:00+08:00",
+  "max_turns": 15,
+  "instruction": "Complete the cold-chain console installation at Clinic North for the procurement team. The activity log contains commitments that are already paid and active, but the most recent Orchid Interface Unit operation failed. Keep the required primary arrangement, support, access, shared service, and accessory coverage valid at Clinic North by day 4. Investigate the authoritative records and execute the best supported recovery without asking me to choose.",
+  "initial_snapshot": {
+    "commitments": []
+  },
+  "initial_snapshot_sha256": "dbc26b7f61e91d0529291823abb38756f52a36dc52e819cf0a83abddfe598124",
+  "failure_snapshot": {
+    "commitments": [
+      {
+        "entity_id": "E-1d9333018436",
+        "option_id": "O-555742f8b056",
+        "name": "Northstar Service Cover",
+        "kind": "warranty",
+        "status": "active",
+        "paid_cents": 40000,
+        "refund_policy_id": "P-555742f8b056",
+        "provides": {
+          "F05-support": 1
+        },
+        "attributes": {
+          "delivery_site": "Clinic North",
+          "delivery_day": 2
+        },
+        "created_after_boundary": false
+      },
+      {
+        "entity_id": "E-3812215f33be",
+        "option_id": "O-2e0d6eec8a2f",
+        "name": "Aster Workstation",
+        "kind": "core_device",
+        "status": "active",
+        "paid_cents": 100000,
+        "refund_policy_id": "P-2e0d6eec8a2f",
+        "provides": {
+          "F05-primary": 1
+        },
+        "attributes": {
+          "delivery_site": "Clinic North",
+          "delivery_day": 2
+        },
+        "created_after_boundary": false
+      },
+      {
+        "entity_id": "E-5ff0bacd4967",
+        "option_id": "O-124772e14ca4",
+        "name": "Meridian Clinical Licence",
+        "kind": "software",
+        "status": "active",
+        "paid_cents": 30000,
+        "refund_policy_id": "P-124772e14ca4",
+        "provides": {
+          "F05-access": 1
+        },
+        "attributes": {
+          "delivery_site": "Clinic North",
+          "delivery_day": 2
+        },
+        "created_after_boundary": false
+      },
+      {
+        "entity_id": "E-e1a6e7152dc2",
+        "option_id": "O-b1f38a4ac6de",
+        "name": "Helios Reference Display",
+        "kind": "display",
+        "status": "active",
+        "paid_cents": 20000,
+        "refund_policy_id": "P-b1f38a4ac6de",
+        "provides": {
+          "F05-shared": 1
+        },
+        "attributes": {
+          "delivery_site": "Clinic North",
+          "delivery_day": 2
+        },
+        "created_after_boundary": false
+      }
+    ]
+  },
+  "snapshot_sha256": "b4a409ef34cecfb634513d8dc7761195505643dfa37bf66c4fb6d7dc540b3f02",
+  "pre_failure_trace": [
+    {
+      "step": 1,
+      "tool": "purchase_product_option",
+      "arguments": {
+        "product_option_id": "O-2e0d6eec8a2f"
+      },
+      "result": {
+        "ok": true,
+        "message": "New commitment created.",
+        "data": {
+          "entity_id": "E-3812215f33be",
+          "option_id": "O-2e0d6eec8a2f",
+          "charge_cents": 100000,
+          "contract_charges_applied": []
+        }
+      }
+    },
+    {
+      "step": 2,
+      "tool": "purchase_product_option",
+      "arguments": {
+        "product_option_id": "O-555742f8b056"
+      },
+      "result": {
+        "ok": true,
+        "message": "New commitment created.",
+        "data": {
+          "entity_id": "E-1d9333018436",
+          "option_id": "O-555742f8b056",
+          "charge_cents": 40000,
+          "contract_charges_applied": []
+        }
+      }
+    },
+    {
+      "step": 3,
+      "tool": "purchase_product_option",
+      "arguments": {
+        "product_option_id": "O-124772e14ca4"
+      },
+      "result": {
+        "ok": true,
+        "message": "New commitment created.",
+        "data": {
+          "entity_id": "E-5ff0bacd4967",
+          "option_id": "O-124772e14ca4",
+          "charge_cents": 30000,
+          "contract_charges_applied": []
+        }
+      }
+    },
+    {
+      "step": 4,
+      "tool": "purchase_product_option",
+      "arguments": {
+        "product_option_id": "O-b1f38a4ac6de"
+      },
+      "result": {
+        "ok": true,
+        "message": "New commitment created.",
+        "data": {
+          "entity_id": "E-e1a6e7152dc2",
+          "option_id": "O-b1f38a4ac6de",
+          "charge_cents": 20000,
+          "contract_charges_applied": []
+        }
+      }
+    }
+  ],
+  "prefix_ledger": [
+    {
+      "event_index": 1,
+      "tool": "purchase_product",
+      "entity_id": "E-3812215f33be",
+      "contract_id": null,
+      "charge_cents": 100000,
+      "refund_cents": 0,
+      "irreversible_loss_delta": 0,
+      "net_outlay_delta": 100000
+    },
+    {
+      "event_index": 2,
+      "tool": "purchase_product",
+      "entity_id": "E-1d9333018436",
+      "contract_id": null,
+      "charge_cents": 40000,
+      "refund_cents": 0,
+      "irreversible_loss_delta": 0,
+      "net_outlay_delta": 40000
+    },
+    {
+      "event_index": 3,
+      "tool": "purchase_product",
+      "entity_id": "E-5ff0bacd4967",
+      "contract_id": null,
+      "charge_cents": 30000,
+      "refund_cents": 0,
+      "irreversible_loss_delta": 0,
+      "net_outlay_delta": 30000
+    },
+    {
+      "event_index": 4,
+      "tool": "purchase_product",
+      "entity_id": "E-e1a6e7152dc2",
+      "contract_id": null,
+      "charge_cents": 20000,
+      "refund_cents": 0,
+      "irreversible_loss_delta": 0,
+      "net_outlay_delta": 20000
+    }
+  ],
+  "latest_failure": {
+    "tool": "purchase_product_option",
+    "arguments": {
+      "product_option_id": "O-ac4ab4e63c1f"
+    },
+    "result": {
+      "ok": false,
+      "message": "The selected option is unavailable.",
+      "data": null
+    }
+  },
+  "boundary_commitments": [
+    {
+      "entity_id": "E-1d9333018436",
+      "option_id": "O-555742f8b056",
+      "name": "Northstar Service Cover",
+      "kind": "warranty",
+      "status": "active",
+      "paid_cents": 40000,
+      "refund_policy_id": "P-555742f8b056",
+      "provides": {
+        "F05-support": 1
+      },
+      "attributes": {
+        "delivery_site": "Clinic North",
+        "delivery_day": 2
+      },
+      "created_after_boundary": false,
+      "primary_capability": "F05-support"
+    },
+    {
+      "entity_id": "E-3812215f33be",
+      "option_id": "O-2e0d6eec8a2f",
+      "name": "Aster Workstation",
+      "kind": "core_device",
+      "status": "active",
+      "paid_cents": 100000,
+      "refund_policy_id": "P-2e0d6eec8a2f",
+      "provides": {
+        "F05-primary": 1
+      },
+      "attributes": {
+        "delivery_site": "Clinic North",
+        "delivery_day": 2
+      },
+      "created_after_boundary": false,
+      "primary_capability": "F05-primary"
+    },
+    {
+      "entity_id": "E-5ff0bacd4967",
+      "option_id": "O-124772e14ca4",
+      "name": "Meridian Clinical Licence",
+      "kind": "software",
+      "status": "active",
+      "paid_cents": 30000,
+      "refund_policy_id": "P-124772e14ca4",
+      "provides": {
+        "F05-access": 1
+      },
+      "attributes": {
+        "delivery_site": "Clinic North",
+        "delivery_day": 2
+      },
+      "created_after_boundary": false,
+      "primary_capability": "F05-access"
+    },
+    {
+      "entity_id": "E-e1a6e7152dc2",
+      "option_id": "O-b1f38a4ac6de",
+      "name": "Helios Reference Display",
+      "kind": "display",
+      "status": "active",
+      "paid_cents": 20000,
+      "refund_policy_id": "P-b1f38a4ac6de",
+      "provides": {
+        "F05-shared": 1
+      },
+      "attributes": {
+        "delivery_site": "Clinic North",
+        "delivery_day": 2
+      },
+      "created_after_boundary": false,
+      "primary_capability": "F05-shared"
+    }
+  ],
+  "inventory": [
+    {
+      "option_id": "O-2e0d6eec8a2f",
+      "name": "Aster Workstation",
+      "kind": "core_device",
+      "available": false,
+      "upfront_cents": 100000,
+      "monthly_cents": 0,
+      "horizon_months": 0,
+      "refund_policy_id": "P-2e0d6eec8a2f",
+      "provides": {
+        "F05-primary": 1
+      },
+      "attributes": {
+        "delivery_site": "Clinic North",
+        "delivery_day": 2
+      },
+      "entity_id_on_purchase": "E-3812215f33be"
+    },
+    {
+      "option_id": "O-555742f8b056",
+      "name": "Northstar Service Cover",
+      "kind": "warranty",
+      "available": false,
+      "upfront_cents": 40000,
+      "monthly_cents": 0,
+      "horizon_months": 0,
+      "refund_policy_id": "P-555742f8b056",
+      "provides": {
+        "F05-support": 1
+      },
+      "attributes": {
+        "delivery_site": "Clinic North",
+        "delivery_day": 2
+      },
+      "entity_id_on_purchase": "E-1d9333018436"
+    },
+    {
+      "option_id": "O-124772e14ca4",
+      "name": "Meridian Clinical Licence",
+      "kind": "software",
+      "available": false,
+      "upfront_cents": 30000,
+      "monthly_cents": 0,
+      "horizon_months": 0,
+      "refund_policy_id": "P-124772e14ca4",
+      "provides": {
+        "F05-access": 1
+      },
+      "attributes": {
+        "delivery_site": "Clinic North",
+        "delivery_day": 2
+      },
+      "entity_id_on_purchase": "E-5ff0bacd4967"
+    },
+    {
+      "option_id": "O-b1f38a4ac6de",
+      "name": "Helios Reference Display",
+      "kind": "display",
+      "available": false,
+      "upfront_cents": 20000,
+      "monthly_cents": 0,
+      "horizon_months": 0,
+      "refund_policy_id": "P-b1f38a4ac6de",
+      "provides": {
+        "F05-shared": 1
+      },
+      "attributes": {
+        "delivery_site": "Clinic North",
+        "delivery_day": 2
+      },
+      "entity_id_on_purchase": "E-e1a6e7152dc2"
+    },
+    {
+      "option_id": "O-5bceca33a41a",
+      "name": "Orchid Interface Unit",
+      "kind": "accessory",
+      "available": true,
+      "upfront_cents": 50000,
+      "monthly_cents": 0,
+      "horizon_months": 0,
+      "refund_policy_id": "P-afd497283e78",
+      "provides": {
+        "F05-gap": 2
+      },
+      "attributes": {
+        "delivery_site": "Clinic North",
+        "delivery_day": 2
+      },
+      "entity_id_on_purchase": "E-af2b9bac0705"
+    },
+    {
+      "option_id": "O-38c075ada2f2",
+      "name": "Aster Integration Set",
+      "kind": "accessory_package",
+      "available": true,
+      "upfront_cents": 300000,
+      "monthly_cents": 0,
+      "horizon_months": 0,
+      "refund_policy_id": "P-afd497283e78",
+      "provides": {
+        "F05-primary": 1,
+        "F05-gap": 2
+      },
+      "attributes": {
+        "delivery_site": "Clinic North",
+        "delivery_day": 2
+      },
+      "entity_id_on_purchase": "E-a8279792f401"
+    },
+    {
+      "option_id": "O-32a71e7a3fec",
+      "name": "Cedar Interface Unit",
+      "kind": "accessory",
+      "available": true,
+      "upfront_cents": 35000,
+      "monthly_cents": 0,
+      "horizon_months": 0,
+      "refund_policy_id": "P-afd497283e78",
+      "provides": {
+        "F05-gap": 1
+      },
+      "attributes": {
+        "delivery_site": "Clinic North",
+        "delivery_day": 2
+      },
+      "entity_id_on_purchase": "E-3f68af770a60"
+    },
+    {
+      "option_id": "O-f3c495efaa9e",
+      "name": "Meridian Deployment Set",
+      "kind": "continuity_package",
+      "available": true,
+      "upfront_cents": 600000,
+      "monthly_cents": 0,
+      "horizon_months": 0,
+      "refund_policy_id": "P-afd497283e78",
+      "provides": {
+        "F05-primary": 1,
+        "F05-support": 1,
+        "F05-access": 1,
+        "F05-shared": 1,
+        "F05-gap": 2
+      },
+      "attributes": {
+        "delivery_site": "Clinic North",
+        "delivery_day": 3
+      },
+      "entity_id_on_purchase": "E-47d0767ff04b"
+    },
+    {
+      "option_id": "O-03ca0dd69bc2",
+      "name": "Juniper Certification Service",
+      "kind": "coordination_service",
+      "available": true,
+      "upfront_cents": 35000,
+      "monthly_cents": 0,
+      "horizon_months": 0,
+      "refund_policy_id": "P-afd497283e78",
+      "provides": {
+        "F05-gap": 1
+      },
+      "attributes": {
+        "delivery_site": "Clinic North",
+        "delivery_day": 2
+      },
+      "entity_id_on_purchase": "E-a0be7512cf0d"
+    },
+    {
+      "option_id": "O-0b169b028a20",
+      "name": "Pine Interface Unit",
+      "kind": "warranty",
+      "available": true,
+      "upfront_cents": 10000,
+      "monthly_cents": 0,
+      "horizon_months": 0,
+      "refund_policy_id": "P-afd497283e78",
+      "provides": {
+        "F05-gap-auxiliary": 1
+      },
+      "attributes": {
+        "delivery_site": "Clinic North",
+        "delivery_day": 2
+      },
+      "entity_id_on_purchase": "E-ee0983bdcb32"
+    },
+    {
+      "option_id": "O-21dc3606a5a1",
+      "name": "Rivermark Service",
+      "kind": "accessory",
+      "available": true,
+      "upfront_cents": 4000,
+      "monthly_cents": 0,
+      "horizon_months": 0,
+      "refund_policy_id": "P-afd497283e78",
+      "provides": {
+        "F05-gap": 2
+      },
+      "attributes": {
+        "delivery_site": "Other Clinic North",
+        "delivery_day": 2
+      },
+      "entity_id_on_purchase": "E-3a218c9c6639"
+    },
+    {
+      "option_id": "O-fc1a823c77c5",
+      "name": "Cypress Service",
+      "kind": "accessory",
+      "available": true,
+      "upfront_cents": 3000,
+      "monthly_cents": 0,
+      "horizon_months": 0,
+      "refund_policy_id": "P-afd497283e78",
+      "provides": {
+        "F05-gap": 2
+      },
+      "attributes": {
+        "delivery_site": "Clinic North",
+        "delivery_day": 9
+      },
+      "entity_id_on_purchase": "E-778fae3daf56"
+    },
+    {
+      "option_id": "O-ac4ab4e63c1f",
+      "name": "Orchid Interface Unit",
+      "kind": "accessory",
+      "available": false,
+      "upfront_cents": 18000,
+      "monthly_cents": 0,
+      "horizon_months": 0,
+      "refund_policy_id": "P-afd497283e78",
+      "provides": {
+        "F05-gap": 2
+      },
+      "attributes": {
+        "delivery_site": "Clinic North",
+        "delivery_day": 2
+      },
+      "entity_id_on_purchase": "E-cd876951848d"
+    }
+  ],
+  "policies": [
+    {
+      "policy_id": "P-2e0d6eec8a2f",
+      "type": "refund",
+      "description": "The stated refund applies if the linked commitment is changed now.",
+      "refund_cents": 100000
+    },
+    {
+      "policy_id": "P-555742f8b056",
+      "type": "refund",
+      "description": "The stated refund applies if the linked commitment is changed now.",
+      "refund_cents": 10000
+    },
+    {
+      "policy_id": "P-124772e14ca4",
+      "type": "refund",
+      "description": "The stated refund applies if the linked commitment is changed now.",
+      "refund_cents": 0
+    },
+    {
+      "policy_id": "P-b1f38a4ac6de",
+      "type": "refund",
+      "description": "The stated refund applies if the linked commitment is changed now.",
+      "refund_cents": 0
+    },
+    {
+      "policy_id": "P-afd497283e78",
+      "type": "refund",
+      "description": "The stated refund applies if the linked commitment is changed now.",
+      "refund_cents": 0
+    }
+  ],
+  "contracts": [],
+  "compatibility_rules": [
+    {
+      "type": "requires_all",
+      "if_option_id": "O-32a71e7a3fec",
+      "all_option_ids": [
+        "O-0b169b028a20"
+      ]
+    }
+  ],
+  "hard_goals": {
+    "capabilities": [
+      {
+        "capability": "F05-primary",
+        "min": 1,
+        "max": 1
+      },
+      {
+        "capability": "F05-support",
+        "min": 1,
+        "max": 1
+      },
+      {
+        "capability": "F05-access",
+        "min": 1,
+        "max": 1
+      },
+      {
+        "capability": "F05-shared",
+        "min": 1,
+        "max": 1
+      },
+      {
+        "capability": "F05-gap",
+        "min": 2,
+        "max": 2
+      }
+    ],
+    "attribute_requirements": [
+      {
+        "capability": "F05-gap",
+        "attribute": "delivery_site",
+        "op": "eq",
+        "value": "Clinic North"
+      },
+      {
+        "capability": "F05-gap",
+        "attribute": "delivery_day",
+        "op": "le",
+        "value": 4
+      }
+    ]
+  },
+  "construction": {
+    "prefix_generated_by_public_tools": true,
+    "failure_generated_by_public_tool": true,
+    "normalized_policy_source": true,
+    "necessary_action_order_invariant": true
+  }
+}

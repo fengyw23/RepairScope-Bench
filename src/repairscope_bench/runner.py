@@ -97,10 +97,31 @@ customer's interests without inventing identifiers or asking the customer to
 choose. Verify the resulting event plan and stop when complete.""",
 }
 
+V2_SYSTEM_PROMPTS = {
+    "travel": """You are a travel service agent continuing a partially executed request.
+Use the authoritative travel records, inventory, policy, compatibility, and
+reservation tools. Investigate before changing persistent arrangements. Make
+and execute the best supported decision without asking the customer to choose,
+then stop when the resulting arrangements are correct.""",
+    "after_sales": """You are an after-sales agent continuing a partially executed purchase.
+Use the authoritative order, product, policy, compatibility, return, and
+purchase tools. Investigate before changing persistent orders. Make and execute
+the best supported decision without asking the customer to choose, then stop
+when the resulting order state is correct.""",
+    "saas": """You are an enterprise SaaS agent continuing a partially executed request.
+Use the authoritative service, catalogue, billing-term, compatibility,
+termination, and activation tools. Investigate before changing persistent
+services. Decide and execute the best supported recovery, then stop.""",
+    "event_logistics": """You are an event-logistics agent continuing a partially executed request.
+Use the authoritative event commitments, supplier, contract, compatibility,
+cancellation, and booking tools. Investigate before changing persistent
+contracts. Decide and execute the best supported recovery, then stop.""",
+}
+
 
 def build_user_prompt(task: dict[str, Any]) -> str:
     """Build the model-visible context without evaluator constraints or gold."""
-    if task["schema_version"] in {"0.6", "1.0", "1.1"}:
+    if task["schema_version"] in {"0.6", "1.0", "1.1", "2.0"}:
         public = {
             "customer_request": task["instruction"],
             "earlier_successful_tool_activity": task["pre_failure_trace"],
@@ -128,13 +149,19 @@ def run_episode(
     max_turns: int = 15,
     run_id: str | None = None,
 ) -> dict[str, Any]:
+    is_v2 = task["schema_version"] == "2.0"
     is_v06 = task["schema_version"] == "0.6"
     is_v1 = task["schema_version"] in {"1.0", "1.1"}
-    is_stateful = is_v06 or is_v1
+    is_stateful = is_v06 or is_v1 or is_v2
     effective_max_turns = (
         min(max_turns, int(task["max_turns"])) if is_stateful else max_turns
     )
-    if is_v1:
+    if is_v2:
+        from .v2_environment import DomainRecoveryEnvironmentV2
+
+        environment = DomainRecoveryEnvironmentV2(task)
+        router = None
+    elif is_v1:
         from .v1_environment import CommitmentRecoveryEnvironment
         from .v1_evaluator import evaluate_v1_environment
 
@@ -150,7 +177,9 @@ def run_episode(
         environment = RepairEnvironment(task)
         router = DomainToolRouter(environment)
     user_prompt = build_user_prompt(task)
-    if is_v1:
+    if is_v2:
+        prompts = V2_SYSTEM_PROMPTS
+    elif is_v1:
         prompts = V1_SYSTEM_PROMPTS
     elif is_v06:
         prompts = V06_SYSTEM_PROMPTS
@@ -227,7 +256,11 @@ def run_episode(
     else:
         status = "turn_budget_exceeded"
 
-    if is_v1:
+    if is_v2:
+        from .v2_evaluator import evaluate_v2_environment
+
+        score = evaluate_v2_environment(task, environment)
+    elif is_v1:
         score = evaluate_v1_environment(task, environment)
     elif is_v06:
         score = evaluate_v06_environment(task, environment)
@@ -252,6 +285,15 @@ def run_episode(
         "reasoning_structure": task.get(
             "reasoning_structure",
             task.get("_benchmark_metadata", {}).get("reasoning_structure"),
+        ),
+        "reasoning_signature": task.get("_benchmark_metadata", {}).get(
+            "reasoning_signature"
+        ),
+        "mechanism_card_id": task.get("_benchmark_metadata", {}).get(
+            "mechanism_card_id"
+        ),
+        "construction_stratum": task.get("_benchmark_metadata", {}).get(
+            "construction_stratum"
         ),
         "domain": task.get("domain"),
         "difficulty_level": task.get(
@@ -346,6 +388,13 @@ def run_suite(
                             "reasoning_structure",
                             metadata.get("reasoning_structure"),
                         ),
+                        "reasoning_signature": metadata.get(
+                            "reasoning_signature"
+                        ),
+                        "mechanism_card_id": metadata.get("mechanism_card_id"),
+                        "construction_stratum": metadata.get(
+                            "construction_stratum"
+                        ),
                         "domain": task.get("domain"),
                         "difficulty_level": task.get(
                             "difficulty_level",
@@ -388,11 +437,27 @@ def summarize_runs(
     aggregate_task_groups = _group_records(aggregate_records, "task_id")
     goal_pass_at_1 = _record_rate(aggregate_records, "success")
     optimal_pass_at_1 = _record_rate(aggregate_records, "optimal_repair")
+    scope_field = (
+        "scope_non_dominated_pass"
+        if any(
+            "scope_non_dominated_pass" in record.get("score", {})
+            for record in aggregate_records
+        )
+        else "optimal_repair"
+    )
+    scope_pass_at_1 = _record_rate(
+        aggregate_records, scope_field
+    )
     goal_pass_at_k = _all_repeats_rate(
         aggregate_task_groups, "success", expected_repeats=repeats
     )
     optimal_pass_at_k = _all_repeats_rate(
         aggregate_task_groups, "optimal_repair", expected_repeats=repeats
+    )
+    scope_pass_at_k = _all_repeats_rate(
+        aggregate_task_groups,
+        scope_field,
+        expected_repeats=repeats,
     )
     goal_repeat_rates = [
         rate
@@ -431,25 +496,41 @@ def summarize_runs(
         "goal_pass^k": goal_pass_at_k,
         f"goal_pass^{repeats}": goal_pass_at_k,
         "optimal_pass@1": optimal_pass_at_1,
+        "scope_non_dominated_pass@1": scope_pass_at_1,
+        "realized_non_dominated_pass@1": optimal_pass_at_1,
         "non_dominated_repair_pass@1": optimal_pass_at_1,
         "dominated_repair_rate": _conditional_dominated_rate(
             aggregate_records
         ),
         "scope_optimization_gap@1": (
-            goal_pass_at_1 - optimal_pass_at_1
-            if goal_pass_at_1 is not None and optimal_pass_at_1 is not None
+            goal_pass_at_1 - scope_pass_at_1
+            if goal_pass_at_1 is not None and scope_pass_at_1 is not None
+            else None
+        ),
+        "execution_efficiency_gap@1": (
+            scope_pass_at_1 - optimal_pass_at_1
+            if scope_pass_at_1 is not None and optimal_pass_at_1 is not None
             else None
         ),
         "optimal_pass@1_stddev": _population_stddev(optimal_repeat_rates),
         "optimal_pass^k": optimal_pass_at_k,
+        "scope_non_dominated_pass^k": scope_pass_at_k,
+        "realized_non_dominated_pass^k": optimal_pass_at_k,
         "non_dominated_repair_pass^k": optimal_pass_at_k,
         "scope_optimization_gap^k": (
-            goal_pass_at_k - optimal_pass_at_k
-            if goal_pass_at_k is not None and optimal_pass_at_k is not None
+            goal_pass_at_k - scope_pass_at_k
+            if goal_pass_at_k is not None and scope_pass_at_k is not None
+            else None
+        ),
+        "execution_efficiency_gap^k": (
+            scope_pass_at_k - optimal_pass_at_k
+            if scope_pass_at_k is not None and optimal_pass_at_k is not None
             else None
         ),
         f"optimal_pass^{repeats}": optimal_pass_at_k,
         f"non_dominated_repair_pass^{repeats}": optimal_pass_at_k,
+        f"scope_non_dominated_pass^{repeats}": scope_pass_at_k,
+        f"realized_non_dominated_pass^{repeats}": optimal_pass_at_k,
         # Backward-compatible aliases. Unlike the pre-v0.3.2 implementation,
         # provider errors are now failures in these primary rates rather than
         # silently disappearing from the denominator.
@@ -476,6 +557,41 @@ def summarize_runs(
                 score.get("net_outlay_regret")
                 for score in scored
                 if score.get("net_outlay_regret") is not None
+            ]
+        ),
+        "mean_scope_loss_regret": _mean(
+            [
+                score.get("scope_loss_regret")
+                for score in scored
+                if score.get("scope_loss_regret") is not None
+            ]
+        ),
+        "mean_scope_outlay_regret": _mean(
+            [
+                score.get("scope_outlay_regret")
+                for score in scored
+                if score.get("scope_outlay_regret") is not None
+            ]
+        ),
+        "mean_realized_loss_regret": _mean(
+            [
+                score.get("realized_loss_regret")
+                for score in scored
+                if score.get("realized_loss_regret") is not None
+            ]
+        ),
+        "mean_realized_outlay_regret": _mean(
+            [
+                score.get("realized_outlay_regret")
+                for score in scored
+                if score.get("realized_outlay_regret") is not None
+            ]
+        ),
+        "changed_fact_acquisition_rate": _mean(
+            [
+                bool(item["queried_before_first_mutation"])
+                for score in scored
+                if (item := score.get("changed_fact_acquisition")) is not None
             ]
         ),
     }
@@ -529,7 +645,40 @@ def summarize_runs(
         summary[
             f"counterfactual_pair_success^{repeats}"
         ] = strict_pair_success
-    for field in ["domain", "reasoning_structure", "difficulty_level"]:
+        if scope_field == "scope_non_dominated_pass":
+            scope_pair_successes = []
+            adaptive_switches = []
+            for group in pair_repeat_groups.values():
+                scope_success = len(group) == 2 and all(
+                    item.get("score", {}).get(
+                        "scope_non_dominated_pass", False
+                    )
+                    for item in group
+                )
+                scope_pair_successes.append(scope_success)
+                signatures = {
+                    json.dumps(
+                        item.get("score", {}).get("scope_signature"),
+                        sort_keys=True,
+                    )
+                    for item in group
+                }
+                adaptive_switches.append(
+                    scope_success and len(signatures) == 2
+                )
+            summary["counterfactual_scope_pair_success@1"] = (
+                sum(scope_pair_successes) / len(scope_pair_successes)
+            )
+            summary["adaptive_scope_switch@1"] = (
+                sum(adaptive_switches) / len(adaptive_switches)
+            )
+    for field in [
+        "domain",
+        "reasoning_structure",
+        "difficulty_level",
+        "construction_stratum",
+        "mechanism_card_id",
+    ]:
         groups = _group_records(records, field)
         if groups:
             summary[f"by_{field}"] = {
@@ -543,6 +692,24 @@ def summarize_runs(
                 }
                 for key, group in groups.items()
             }
+    mechanism_groups: dict[str, list[dict[str, Any]]] = {}
+    for record in records:
+        for mechanism in record.get("reasoning_signature") or []:
+            mechanism_groups.setdefault(str(mechanism), []).append(record)
+    if mechanism_groups:
+        summary["by_reasoning_mechanism"] = {
+            mechanism: {
+                "run_count": len(group),
+                "goal_pass@1": _record_rate(group, "success"),
+                "scope_non_dominated_pass@1": _record_rate(
+                    group, "scope_non_dominated_pass"
+                ),
+                "realized_non_dominated_pass@1": _record_rate(
+                    group, "optimal_repair"
+                ),
+            }
+            for mechanism, group in mechanism_groups.items()
+        }
     return summary
 
 

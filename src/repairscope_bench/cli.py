@@ -36,6 +36,15 @@ def main(argv: list[str] | None = None) -> int:
     baselines_parser = subparsers.add_parser("run-baselines")
     baselines_parser.add_argument("data", nargs="?", default="data/v11")
 
+    calibration_parser = subparsers.add_parser("calibrate-difficulty")
+    calibration_parser.add_argument("runs")
+    calibration_parser.add_argument("--version", required=True)
+    calibration_parser.add_argument(
+        "--response-field",
+        default="scope_non_dominated_pass",
+    )
+    calibration_parser.add_argument("--output")
+
     model_parser = subparsers.add_parser("run-model")
     model_parser.add_argument("task")
     _add_provider_arguments(model_parser)
@@ -64,7 +73,7 @@ def main(argv: list[str] | None = None) -> int:
         return _print_result(solve_task(load_task(args.task)).as_dict())
     if args.command == "inspect":
         task = load_task(args.task)
-        if task["schema_version"] in {"0.6", "1.0", "1.1"}:
+        if task["schema_version"] in {"0.6", "1.0", "1.1", "2.0"}:
             return _print_result(
                 {
                     "task_id": task["task_id"],
@@ -73,6 +82,12 @@ def main(argv: list[str] | None = None) -> int:
                     "failure_snapshot_sha256": task["snapshot_sha256"],
                     "boundary_commitments": task["boundary_commitments"],
                     "reasoning_structure": task.get("reasoning_structure"),
+                    "reasoning_signature": task.get(
+                        "_benchmark_metadata", {}
+                    ).get("reasoning_signature"),
+                    "complexity_profile": task.get(
+                        "_benchmark_metadata", {}
+                    ).get("complexity_profile"),
                     "available_tools": [
                         item["name"] for item in tool_definitions_for_task(task)
                     ],
@@ -88,7 +103,23 @@ def main(argv: list[str] | None = None) -> int:
                     item["name"] for item in tool_definitions_for_task(task)
                 ],
             }
+            )
+    if args.command == "calibrate-difficulty":
+        from .difficulty import calibrate_rasch
+
+        result = calibrate_rasch(
+            _read_jsonl(args.runs),
+            response_field=args.response_field,
+            calibration_version=args.version,
         )
+        if args.output:
+            output = Path(args.output)
+            output.parent.mkdir(parents=True, exist_ok=True)
+            output.write_text(
+                json.dumps(result, ensure_ascii=False, indent=2) + "\n",
+                encoding="utf-8",
+            )
+        return _print_result(result)
     if args.command == "evaluate":
         task = load_task(args.task)
         actions = _read_json(args.actions)
@@ -109,7 +140,7 @@ def main(argv: list[str] | None = None) -> int:
                 "outlay_only",
                 "pareto_oracle",
             ]
-            if tasks and tasks[0]["schema_version"] in {"1.0", "1.1"}
+            if tasks and tasks[0]["schema_version"] in {"1.0", "1.1", "2.0"}
             else
             [
                 "no_repair",
@@ -136,6 +167,22 @@ def main(argv: list[str] | None = None) -> int:
             ]
             results[strategy] = {
                 "success_rate": sum(score["success"] for score in scores)
+                / len(scores),
+                "scope_non_dominated_rate": sum(
+                    score.get(
+                        "scope_non_dominated_pass",
+                        score["optimal_repair"],
+                    )
+                    for score in scores
+                )
+                / len(scores),
+                "realized_non_dominated_rate": sum(
+                    score.get(
+                        "realized_non_dominated_pass",
+                        score["optimal_repair"],
+                    )
+                    for score in scores
+                )
                 / len(scores),
                 "optimal_repair_rate": sum(
                     score["optimal_repair"] for score in scores
@@ -212,6 +259,15 @@ def main(argv: list[str] | None = None) -> int:
 def _read_json(path: str | Path) -> Any:
     with Path(path).open("r", encoding="utf-8") as handle:
         return json.load(handle)
+
+
+def _read_jsonl(path: str | Path) -> list[dict[str, Any]]:
+    records = []
+    with Path(path).open("r", encoding="utf-8") as handle:
+        for line in handle:
+            if line.strip():
+                records.append(json.loads(line))
+    return records
 
 
 def _print_result(value: Any) -> int:

@@ -1,0 +1,629 @@
+{
+  "schema_version": "2.0",
+  "task_id": "T-3f2d8ae4cff2",
+  "domain": "event_logistics",
+  "environment_type": "repairscope.event_logistics.state.v2",
+  "split": "dev",
+  "now": "2026-09-01T09:00:00+08:00",
+  "max_turns": 15,
+  "instruction": "Complete the vaccination outreach event at District 7 for the event coordinator. The activity log contains commitments that are already paid and active, but the most recent Orchid Field Service operation failed. Keep the required primary arrangement, support, access, shared service, and vendor coverage valid at District 7 by day 4. Investigate the authoritative records and execute the best supported recovery without asking me to choose.",
+  "initial_snapshot": {
+    "commitments": []
+  },
+  "initial_snapshot_sha256": "dbc26b7f61e91d0529291823abb38756f52a36dc52e819cf0a83abddfe598124",
+  "failure_snapshot": {
+    "commitments": [
+      {
+        "entity_id": "E-85a160fa0bf4",
+        "option_id": "O-8c219e704373",
+        "name": "Harbor Convention Hall",
+        "kind": "venue",
+        "status": "active",
+        "paid_cents": 100000,
+        "refund_policy_id": "P-8c219e704373",
+        "provides": {
+          "F10-primary": 1
+        },
+        "attributes": {
+          "service_area": "District 7",
+          "service_day": 2
+        },
+        "created_after_boundary": false
+      },
+      {
+        "entity_id": "E-9ecb9a934a34",
+        "option_id": "O-6373d54226c2",
+        "name": "MetroLink Transport",
+        "kind": "transport",
+        "status": "active",
+        "paid_cents": 40000,
+        "refund_policy_id": "P-6373d54226c2",
+        "provides": {
+          "F10-support": 1
+        },
+        "attributes": {
+          "service_area": "District 7",
+          "service_day": 2
+        },
+        "created_after_boundary": false
+      },
+      {
+        "entity_id": "E-d241be4a4e04",
+        "option_id": "O-0d30e303d125",
+        "name": "Beacon Event Cover",
+        "kind": "coverage",
+        "status": "active",
+        "paid_cents": 20000,
+        "refund_policy_id": "P-0d30e303d125",
+        "provides": {
+          "F10-shared": 1
+        },
+        "attributes": {
+          "service_area": "District 7",
+          "service_day": 2
+        },
+        "created_after_boundary": false
+      },
+      {
+        "entity_id": "E-d38cbb1d4d5d",
+        "option_id": "O-60bfd61ecbfd",
+        "name": "Northstar Storage Service",
+        "kind": "storage",
+        "status": "active",
+        "paid_cents": 30000,
+        "refund_policy_id": "P-60bfd61ecbfd",
+        "provides": {
+          "F10-access": 1
+        },
+        "attributes": {
+          "service_area": "District 7",
+          "service_day": 2
+        },
+        "created_after_boundary": false
+      }
+    ]
+  },
+  "snapshot_sha256": "662cf0f8f1da9ffc79b59b30ce79bff13309536c13a62b29db07ba7aa5d852dd",
+  "pre_failure_trace": [
+    {
+      "step": 1,
+      "tool": "book_event_option",
+      "arguments": {
+        "event_option_id": "O-8c219e704373"
+      },
+      "result": {
+        "ok": true,
+        "message": "New commitment created.",
+        "data": {
+          "entity_id": "E-85a160fa0bf4",
+          "option_id": "O-8c219e704373",
+          "charge_cents": 100000,
+          "contract_charges_applied": []
+        }
+      }
+    },
+    {
+      "step": 2,
+      "tool": "book_event_option",
+      "arguments": {
+        "event_option_id": "O-6373d54226c2"
+      },
+      "result": {
+        "ok": true,
+        "message": "New commitment created.",
+        "data": {
+          "entity_id": "E-9ecb9a934a34",
+          "option_id": "O-6373d54226c2",
+          "charge_cents": 40000,
+          "contract_charges_applied": []
+        }
+      }
+    },
+    {
+      "step": 3,
+      "tool": "book_event_option",
+      "arguments": {
+        "event_option_id": "O-60bfd61ecbfd"
+      },
+      "result": {
+        "ok": true,
+        "message": "New commitment created.",
+        "data": {
+          "entity_id": "E-d38cbb1d4d5d",
+          "option_id": "O-60bfd61ecbfd",
+          "charge_cents": 30000,
+          "contract_charges_applied": []
+        }
+      }
+    },
+    {
+      "step": 4,
+      "tool": "book_event_option",
+      "arguments": {
+        "event_option_id": "O-0d30e303d125"
+      },
+      "result": {
+        "ok": true,
+        "message": "New commitment created.",
+        "data": {
+          "entity_id": "E-d241be4a4e04",
+          "option_id": "O-0d30e303d125",
+          "charge_cents": 20000,
+          "contract_charges_applied": []
+        }
+      }
+    }
+  ],
+  "prefix_ledger": [
+    {
+      "event_index": 1,
+      "tool": "book_vendor_option",
+      "entity_id": "E-85a160fa0bf4",
+      "contract_id": null,
+      "charge_cents": 100000,
+      "refund_cents": 0,
+      "irreversible_loss_delta": 0,
+      "net_outlay_delta": 100000
+    },
+    {
+      "event_index": 2,
+      "tool": "book_vendor_option",
+      "entity_id": "E-9ecb9a934a34",
+      "contract_id": null,
+      "charge_cents": 40000,
+      "refund_cents": 0,
+      "irreversible_loss_delta": 0,
+      "net_outlay_delta": 40000
+    },
+    {
+      "event_index": 3,
+      "tool": "book_vendor_option",
+      "entity_id": "E-d38cbb1d4d5d",
+      "contract_id": null,
+      "charge_cents": 30000,
+      "refund_cents": 0,
+      "irreversible_loss_delta": 0,
+      "net_outlay_delta": 30000
+    },
+    {
+      "event_index": 4,
+      "tool": "book_vendor_option",
+      "entity_id": "E-d241be4a4e04",
+      "contract_id": null,
+      "charge_cents": 20000,
+      "refund_cents": 0,
+      "irreversible_loss_delta": 0,
+      "net_outlay_delta": 20000
+    }
+  ],
+  "latest_failure": {
+    "tool": "book_event_option",
+    "arguments": {
+      "event_option_id": "O-7599e976ab70"
+    },
+    "result": {
+      "ok": false,
+      "message": "The selected option is unavailable.",
+      "data": null
+    }
+  },
+  "boundary_commitments": [
+    {
+      "entity_id": "E-85a160fa0bf4",
+      "option_id": "O-8c219e704373",
+      "name": "Harbor Convention Hall",
+      "kind": "venue",
+      "status": "active",
+      "paid_cents": 100000,
+      "refund_policy_id": "P-8c219e704373",
+      "provides": {
+        "F10-primary": 1
+      },
+      "attributes": {
+        "service_area": "District 7",
+        "service_day": 2
+      },
+      "created_after_boundary": false,
+      "primary_capability": "F10-primary"
+    },
+    {
+      "entity_id": "E-9ecb9a934a34",
+      "option_id": "O-6373d54226c2",
+      "name": "MetroLink Transport",
+      "kind": "transport",
+      "status": "active",
+      "paid_cents": 40000,
+      "refund_policy_id": "P-6373d54226c2",
+      "provides": {
+        "F10-support": 1
+      },
+      "attributes": {
+        "service_area": "District 7",
+        "service_day": 2
+      },
+      "created_after_boundary": false,
+      "primary_capability": "F10-support"
+    },
+    {
+      "entity_id": "E-d241be4a4e04",
+      "option_id": "O-0d30e303d125",
+      "name": "Beacon Event Cover",
+      "kind": "coverage",
+      "status": "active",
+      "paid_cents": 20000,
+      "refund_policy_id": "P-0d30e303d125",
+      "provides": {
+        "F10-shared": 1
+      },
+      "attributes": {
+        "service_area": "District 7",
+        "service_day": 2
+      },
+      "created_after_boundary": false,
+      "primary_capability": "F10-shared"
+    },
+    {
+      "entity_id": "E-d38cbb1d4d5d",
+      "option_id": "O-60bfd61ecbfd",
+      "name": "Northstar Storage Service",
+      "kind": "storage",
+      "status": "active",
+      "paid_cents": 30000,
+      "refund_policy_id": "P-60bfd61ecbfd",
+      "provides": {
+        "F10-access": 1
+      },
+      "attributes": {
+        "service_area": "District 7",
+        "service_day": 2
+      },
+      "created_after_boundary": false,
+      "primary_capability": "F10-access"
+    }
+  ],
+  "inventory": [
+    {
+      "option_id": "O-8c219e704373",
+      "name": "Harbor Convention Hall",
+      "kind": "venue",
+      "available": false,
+      "upfront_cents": 100000,
+      "monthly_cents": 0,
+      "horizon_months": 0,
+      "refund_policy_id": "P-8c219e704373",
+      "provides": {
+        "F10-primary": 1
+      },
+      "attributes": {
+        "service_area": "District 7",
+        "service_day": 2
+      },
+      "entity_id_on_purchase": "E-85a160fa0bf4"
+    },
+    {
+      "option_id": "O-6373d54226c2",
+      "name": "MetroLink Transport",
+      "kind": "transport",
+      "available": false,
+      "upfront_cents": 40000,
+      "monthly_cents": 0,
+      "horizon_months": 0,
+      "refund_policy_id": "P-6373d54226c2",
+      "provides": {
+        "F10-support": 1
+      },
+      "attributes": {
+        "service_area": "District 7",
+        "service_day": 2
+      },
+      "entity_id_on_purchase": "E-9ecb9a934a34"
+    },
+    {
+      "option_id": "O-60bfd61ecbfd",
+      "name": "Northstar Storage Service",
+      "kind": "storage",
+      "available": false,
+      "upfront_cents": 30000,
+      "monthly_cents": 0,
+      "horizon_months": 0,
+      "refund_policy_id": "P-60bfd61ecbfd",
+      "provides": {
+        "F10-access": 1
+      },
+      "attributes": {
+        "service_area": "District 7",
+        "service_day": 2
+      },
+      "entity_id_on_purchase": "E-d38cbb1d4d5d"
+    },
+    {
+      "option_id": "O-0d30e303d125",
+      "name": "Beacon Event Cover",
+      "kind": "coverage",
+      "available": false,
+      "upfront_cents": 20000,
+      "monthly_cents": 0,
+      "horizon_months": 0,
+      "refund_policy_id": "P-0d30e303d125",
+      "provides": {
+        "F10-shared": 1
+      },
+      "attributes": {
+        "service_area": "District 7",
+        "service_day": 2
+      },
+      "entity_id_on_purchase": "E-d241be4a4e04"
+    },
+    {
+      "option_id": "O-0cf96e5ca04b",
+      "name": "Orchid Field Service",
+      "kind": "vendor",
+      "available": true,
+      "upfront_cents": 70000,
+      "monthly_cents": 0,
+      "horizon_months": 0,
+      "refund_policy_id": "P-f0b4a3d65e4d",
+      "provides": {
+        "F10-gap": 1
+      },
+      "attributes": {
+        "service_area": "District 7",
+        "service_day": 2
+      },
+      "entity_id_on_purchase": "E-27d9848b4047"
+    },
+    {
+      "option_id": "O-3fc6a31d3790",
+      "name": "Harbor Integrated Package",
+      "kind": "vendor_package",
+      "available": true,
+      "upfront_cents": 120000,
+      "monthly_cents": 0,
+      "horizon_months": 0,
+      "refund_policy_id": "P-f0b4a3d65e4d",
+      "provides": {
+        "F10-primary": 1,
+        "F10-gap": 1
+      },
+      "attributes": {
+        "service_area": "District 7",
+        "service_day": 2
+      },
+      "entity_id_on_purchase": "E-200c31b7d24c"
+    },
+    {
+      "option_id": "O-2de44a5b98b1",
+      "name": "Cedar Field Service",
+      "kind": "vendor",
+      "available": true,
+      "upfront_cents": 30000,
+      "monthly_cents": 0,
+      "horizon_months": 0,
+      "refund_policy_id": "P-f0b4a3d65e4d",
+      "provides": {
+        "F10-gap": 1
+      },
+      "attributes": {
+        "service_area": "District 7",
+        "service_day": 2
+      },
+      "entity_id_on_purchase": "E-b6308447a3b8"
+    },
+    {
+      "option_id": "O-5d37032af8fb",
+      "name": "Meridian Event Package",
+      "kind": "continuity_package",
+      "available": true,
+      "upfront_cents": 600000,
+      "monthly_cents": 0,
+      "horizon_months": 0,
+      "refund_policy_id": "P-f0b4a3d65e4d",
+      "provides": {
+        "F10-primary": 1,
+        "F10-support": 1,
+        "F10-access": 1,
+        "F10-shared": 1,
+        "F10-gap": 1
+      },
+      "attributes": {
+        "service_area": "District 7",
+        "service_day": 3
+      },
+      "entity_id_on_purchase": "E-97fe7f5d547d"
+    },
+    {
+      "option_id": "O-c4062e51a10b",
+      "name": "Juniper Coordination Service",
+      "kind": "coordination_service",
+      "available": true,
+      "upfront_cents": 10000,
+      "monthly_cents": 0,
+      "horizon_months": 0,
+      "refund_policy_id": "P-f0b4a3d65e4d",
+      "provides": {
+        "F10-gap-companion": 1
+      },
+      "attributes": {
+        "service_area": "District 7",
+        "service_day": 2
+      },
+      "entity_id_on_purchase": "E-9f42bb8de734"
+    },
+    {
+      "option_id": "O-7f2ae72d6443",
+      "name": "Pine Field Service",
+      "kind": "transport",
+      "available": false,
+      "upfront_cents": 150000,
+      "monthly_cents": 0,
+      "horizon_months": 0,
+      "refund_policy_id": "P-f0b4a3d65e4d",
+      "provides": {
+        "F10-support": 1
+      },
+      "attributes": {
+        "service_area": "District 7",
+        "service_day": 2
+      },
+      "entity_id_on_purchase": "E-71387f3fdbd6"
+    },
+    {
+      "option_id": "O-370de3d8f28b",
+      "name": "Rivermark Service",
+      "kind": "vendor",
+      "available": true,
+      "upfront_cents": 4000,
+      "monthly_cents": 0,
+      "horizon_months": 0,
+      "refund_policy_id": "P-f0b4a3d65e4d",
+      "provides": {
+        "F10-gap": 1
+      },
+      "attributes": {
+        "service_area": "Other District 7",
+        "service_day": 2
+      },
+      "entity_id_on_purchase": "E-c8f93c2f9e69"
+    },
+    {
+      "option_id": "O-dd1584e02e11",
+      "name": "Cypress Service",
+      "kind": "vendor",
+      "available": true,
+      "upfront_cents": 3000,
+      "monthly_cents": 0,
+      "horizon_months": 0,
+      "refund_policy_id": "P-f0b4a3d65e4d",
+      "provides": {
+        "F10-gap": 1
+      },
+      "attributes": {
+        "service_area": "District 7",
+        "service_day": 9
+      },
+      "entity_id_on_purchase": "E-c36cbf1535b6"
+    },
+    {
+      "option_id": "O-7599e976ab70",
+      "name": "Orchid Field Service",
+      "kind": "vendor",
+      "available": false,
+      "upfront_cents": 18000,
+      "monthly_cents": 0,
+      "horizon_months": 0,
+      "refund_policy_id": "P-f0b4a3d65e4d",
+      "provides": {
+        "F10-gap": 1
+      },
+      "attributes": {
+        "service_area": "District 7",
+        "service_day": 2
+      },
+      "entity_id_on_purchase": "E-36e73514d87d"
+    }
+  ],
+  "policies": [
+    {
+      "policy_id": "P-8c219e704373",
+      "type": "refund",
+      "description": "The stated refund applies if the linked commitment is changed now.",
+      "refund_cents": 80000
+    },
+    {
+      "policy_id": "P-6373d54226c2",
+      "type": "refund",
+      "description": "The stated refund applies if the linked commitment is changed now.",
+      "refund_cents": 10000
+    },
+    {
+      "policy_id": "P-60bfd61ecbfd",
+      "type": "refund",
+      "description": "The stated refund applies if the linked commitment is changed now.",
+      "refund_cents": 0
+    },
+    {
+      "policy_id": "P-0d30e303d125",
+      "type": "refund",
+      "description": "The stated refund applies if the linked commitment is changed now.",
+      "refund_cents": 0
+    },
+    {
+      "policy_id": "P-f0b4a3d65e4d",
+      "type": "refund",
+      "description": "The stated refund applies if the linked commitment is changed now.",
+      "refund_cents": 0
+    }
+  ],
+  "contracts": [
+    {
+      "contract_id": "C-b57112f2a81d",
+      "description": "A service-specific settlement applies when the linked option is activated.",
+      "trigger": {
+        "type": "active_any",
+        "option_ids": [
+          "O-2de44a5b98b1"
+        ],
+        "entity_ids": []
+      },
+      "charge_cents": 0
+    }
+  ],
+  "compatibility_rules": [
+    {
+      "type": "requires_all",
+      "if_option_id": "O-3fc6a31d3790",
+      "all_option_ids": [
+        "O-c4062e51a10b"
+      ]
+    }
+  ],
+  "hard_goals": {
+    "capabilities": [
+      {
+        "capability": "F10-primary",
+        "min": 1,
+        "max": 1
+      },
+      {
+        "capability": "F10-support",
+        "min": 1,
+        "max": 1
+      },
+      {
+        "capability": "F10-access",
+        "min": 1,
+        "max": 1
+      },
+      {
+        "capability": "F10-shared",
+        "min": 1,
+        "max": 1
+      },
+      {
+        "capability": "F10-gap",
+        "min": 1,
+        "max": 1
+      }
+    ],
+    "attribute_requirements": [
+      {
+        "capability": "F10-gap",
+        "attribute": "service_area",
+        "op": "eq",
+        "value": "District 7"
+      },
+      {
+        "capability": "F10-gap",
+        "attribute": "service_day",
+        "op": "le",
+        "value": 4
+      }
+    ]
+  },
+  "construction": {
+    "prefix_generated_by_public_tools": true,
+    "failure_generated_by_public_tool": true,
+    "normalized_policy_source": true,
+    "necessary_action_order_invariant": true
+  }
+}

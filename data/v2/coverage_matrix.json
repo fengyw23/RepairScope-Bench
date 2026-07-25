@@ -1,0 +1,92 @@
+{
+  "bridge_vs_replacement": {
+    "travel": {
+      "C2": 1,
+      "C3": 1
+    }
+  },
+  "conditional_contract": {
+    "event_logistics": {
+      "C2": 2
+    },
+    "saas": {
+      "C2": 2
+    },
+    "travel": {
+      "C2": 1,
+      "C3": 1
+    }
+  },
+  "explicit_horizon": {
+    "saas": {
+      "C3": 2
+    }
+  },
+  "joint_bundle_selection": {
+    "after_sales": {
+      "C2": 2
+    },
+    "event_logistics": {
+      "C2": 4
+    },
+    "saas": {
+      "C3": 2
+    },
+    "travel": {
+      "C2": 1,
+      "C3": 1
+    }
+  },
+  "multi_hop_propagation": {
+    "after_sales": {
+      "C3": 4
+    },
+    "saas": {
+      "C3": 2
+    }
+  },
+  "nonlinear_threshold": {
+    "travel": {
+      "C2": 1,
+      "C3": 1
+    }
+  },
+  "partial_quantity": {
+    "after_sales": {
+      "C2": 2
+    },
+    "event_logistics": {
+      "C2": 2
+    }
+  },
+  "selective_dependency_cut": {
+    "after_sales": {
+      "C3": 2
+    },
+    "event_logistics": {
+      "C2": 2
+    },
+    "saas": {
+      "C3": 2
+    }
+  },
+  "shared_commitment": {
+    "after_sales": {
+      "C3": 2
+    },
+    "travel": {
+      "C2": 2
+    }
+  },
+  "sunk_vs_marginal": {
+    "event_logistics": {
+      "C2": 2
+    },
+    "saas": {
+      "C2": 2
+    },
+    "travel": {
+      "C2": 2
+    }
+  }
+}

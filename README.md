@@ -1,5 +1,10 @@
 # RepairScope-Bench
 
+> **v2.0 strict pilot:** the repository now includes 24 tasks in 12
+> single-fact pairs with separate scope/trajectory economics, declarative and
+> public-tool replay Oracles, and reusable complexity calibration. See
+> [docs/V2_PILOT.md](docs/V2_PILOT.md). v1.1 remains frozen for reproduction.
+
 **Can a tool-using agent repair a failed multi-step task without discarding
 valuable commitments or choosing a recovery that another feasible recovery
 objectively dominates?**

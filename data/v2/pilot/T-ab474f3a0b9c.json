@@ -1,0 +1,623 @@
+{
+  "schema_version": "2.0",
+  "task_id": "T-ab474f3a0b9c",
+  "domain": "after_sales",
+  "environment_type": "repairscope.after_sales.state.v2",
+  "split": "dev",
+  "now": "2026-09-01T09:00:00+08:00",
+  "max_turns": 15,
+  "instruction": "Complete the radiology workstation deployment at Radiology Lab A for the procurement team. The activity log contains commitments that are already paid and active, but the most recent Orchid Interface Unit operation failed. Keep the required primary arrangement, support, access, shared service, and accessory coverage valid at Radiology Lab A by day 4. Investigate the authoritative records and execute the best supported recovery without asking me to choose.",
+  "initial_snapshot": {
+    "commitments": []
+  },
+  "initial_snapshot_sha256": "dbc26b7f61e91d0529291823abb38756f52a36dc52e819cf0a83abddfe598124",
+  "failure_snapshot": {
+    "commitments": [
+      {
+        "entity_id": "E-b67972a17fdc",
+        "option_id": "O-0e0f8da41ef9",
+        "name": "Helios Reference Display",
+        "kind": "display",
+        "status": "active",
+        "paid_cents": 20000,
+        "refund_policy_id": "P-0e0f8da41ef9",
+        "provides": {
+          "F04-shared": 1
+        },
+        "attributes": {
+          "delivery_site": "Radiology Lab A",
+          "delivery_day": 2
+        },
+        "created_after_boundary": false
+      },
+      {
+        "entity_id": "E-ca328ffcec0d",
+        "option_id": "O-cef489f6ab02",
+        "name": "Aster Workstation",
+        "kind": "core_device",
+        "status": "active",
+        "paid_cents": 100000,
+        "refund_policy_id": "P-cef489f6ab02",
+        "provides": {
+          "F04-primary": 1
+        },
+        "attributes": {
+          "delivery_site": "Radiology Lab A",
+          "delivery_day": 2
+        },
+        "created_after_boundary": false
+      },
+      {
+        "entity_id": "E-df1592a25ea4",
+        "option_id": "O-ea2576773379",
+        "name": "Northstar Service Cover",
+        "kind": "warranty",
+        "status": "active",
+        "paid_cents": 40000,
+        "refund_policy_id": "P-ea2576773379",
+        "provides": {
+          "F04-support": 1
+        },
+        "attributes": {
+          "delivery_site": "Radiology Lab A",
+          "delivery_day": 2
+        },
+        "created_after_boundary": false
+      },
+      {
+        "entity_id": "E-e5851fae206e",
+        "option_id": "O-19ad46f9c752",
+        "name": "Meridian Clinical Licence",
+        "kind": "software",
+        "status": "active",
+        "paid_cents": 30000,
+        "refund_policy_id": "P-19ad46f9c752",
+        "provides": {
+          "F04-access": 1
+        },
+        "attributes": {
+          "delivery_site": "Radiology Lab A",
+          "delivery_day": 2
+        },
+        "created_after_boundary": false
+      }
+    ]
+  },
+  "snapshot_sha256": "11ac7b919948463d36a57eacd162b46dcfdc9834698a7e4a1667e120b0d6ec50",
+  "pre_failure_trace": [
+    {
+      "step": 1,
+      "tool": "purchase_product_option",
+      "arguments": {
+        "product_option_id": "O-cef489f6ab02"
+      },
+      "result": {
+        "ok": true,
+        "message": "New commitment created.",
+        "data": {
+          "entity_id": "E-ca328ffcec0d",
+          "option_id": "O-cef489f6ab02",
+          "charge_cents": 100000,
+          "contract_charges_applied": []
+        }
+      }
+    },
+    {
+      "step": 2,
+      "tool": "purchase_product_option",
+      "arguments": {
+        "product_option_id": "O-ea2576773379"
+      },
+      "result": {
+        "ok": true,
+        "message": "New commitment created.",
+        "data": {
+          "entity_id": "E-df1592a25ea4",
+          "option_id": "O-ea2576773379",
+          "charge_cents": 40000,
+          "contract_charges_applied": []
+        }
+      }
+    },
+    {
+      "step": 3,
+      "tool": "purchase_product_option",
+      "arguments": {
+        "product_option_id": "O-19ad46f9c752"
+      },
+      "result": {
+        "ok": true,
+        "message": "New commitment created.",
+        "data": {
+          "entity_id": "E-e5851fae206e",
+          "option_id": "O-19ad46f9c752",
+          "charge_cents": 30000,
+          "contract_charges_applied": []
+        }
+      }
+    },
+    {
+      "step": 4,
+      "tool": "purchase_product_option",
+      "arguments": {
+        "product_option_id": "O-0e0f8da41ef9"
+      },
+      "result": {
+        "ok": true,
+        "message": "New commitment created.",
+        "data": {
+          "entity_id": "E-b67972a17fdc",
+          "option_id": "O-0e0f8da41ef9",
+          "charge_cents": 20000,
+          "contract_charges_applied": []
+        }
+      }
+    }
+  ],
+  "prefix_ledger": [
+    {
+      "event_index": 1,
+      "tool": "purchase_product",
+      "entity_id": "E-ca328ffcec0d",
+      "contract_id": null,
+      "charge_cents": 100000,
+      "refund_cents": 0,
+      "irreversible_loss_delta": 0,
+      "net_outlay_delta": 100000
+    },
+    {
+      "event_index": 2,
+      "tool": "purchase_product",
+      "entity_id": "E-df1592a25ea4",
+      "contract_id": null,
+      "charge_cents": 40000,
+      "refund_cents": 0,
+      "irreversible_loss_delta": 0,
+      "net_outlay_delta": 40000
+    },
+    {
+      "event_index": 3,
+      "tool": "purchase_product",
+      "entity_id": "E-e5851fae206e",
+      "contract_id": null,
+      "charge_cents": 30000,
+      "refund_cents": 0,
+      "irreversible_loss_delta": 0,
+      "net_outlay_delta": 30000
+    },
+    {
+      "event_index": 4,
+      "tool": "purchase_product",
+      "entity_id": "E-b67972a17fdc",
+      "contract_id": null,
+      "charge_cents": 20000,
+      "refund_cents": 0,
+      "irreversible_loss_delta": 0,
+      "net_outlay_delta": 20000
+    }
+  ],
+  "latest_failure": {
+    "tool": "purchase_product_option",
+    "arguments": {
+      "product_option_id": "O-30d0c4a53a9c"
+    },
+    "result": {
+      "ok": false,
+      "message": "The selected option is unavailable.",
+      "data": null
+    }
+  },
+  "boundary_commitments": [
+    {
+      "entity_id": "E-b67972a17fdc",
+      "option_id": "O-0e0f8da41ef9",
+      "name": "Helios Reference Display",
+      "kind": "display",
+      "status": "active",
+      "paid_cents": 20000,
+      "refund_policy_id": "P-0e0f8da41ef9",
+      "provides": {
+        "F04-shared": 1
+      },
+      "attributes": {
+        "delivery_site": "Radiology Lab A",
+        "delivery_day": 2
+      },
+      "created_after_boundary": false,
+      "primary_capability": "F04-shared"
+    },
+    {
+      "entity_id": "E-ca328ffcec0d",
+      "option_id": "O-cef489f6ab02",
+      "name": "Aster Workstation",
+      "kind": "core_device",
+      "status": "active",
+      "paid_cents": 100000,
+      "refund_policy_id": "P-cef489f6ab02",
+      "provides": {
+        "F04-primary": 1
+      },
+      "attributes": {
+        "delivery_site": "Radiology Lab A",
+        "delivery_day": 2
+      },
+      "created_after_boundary": false,
+      "primary_capability": "F04-primary"
+    },
+    {
+      "entity_id": "E-df1592a25ea4",
+      "option_id": "O-ea2576773379",
+      "name": "Northstar Service Cover",
+      "kind": "warranty",
+      "status": "active",
+      "paid_cents": 40000,
+      "refund_policy_id": "P-ea2576773379",
+      "provides": {
+        "F04-support": 1
+      },
+      "attributes": {
+        "delivery_site": "Radiology Lab A",
+        "delivery_day": 2
+      },
+      "created_after_boundary": false,
+      "primary_capability": "F04-support"
+    },
+    {
+      "entity_id": "E-e5851fae206e",
+      "option_id": "O-19ad46f9c752",
+      "name": "Meridian Clinical Licence",
+      "kind": "software",
+      "status": "active",
+      "paid_cents": 30000,
+      "refund_policy_id": "P-19ad46f9c752",
+      "provides": {
+        "F04-access": 1
+      },
+      "attributes": {
+        "delivery_site": "Radiology Lab A",
+        "delivery_day": 2
+      },
+      "created_after_boundary": false,
+      "primary_capability": "F04-access"
+    }
+  ],
+  "inventory": [
+    {
+      "option_id": "O-cef489f6ab02",
+      "name": "Aster Workstation",
+      "kind": "core_device",
+      "available": false,
+      "upfront_cents": 100000,
+      "monthly_cents": 0,
+      "horizon_months": 0,
+      "refund_policy_id": "P-cef489f6ab02",
+      "provides": {
+        "F04-primary": 1
+      },
+      "attributes": {
+        "delivery_site": "Radiology Lab A",
+        "delivery_day": 2
+      },
+      "entity_id_on_purchase": "E-ca328ffcec0d"
+    },
+    {
+      "option_id": "O-ea2576773379",
+      "name": "Northstar Service Cover",
+      "kind": "warranty",
+      "available": false,
+      "upfront_cents": 40000,
+      "monthly_cents": 0,
+      "horizon_months": 0,
+      "refund_policy_id": "P-ea2576773379",
+      "provides": {
+        "F04-support": 1
+      },
+      "attributes": {
+        "delivery_site": "Radiology Lab A",
+        "delivery_day": 2
+      },
+      "entity_id_on_purchase": "E-df1592a25ea4"
+    },
+    {
+      "option_id": "O-19ad46f9c752",
+      "name": "Meridian Clinical Licence",
+      "kind": "software",
+      "available": false,
+      "upfront_cents": 30000,
+      "monthly_cents": 0,
+      "horizon_months": 0,
+      "refund_policy_id": "P-19ad46f9c752",
+      "provides": {
+        "F04-access": 1
+      },
+      "attributes": {
+        "delivery_site": "Radiology Lab A",
+        "delivery_day": 2
+      },
+      "entity_id_on_purchase": "E-e5851fae206e"
+    },
+    {
+      "option_id": "O-0e0f8da41ef9",
+      "name": "Helios Reference Display",
+      "kind": "display",
+      "available": false,
+      "upfront_cents": 20000,
+      "monthly_cents": 0,
+      "horizon_months": 0,
+      "refund_policy_id": "P-0e0f8da41ef9",
+      "provides": {
+        "F04-shared": 1
+      },
+      "attributes": {
+        "delivery_site": "Radiology Lab A",
+        "delivery_day": 2
+      },
+      "entity_id_on_purchase": "E-b67972a17fdc"
+    },
+    {
+      "option_id": "O-64e036327056",
+      "name": "Orchid Interface Unit",
+      "kind": "accessory",
+      "available": true,
+      "upfront_cents": 70000,
+      "monthly_cents": 0,
+      "horizon_months": 0,
+      "refund_policy_id": "P-91dde354e871",
+      "provides": {
+        "F04-gap": 1
+      },
+      "attributes": {
+        "delivery_site": "Radiology Lab A",
+        "delivery_day": 2
+      },
+      "entity_id_on_purchase": "E-8439ba216c69"
+    },
+    {
+      "option_id": "O-4ed46c38115a",
+      "name": "Aster Integration Set",
+      "kind": "accessory_package",
+      "available": true,
+      "upfront_cents": 80000,
+      "monthly_cents": 0,
+      "horizon_months": 0,
+      "refund_policy_id": "P-91dde354e871",
+      "provides": {
+        "F04-primary": 1,
+        "F04-gap": 1
+      },
+      "attributes": {
+        "delivery_site": "Radiology Lab A",
+        "delivery_day": 2
+      },
+      "entity_id_on_purchase": "E-f29b862cf18a"
+    },
+    {
+      "option_id": "O-b011bf1180fc",
+      "name": "Cedar Interface Unit",
+      "kind": "accessory",
+      "available": true,
+      "upfront_cents": 120000,
+      "monthly_cents": 0,
+      "horizon_months": 0,
+      "refund_policy_id": "P-91dde354e871",
+      "provides": {
+        "F04-gap": 1
+      },
+      "attributes": {
+        "delivery_site": "Radiology Lab A",
+        "delivery_day": 2
+      },
+      "entity_id_on_purchase": "E-86b6ea0a16c9"
+    },
+    {
+      "option_id": "O-dec9367e4b55",
+      "name": "Meridian Deployment Set",
+      "kind": "continuity_package",
+      "available": true,
+      "upfront_cents": 600000,
+      "monthly_cents": 0,
+      "horizon_months": 0,
+      "refund_policy_id": "P-91dde354e871",
+      "provides": {
+        "F04-primary": 1,
+        "F04-support": 1,
+        "F04-access": 1,
+        "F04-shared": 1,
+        "F04-gap": 1
+      },
+      "attributes": {
+        "delivery_site": "Radiology Lab A",
+        "delivery_day": 3
+      },
+      "entity_id_on_purchase": "E-66e3bd50110f"
+    },
+    {
+      "option_id": "O-699d790981b7",
+      "name": "Juniper Certification Service",
+      "kind": "coordination_service",
+      "available": true,
+      "upfront_cents": 10000,
+      "monthly_cents": 0,
+      "horizon_months": 0,
+      "refund_policy_id": "P-91dde354e871",
+      "provides": {
+        "F04-gap-companion": 1
+      },
+      "attributes": {
+        "delivery_site": "Radiology Lab A",
+        "delivery_day": 2
+      },
+      "entity_id_on_purchase": "E-b68a1f35566d"
+    },
+    {
+      "option_id": "O-e718540898a8",
+      "name": "Pine Interface Unit",
+      "kind": "warranty",
+      "available": true,
+      "upfront_cents": 100000,
+      "monthly_cents": 0,
+      "horizon_months": 0,
+      "refund_policy_id": "P-91dde354e871",
+      "provides": {
+        "F04-support": 1
+      },
+      "attributes": {
+        "delivery_site": "Radiology Lab A",
+        "delivery_day": 2
+      },
+      "entity_id_on_purchase": "E-584b1cf47d66"
+    },
+    {
+      "option_id": "O-2166608a2170",
+      "name": "Rivermark Service",
+      "kind": "accessory",
+      "available": true,
+      "upfront_cents": 4000,
+      "monthly_cents": 0,
+      "horizon_months": 0,
+      "refund_policy_id": "P-91dde354e871",
+      "provides": {
+        "F04-gap": 1
+      },
+      "attributes": {
+        "delivery_site": "Other Radiology Lab A",
+        "delivery_day": 2
+      },
+      "entity_id_on_purchase": "E-f3c4171638b9"
+    },
+    {
+      "option_id": "O-42e01eb4d9a4",
+      "name": "Cypress Service",
+      "kind": "accessory",
+      "available": true,
+      "upfront_cents": 3000,
+      "monthly_cents": 0,
+      "horizon_months": 0,
+      "refund_policy_id": "P-91dde354e871",
+      "provides": {
+        "F04-gap": 1
+      },
+      "attributes": {
+        "delivery_site": "Radiology Lab A",
+        "delivery_day": 9
+      },
+      "entity_id_on_purchase": "E-30251966c153"
+    },
+    {
+      "option_id": "O-30d0c4a53a9c",
+      "name": "Orchid Interface Unit",
+      "kind": "accessory",
+      "available": false,
+      "upfront_cents": 18000,
+      "monthly_cents": 0,
+      "horizon_months": 0,
+      "refund_policy_id": "P-91dde354e871",
+      "provides": {
+        "F04-gap": 1
+      },
+      "attributes": {
+        "delivery_site": "Radiology Lab A",
+        "delivery_day": 2
+      },
+      "entity_id_on_purchase": "E-9a76f2b68440"
+    }
+  ],
+  "policies": [
+    {
+      "policy_id": "P-cef489f6ab02",
+      "type": "refund",
+      "description": "The stated refund applies if the linked commitment is changed now.",
+      "refund_cents": 100000
+    },
+    {
+      "policy_id": "P-ea2576773379",
+      "type": "refund",
+      "description": "The stated refund applies if the linked commitment is changed now.",
+      "refund_cents": 40000
+    },
+    {
+      "policy_id": "P-19ad46f9c752",
+      "type": "refund",
+      "description": "The stated refund applies if the linked commitment is changed now.",
+      "refund_cents": 0
+    },
+    {
+      "policy_id": "P-0e0f8da41ef9",
+      "type": "refund",
+      "description": "The stated refund applies if the linked commitment is changed now.",
+      "refund_cents": 0
+    },
+    {
+      "policy_id": "P-91dde354e871",
+      "type": "refund",
+      "description": "The stated refund applies if the linked commitment is changed now.",
+      "refund_cents": 0
+    }
+  ],
+  "contracts": [],
+  "compatibility_rules": [
+    {
+      "type": "requires_any",
+      "if_option_id": "O-4ed46c38115a",
+      "any_option_ids": [
+        "O-ea2576773379"
+      ]
+    },
+    {
+      "type": "requires_all",
+      "if_option_id": "O-4ed46c38115a",
+      "all_option_ids": [
+        "O-699d790981b7"
+      ]
+    }
+  ],
+  "hard_goals": {
+    "capabilities": [
+      {
+        "capability": "F04-primary",
+        "min": 1,
+        "max": 1
+      },
+      {
+        "capability": "F04-support",
+        "min": 1,
+        "max": 1
+      },
+      {
+        "capability": "F04-access",
+        "min": 1,
+        "max": 1
+      },
+      {
+        "capability": "F04-shared",
+        "min": 1,
+        "max": 1
+      },
+      {
+        "capability": "F04-gap",
+        "min": 1,
+        "max": 1
+      }
+    ],
+    "attribute_requirements": [
+      {
+        "capability": "F04-gap",
+        "attribute": "delivery_site",
+        "op": "eq",
+        "value": "Radiology Lab A"
+      },
+      {
+        "capability": "F04-gap",
+        "attribute": "delivery_day",
+        "op": "le",
+        "value": 4
+      }
+    ]
+  },
+  "construction": {
+    "prefix_generated_by_public_tools": true,
+    "failure_generated_by_public_tool": true,
+    "normalized_policy_source": true,
+    "necessary_action_order_invariant": true
+  }
+}

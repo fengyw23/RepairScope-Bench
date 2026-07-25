@@ -51,6 +51,10 @@ _ORACLE_CACHE: dict[str, OracleResult] = {}
 
 def solve_task(task: dict[str, Any]) -> OracleResult:
     """Solve a task exactly, reusing results across evaluator and baselines."""
+    if task.get("schema_version") == "2.0":
+        from .v2_oracle import solve_task_v2
+
+        return solve_task_v2(task)  # type: ignore[return-value]
     if task.get("schema_version") in {"1.0", "1.1"}:
         from .v1_oracle import solve_task_v1
 
