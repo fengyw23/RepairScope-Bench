@@ -834,9 +834,21 @@ def _conditional_dominated_rate(
     if not completed:
         return None
     return sum(
-        bool(record.get("score", {}).get("dominated_repair", False))
+        _is_dominated_repair(record.get("score", {}))
         for record in completed
     ) / len(completed)
+
+
+def _is_dominated_repair(score: dict[str, Any]) -> bool:
+    if "dominated_repair" in score:
+        return bool(score["dominated_repair"])
+    if "unique_scope_pass" in score:
+        return bool(
+            score.get("goal_pass", False)
+            and not score.get("unique_scope_pass", False)
+            and not score.get("oracle_violation", False)
+        )
+    return False
 
 
 def _record_rate(records: list[dict[str, Any]], key: str) -> float | None:

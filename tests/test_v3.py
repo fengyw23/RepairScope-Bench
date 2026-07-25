@@ -524,6 +524,32 @@ class V3ReleaseTests(unittest.TestCase):
         self.assertEqual(summary["adaptive_scope_switch@1"], 1.0)
         self.assertEqual(summary["mean_execution_waste_minor"], 500)
 
+    def test_summary_counts_v3_scope_miss_as_dominated(self) -> None:
+        summary = summarize_runs(
+            [
+                {
+                    "task_id": "task",
+                    "pair_id": "pair",
+                    "repeat_index": 1,
+                    "provider": "mock",
+                    "model": "mock",
+                    "score": {
+                        "success": True,
+                        "goal_pass": True,
+                        "unique_scope_pass": False,
+                        "scope_non_dominated_pass": False,
+                        "clean_execution": False,
+                        "optimal_repair": False,
+                        "oracle_violation": False,
+                        "scope_signature": {"choice": "costlier"},
+                        "cost_regret_minor": 1000,
+                    },
+                }
+            ],
+            expected_repeats=1,
+        )
+        self.assertEqual(summary["dominated_repair_rate"], 1.0)
+
 
 if __name__ == "__main__":
     unittest.main()

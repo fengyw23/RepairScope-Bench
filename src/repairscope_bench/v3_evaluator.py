@@ -52,6 +52,9 @@ def evaluate_v3_environment(
         "goal_pass": goal_pass,
         "success": goal_pass,
         "unique_scope_pass": scope_pass,
+        "dominated_repair": bool(
+            goal_pass and not scope_pass and not oracle_violation
+        ),
         "scope_non_dominated_pass": scope_pass,
         "clean_execution": clean_execution,
         "optimal_repair": clean_execution,
