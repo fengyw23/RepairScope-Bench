@@ -210,6 +210,8 @@ def _validate_v3_dataset(
     unique_count = 0
     evidence_count = 0
     evidence_total = 0
+    observable_atom_count = 0
+    observable_atom_total = 0
     price_valid_count = 0
 
     for task in tasks:
@@ -258,6 +260,19 @@ def _validate_v3_dataset(
             errors.extend(
                 f"{task['task_id']}: {message}"
                 for message in evidence_errors
+            )
+        (
+            observable_ok,
+            observable,
+            observable_total,
+            observable_errors,
+        ) = _validate_v3_observability(task)
+        observable_atom_count += observable
+        observable_atom_total += observable_total
+        if not observable_ok:
+            errors.extend(
+                f"{task['task_id']}: {message}"
+                for message in observable_errors
             )
         if _v3_prices_plausible(task):
             price_valid_count += 1
@@ -334,6 +349,12 @@ def _validate_v3_dataset(
         errors.append(
             f"only {evidence_count}/{evidence_total} evidence references validated"
         )
+    if observable_atom_count != observable_atom_total:
+        errors.append(
+            "only "
+            f"{observable_atom_count}/{observable_atom_total} scored state "
+            "atoms are reproducibly observable"
+        )
     if price_valid_count != len(tasks):
         errors.append("not every v3 task passes price plausibility checks")
 
@@ -394,6 +415,8 @@ def _validate_v3_dataset(
         "unique_gold_count": unique_count,
         "validated_evidence_count": evidence_count,
         "evidence_reference_count": evidence_total,
+        "observable_state_atom_count": observable_atom_count,
+        "observable_state_atom_total": observable_atom_total,
         "price_valid_task_count": price_valid_count,
         "errors": errors,
         "gold_path": str(gold_file.resolve()),
@@ -432,7 +455,6 @@ def _validate_v3_evidence(
     task: dict[str, Any],
     manifest: list[dict[str, Any]],
 ) -> tuple[bool, int, int, list[str]]:
-    from .domain_tools import tool_definitions_for_task
     from .v3_environment import NativeRecoveryEnvironmentV3
 
     by_id = {item["evidence_id"]: item for item in manifest}
@@ -445,9 +467,6 @@ def _validate_v3_evidence(
         referenced.extend(constraint.get("evidence_refs", []))
     errors: list[str] = []
     observed = 0
-    definitions = {
-        item["name"]: item for item in tool_definitions_for_task(task)
-    }
     environment = NativeRecoveryEnvironmentV3(task)
     for evidence_id in referenced:
         evidence = by_id.get(evidence_id)
@@ -459,21 +478,27 @@ def _validate_v3_evidence(
         if source_type == "instruction_span":
             valid = evidence["text"] in task["instruction"]
         elif source_type == "tool_rule":
-            tool = definitions.get(evidence["tool"])
-            valid = bool(
-                tool
-                and evidence["description_fragment"].lower()
-                in tool["description"].lower()
+            errors.append(
+                f"{evidence_id} relies on a tool description instead of a "
+                "replayable structured result"
             )
         elif source_type == "prefix_trace":
             step = int(evidence["step"])
             valid = 1 <= step <= len(task["pre_failure_trace"])
         elif source_type == "query_result":
-            result = environment.execute_tool(
-                evidence["tool"], deepcopy(evidence["arguments"])
-            )
-            valid = result.ok and _v3_query_match(
-                result.data or {}, evidence["match"]
+            queries = evidence.get("equivalent_arguments") or [
+                evidence["arguments"]
+            ]
+            valid = all(
+                (
+                    result := environment.execute_tool(
+                        evidence["tool"], deepcopy(arguments)
+                    )
+                ).ok
+                and _v3_query_match(
+                    result.data or {}, evidence["match"]
+                )
+                for arguments in queries
             )
         if valid:
             observed += 1
@@ -483,24 +508,52 @@ def _validate_v3_evidence(
     # The changed economic fact is not itself a hard constraint, but it must
     # still be discoverable before any mutation.
     fact_records = [
-        item for item in manifest if item["source_type"] == "query_result"
+        item
+        for item in manifest
+        if item["source_type"] == "query_result"
+        and item.get("constraint_id") is None
     ]
     for evidence in fact_records:
-        result = environment.execute_tool(
-            evidence["tool"], deepcopy(evidence["arguments"])
-        )
-        if not result.ok or not _v3_query_match(
-            result.data or {}, evidence["match"]
-        ):
-            errors.append(
-                f"changed fact {evidence['evidence_id']} is not queryable"
+        for arguments in evidence.get("equivalent_arguments") or [
+            evidence["arguments"]
+        ]:
+            result = environment.execute_tool(
+                evidence["tool"], deepcopy(arguments)
             )
+            if not result.ok or not _v3_query_match(
+                result.data or {}, evidence["match"]
+            ):
+                errors.append(
+                    f"changed fact {evidence['evidence_id']} is not "
+                    f"queryable through {arguments}"
+                )
     return not errors, observed, len(referenced), errors
 
 
 def _v3_query_match(
     data: dict[str, Any], match: dict[str, Any]
 ) -> bool:
+    if match.get("kind") == "relationship_rule":
+        rule = next(
+            (
+                item
+                for item in data.get("relationship_rules", [])
+                if item.get("constraint_id") == match["constraint_id"]
+            ),
+            None,
+        )
+        if rule is None:
+            return False
+        for key, expected in match.items():
+            if key in {"kind", "constraint_id"}:
+                continue
+            observed = rule.get(key)
+            if isinstance(expected, list):
+                observed = sorted(observed or [])
+                expected = sorted(expected)
+            if observed != expected:
+                return False
+        return True
     term = next(
         (
             item
@@ -525,6 +578,291 @@ def _v3_query_match(
     else:
         return False
     return observed == match["expected"]
+
+
+def _validate_v3_observability(
+    task: dict[str, Any],
+) -> tuple[bool, int, int, list[str]]:
+    """Prove that every scored atom has a structured public evidence path."""
+    from .v3_environment import (
+        NativeRecoveryEnvironmentV3,
+        public_trigger_condition,
+        term_charge_minor,
+        term_credit_minor,
+    )
+
+    environment = NativeRecoveryEnvironmentV3(task)
+    errors: list[str] = []
+    observed = 0
+    total = 0
+    terms_tool = (
+        "get_travel_terms"
+        if task["domain"] == "travel"
+        else "get_product_terms"
+    )
+    compatibility_tool = (
+        "check_travel_compatibility"
+        if task["domain"] == "travel"
+        else "check_product_compatibility"
+    )
+
+    for rule in task["compatibility_rules"]:
+        total += 1
+        if rule["type"] == "forbid_pair":
+            left_key = (
+                "left_option_id"
+                if task["domain"] == "travel"
+                else "left_product_id"
+            )
+            right_key = (
+                "right_option_id"
+                if task["domain"] == "travel"
+                else "right_product_id"
+            )
+            result = environment.execute_tool(
+                compatibility_tool,
+                {
+                    left_key: rule["option_ids"][0],
+                    right_key: rule["option_ids"][1],
+                },
+            )
+            match = {
+                "kind": "relationship_rule",
+                "constraint_id": rule["constraint_id"],
+                "type": "forbid_pair",
+                "option_ids": sorted(rule["option_ids"]),
+            }
+            valid = bool(
+                result.ok
+                and result.data
+                and result.data.get("coexistence_allowed") is False
+                and _v3_query_match(result.data, match)
+            )
+        else:
+            required_key = (
+                "any_option_ids"
+                if rule["type"] == "requires_any"
+                else "all_option_ids"
+            )
+            result = environment.execute_tool(
+                terms_tool, {"record_id": rule["if_option_id"]}
+            )
+            valid = bool(
+                result.ok
+                and _v3_query_match(
+                    result.data or {},
+                    {
+                        "kind": "relationship_rule",
+                        "constraint_id": rule["constraint_id"],
+                        "type": rule["type"],
+                        "if_option_id": rule["if_option_id"],
+                        required_key: sorted(rule[required_key]),
+                    },
+                )
+            )
+        if valid:
+            observed += 1
+        else:
+            errors.append(
+                f"relationship constraint {rule['constraint_id']} is not "
+                "available as a structured query result"
+            )
+
+    for term in task["economic_terms"]:
+        linked_records = sorted(
+            set(term.get("linked_entity_ids", []))
+            | set(term.get("linked_option_ids", []))
+        )
+        if not linked_records:
+            errors.append(f"economic term {term['term_id']} has no query path")
+            continue
+        for record_id in linked_records:
+            total += 1
+            result = environment.execute_tool(
+                terms_tool, {"record_id": record_id}
+            )
+            valid = bool(
+                result.ok
+                and _v3_term_is_fully_observable(
+                    result.data or {},
+                    term,
+                    public_trigger_condition(term["trigger"]),
+                    term_charge_minor(term),
+                    term_credit_minor(term),
+                )
+            )
+            if valid:
+                observed += 1
+            else:
+                errors.append(
+                    f"economic term {term['term_id']} is incomplete through "
+                    f"record {record_id}"
+                )
+
+    search_tool = (
+        "search_travel_options"
+        if task["domain"] == "travel"
+        else "search_product_options"
+    )
+    search_cache: dict[str, dict[str, Any]] = {}
+    for option_id, metadata in task["option_metadata"].items():
+        if not metadata.get("candidate") or not metadata.get("available"):
+            continue
+        total += 1
+        category = metadata["slot"]
+        if category not in search_cache:
+            result = environment.execute_tool(
+                search_tool, {"category": category}
+            )
+            search_cache[category] = result.data or {} if result.ok else {}
+        result_item = next(
+            (
+                item
+                for item in search_cache[category].get("results", [])
+                if item.get("option_id") == option_id
+            ),
+            None,
+        )
+        valid = bool(
+            result_item
+            and _coverage_map(result_item.get("covers", []))
+            == {
+                key: int(value)
+                for key, value in metadata.get("provides", {}).items()
+                if int(value) > 0
+            }
+            and result_item.get("attributes") == metadata.get("attributes")
+            and _money_minor(result_item.get("total_charge"))
+            == int(metadata["total_charge_minor"])
+        )
+        if valid:
+            observed += 1
+        else:
+            errors.append(
+                f"candidate option {option_id} is not faithfully searchable"
+            )
+
+    record_tool = (
+        "get_travel_reservation"
+        if task["domain"] == "travel"
+        else "get_order_item"
+    )
+    record_key = (
+        "reservation_id" if task["domain"] == "travel" else "item_id"
+    )
+    preview_tool = (
+        "preview_travel_cancellation"
+        if task["domain"] == "travel"
+        else "preview_product_return"
+    )
+    preview_key = (
+        "reservation_id" if task["domain"] == "travel" else "item_id"
+    )
+    for boundary in task["boundary_commitments"]:
+        total += 2
+        result = environment.execute_tool(
+            record_tool, {record_key: boundary["entity_id"]}
+        )
+        record_valid = bool(
+            result.ok
+            and result.data
+            and result.data.get("option_id") == boundary["option_id"]
+            and _coverage_map(result.data.get("covers", []))
+            == {
+                key: int(value)
+                for key, value in boundary.get("provides", {}).items()
+                if int(value) > 0
+            }
+            and result.data.get("attributes") == boundary.get("attributes")
+            and _money_minor(result.data.get("amount_paid"))
+            == int(boundary["paid_minor"])
+        )
+        if record_valid:
+            observed += 1
+        else:
+            errors.append(
+                f"boundary record {boundary['entity_id']} is not faithfully "
+                "queryable"
+            )
+        if task["domain"] == "after_sales":
+            environment.execute_tool(
+                terms_tool, {"record_id": boundary["entity_id"]}
+            )
+        preview = environment.execute_tool(
+            preview_tool, {preview_key: boundary["entity_id"]}
+        )
+        preview_data = preview.data or {}
+        refund = preview_data.get(
+            "refund_amount", preview_data.get("base_refund")
+        )
+        if preview.ok and _money_minor(refund) == int(
+            boundary["refund_minor"]
+        ):
+            observed += 1
+        else:
+            errors.append(
+                f"refund for {boundary['entity_id']} is not faithfully "
+                "previewable"
+            )
+
+    return not errors, observed, total, errors
+
+
+def _v3_term_is_fully_observable(
+    data: dict[str, Any],
+    expected: dict[str, Any],
+    expected_condition: dict[str, Any],
+    expected_total_charge: int,
+    expected_credit: int,
+) -> bool:
+    term = next(
+        (
+            item
+            for item in data.get("linked_terms", [])
+            if item.get("term_id") == expected["term_id"]
+        ),
+        None,
+    )
+    if term is None or term.get("description") != expected["description"]:
+        return False
+    if _restore_public_minor_units(term.get("trigger")) != expected["trigger"]:
+        return False
+    if (
+        _restore_public_minor_units(term.get("applies_when"))
+        != expected_condition
+    ):
+        return False
+    return bool(
+        _money_minor(term.get("one_time_charge"))
+        == int(expected.get("charge_minor", 0))
+        and _money_minor(term.get("monthly_charge"))
+        == int(expected.get("monthly_minor", 0))
+        and int(term.get("billing_months", 0))
+        == int(expected.get("horizon_months", 0))
+        and _money_minor(term.get("total_charge"))
+        == expected_total_charge
+        and _money_minor(term.get("credit")) == expected_credit
+    )
+
+
+def _restore_public_minor_units(value: Any, key: str | None = None) -> Any:
+    if isinstance(value, dict) and value.get("currency") == "USD":
+        return _money_minor(value)
+    if isinstance(value, dict):
+        return {
+            item_key: _restore_public_minor_units(item, item_key)
+            for item_key, item in value.items()
+        }
+    if isinstance(value, list):
+        return [_restore_public_minor_units(item, key) for item in value]
+    return deepcopy(value)
+
+
+def _coverage_map(items: list[dict[str, Any]]) -> dict[str, int]:
+    return {
+        str(item["requirement"]): int(item["quantity"])
+        for item in items
+    }
 
 
 def _money_minor(value: Any) -> int | None:

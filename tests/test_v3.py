@@ -127,8 +127,8 @@ class V3ReleaseTests(unittest.TestCase):
     def test_every_hard_constraint_has_visible_evidence(self) -> None:
         for task in self.tasks:
             metadata = self.gold[task["task_id"]]["metadata"]
-            evidence_ids = {
-                item["evidence_id"]
+            evidence_by_id = {
+                item["evidence_id"]: item
                 for item in metadata["evidence_manifest"]
             }
             for constraint in (
@@ -138,7 +138,156 @@ class V3ReleaseTests(unittest.TestCase):
             ):
                 refs = constraint.get("evidence_refs", [])
                 self.assertTrue(refs, (task["task_id"], constraint))
-                self.assertTrue(set(refs).issubset(evidence_ids))
+                self.assertTrue(set(refs).issubset(evidence_by_id))
+                for evidence_id in refs:
+                    self.assertNotEqual(
+                        evidence_by_id[evidence_id]["source_type"],
+                        "tool_rule",
+                        (task["task_id"], constraint),
+                    )
+
+    def test_relationship_rules_are_structured_public_results(self) -> None:
+        observed_types = set()
+        for task in self.tasks:
+            environment = NativeRecoveryEnvironmentV3(task)
+            terms_tool = (
+                "get_travel_terms"
+                if task["domain"] == "travel"
+                else "get_product_terms"
+            )
+            compatibility_tool = (
+                "check_travel_compatibility"
+                if task["domain"] == "travel"
+                else "check_product_compatibility"
+            )
+            for rule in task["compatibility_rules"]:
+                observed_types.add(rule["type"])
+                if rule["type"] == "forbid_pair":
+                    left_key = (
+                        "left_option_id"
+                        if task["domain"] == "travel"
+                        else "left_product_id"
+                    )
+                    right_key = (
+                        "right_option_id"
+                        if task["domain"] == "travel"
+                        else "right_product_id"
+                    )
+                    result = environment.execute_tool(
+                        compatibility_tool,
+                        {
+                            left_key: rule["option_ids"][0],
+                            right_key: rule["option_ids"][1],
+                        },
+                    )
+                    self.assertTrue(result.ok)
+                    self.assertFalse(result.data["coexistence_allowed"])
+                else:
+                    result = environment.execute_tool(
+                        terms_tool, {"record_id": rule["if_option_id"]}
+                    )
+                    self.assertTrue(result.ok)
+                public = next(
+                    (
+                        item
+                        for item in result.data["relationship_rules"]
+                        if item["constraint_id"] == rule["constraint_id"]
+                    ),
+                    None,
+                )
+                self.assertIsNotNone(public, (task["task_id"], rule))
+                self.assertEqual(public["type"], rule["type"])
+                if rule["type"] == "requires_any":
+                    self.assertEqual(
+                        public["if_option_id"], rule["if_option_id"]
+                    )
+                    self.assertEqual(
+                        public["any_option_ids"],
+                        sorted(rule["any_option_ids"]),
+                    )
+        self.assertEqual(observed_types, {"forbid_pair", "requires_any"})
+
+    def test_equivalent_term_query_counts_as_fact_acquisition(self) -> None:
+        task = next(
+            task
+            for task in self.tasks
+            if self.gold[task["task_id"]]["metadata"][
+                "reasoning_structure"
+            ]
+            == "bridge_vs_replacement"
+            and len(
+                self.gold[task["task_id"]]["metadata"]["changed_fact"][
+                    "reveal_paths"
+                ]
+            )
+            > 1
+        )
+        changed = self.gold[task["task_id"]]["metadata"]["changed_fact"]
+        alternate = next(
+            path
+            for path in changed["reveal_paths"]
+            if path["arguments"]["record_id"] != changed["record_id"]
+        )
+        environment = NativeRecoveryEnvironmentV3(task)
+        self.assertTrue(
+            environment.execute_tool(
+                alternate["tool"], deepcopy(alternate["arguments"])
+            ).ok
+        )
+        score = evaluate_v3_environment(task, environment)
+        self.assertTrue(
+            score["changed_fact_acquisition"][
+                "queried_before_first_mutation"
+            ]
+        )
+        self.assertEqual(
+            score["changed_fact_acquisition"]["observed_record_id"],
+            alternate["arguments"]["record_id"],
+        )
+
+    def test_missing_added_companion_is_under_repair(self) -> None:
+        task = next(
+            task
+            for task in self.tasks
+            if self.gold[task["task_id"]]["metadata"][
+                "reasoning_structure"
+            ]
+            == "bridge_vs_replacement"
+            and self.gold[task["task_id"]]["metadata"]["variant_role"]
+            == "left"
+        )
+        rule = next(
+            rule
+            for rule in task["compatibility_rules"]
+            if rule["type"] == "requires_any"
+        )
+        environment = NativeRecoveryEnvironmentV3(task)
+        tool = (
+            "book_travel_option"
+            if task["domain"] == "travel"
+            else "purchase_product_option"
+        )
+        actor_key = (
+            "user_id" if task["domain"] == "travel" else "customer_id"
+        )
+        option_key = (
+            "option_id" if task["domain"] == "travel" else "product_id"
+        )
+        self.assertTrue(
+            environment.execute_tool(
+                tool,
+                {
+                    option_key: rule["if_option_id"],
+                    actor_key: task["actor_id"],
+                },
+            ).ok
+        )
+        score = evaluate_v3_environment(task, environment)
+        self.assertFalse(score["goal_pass"])
+        for required in rule["any_option_ids"]:
+            self.assertIn(
+                f"added_option:{required}", score["under_repair"]
+            )
 
     def test_correct_scope_can_still_have_execution_waste(self) -> None:
         selected = None
@@ -325,6 +474,10 @@ class V3ReleaseTests(unittest.TestCase):
         self.assertTrue(report["valid"], report["errors"])
         self.assertEqual(report["validated_evidence_count"], 624)
         self.assertEqual(report["evidence_reference_count"], 624)
+        self.assertEqual(
+            report["observable_state_atom_count"],
+            report["observable_state_atom_total"],
+        )
         for strategy in [
             "local_repair",
             "dependency_repair",

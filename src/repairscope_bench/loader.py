@@ -967,6 +967,16 @@ def _validate_v3_task(task: dict[str, Any]) -> None:
                 f"{task['task_id']}: refund exceeds amount paid"
             )
     term_ids: set[str] = set()
+    supported_triggers = {
+        "any_changed",
+        "all_changed",
+        "changed_count_at_least",
+        "changed_with_retained",
+        "retained_paid_below",
+        "retained_quantity_below",
+        "active_any",
+        "active_all",
+    }
     for term in task["economic_terms"]:
         if term["term_id"] in term_ids:
             raise TaskValidationError(
@@ -986,6 +996,46 @@ def _validate_v3_task(task: dict[str, Any]) -> None:
         if not set(term.get("linked_option_ids", [])).issubset(option_ids):
             raise TaskValidationError(
                 f"{task['task_id']}: term references unknown option"
+            )
+        trigger = term.get("trigger", {})
+        if trigger.get("type") not in supported_triggers:
+            raise TaskValidationError(
+                f"{task['task_id']}: unsupported economic trigger"
+            )
+        referenced_entities = set(trigger.get("entity_ids", []))
+        referenced_entities.update(trigger.get("changed_entity_ids", []))
+        referenced_entities.update(trigger.get("retained_entity_ids", []))
+        if not referenced_entities.issubset(set(entity_ids)):
+            raise TaskValidationError(
+                f"{task['task_id']}: economic trigger references unknown entity"
+            )
+        if not set(trigger.get("option_ids", [])).issubset(option_ids):
+            raise TaskValidationError(
+                f"{task['task_id']}: economic trigger references unknown option"
+            )
+    for rule in task["compatibility_rules"]:
+        kind = rule.get("type")
+        if kind == "forbid_pair":
+            referenced_options = set(rule.get("option_ids", []))
+            valid_shape = len(rule.get("option_ids", [])) == 2
+        elif kind in {"requires_any", "requires_all"}:
+            required_key = (
+                "any_option_ids"
+                if kind == "requires_any"
+                else "all_option_ids"
+            )
+            referenced_options = {rule.get("if_option_id")}
+            referenced_options.update(rule.get(required_key, []))
+            valid_shape = bool(
+                rule.get("if_option_id") and rule.get(required_key)
+            )
+        else:
+            raise TaskValidationError(
+                f"{task['task_id']}: unsupported compatibility rule {kind!r}"
+            )
+        if not valid_shape or not referenced_options.issubset(option_ids):
+            raise TaskValidationError(
+                f"{task['task_id']}: malformed or unknown compatibility rule"
             )
     constraint_ids: set[str] = set()
     for item in task["hard_goals"]["capabilities"] + task["hard_goals"].get(

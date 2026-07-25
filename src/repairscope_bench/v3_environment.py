@@ -99,13 +99,13 @@ TRAVEL_TOOLS_V3 = [
     ),
     _schema(
         "get_travel_terms",
-        "Read authoritative refund, package, threshold, recurring-charge, and settlement terms linked to a reservation or option.",
+        "Read authoritative refund, package, threshold, recurring-charge, settlement, conflict, and required-companion rules linked to a reservation or option. Relationship rules are returned as structured records.",
         {"record_id": {"type": "string"}},
         ["record_id"],
     ),
     _schema(
         "check_travel_compatibility",
-        "Check whether two travel options can coexist under the current itinerary and supplier rules.",
+        "Check whether two travel options may coexist and return every structured conflict or required-companion rule involving either option. Pairwise coexistence does not by itself waive a required companion.",
         {
             "left_option_id": {"type": "string"},
             "right_option_id": {"type": "string"},
@@ -160,13 +160,13 @@ AFTER_SALES_TOOLS_V3 = [
     ),
     _schema(
         "get_product_terms",
-        "Read authoritative return, bundle, threshold, licence, recurring-charge, and settlement terms linked to an item or product.",
+        "Read authoritative return, bundle, threshold, licence, recurring-charge, settlement, conflict, and required-companion rules linked to an item or product. Relationship rules are returned as structured records.",
         {"record_id": {"type": "string"}},
         ["record_id"],
     ),
     _schema(
         "check_product_compatibility",
-        "Check whether two products or services can coexist under current specifications and contracts.",
+        "Check whether two products or services may coexist and return every structured conflict or required-companion rule involving either option. Pairwise coexistence does not by itself waive a required companion.",
         {
             "left_product_id": {"type": "string"},
             "right_product_id": {"type": "string"},
@@ -547,6 +547,7 @@ class NativeRecoveryEnvironmentV3:
                     "term_id": term["term_id"],
                     "description": term["description"],
                     "trigger": deepcopy(term["trigger"]),
+                    "applies_when": public_trigger_condition(term["trigger"]),
                     "one_time_charge": int(
                         term.get("charge_minor", 0)
                     )
@@ -584,17 +585,92 @@ class NativeRecoveryEnvironmentV3:
             "post_purchase_cancellation_fee": post_purchase_fee / 100,
             "post_purchase_refund": post_purchase_refund / 100,
             "linked_terms": linked_terms,
+            "relationship_rules": self._public_relationship_rules(
+                {option_id}
+            ),
         }
 
     def _compatibility(self, left: str, right: str) -> dict[str, Any]:
         known = set(self.option_metadata)
         if left not in known or right not in known:
             return {"error": "Unknown option identifier."}
+        compatible = options_compatible(self.task, left, right)
         return {
             "left_option_id": left,
             "right_option_id": right,
-            "compatible": options_compatible(self.task, left, right),
+            "compatible": compatible,
+            "coexistence_allowed": compatible,
+            "relationship_rules": self._public_relationship_rules(
+                {left, right}
+            ),
         }
+
+    def _public_relationship_rules(
+        self, referenced_option_ids: set[str]
+    ) -> list[dict[str, Any]]:
+        rules: list[dict[str, Any]] = []
+        for rule in self.task.get("compatibility_rules", []):
+            kind = rule["type"]
+            if kind == "forbid_pair":
+                involved = set(rule["option_ids"])
+                if not involved.intersection(referenced_option_ids):
+                    continue
+                rules.append(
+                    {
+                        "constraint_id": rule["constraint_id"],
+                        "type": "forbid_pair",
+                        "option_ids": sorted(involved),
+                        "options": [
+                            self._public_option_reference(option_id)
+                            for option_id in sorted(involved)
+                        ],
+                        "meaning": "These options must not be active together.",
+                    }
+                )
+            elif kind in {"requires_any", "requires_all"}:
+                required_key = (
+                    "any_option_ids"
+                    if kind == "requires_any"
+                    else "all_option_ids"
+                )
+                subject = rule["if_option_id"]
+                required = set(rule[required_key])
+                involved = {subject} | required
+                if not involved.intersection(referenced_option_ids):
+                    continue
+                rules.append(
+                    {
+                        "constraint_id": rule["constraint_id"],
+                        "type": kind,
+                        "if_option_id": subject,
+                        required_key: sorted(required),
+                        "subject": self._public_option_reference(subject),
+                        (
+                            "required_any_options"
+                            if kind == "requires_any"
+                            else "required_all_options"
+                        ): [
+                            self._public_option_reference(option_id)
+                            for option_id in sorted(required)
+                        ],
+                        "meaning": (
+                            "The subject option is valid only when at least one "
+                            "listed companion option is also active."
+                            if kind == "requires_any"
+                            else "The subject option is valid only when every "
+                            "listed companion option is also active."
+                        ),
+                    }
+                )
+            else:
+                raise ValueError(
+                    f"Unsupported v3 relationship rule: {kind}"
+                )
+        return sorted(rules, key=lambda item: item["constraint_id"])
+
+    def _public_option_reference(self, option_id: str) -> dict[str, str]:
+        metadata = self.option_metadata[option_id]
+        return {"option_id": option_id, "name": metadata["name"]}
 
     def _travel_cancel(
         self, entity_id: str, confirm: bool
@@ -834,6 +910,51 @@ def options_compatible(task: dict[str, Any], left: str, right: str) -> bool:
     return True
 
 
+def public_trigger_condition(trigger: dict[str, Any]) -> dict[str, Any]:
+    """Render economic trigger semantics as explicit predicates."""
+    kind = trigger["type"]
+    if kind in {"any_changed", "all_changed"}:
+        return {
+            "predicate": "boundary_record_is_no_longer_active",
+            "aggregation": "any" if kind == "any_changed" else "all",
+            "record_ids": sorted(trigger["entity_ids"]),
+        }
+    if kind == "changed_count_at_least":
+        return {
+            "predicate": "boundary_record_is_no_longer_active",
+            "aggregation": "count_at_least",
+            "record_ids": sorted(trigger["entity_ids"]),
+            "count": int(trigger["count"]),
+        }
+    if kind == "changed_with_retained":
+        return {
+            "predicate": "changed_and_retained",
+            "changed_record_ids": sorted(trigger["changed_entity_ids"]),
+            "retained_record_ids": sorted(trigger["retained_entity_ids"]),
+        }
+    if kind == "retained_paid_below":
+        return {
+            "metric": "sum_original_amount_paid_for_still_active_records",
+            "record_ids": sorted(trigger["entity_ids"]),
+            "operator": "less_than",
+            "threshold_minor": int(trigger["threshold_minor"]),
+        }
+    if kind == "retained_quantity_below":
+        return {
+            "metric": "sum_original_quantity_for_still_active_records",
+            "record_ids": sorted(trigger["entity_ids"]),
+            "operator": "less_than",
+            "quantity": int(trigger["quantity"]),
+        }
+    if kind in {"active_any", "active_all"}:
+        return {
+            "predicate": "option_is_active",
+            "aggregation": "any" if kind == "active_any" else "all",
+            "option_ids": sorted(trigger["option_ids"]),
+        }
+    raise ValueError(f"Unsupported v3 term trigger: {kind}")
+
+
 def term_charge_minor(term: dict[str, Any]) -> int:
     return int(term.get("charge_minor", 0)) + int(
         term.get("monthly_minor", 0)
@@ -933,6 +1054,7 @@ __all__ = [
     "TRAVEL_TOOLS_V3",
     "money",
     "options_compatible",
+    "public_trigger_condition",
     "snapshot_hash",
     "term_charge_minor",
     "term_credit_minor",

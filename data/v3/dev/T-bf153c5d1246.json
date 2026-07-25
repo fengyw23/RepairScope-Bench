@@ -432,7 +432,7 @@
     "currency": "USD",
     "internal_money_unit": "minor"
   },
-  "instruction": "Continue the partially completed Denver clinical meeting. The earlier orders and reservations shown below are already active, but the attempted host dinner (dining) has just failed. The final state must contain exactly one hotel stay, exactly one ground transfer, exactly one event admission, exactly one arrival flight, exactly one host dinner, exactly one meeting-location continuity. Every option covering host dinner must be in Denver and be ready by day 4. Do not retain combinations that supplier records mark as incompatible. Complete the remaining goal with the lowest actual net monetary cost from this failure point.",
+  "instruction": "Continue the partially completed Denver clinical meeting. The earlier orders and reservations shown below are already active, but the attempted host dinner (dining) has just failed. The final state must contain exactly one hotel stay, exactly one ground transfer, exactly one event admission, exactly one arrival flight, exactly one host dinner, exactly one meeting-location continuity. Every option covering host dinner must be in Denver and be ready by day 4. Honor every supplier-recorded conflict and required companion; pairwise coexistence alone does not waive a required companion. Complete the remaining goal with the lowest actual net monetary cost from this failure point.",
   "initial_snapshot": {
     "state_bench": {
       "flights": [

@@ -447,7 +447,7 @@
     "currency": "USD",
     "internal_money_unit": "minor"
   },
-  "instruction": "Continue the partially completed ultrasound review workstation. The earlier orders and reservations shown below are already active, but the attempted ultrasound dock (dock) has just failed. The final state must contain exactly one core device, exactly one service coverage, exactly one licensed software, exactly one reference display, exactly one ultrasound dock. Every option covering ultrasound dock must be delivered to Ultrasound Lab and be ready by day 4. Do not retain combinations that supplier records mark as incompatible. Complete the remaining goal with the lowest actual net monetary cost from this failure point.",
+  "instruction": "Continue the partially completed ultrasound review workstation. The earlier orders and reservations shown below are already active, but the attempted ultrasound dock (dock) has just failed. The final state must contain exactly one core device, exactly one service coverage, exactly one licensed software, exactly one reference display, exactly one ultrasound dock. Every option covering ultrasound dock must be delivered to Ultrasound Lab and be ready by day 4. Honor every supplier-recorded conflict and required companion; pairwise coexistence alone does not waive a required companion. Complete the remaining goal with the lowest actual net monetary cost from this failure point.",
   "initial_snapshot": {
     "state_bench": {
       "products": [

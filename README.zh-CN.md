@@ -97,6 +97,10 @@ max($10，失败边界有效承诺总价的 1%)
 - `Execution Waste`：多余中间操作造成的费用；
 - `Over-Repair` 与 `Under-Repair`。
 
+发布验证器还会证明评分器与 Agent 的信息对称性：624/624 条硬约束证据和
+1,320/1,320 个评分状态原子都能通过模型可见的指令或结构化公开工具重放。
+详见[评分器—Agent 可观测性审计](docs/OBSERVABILITY_AUDIT.md)。
+
 范围推理与工具执行分开计分。例如 Agent 先购买错误选项、支付可查询的
 取消费，随后到达正确终态，则 `Unique Scope Pass=true`，但
 `Clean Execution=false`。

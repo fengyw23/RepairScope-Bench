@@ -87,7 +87,15 @@ operation orders are constructed to be economically equivalent.
 - `Unique Scope Pass^5`: fraction obtaining Unique Scope Pass in all five
   runs;
 - `Counterfactual Pair Success`: both variants pass in the matched repeat;
-- `Over-Repair` and `Under-Repair`: incorrect changes to prior commitments.
+- `Over-Repair` and `Under-Repair`: incorrect changes to prior commitments
+  plus extra or missing newly added options.
+
+Changed-fact acquisition is matched against the returned term ID, field, and
+value. All linked record or option IDs that reveal the same fact are accepted;
+the metric does not require one author-selected record ID.
+
+The full structured evidence and state-atom release gate is documented in
+[Scorer–Agent Observability Audit](OBSERVABILITY_AUDIT.md).
 
 ### Economic execution
 

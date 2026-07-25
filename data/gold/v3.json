@@ -57,7 +57,13 @@
           "arguments": {
             "record_id": "HR-0001"
           },
+          "equivalent_arguments": [
+            {
+              "record_id": "HR-0001"
+            }
+          ],
           "match": {
+            "kind": "economic_term_fact",
             "term_id": "TERM-626deef2d0c5",
             "field": "credit_minor",
             "expected": 0
@@ -68,7 +74,21 @@
         "logical_fact": "supplier refund credit",
         "json_pointer": "/economic_terms/0/credit_minor",
         "reveal_tool": "get_travel_terms",
-        "record_id": "HR-0001"
+        "record_id": "HR-0001",
+        "reveal_paths": [
+          {
+            "tool": "get_travel_terms",
+            "arguments": {
+              "record_id": "HR-0001"
+            },
+            "match": {
+              "kind": "economic_term_fact",
+              "term_id": "TERM-626deef2d0c5",
+              "field": "credit_minor",
+              "expected": 0
+            }
+          }
+        ]
       },
       "complexity_profile": {
         "existing_commitment_count": 4,
@@ -501,7 +521,13 @@
           "arguments": {
             "record_id": "HR-0001"
           },
+          "equivalent_arguments": [
+            {
+              "record_id": "HR-0001"
+            }
+          ],
           "match": {
+            "kind": "economic_term_fact",
             "term_id": "TERM-626deef2d0c5",
             "field": "credit_minor",
             "expected": 15000
@@ -512,7 +538,21 @@
         "logical_fact": "supplier refund credit",
         "json_pointer": "/economic_terms/0/credit_minor",
         "reveal_tool": "get_travel_terms",
-        "record_id": "HR-0001"
+        "record_id": "HR-0001",
+        "reveal_paths": [
+          {
+            "tool": "get_travel_terms",
+            "arguments": {
+              "record_id": "HR-0001"
+            },
+            "match": {
+              "kind": "economic_term_fact",
+              "term_id": "TERM-626deef2d0c5",
+              "field": "credit_minor",
+              "expected": 15000
+            }
+          }
+        ]
       },
       "complexity_profile": {
         "existing_commitment_count": 4,
@@ -985,7 +1025,13 @@
           "arguments": {
             "record_id": "HR-0001"
           },
+          "equivalent_arguments": [
+            {
+              "record_id": "HR-0001"
+            }
+          ],
           "match": {
+            "kind": "economic_term_fact",
             "term_id": "TERM-626deef2d0c5",
             "field": "credit_minor",
             "expected": 0
@@ -996,7 +1042,21 @@
         "logical_fact": "supplier refund credit",
         "json_pointer": "/economic_terms/0/credit_minor",
         "reveal_tool": "get_travel_terms",
-        "record_id": "HR-0001"
+        "record_id": "HR-0001",
+        "reveal_paths": [
+          {
+            "tool": "get_travel_terms",
+            "arguments": {
+              "record_id": "HR-0001"
+            },
+            "match": {
+              "kind": "economic_term_fact",
+              "term_id": "TERM-626deef2d0c5",
+              "field": "credit_minor",
+              "expected": 0
+            }
+          }
+        ]
       },
       "complexity_profile": {
         "existing_commitment_count": 4,
@@ -1429,7 +1489,13 @@
           "arguments": {
             "record_id": "HR-0001"
           },
+          "equivalent_arguments": [
+            {
+              "record_id": "HR-0001"
+            }
+          ],
           "match": {
+            "kind": "economic_term_fact",
             "term_id": "TERM-626deef2d0c5",
             "field": "credit_minor",
             "expected": 15000
@@ -1440,7 +1506,21 @@
         "logical_fact": "supplier refund credit",
         "json_pointer": "/economic_terms/0/credit_minor",
         "reveal_tool": "get_travel_terms",
-        "record_id": "HR-0001"
+        "record_id": "HR-0001",
+        "reveal_paths": [
+          {
+            "tool": "get_travel_terms",
+            "arguments": {
+              "record_id": "HR-0001"
+            },
+            "match": {
+              "kind": "economic_term_fact",
+              "term_id": "TERM-626deef2d0c5",
+              "field": "credit_minor",
+              "expected": 15000
+            }
+          }
+        ]
       },
       "complexity_profile": {
         "existing_commitment_count": 4,
@@ -1908,16 +1988,39 @@
         {
           "evidence_id": "E-CR-e50e51ae415a",
           "constraint_id": "CR-e50e51ae415a",
-          "source_type": "tool_rule",
+          "source_type": "query_result",
           "tool": "check_travel_compatibility",
-          "description_fragment": "Check whether"
+          "arguments": {
+            "left_option_id": "TR-76c65ca64705",
+            "right_option_id": "TR-a4fa39caa938"
+          },
+          "match": {
+            "kind": "relationship_rule",
+            "constraint_id": "CR-e50e51ae415a",
+            "type": "forbid_pair",
+            "option_ids": [
+              "TR-76c65ca64705",
+              "TR-a4fa39caa938"
+            ]
+          }
         },
         {
           "evidence_id": "E-CR-524d12886920",
           "constraint_id": "CR-524d12886920",
-          "source_type": "tool_rule",
-          "tool": "check_travel_compatibility",
-          "description_fragment": "Check whether"
+          "source_type": "query_result",
+          "tool": "get_travel_terms",
+          "arguments": {
+            "record_id": "TR-76c65ca64705"
+          },
+          "match": {
+            "kind": "relationship_rule",
+            "constraint_id": "CR-524d12886920",
+            "type": "requires_any",
+            "if_option_id": "TR-76c65ca64705",
+            "any_option_ids": [
+              "TR-c451786f747a"
+            ]
+          }
         },
         {
           "evidence_id": "E-FACT-T-16f7eb079133",
@@ -1927,7 +2030,16 @@
           "arguments": {
             "record_id": "HR-0001"
           },
+          "equivalent_arguments": [
+            {
+              "record_id": "HR-0001"
+            },
+            {
+              "record_id": "SV-0001"
+            }
+          ],
           "match": {
+            "kind": "economic_term_fact",
             "term_id": "TERM-1eef09609edb",
             "field": "charge_minor",
             "expected": 0
@@ -1938,7 +2050,33 @@
         "logical_fact": "downstream migration charge",
         "json_pointer": "/economic_terms/0/charge_minor",
         "reveal_tool": "get_travel_terms",
-        "record_id": "HR-0001"
+        "record_id": "HR-0001",
+        "reveal_paths": [
+          {
+            "tool": "get_travel_terms",
+            "arguments": {
+              "record_id": "HR-0001"
+            },
+            "match": {
+              "kind": "economic_term_fact",
+              "term_id": "TERM-1eef09609edb",
+              "field": "charge_minor",
+              "expected": 0
+            }
+          },
+          {
+            "tool": "get_travel_terms",
+            "arguments": {
+              "record_id": "SV-0001"
+            },
+            "match": {
+              "kind": "economic_term_fact",
+              "term_id": "TERM-1eef09609edb",
+              "field": "charge_minor",
+              "expected": 0
+            }
+          }
+        ]
       },
       "complexity_profile": {
         "existing_commitment_count": 4,
@@ -2694,16 +2832,39 @@
         {
           "evidence_id": "E-CR-e50e51ae415a",
           "constraint_id": "CR-e50e51ae415a",
-          "source_type": "tool_rule",
+          "source_type": "query_result",
           "tool": "check_travel_compatibility",
-          "description_fragment": "Check whether"
+          "arguments": {
+            "left_option_id": "TR-76c65ca64705",
+            "right_option_id": "TR-a4fa39caa938"
+          },
+          "match": {
+            "kind": "relationship_rule",
+            "constraint_id": "CR-e50e51ae415a",
+            "type": "forbid_pair",
+            "option_ids": [
+              "TR-76c65ca64705",
+              "TR-a4fa39caa938"
+            ]
+          }
         },
         {
           "evidence_id": "E-CR-524d12886920",
           "constraint_id": "CR-524d12886920",
-          "source_type": "tool_rule",
-          "tool": "check_travel_compatibility",
-          "description_fragment": "Check whether"
+          "source_type": "query_result",
+          "tool": "get_travel_terms",
+          "arguments": {
+            "record_id": "TR-76c65ca64705"
+          },
+          "match": {
+            "kind": "relationship_rule",
+            "constraint_id": "CR-524d12886920",
+            "type": "requires_any",
+            "if_option_id": "TR-76c65ca64705",
+            "any_option_ids": [
+              "TR-c451786f747a"
+            ]
+          }
         },
         {
           "evidence_id": "E-FACT-T-05eb3a9ec183",
@@ -2713,7 +2874,16 @@
           "arguments": {
             "record_id": "HR-0001"
           },
+          "equivalent_arguments": [
+            {
+              "record_id": "HR-0001"
+            },
+            {
+              "record_id": "SV-0001"
+            }
+          ],
           "match": {
+            "kind": "economic_term_fact",
             "term_id": "TERM-1eef09609edb",
             "field": "charge_minor",
             "expected": 18000
@@ -2724,7 +2894,33 @@
         "logical_fact": "downstream migration charge",
         "json_pointer": "/economic_terms/0/charge_minor",
         "reveal_tool": "get_travel_terms",
-        "record_id": "HR-0001"
+        "record_id": "HR-0001",
+        "reveal_paths": [
+          {
+            "tool": "get_travel_terms",
+            "arguments": {
+              "record_id": "HR-0001"
+            },
+            "match": {
+              "kind": "economic_term_fact",
+              "term_id": "TERM-1eef09609edb",
+              "field": "charge_minor",
+              "expected": 18000
+            }
+          },
+          {
+            "tool": "get_travel_terms",
+            "arguments": {
+              "record_id": "SV-0001"
+            },
+            "match": {
+              "kind": "economic_term_fact",
+              "term_id": "TERM-1eef09609edb",
+              "field": "charge_minor",
+              "expected": 18000
+            }
+          }
+        ]
       },
       "complexity_profile": {
         "existing_commitment_count": 4,
@@ -3392,16 +3588,39 @@
         {
           "evidence_id": "E-CR-b21d96137ab1",
           "constraint_id": "CR-b21d96137ab1",
-          "source_type": "tool_rule",
+          "source_type": "query_result",
           "tool": "check_travel_compatibility",
-          "description_fragment": "Check whether"
+          "arguments": {
+            "left_option_id": "TR-5f5a396debc9",
+            "right_option_id": "TR-41ee76fd599b"
+          },
+          "match": {
+            "kind": "relationship_rule",
+            "constraint_id": "CR-b21d96137ab1",
+            "type": "forbid_pair",
+            "option_ids": [
+              "TR-41ee76fd599b",
+              "TR-5f5a396debc9"
+            ]
+          }
         },
         {
           "evidence_id": "E-CR-821e6520c7ac",
           "constraint_id": "CR-821e6520c7ac",
-          "source_type": "tool_rule",
-          "tool": "check_travel_compatibility",
-          "description_fragment": "Check whether"
+          "source_type": "query_result",
+          "tool": "get_travel_terms",
+          "arguments": {
+            "record_id": "TR-5f5a396debc9"
+          },
+          "match": {
+            "kind": "relationship_rule",
+            "constraint_id": "CR-821e6520c7ac",
+            "type": "requires_any",
+            "if_option_id": "TR-5f5a396debc9",
+            "any_option_ids": [
+              "TR-a601e8139001"
+            ]
+          }
         },
         {
           "evidence_id": "E-FACT-T-6cbbedb7cde2",
@@ -3411,7 +3630,16 @@
           "arguments": {
             "record_id": "HR-0001"
           },
+          "equivalent_arguments": [
+            {
+              "record_id": "HR-0001"
+            },
+            {
+              "record_id": "SV-0001"
+            }
+          ],
           "match": {
+            "kind": "economic_term_fact",
             "term_id": "TERM-1eef09609edb",
             "field": "charge_minor",
             "expected": 0
@@ -3422,7 +3650,33 @@
         "logical_fact": "downstream migration charge",
         "json_pointer": "/economic_terms/0/charge_minor",
         "reveal_tool": "get_travel_terms",
-        "record_id": "HR-0001"
+        "record_id": "HR-0001",
+        "reveal_paths": [
+          {
+            "tool": "get_travel_terms",
+            "arguments": {
+              "record_id": "HR-0001"
+            },
+            "match": {
+              "kind": "economic_term_fact",
+              "term_id": "TERM-1eef09609edb",
+              "field": "charge_minor",
+              "expected": 0
+            }
+          },
+          {
+            "tool": "get_travel_terms",
+            "arguments": {
+              "record_id": "SV-0001"
+            },
+            "match": {
+              "kind": "economic_term_fact",
+              "term_id": "TERM-1eef09609edb",
+              "field": "charge_minor",
+              "expected": 0
+            }
+          }
+        ]
       },
       "complexity_profile": {
         "existing_commitment_count": 4,
@@ -4178,16 +4432,39 @@
         {
           "evidence_id": "E-CR-b21d96137ab1",
           "constraint_id": "CR-b21d96137ab1",
-          "source_type": "tool_rule",
+          "source_type": "query_result",
           "tool": "check_travel_compatibility",
-          "description_fragment": "Check whether"
+          "arguments": {
+            "left_option_id": "TR-5f5a396debc9",
+            "right_option_id": "TR-41ee76fd599b"
+          },
+          "match": {
+            "kind": "relationship_rule",
+            "constraint_id": "CR-b21d96137ab1",
+            "type": "forbid_pair",
+            "option_ids": [
+              "TR-41ee76fd599b",
+              "TR-5f5a396debc9"
+            ]
+          }
         },
         {
           "evidence_id": "E-CR-821e6520c7ac",
           "constraint_id": "CR-821e6520c7ac",
-          "source_type": "tool_rule",
-          "tool": "check_travel_compatibility",
-          "description_fragment": "Check whether"
+          "source_type": "query_result",
+          "tool": "get_travel_terms",
+          "arguments": {
+            "record_id": "TR-5f5a396debc9"
+          },
+          "match": {
+            "kind": "relationship_rule",
+            "constraint_id": "CR-821e6520c7ac",
+            "type": "requires_any",
+            "if_option_id": "TR-5f5a396debc9",
+            "any_option_ids": [
+              "TR-a601e8139001"
+            ]
+          }
         },
         {
           "evidence_id": "E-FACT-T-460e447c46ca",
@@ -4197,7 +4474,16 @@
           "arguments": {
             "record_id": "HR-0001"
           },
+          "equivalent_arguments": [
+            {
+              "record_id": "HR-0001"
+            },
+            {
+              "record_id": "SV-0001"
+            }
+          ],
           "match": {
+            "kind": "economic_term_fact",
             "term_id": "TERM-1eef09609edb",
             "field": "charge_minor",
             "expected": 18000
@@ -4208,7 +4494,33 @@
         "logical_fact": "downstream migration charge",
         "json_pointer": "/economic_terms/0/charge_minor",
         "reveal_tool": "get_travel_terms",
-        "record_id": "HR-0001"
+        "record_id": "HR-0001",
+        "reveal_paths": [
+          {
+            "tool": "get_travel_terms",
+            "arguments": {
+              "record_id": "HR-0001"
+            },
+            "match": {
+              "kind": "economic_term_fact",
+              "term_id": "TERM-1eef09609edb",
+              "field": "charge_minor",
+              "expected": 18000
+            }
+          },
+          {
+            "tool": "get_travel_terms",
+            "arguments": {
+              "record_id": "SV-0001"
+            },
+            "match": {
+              "kind": "economic_term_fact",
+              "term_id": "TERM-1eef09609edb",
+              "field": "charge_minor",
+              "expected": 18000
+            }
+          }
+        ]
       },
       "complexity_profile": {
         "existing_commitment_count": 4,
@@ -4887,7 +5199,16 @@
           "arguments": {
             "record_id": "HR-0001"
           },
+          "equivalent_arguments": [
+            {
+              "record_id": "HR-0001"
+            },
+            {
+              "record_id": "TR-65cbf88ed6a1"
+            }
+          ],
           "match": {
+            "kind": "economic_term_fact",
             "term_id": "TERM-168ba5fbeaad",
             "field": "charge_minor",
             "expected": 0
@@ -4898,7 +5219,33 @@
         "logical_fact": "continuity settlement charge",
         "json_pointer": "/economic_terms/0/charge_minor",
         "reveal_tool": "get_travel_terms",
-        "record_id": "HR-0001"
+        "record_id": "HR-0001",
+        "reveal_paths": [
+          {
+            "tool": "get_travel_terms",
+            "arguments": {
+              "record_id": "HR-0001"
+            },
+            "match": {
+              "kind": "economic_term_fact",
+              "term_id": "TERM-168ba5fbeaad",
+              "field": "charge_minor",
+              "expected": 0
+            }
+          },
+          {
+            "tool": "get_travel_terms",
+            "arguments": {
+              "record_id": "TR-65cbf88ed6a1"
+            },
+            "match": {
+              "kind": "economic_term_fact",
+              "term_id": "TERM-168ba5fbeaad",
+              "field": "charge_minor",
+              "expected": 0
+            }
+          }
+        ]
       },
       "complexity_profile": {
         "existing_commitment_count": 4,
@@ -5405,7 +5752,16 @@
           "arguments": {
             "record_id": "HR-0001"
           },
+          "equivalent_arguments": [
+            {
+              "record_id": "HR-0001"
+            },
+            {
+              "record_id": "TR-65cbf88ed6a1"
+            }
+          ],
           "match": {
+            "kind": "economic_term_fact",
             "term_id": "TERM-168ba5fbeaad",
             "field": "charge_minor",
             "expected": 15000
@@ -5416,7 +5772,33 @@
         "logical_fact": "continuity settlement charge",
         "json_pointer": "/economic_terms/0/charge_minor",
         "reveal_tool": "get_travel_terms",
-        "record_id": "HR-0001"
+        "record_id": "HR-0001",
+        "reveal_paths": [
+          {
+            "tool": "get_travel_terms",
+            "arguments": {
+              "record_id": "HR-0001"
+            },
+            "match": {
+              "kind": "economic_term_fact",
+              "term_id": "TERM-168ba5fbeaad",
+              "field": "charge_minor",
+              "expected": 15000
+            }
+          },
+          {
+            "tool": "get_travel_terms",
+            "arguments": {
+              "record_id": "TR-65cbf88ed6a1"
+            },
+            "match": {
+              "kind": "economic_term_fact",
+              "term_id": "TERM-168ba5fbeaad",
+              "field": "charge_minor",
+              "expected": 15000
+            }
+          }
+        ]
       },
       "complexity_profile": {
         "existing_commitment_count": 4,
@@ -5864,7 +6246,16 @@
           "arguments": {
             "record_id": "HR-0001"
           },
+          "equivalent_arguments": [
+            {
+              "record_id": "HR-0001"
+            },
+            {
+              "record_id": "TR-88cc7969ba80"
+            }
+          ],
           "match": {
+            "kind": "economic_term_fact",
             "term_id": "TERM-168ba5fbeaad",
             "field": "charge_minor",
             "expected": 0
@@ -5875,7 +6266,33 @@
         "logical_fact": "continuity settlement charge",
         "json_pointer": "/economic_terms/0/charge_minor",
         "reveal_tool": "get_travel_terms",
-        "record_id": "HR-0001"
+        "record_id": "HR-0001",
+        "reveal_paths": [
+          {
+            "tool": "get_travel_terms",
+            "arguments": {
+              "record_id": "HR-0001"
+            },
+            "match": {
+              "kind": "economic_term_fact",
+              "term_id": "TERM-168ba5fbeaad",
+              "field": "charge_minor",
+              "expected": 0
+            }
+          },
+          {
+            "tool": "get_travel_terms",
+            "arguments": {
+              "record_id": "TR-88cc7969ba80"
+            },
+            "match": {
+              "kind": "economic_term_fact",
+              "term_id": "TERM-168ba5fbeaad",
+              "field": "charge_minor",
+              "expected": 0
+            }
+          }
+        ]
       },
       "complexity_profile": {
         "existing_commitment_count": 4,
@@ -6382,7 +6799,16 @@
           "arguments": {
             "record_id": "HR-0001"
           },
+          "equivalent_arguments": [
+            {
+              "record_id": "HR-0001"
+            },
+            {
+              "record_id": "TR-88cc7969ba80"
+            }
+          ],
           "match": {
+            "kind": "economic_term_fact",
             "term_id": "TERM-168ba5fbeaad",
             "field": "charge_minor",
             "expected": 15000
@@ -6393,7 +6819,33 @@
         "logical_fact": "continuity settlement charge",
         "json_pointer": "/economic_terms/0/charge_minor",
         "reveal_tool": "get_travel_terms",
-        "record_id": "HR-0001"
+        "record_id": "HR-0001",
+        "reveal_paths": [
+          {
+            "tool": "get_travel_terms",
+            "arguments": {
+              "record_id": "HR-0001"
+            },
+            "match": {
+              "kind": "economic_term_fact",
+              "term_id": "TERM-168ba5fbeaad",
+              "field": "charge_minor",
+              "expected": 15000
+            }
+          },
+          {
+            "tool": "get_travel_terms",
+            "arguments": {
+              "record_id": "TR-88cc7969ba80"
+            },
+            "match": {
+              "kind": "economic_term_fact",
+              "term_id": "TERM-168ba5fbeaad",
+              "field": "charge_minor",
+              "expected": 15000
+            }
+          }
+        ]
       },
       "complexity_profile": {
         "existing_commitment_count": 4,
@@ -6835,7 +7287,22 @@
           "arguments": {
             "record_id": "BK-0001"
           },
+          "equivalent_arguments": [
+            {
+              "record_id": "BK-0001"
+            },
+            {
+              "record_id": "HR-0001"
+            },
+            {
+              "record_id": "SV-0001"
+            },
+            {
+              "record_id": "SV-0002"
+            }
+          ],
           "match": {
+            "kind": "economic_term_fact",
             "term_id": "TERM-6314c7d6d3be",
             "field": "trigger/threshold_minor",
             "expected": 98000
@@ -6846,7 +7313,57 @@
         "logical_fact": "retained-value threshold",
         "json_pointer": "/economic_terms/0/trigger/threshold_minor",
         "reveal_tool": "get_travel_terms",
-        "record_id": "BK-0001"
+        "record_id": "BK-0001",
+        "reveal_paths": [
+          {
+            "tool": "get_travel_terms",
+            "arguments": {
+              "record_id": "BK-0001"
+            },
+            "match": {
+              "kind": "economic_term_fact",
+              "term_id": "TERM-6314c7d6d3be",
+              "field": "trigger/threshold_minor",
+              "expected": 98000
+            }
+          },
+          {
+            "tool": "get_travel_terms",
+            "arguments": {
+              "record_id": "HR-0001"
+            },
+            "match": {
+              "kind": "economic_term_fact",
+              "term_id": "TERM-6314c7d6d3be",
+              "field": "trigger/threshold_minor",
+              "expected": 98000
+            }
+          },
+          {
+            "tool": "get_travel_terms",
+            "arguments": {
+              "record_id": "SV-0001"
+            },
+            "match": {
+              "kind": "economic_term_fact",
+              "term_id": "TERM-6314c7d6d3be",
+              "field": "trigger/threshold_minor",
+              "expected": 98000
+            }
+          },
+          {
+            "tool": "get_travel_terms",
+            "arguments": {
+              "record_id": "SV-0002"
+            },
+            "match": {
+              "kind": "economic_term_fact",
+              "term_id": "TERM-6314c7d6d3be",
+              "field": "trigger/threshold_minor",
+              "expected": 98000
+            }
+          }
+        ]
       },
       "complexity_profile": {
         "existing_commitment_count": 4,
@@ -7299,7 +7816,22 @@
           "arguments": {
             "record_id": "BK-0001"
           },
+          "equivalent_arguments": [
+            {
+              "record_id": "BK-0001"
+            },
+            {
+              "record_id": "HR-0001"
+            },
+            {
+              "record_id": "SV-0001"
+            },
+            {
+              "record_id": "SV-0002"
+            }
+          ],
           "match": {
+            "kind": "economic_term_fact",
             "term_id": "TERM-6314c7d6d3be",
             "field": "trigger/threshold_minor",
             "expected": 100000
@@ -7310,7 +7842,57 @@
         "logical_fact": "retained-value threshold",
         "json_pointer": "/economic_terms/0/trigger/threshold_minor",
         "reveal_tool": "get_travel_terms",
-        "record_id": "BK-0001"
+        "record_id": "BK-0001",
+        "reveal_paths": [
+          {
+            "tool": "get_travel_terms",
+            "arguments": {
+              "record_id": "BK-0001"
+            },
+            "match": {
+              "kind": "economic_term_fact",
+              "term_id": "TERM-6314c7d6d3be",
+              "field": "trigger/threshold_minor",
+              "expected": 100000
+            }
+          },
+          {
+            "tool": "get_travel_terms",
+            "arguments": {
+              "record_id": "HR-0001"
+            },
+            "match": {
+              "kind": "economic_term_fact",
+              "term_id": "TERM-6314c7d6d3be",
+              "field": "trigger/threshold_minor",
+              "expected": 100000
+            }
+          },
+          {
+            "tool": "get_travel_terms",
+            "arguments": {
+              "record_id": "SV-0001"
+            },
+            "match": {
+              "kind": "economic_term_fact",
+              "term_id": "TERM-6314c7d6d3be",
+              "field": "trigger/threshold_minor",
+              "expected": 100000
+            }
+          },
+          {
+            "tool": "get_travel_terms",
+            "arguments": {
+              "record_id": "SV-0002"
+            },
+            "match": {
+              "kind": "economic_term_fact",
+              "term_id": "TERM-6314c7d6d3be",
+              "field": "trigger/threshold_minor",
+              "expected": 100000
+            }
+          }
+        ]
       },
       "complexity_profile": {
         "existing_commitment_count": 4,
@@ -7743,7 +8325,22 @@
           "arguments": {
             "record_id": "BK-0001"
           },
+          "equivalent_arguments": [
+            {
+              "record_id": "BK-0001"
+            },
+            {
+              "record_id": "HR-0001"
+            },
+            {
+              "record_id": "SV-0001"
+            },
+            {
+              "record_id": "SV-0002"
+            }
+          ],
           "match": {
+            "kind": "economic_term_fact",
             "term_id": "TERM-6314c7d6d3be",
             "field": "trigger/threshold_minor",
             "expected": 108000
@@ -7754,7 +8351,57 @@
         "logical_fact": "retained-value threshold",
         "json_pointer": "/economic_terms/0/trigger/threshold_minor",
         "reveal_tool": "get_travel_terms",
-        "record_id": "BK-0001"
+        "record_id": "BK-0001",
+        "reveal_paths": [
+          {
+            "tool": "get_travel_terms",
+            "arguments": {
+              "record_id": "BK-0001"
+            },
+            "match": {
+              "kind": "economic_term_fact",
+              "term_id": "TERM-6314c7d6d3be",
+              "field": "trigger/threshold_minor",
+              "expected": 108000
+            }
+          },
+          {
+            "tool": "get_travel_terms",
+            "arguments": {
+              "record_id": "HR-0001"
+            },
+            "match": {
+              "kind": "economic_term_fact",
+              "term_id": "TERM-6314c7d6d3be",
+              "field": "trigger/threshold_minor",
+              "expected": 108000
+            }
+          },
+          {
+            "tool": "get_travel_terms",
+            "arguments": {
+              "record_id": "SV-0001"
+            },
+            "match": {
+              "kind": "economic_term_fact",
+              "term_id": "TERM-6314c7d6d3be",
+              "field": "trigger/threshold_minor",
+              "expected": 108000
+            }
+          },
+          {
+            "tool": "get_travel_terms",
+            "arguments": {
+              "record_id": "SV-0002"
+            },
+            "match": {
+              "kind": "economic_term_fact",
+              "term_id": "TERM-6314c7d6d3be",
+              "field": "trigger/threshold_minor",
+              "expected": 108000
+            }
+          }
+        ]
       },
       "complexity_profile": {
         "existing_commitment_count": 4,
@@ -8207,7 +8854,22 @@
           "arguments": {
             "record_id": "BK-0001"
           },
+          "equivalent_arguments": [
+            {
+              "record_id": "BK-0001"
+            },
+            {
+              "record_id": "HR-0001"
+            },
+            {
+              "record_id": "SV-0001"
+            },
+            {
+              "record_id": "SV-0002"
+            }
+          ],
           "match": {
+            "kind": "economic_term_fact",
             "term_id": "TERM-6314c7d6d3be",
             "field": "trigger/threshold_minor",
             "expected": 110000
@@ -8218,7 +8880,57 @@
         "logical_fact": "retained-value threshold",
         "json_pointer": "/economic_terms/0/trigger/threshold_minor",
         "reveal_tool": "get_travel_terms",
-        "record_id": "BK-0001"
+        "record_id": "BK-0001",
+        "reveal_paths": [
+          {
+            "tool": "get_travel_terms",
+            "arguments": {
+              "record_id": "BK-0001"
+            },
+            "match": {
+              "kind": "economic_term_fact",
+              "term_id": "TERM-6314c7d6d3be",
+              "field": "trigger/threshold_minor",
+              "expected": 110000
+            }
+          },
+          {
+            "tool": "get_travel_terms",
+            "arguments": {
+              "record_id": "HR-0001"
+            },
+            "match": {
+              "kind": "economic_term_fact",
+              "term_id": "TERM-6314c7d6d3be",
+              "field": "trigger/threshold_minor",
+              "expected": 110000
+            }
+          },
+          {
+            "tool": "get_travel_terms",
+            "arguments": {
+              "record_id": "SV-0001"
+            },
+            "match": {
+              "kind": "economic_term_fact",
+              "term_id": "TERM-6314c7d6d3be",
+              "field": "trigger/threshold_minor",
+              "expected": 110000
+            }
+          },
+          {
+            "tool": "get_travel_terms",
+            "arguments": {
+              "record_id": "SV-0002"
+            },
+            "match": {
+              "kind": "economic_term_fact",
+              "term_id": "TERM-6314c7d6d3be",
+              "field": "trigger/threshold_minor",
+              "expected": 110000
+            }
+          }
+        ]
       },
       "complexity_profile": {
         "existing_commitment_count": 4,
@@ -8651,7 +9363,16 @@
           "arguments": {
             "record_id": "HR-0001"
           },
+          "equivalent_arguments": [
+            {
+              "record_id": "HR-0001"
+            },
+            {
+              "record_id": "SV-0001"
+            }
+          ],
           "match": {
+            "kind": "economic_term_fact",
             "term_id": "TERM-f99f5ecd0445",
             "field": "trigger/type",
             "expected": "any_changed"
@@ -8662,7 +9383,33 @@
         "logical_fact": "Boolean trigger condition",
         "json_pointer": "/economic_terms/0/trigger/type",
         "reveal_tool": "get_travel_terms",
-        "record_id": "HR-0001"
+        "record_id": "HR-0001",
+        "reveal_paths": [
+          {
+            "tool": "get_travel_terms",
+            "arguments": {
+              "record_id": "HR-0001"
+            },
+            "match": {
+              "kind": "economic_term_fact",
+              "term_id": "TERM-f99f5ecd0445",
+              "field": "trigger/type",
+              "expected": "any_changed"
+            }
+          },
+          {
+            "tool": "get_travel_terms",
+            "arguments": {
+              "record_id": "SV-0001"
+            },
+            "match": {
+              "kind": "economic_term_fact",
+              "term_id": "TERM-f99f5ecd0445",
+              "field": "trigger/type",
+              "expected": "any_changed"
+            }
+          }
+        ]
       },
       "complexity_profile": {
         "existing_commitment_count": 4,
@@ -9095,7 +9842,16 @@
           "arguments": {
             "record_id": "HR-0001"
           },
+          "equivalent_arguments": [
+            {
+              "record_id": "HR-0001"
+            },
+            {
+              "record_id": "SV-0001"
+            }
+          ],
           "match": {
+            "kind": "economic_term_fact",
             "term_id": "TERM-f99f5ecd0445",
             "field": "trigger/type",
             "expected": "all_changed"
@@ -9106,7 +9862,33 @@
         "logical_fact": "Boolean trigger condition",
         "json_pointer": "/economic_terms/0/trigger/type",
         "reveal_tool": "get_travel_terms",
-        "record_id": "HR-0001"
+        "record_id": "HR-0001",
+        "reveal_paths": [
+          {
+            "tool": "get_travel_terms",
+            "arguments": {
+              "record_id": "HR-0001"
+            },
+            "match": {
+              "kind": "economic_term_fact",
+              "term_id": "TERM-f99f5ecd0445",
+              "field": "trigger/type",
+              "expected": "all_changed"
+            }
+          },
+          {
+            "tool": "get_travel_terms",
+            "arguments": {
+              "record_id": "SV-0001"
+            },
+            "match": {
+              "kind": "economic_term_fact",
+              "term_id": "TERM-f99f5ecd0445",
+              "field": "trigger/type",
+              "expected": "all_changed"
+            }
+          }
+        ]
       },
       "complexity_profile": {
         "existing_commitment_count": 4,
@@ -9559,7 +10341,16 @@
           "arguments": {
             "record_id": "HR-0001"
           },
+          "equivalent_arguments": [
+            {
+              "record_id": "HR-0001"
+            },
+            {
+              "record_id": "SV-0001"
+            }
+          ],
           "match": {
+            "kind": "economic_term_fact",
             "term_id": "TERM-f99f5ecd0445",
             "field": "trigger/type",
             "expected": "any_changed"
@@ -9570,7 +10361,33 @@
         "logical_fact": "Boolean trigger condition",
         "json_pointer": "/economic_terms/0/trigger/type",
         "reveal_tool": "get_travel_terms",
-        "record_id": "HR-0001"
+        "record_id": "HR-0001",
+        "reveal_paths": [
+          {
+            "tool": "get_travel_terms",
+            "arguments": {
+              "record_id": "HR-0001"
+            },
+            "match": {
+              "kind": "economic_term_fact",
+              "term_id": "TERM-f99f5ecd0445",
+              "field": "trigger/type",
+              "expected": "any_changed"
+            }
+          },
+          {
+            "tool": "get_travel_terms",
+            "arguments": {
+              "record_id": "SV-0001"
+            },
+            "match": {
+              "kind": "economic_term_fact",
+              "term_id": "TERM-f99f5ecd0445",
+              "field": "trigger/type",
+              "expected": "any_changed"
+            }
+          }
+        ]
       },
       "complexity_profile": {
         "existing_commitment_count": 4,
@@ -10003,7 +10820,16 @@
           "arguments": {
             "record_id": "HR-0001"
           },
+          "equivalent_arguments": [
+            {
+              "record_id": "HR-0001"
+            },
+            {
+              "record_id": "SV-0001"
+            }
+          ],
           "match": {
+            "kind": "economic_term_fact",
             "term_id": "TERM-f99f5ecd0445",
             "field": "trigger/type",
             "expected": "all_changed"
@@ -10014,7 +10840,33 @@
         "logical_fact": "Boolean trigger condition",
         "json_pointer": "/economic_terms/0/trigger/type",
         "reveal_tool": "get_travel_terms",
-        "record_id": "HR-0001"
+        "record_id": "HR-0001",
+        "reveal_paths": [
+          {
+            "tool": "get_travel_terms",
+            "arguments": {
+              "record_id": "HR-0001"
+            },
+            "match": {
+              "kind": "economic_term_fact",
+              "term_id": "TERM-f99f5ecd0445",
+              "field": "trigger/type",
+              "expected": "all_changed"
+            }
+          },
+          {
+            "tool": "get_travel_terms",
+            "arguments": {
+              "record_id": "SV-0001"
+            },
+            "match": {
+              "kind": "economic_term_fact",
+              "term_id": "TERM-f99f5ecd0445",
+              "field": "trigger/type",
+              "expected": "all_changed"
+            }
+          }
+        ]
       },
       "complexity_profile": {
         "existing_commitment_count": 4,
@@ -10467,7 +11319,16 @@
           "arguments": {
             "record_id": "HR-0001"
           },
+          "equivalent_arguments": [
+            {
+              "record_id": "HR-0001"
+            },
+            {
+              "record_id": "TR-e7a1f7fb3071"
+            }
+          ],
           "match": {
+            "kind": "economic_term_fact",
             "term_id": "TERM-1f012c45332c",
             "field": "credit_minor",
             "expected": 0
@@ -10478,7 +11339,33 @@
         "logical_fact": "full-replacement supplier credit",
         "json_pointer": "/economic_terms/0/credit_minor",
         "reveal_tool": "get_travel_terms",
-        "record_id": "HR-0001"
+        "record_id": "HR-0001",
+        "reveal_paths": [
+          {
+            "tool": "get_travel_terms",
+            "arguments": {
+              "record_id": "HR-0001"
+            },
+            "match": {
+              "kind": "economic_term_fact",
+              "term_id": "TERM-1f012c45332c",
+              "field": "credit_minor",
+              "expected": 0
+            }
+          },
+          {
+            "tool": "get_travel_terms",
+            "arguments": {
+              "record_id": "TR-e7a1f7fb3071"
+            },
+            "match": {
+              "kind": "economic_term_fact",
+              "term_id": "TERM-1f012c45332c",
+              "field": "credit_minor",
+              "expected": 0
+            }
+          }
+        ]
       },
       "complexity_profile": {
         "existing_commitment_count": 4,
@@ -10967,7 +11854,16 @@
           "arguments": {
             "record_id": "HR-0001"
           },
+          "equivalent_arguments": [
+            {
+              "record_id": "HR-0001"
+            },
+            {
+              "record_id": "TR-e7a1f7fb3071"
+            }
+          ],
           "match": {
+            "kind": "economic_term_fact",
             "term_id": "TERM-1f012c45332c",
             "field": "credit_minor",
             "expected": 15000
@@ -10978,7 +11874,33 @@
         "logical_fact": "full-replacement supplier credit",
         "json_pointer": "/economic_terms/0/credit_minor",
         "reveal_tool": "get_travel_terms",
-        "record_id": "HR-0001"
+        "record_id": "HR-0001",
+        "reveal_paths": [
+          {
+            "tool": "get_travel_terms",
+            "arguments": {
+              "record_id": "HR-0001"
+            },
+            "match": {
+              "kind": "economic_term_fact",
+              "term_id": "TERM-1f012c45332c",
+              "field": "credit_minor",
+              "expected": 15000
+            }
+          },
+          {
+            "tool": "get_travel_terms",
+            "arguments": {
+              "record_id": "TR-e7a1f7fb3071"
+            },
+            "match": {
+              "kind": "economic_term_fact",
+              "term_id": "TERM-1f012c45332c",
+              "field": "credit_minor",
+              "expected": 15000
+            }
+          }
+        ]
       },
       "complexity_profile": {
         "existing_commitment_count": 4,
@@ -11507,7 +12429,16 @@
           "arguments": {
             "record_id": "HR-0001"
           },
+          "equivalent_arguments": [
+            {
+              "record_id": "HR-0001"
+            },
+            {
+              "record_id": "TR-898a7d25ed86"
+            }
+          ],
           "match": {
+            "kind": "economic_term_fact",
             "term_id": "TERM-1f012c45332c",
             "field": "credit_minor",
             "expected": 0
@@ -11518,7 +12449,33 @@
         "logical_fact": "full-replacement supplier credit",
         "json_pointer": "/economic_terms/0/credit_minor",
         "reveal_tool": "get_travel_terms",
-        "record_id": "HR-0001"
+        "record_id": "HR-0001",
+        "reveal_paths": [
+          {
+            "tool": "get_travel_terms",
+            "arguments": {
+              "record_id": "HR-0001"
+            },
+            "match": {
+              "kind": "economic_term_fact",
+              "term_id": "TERM-1f012c45332c",
+              "field": "credit_minor",
+              "expected": 0
+            }
+          },
+          {
+            "tool": "get_travel_terms",
+            "arguments": {
+              "record_id": "TR-898a7d25ed86"
+            },
+            "match": {
+              "kind": "economic_term_fact",
+              "term_id": "TERM-1f012c45332c",
+              "field": "credit_minor",
+              "expected": 0
+            }
+          }
+        ]
       },
       "complexity_profile": {
         "existing_commitment_count": 4,
@@ -12007,7 +12964,16 @@
           "arguments": {
             "record_id": "HR-0001"
           },
+          "equivalent_arguments": [
+            {
+              "record_id": "HR-0001"
+            },
+            {
+              "record_id": "TR-898a7d25ed86"
+            }
+          ],
           "match": {
+            "kind": "economic_term_fact",
             "term_id": "TERM-1f012c45332c",
             "field": "credit_minor",
             "expected": 15000
@@ -12018,7 +12984,33 @@
         "logical_fact": "full-replacement supplier credit",
         "json_pointer": "/economic_terms/0/credit_minor",
         "reveal_tool": "get_travel_terms",
-        "record_id": "HR-0001"
+        "record_id": "HR-0001",
+        "reveal_paths": [
+          {
+            "tool": "get_travel_terms",
+            "arguments": {
+              "record_id": "HR-0001"
+            },
+            "match": {
+              "kind": "economic_term_fact",
+              "term_id": "TERM-1f012c45332c",
+              "field": "credit_minor",
+              "expected": 15000
+            }
+          },
+          {
+            "tool": "get_travel_terms",
+            "arguments": {
+              "record_id": "TR-898a7d25ed86"
+            },
+            "match": {
+              "kind": "economic_term_fact",
+              "term_id": "TERM-1f012c45332c",
+              "field": "credit_minor",
+              "expected": 15000
+            }
+          }
+        ]
       },
       "complexity_profile": {
         "existing_commitment_count": 4,
@@ -12542,9 +13534,20 @@
         {
           "evidence_id": "E-CR-d902188137a3",
           "constraint_id": "CR-d902188137a3",
-          "source_type": "tool_rule",
-          "tool": "check_travel_compatibility",
-          "description_fragment": "Check whether"
+          "source_type": "query_result",
+          "tool": "get_travel_terms",
+          "arguments": {
+            "record_id": "TR-884239ac837b"
+          },
+          "match": {
+            "kind": "relationship_rule",
+            "constraint_id": "CR-d902188137a3",
+            "type": "requires_any",
+            "if_option_id": "TR-884239ac837b",
+            "any_option_ids": [
+              "TR-176cfdcda066"
+            ]
+          }
         },
         {
           "evidence_id": "E-FACT-T-7105c7a03357",
@@ -12554,7 +13557,19 @@
           "arguments": {
             "record_id": "HR-0001"
           },
+          "equivalent_arguments": [
+            {
+              "record_id": "HR-0001"
+            },
+            {
+              "record_id": "TR-176cfdcda066"
+            },
+            {
+              "record_id": "TR-884239ac837b"
+            }
+          ],
           "match": {
+            "kind": "economic_term_fact",
             "term_id": "TERM-bf3bfef09f1f",
             "field": "charge_minor",
             "expected": 0
@@ -12565,7 +13580,45 @@
         "logical_fact": "bridge certification charge",
         "json_pointer": "/economic_terms/0/charge_minor",
         "reveal_tool": "get_travel_terms",
-        "record_id": "HR-0001"
+        "record_id": "HR-0001",
+        "reveal_paths": [
+          {
+            "tool": "get_travel_terms",
+            "arguments": {
+              "record_id": "HR-0001"
+            },
+            "match": {
+              "kind": "economic_term_fact",
+              "term_id": "TERM-bf3bfef09f1f",
+              "field": "charge_minor",
+              "expected": 0
+            }
+          },
+          {
+            "tool": "get_travel_terms",
+            "arguments": {
+              "record_id": "TR-176cfdcda066"
+            },
+            "match": {
+              "kind": "economic_term_fact",
+              "term_id": "TERM-bf3bfef09f1f",
+              "field": "charge_minor",
+              "expected": 0
+            }
+          },
+          {
+            "tool": "get_travel_terms",
+            "arguments": {
+              "record_id": "TR-884239ac837b"
+            },
+            "match": {
+              "kind": "economic_term_fact",
+              "term_id": "TERM-bf3bfef09f1f",
+              "field": "charge_minor",
+              "expected": 0
+            }
+          }
+        ]
       },
       "complexity_profile": {
         "existing_commitment_count": 4,
@@ -13318,9 +14371,20 @@
         {
           "evidence_id": "E-CR-d902188137a3",
           "constraint_id": "CR-d902188137a3",
-          "source_type": "tool_rule",
-          "tool": "check_travel_compatibility",
-          "description_fragment": "Check whether"
+          "source_type": "query_result",
+          "tool": "get_travel_terms",
+          "arguments": {
+            "record_id": "TR-884239ac837b"
+          },
+          "match": {
+            "kind": "relationship_rule",
+            "constraint_id": "CR-d902188137a3",
+            "type": "requires_any",
+            "if_option_id": "TR-884239ac837b",
+            "any_option_ids": [
+              "TR-176cfdcda066"
+            ]
+          }
         },
         {
           "evidence_id": "E-FACT-T-abf7aba213f5",
@@ -13330,7 +14394,19 @@
           "arguments": {
             "record_id": "HR-0001"
           },
+          "equivalent_arguments": [
+            {
+              "record_id": "HR-0001"
+            },
+            {
+              "record_id": "TR-176cfdcda066"
+            },
+            {
+              "record_id": "TR-884239ac837b"
+            }
+          ],
           "match": {
+            "kind": "economic_term_fact",
             "term_id": "TERM-bf3bfef09f1f",
             "field": "charge_minor",
             "expected": 20000
@@ -13341,7 +14417,45 @@
         "logical_fact": "bridge certification charge",
         "json_pointer": "/economic_terms/0/charge_minor",
         "reveal_tool": "get_travel_terms",
-        "record_id": "HR-0001"
+        "record_id": "HR-0001",
+        "reveal_paths": [
+          {
+            "tool": "get_travel_terms",
+            "arguments": {
+              "record_id": "HR-0001"
+            },
+            "match": {
+              "kind": "economic_term_fact",
+              "term_id": "TERM-bf3bfef09f1f",
+              "field": "charge_minor",
+              "expected": 20000
+            }
+          },
+          {
+            "tool": "get_travel_terms",
+            "arguments": {
+              "record_id": "TR-176cfdcda066"
+            },
+            "match": {
+              "kind": "economic_term_fact",
+              "term_id": "TERM-bf3bfef09f1f",
+              "field": "charge_minor",
+              "expected": 20000
+            }
+          },
+          {
+            "tool": "get_travel_terms",
+            "arguments": {
+              "record_id": "TR-884239ac837b"
+            },
+            "match": {
+              "kind": "economic_term_fact",
+              "term_id": "TERM-bf3bfef09f1f",
+              "field": "charge_minor",
+              "expected": 20000
+            }
+          }
+        ]
       },
       "complexity_profile": {
         "existing_commitment_count": 4,
@@ -14095,9 +15209,20 @@
         {
           "evidence_id": "E-CR-17e711324a7d",
           "constraint_id": "CR-17e711324a7d",
-          "source_type": "tool_rule",
-          "tool": "check_travel_compatibility",
-          "description_fragment": "Check whether"
+          "source_type": "query_result",
+          "tool": "get_travel_terms",
+          "arguments": {
+            "record_id": "TR-0cead68616dd"
+          },
+          "match": {
+            "kind": "relationship_rule",
+            "constraint_id": "CR-17e711324a7d",
+            "type": "requires_any",
+            "if_option_id": "TR-0cead68616dd",
+            "any_option_ids": [
+              "TR-f71239206326"
+            ]
+          }
         },
         {
           "evidence_id": "E-FACT-T-62194e526e1e",
@@ -14107,7 +15232,19 @@
           "arguments": {
             "record_id": "HR-0001"
           },
+          "equivalent_arguments": [
+            {
+              "record_id": "HR-0001"
+            },
+            {
+              "record_id": "TR-0cead68616dd"
+            },
+            {
+              "record_id": "TR-f71239206326"
+            }
+          ],
           "match": {
+            "kind": "economic_term_fact",
             "term_id": "TERM-bf3bfef09f1f",
             "field": "charge_minor",
             "expected": 0
@@ -14118,7 +15255,45 @@
         "logical_fact": "bridge certification charge",
         "json_pointer": "/economic_terms/0/charge_minor",
         "reveal_tool": "get_travel_terms",
-        "record_id": "HR-0001"
+        "record_id": "HR-0001",
+        "reveal_paths": [
+          {
+            "tool": "get_travel_terms",
+            "arguments": {
+              "record_id": "HR-0001"
+            },
+            "match": {
+              "kind": "economic_term_fact",
+              "term_id": "TERM-bf3bfef09f1f",
+              "field": "charge_minor",
+              "expected": 0
+            }
+          },
+          {
+            "tool": "get_travel_terms",
+            "arguments": {
+              "record_id": "TR-0cead68616dd"
+            },
+            "match": {
+              "kind": "economic_term_fact",
+              "term_id": "TERM-bf3bfef09f1f",
+              "field": "charge_minor",
+              "expected": 0
+            }
+          },
+          {
+            "tool": "get_travel_terms",
+            "arguments": {
+              "record_id": "TR-f71239206326"
+            },
+            "match": {
+              "kind": "economic_term_fact",
+              "term_id": "TERM-bf3bfef09f1f",
+              "field": "charge_minor",
+              "expected": 0
+            }
+          }
+        ]
       },
       "complexity_profile": {
         "existing_commitment_count": 4,
@@ -14871,9 +16046,20 @@
         {
           "evidence_id": "E-CR-17e711324a7d",
           "constraint_id": "CR-17e711324a7d",
-          "source_type": "tool_rule",
-          "tool": "check_travel_compatibility",
-          "description_fragment": "Check whether"
+          "source_type": "query_result",
+          "tool": "get_travel_terms",
+          "arguments": {
+            "record_id": "TR-0cead68616dd"
+          },
+          "match": {
+            "kind": "relationship_rule",
+            "constraint_id": "CR-17e711324a7d",
+            "type": "requires_any",
+            "if_option_id": "TR-0cead68616dd",
+            "any_option_ids": [
+              "TR-f71239206326"
+            ]
+          }
         },
         {
           "evidence_id": "E-FACT-T-29bab465143f",
@@ -14883,7 +16069,19 @@
           "arguments": {
             "record_id": "HR-0001"
           },
+          "equivalent_arguments": [
+            {
+              "record_id": "HR-0001"
+            },
+            {
+              "record_id": "TR-0cead68616dd"
+            },
+            {
+              "record_id": "TR-f71239206326"
+            }
+          ],
           "match": {
+            "kind": "economic_term_fact",
             "term_id": "TERM-bf3bfef09f1f",
             "field": "charge_minor",
             "expected": 20000
@@ -14894,7 +16092,45 @@
         "logical_fact": "bridge certification charge",
         "json_pointer": "/economic_terms/0/charge_minor",
         "reveal_tool": "get_travel_terms",
-        "record_id": "HR-0001"
+        "record_id": "HR-0001",
+        "reveal_paths": [
+          {
+            "tool": "get_travel_terms",
+            "arguments": {
+              "record_id": "HR-0001"
+            },
+            "match": {
+              "kind": "economic_term_fact",
+              "term_id": "TERM-bf3bfef09f1f",
+              "field": "charge_minor",
+              "expected": 20000
+            }
+          },
+          {
+            "tool": "get_travel_terms",
+            "arguments": {
+              "record_id": "TR-0cead68616dd"
+            },
+            "match": {
+              "kind": "economic_term_fact",
+              "term_id": "TERM-bf3bfef09f1f",
+              "field": "charge_minor",
+              "expected": 20000
+            }
+          },
+          {
+            "tool": "get_travel_terms",
+            "arguments": {
+              "record_id": "TR-f71239206326"
+            },
+            "match": {
+              "kind": "economic_term_fact",
+              "term_id": "TERM-bf3bfef09f1f",
+              "field": "charge_minor",
+              "expected": 20000
+            }
+          }
+        ]
       },
       "complexity_profile": {
         "existing_commitment_count": 4,
@@ -15654,9 +16890,20 @@
         {
           "evidence_id": "E-CR-f1082932d1c1",
           "constraint_id": "CR-f1082932d1c1",
-          "source_type": "tool_rule",
-          "tool": "check_travel_compatibility",
-          "description_fragment": "Check whether"
+          "source_type": "query_result",
+          "tool": "get_travel_terms",
+          "arguments": {
+            "record_id": "TR-e9f3e9b54b0d"
+          },
+          "match": {
+            "kind": "relationship_rule",
+            "constraint_id": "CR-f1082932d1c1",
+            "type": "requires_any",
+            "if_option_id": "TR-e9f3e9b54b0d",
+            "any_option_ids": [
+              "TR-343c55e09f55"
+            ]
+          }
         },
         {
           "evidence_id": "E-FACT-T-069145c482ae",
@@ -15666,7 +16913,19 @@
           "arguments": {
             "record_id": "HR-0001"
           },
+          "equivalent_arguments": [
+            {
+              "record_id": "HR-0001"
+            },
+            {
+              "record_id": "TR-343c55e09f55"
+            },
+            {
+              "record_id": "TR-e9f3e9b54b0d"
+            }
+          ],
           "match": {
+            "kind": "economic_term_fact",
             "term_id": "TERM-91fb34bd5548",
             "field": "charge_minor",
             "expected": 0
@@ -15677,7 +16936,45 @@
         "logical_fact": "joint supplier coordination charge",
         "json_pointer": "/economic_terms/0/charge_minor",
         "reveal_tool": "get_travel_terms",
-        "record_id": "HR-0001"
+        "record_id": "HR-0001",
+        "reveal_paths": [
+          {
+            "tool": "get_travel_terms",
+            "arguments": {
+              "record_id": "HR-0001"
+            },
+            "match": {
+              "kind": "economic_term_fact",
+              "term_id": "TERM-91fb34bd5548",
+              "field": "charge_minor",
+              "expected": 0
+            }
+          },
+          {
+            "tool": "get_travel_terms",
+            "arguments": {
+              "record_id": "TR-343c55e09f55"
+            },
+            "match": {
+              "kind": "economic_term_fact",
+              "term_id": "TERM-91fb34bd5548",
+              "field": "charge_minor",
+              "expected": 0
+            }
+          },
+          {
+            "tool": "get_travel_terms",
+            "arguments": {
+              "record_id": "TR-e9f3e9b54b0d"
+            },
+            "match": {
+              "kind": "economic_term_fact",
+              "term_id": "TERM-91fb34bd5548",
+              "field": "charge_minor",
+              "expected": 0
+            }
+          }
+        ]
       },
       "complexity_profile": {
         "existing_commitment_count": 4,
@@ -16168,9 +17465,20 @@
         {
           "evidence_id": "E-CR-f1082932d1c1",
           "constraint_id": "CR-f1082932d1c1",
-          "source_type": "tool_rule",
-          "tool": "check_travel_compatibility",
-          "description_fragment": "Check whether"
+          "source_type": "query_result",
+          "tool": "get_travel_terms",
+          "arguments": {
+            "record_id": "TR-e9f3e9b54b0d"
+          },
+          "match": {
+            "kind": "relationship_rule",
+            "constraint_id": "CR-f1082932d1c1",
+            "type": "requires_any",
+            "if_option_id": "TR-e9f3e9b54b0d",
+            "any_option_ids": [
+              "TR-343c55e09f55"
+            ]
+          }
         },
         {
           "evidence_id": "E-FACT-T-20e4be845654",
@@ -16180,7 +17488,19 @@
           "arguments": {
             "record_id": "HR-0001"
           },
+          "equivalent_arguments": [
+            {
+              "record_id": "HR-0001"
+            },
+            {
+              "record_id": "TR-343c55e09f55"
+            },
+            {
+              "record_id": "TR-e9f3e9b54b0d"
+            }
+          ],
           "match": {
+            "kind": "economic_term_fact",
             "term_id": "TERM-91fb34bd5548",
             "field": "charge_minor",
             "expected": 10000
@@ -16191,7 +17511,45 @@
         "logical_fact": "joint supplier coordination charge",
         "json_pointer": "/economic_terms/0/charge_minor",
         "reveal_tool": "get_travel_terms",
-        "record_id": "HR-0001"
+        "record_id": "HR-0001",
+        "reveal_paths": [
+          {
+            "tool": "get_travel_terms",
+            "arguments": {
+              "record_id": "HR-0001"
+            },
+            "match": {
+              "kind": "economic_term_fact",
+              "term_id": "TERM-91fb34bd5548",
+              "field": "charge_minor",
+              "expected": 10000
+            }
+          },
+          {
+            "tool": "get_travel_terms",
+            "arguments": {
+              "record_id": "TR-343c55e09f55"
+            },
+            "match": {
+              "kind": "economic_term_fact",
+              "term_id": "TERM-91fb34bd5548",
+              "field": "charge_minor",
+              "expected": 10000
+            }
+          },
+          {
+            "tool": "get_travel_terms",
+            "arguments": {
+              "record_id": "TR-e9f3e9b54b0d"
+            },
+            "match": {
+              "kind": "economic_term_fact",
+              "term_id": "TERM-91fb34bd5548",
+              "field": "charge_minor",
+              "expected": 10000
+            }
+          }
+        ]
       },
       "complexity_profile": {
         "existing_commitment_count": 4,
@@ -16683,9 +18041,20 @@
         {
           "evidence_id": "E-CR-14e518be3fae",
           "constraint_id": "CR-14e518be3fae",
-          "source_type": "tool_rule",
-          "tool": "check_travel_compatibility",
-          "description_fragment": "Check whether"
+          "source_type": "query_result",
+          "tool": "get_travel_terms",
+          "arguments": {
+            "record_id": "TR-346a8b5fe515"
+          },
+          "match": {
+            "kind": "relationship_rule",
+            "constraint_id": "CR-14e518be3fae",
+            "type": "requires_any",
+            "if_option_id": "TR-346a8b5fe515",
+            "any_option_ids": [
+              "TR-05354a4c2b4e"
+            ]
+          }
         },
         {
           "evidence_id": "E-FACT-T-9bd539dab4e7",
@@ -16695,7 +18064,19 @@
           "arguments": {
             "record_id": "HR-0001"
           },
+          "equivalent_arguments": [
+            {
+              "record_id": "HR-0001"
+            },
+            {
+              "record_id": "TR-05354a4c2b4e"
+            },
+            {
+              "record_id": "TR-346a8b5fe515"
+            }
+          ],
           "match": {
+            "kind": "economic_term_fact",
             "term_id": "TERM-91fb34bd5548",
             "field": "charge_minor",
             "expected": 0
@@ -16706,7 +18087,45 @@
         "logical_fact": "joint supplier coordination charge",
         "json_pointer": "/economic_terms/0/charge_minor",
         "reveal_tool": "get_travel_terms",
-        "record_id": "HR-0001"
+        "record_id": "HR-0001",
+        "reveal_paths": [
+          {
+            "tool": "get_travel_terms",
+            "arguments": {
+              "record_id": "HR-0001"
+            },
+            "match": {
+              "kind": "economic_term_fact",
+              "term_id": "TERM-91fb34bd5548",
+              "field": "charge_minor",
+              "expected": 0
+            }
+          },
+          {
+            "tool": "get_travel_terms",
+            "arguments": {
+              "record_id": "TR-05354a4c2b4e"
+            },
+            "match": {
+              "kind": "economic_term_fact",
+              "term_id": "TERM-91fb34bd5548",
+              "field": "charge_minor",
+              "expected": 0
+            }
+          },
+          {
+            "tool": "get_travel_terms",
+            "arguments": {
+              "record_id": "TR-346a8b5fe515"
+            },
+            "match": {
+              "kind": "economic_term_fact",
+              "term_id": "TERM-91fb34bd5548",
+              "field": "charge_minor",
+              "expected": 0
+            }
+          }
+        ]
       },
       "complexity_profile": {
         "existing_commitment_count": 4,
@@ -17197,9 +18616,20 @@
         {
           "evidence_id": "E-CR-14e518be3fae",
           "constraint_id": "CR-14e518be3fae",
-          "source_type": "tool_rule",
-          "tool": "check_travel_compatibility",
-          "description_fragment": "Check whether"
+          "source_type": "query_result",
+          "tool": "get_travel_terms",
+          "arguments": {
+            "record_id": "TR-346a8b5fe515"
+          },
+          "match": {
+            "kind": "relationship_rule",
+            "constraint_id": "CR-14e518be3fae",
+            "type": "requires_any",
+            "if_option_id": "TR-346a8b5fe515",
+            "any_option_ids": [
+              "TR-05354a4c2b4e"
+            ]
+          }
         },
         {
           "evidence_id": "E-FACT-T-6343510ce541",
@@ -17209,7 +18639,19 @@
           "arguments": {
             "record_id": "HR-0001"
           },
+          "equivalent_arguments": [
+            {
+              "record_id": "HR-0001"
+            },
+            {
+              "record_id": "TR-05354a4c2b4e"
+            },
+            {
+              "record_id": "TR-346a8b5fe515"
+            }
+          ],
           "match": {
+            "kind": "economic_term_fact",
             "term_id": "TERM-91fb34bd5548",
             "field": "charge_minor",
             "expected": 10000
@@ -17220,7 +18662,45 @@
         "logical_fact": "joint supplier coordination charge",
         "json_pointer": "/economic_terms/0/charge_minor",
         "reveal_tool": "get_travel_terms",
-        "record_id": "HR-0001"
+        "record_id": "HR-0001",
+        "reveal_paths": [
+          {
+            "tool": "get_travel_terms",
+            "arguments": {
+              "record_id": "HR-0001"
+            },
+            "match": {
+              "kind": "economic_term_fact",
+              "term_id": "TERM-91fb34bd5548",
+              "field": "charge_minor",
+              "expected": 10000
+            }
+          },
+          {
+            "tool": "get_travel_terms",
+            "arguments": {
+              "record_id": "TR-05354a4c2b4e"
+            },
+            "match": {
+              "kind": "economic_term_fact",
+              "term_id": "TERM-91fb34bd5548",
+              "field": "charge_minor",
+              "expected": 10000
+            }
+          },
+          {
+            "tool": "get_travel_terms",
+            "arguments": {
+              "record_id": "TR-346a8b5fe515"
+            },
+            "match": {
+              "kind": "economic_term_fact",
+              "term_id": "TERM-91fb34bd5548",
+              "field": "charge_minor",
+              "expected": 10000
+            }
+          }
+        ]
       },
       "complexity_profile": {
         "existing_commitment_count": 4,
@@ -17711,7 +19191,16 @@
           "arguments": {
             "record_id": "HR-0001"
           },
+          "equivalent_arguments": [
+            {
+              "record_id": "HR-0001"
+            },
+            {
+              "record_id": "TR-a7afbc9607f8"
+            }
+          ],
           "match": {
+            "kind": "economic_term_fact",
             "term_id": "TERM-653263684504",
             "field": "monthly_minor",
             "expected": 1000
@@ -17722,7 +19211,33 @@
         "logical_fact": "monthly service charge",
         "json_pointer": "/economic_terms/0/monthly_minor",
         "reveal_tool": "get_travel_terms",
-        "record_id": "HR-0001"
+        "record_id": "HR-0001",
+        "reveal_paths": [
+          {
+            "tool": "get_travel_terms",
+            "arguments": {
+              "record_id": "HR-0001"
+            },
+            "match": {
+              "kind": "economic_term_fact",
+              "term_id": "TERM-653263684504",
+              "field": "monthly_minor",
+              "expected": 1000
+            }
+          },
+          {
+            "tool": "get_travel_terms",
+            "arguments": {
+              "record_id": "TR-a7afbc9607f8"
+            },
+            "match": {
+              "kind": "economic_term_fact",
+              "term_id": "TERM-653263684504",
+              "field": "monthly_minor",
+              "expected": 1000
+            }
+          }
+        ]
       },
       "complexity_profile": {
         "existing_commitment_count": 4,
@@ -18155,7 +19670,16 @@
           "arguments": {
             "record_id": "HR-0001"
           },
+          "equivalent_arguments": [
+            {
+              "record_id": "HR-0001"
+            },
+            {
+              "record_id": "TR-a7afbc9607f8"
+            }
+          ],
           "match": {
+            "kind": "economic_term_fact",
             "term_id": "TERM-653263684504",
             "field": "monthly_minor",
             "expected": 2000
@@ -18166,7 +19690,33 @@
         "logical_fact": "monthly service charge",
         "json_pointer": "/economic_terms/0/monthly_minor",
         "reveal_tool": "get_travel_terms",
-        "record_id": "HR-0001"
+        "record_id": "HR-0001",
+        "reveal_paths": [
+          {
+            "tool": "get_travel_terms",
+            "arguments": {
+              "record_id": "HR-0001"
+            },
+            "match": {
+              "kind": "economic_term_fact",
+              "term_id": "TERM-653263684504",
+              "field": "monthly_minor",
+              "expected": 2000
+            }
+          },
+          {
+            "tool": "get_travel_terms",
+            "arguments": {
+              "record_id": "TR-a7afbc9607f8"
+            },
+            "match": {
+              "kind": "economic_term_fact",
+              "term_id": "TERM-653263684504",
+              "field": "monthly_minor",
+              "expected": 2000
+            }
+          }
+        ]
       },
       "complexity_profile": {
         "existing_commitment_count": 4,
@@ -18619,7 +20169,16 @@
           "arguments": {
             "record_id": "HR-0001"
           },
+          "equivalent_arguments": [
+            {
+              "record_id": "HR-0001"
+            },
+            {
+              "record_id": "TR-a25344fdf739"
+            }
+          ],
           "match": {
+            "kind": "economic_term_fact",
             "term_id": "TERM-653263684504",
             "field": "monthly_minor",
             "expected": 1000
@@ -18630,7 +20189,33 @@
         "logical_fact": "monthly service charge",
         "json_pointer": "/economic_terms/0/monthly_minor",
         "reveal_tool": "get_travel_terms",
-        "record_id": "HR-0001"
+        "record_id": "HR-0001",
+        "reveal_paths": [
+          {
+            "tool": "get_travel_terms",
+            "arguments": {
+              "record_id": "HR-0001"
+            },
+            "match": {
+              "kind": "economic_term_fact",
+              "term_id": "TERM-653263684504",
+              "field": "monthly_minor",
+              "expected": 1000
+            }
+          },
+          {
+            "tool": "get_travel_terms",
+            "arguments": {
+              "record_id": "TR-a25344fdf739"
+            },
+            "match": {
+              "kind": "economic_term_fact",
+              "term_id": "TERM-653263684504",
+              "field": "monthly_minor",
+              "expected": 1000
+            }
+          }
+        ]
       },
       "complexity_profile": {
         "existing_commitment_count": 4,
@@ -19063,7 +20648,16 @@
           "arguments": {
             "record_id": "HR-0001"
           },
+          "equivalent_arguments": [
+            {
+              "record_id": "HR-0001"
+            },
+            {
+              "record_id": "TR-a25344fdf739"
+            }
+          ],
           "match": {
+            "kind": "economic_term_fact",
             "term_id": "TERM-653263684504",
             "field": "monthly_minor",
             "expected": 2000
@@ -19074,7 +20668,33 @@
         "logical_fact": "monthly service charge",
         "json_pointer": "/economic_terms/0/monthly_minor",
         "reveal_tool": "get_travel_terms",
-        "record_id": "HR-0001"
+        "record_id": "HR-0001",
+        "reveal_paths": [
+          {
+            "tool": "get_travel_terms",
+            "arguments": {
+              "record_id": "HR-0001"
+            },
+            "match": {
+              "kind": "economic_term_fact",
+              "term_id": "TERM-653263684504",
+              "field": "monthly_minor",
+              "expected": 2000
+            }
+          },
+          {
+            "tool": "get_travel_terms",
+            "arguments": {
+              "record_id": "TR-a25344fdf739"
+            },
+            "match": {
+              "kind": "economic_term_fact",
+              "term_id": "TERM-653263684504",
+              "field": "monthly_minor",
+              "expected": 2000
+            }
+          }
+        ]
       },
       "complexity_profile": {
         "existing_commitment_count": 4,
@@ -19522,16 +21142,39 @@
         {
           "evidence_id": "E-CR-d08f270eb994",
           "constraint_id": "CR-d08f270eb994",
-          "source_type": "tool_rule",
+          "source_type": "query_result",
           "tool": "check_travel_compatibility",
-          "description_fragment": "Check whether"
+          "arguments": {
+            "left_option_id": "TR-b46ed907790b",
+            "right_option_id": "TR-29cb4a51d41e"
+          },
+          "match": {
+            "kind": "relationship_rule",
+            "constraint_id": "CR-d08f270eb994",
+            "type": "forbid_pair",
+            "option_ids": [
+              "TR-29cb4a51d41e",
+              "TR-b46ed907790b"
+            ]
+          }
         },
         {
           "evidence_id": "E-CR-dff99b17bbd8",
           "constraint_id": "CR-dff99b17bbd8",
-          "source_type": "tool_rule",
-          "tool": "check_travel_compatibility",
-          "description_fragment": "Check whether"
+          "source_type": "query_result",
+          "tool": "get_travel_terms",
+          "arguments": {
+            "record_id": "TR-b46ed907790b"
+          },
+          "match": {
+            "kind": "relationship_rule",
+            "constraint_id": "CR-dff99b17bbd8",
+            "type": "requires_any",
+            "if_option_id": "TR-b46ed907790b",
+            "any_option_ids": [
+              "TR-705c249bc7c9"
+            ]
+          }
         },
         {
           "evidence_id": "E-FACT-T-107944805a55",
@@ -19541,7 +21184,13 @@
           "arguments": {
             "record_id": "SV-0001"
           },
+          "equivalent_arguments": [
+            {
+              "record_id": "SV-0001"
+            }
+          ],
           "match": {
+            "kind": "economic_term_fact",
             "term_id": "TERM-2ec75b4d8ebb",
             "field": "charge_minor",
             "expected": 0
@@ -19552,7 +21201,21 @@
         "logical_fact": "support migration charge",
         "json_pointer": "/economic_terms/0/charge_minor",
         "reveal_tool": "get_travel_terms",
-        "record_id": "SV-0001"
+        "record_id": "SV-0001",
+        "reveal_paths": [
+          {
+            "tool": "get_travel_terms",
+            "arguments": {
+              "record_id": "SV-0001"
+            },
+            "match": {
+              "kind": "economic_term_fact",
+              "term_id": "TERM-2ec75b4d8ebb",
+              "field": "charge_minor",
+              "expected": 0
+            }
+          }
+        ]
       },
       "complexity_profile": {
         "existing_commitment_count": 4,
@@ -20329,16 +21992,39 @@
         {
           "evidence_id": "E-CR-d08f270eb994",
           "constraint_id": "CR-d08f270eb994",
-          "source_type": "tool_rule",
+          "source_type": "query_result",
           "tool": "check_travel_compatibility",
-          "description_fragment": "Check whether"
+          "arguments": {
+            "left_option_id": "TR-b46ed907790b",
+            "right_option_id": "TR-29cb4a51d41e"
+          },
+          "match": {
+            "kind": "relationship_rule",
+            "constraint_id": "CR-d08f270eb994",
+            "type": "forbid_pair",
+            "option_ids": [
+              "TR-29cb4a51d41e",
+              "TR-b46ed907790b"
+            ]
+          }
         },
         {
           "evidence_id": "E-CR-dff99b17bbd8",
           "constraint_id": "CR-dff99b17bbd8",
-          "source_type": "tool_rule",
-          "tool": "check_travel_compatibility",
-          "description_fragment": "Check whether"
+          "source_type": "query_result",
+          "tool": "get_travel_terms",
+          "arguments": {
+            "record_id": "TR-b46ed907790b"
+          },
+          "match": {
+            "kind": "relationship_rule",
+            "constraint_id": "CR-dff99b17bbd8",
+            "type": "requires_any",
+            "if_option_id": "TR-b46ed907790b",
+            "any_option_ids": [
+              "TR-705c249bc7c9"
+            ]
+          }
         },
         {
           "evidence_id": "E-FACT-T-51e2ca754791",
@@ -20348,7 +22034,13 @@
           "arguments": {
             "record_id": "SV-0001"
           },
+          "equivalent_arguments": [
+            {
+              "record_id": "SV-0001"
+            }
+          ],
           "match": {
+            "kind": "economic_term_fact",
             "term_id": "TERM-2ec75b4d8ebb",
             "field": "charge_minor",
             "expected": 20000
@@ -20359,7 +22051,21 @@
         "logical_fact": "support migration charge",
         "json_pointer": "/economic_terms/0/charge_minor",
         "reveal_tool": "get_travel_terms",
-        "record_id": "SV-0001"
+        "record_id": "SV-0001",
+        "reveal_paths": [
+          {
+            "tool": "get_travel_terms",
+            "arguments": {
+              "record_id": "SV-0001"
+            },
+            "match": {
+              "kind": "economic_term_fact",
+              "term_id": "TERM-2ec75b4d8ebb",
+              "field": "charge_minor",
+              "expected": 20000
+            }
+          }
+        ]
       },
       "complexity_profile": {
         "existing_commitment_count": 4,
@@ -21107,16 +22813,39 @@
         {
           "evidence_id": "E-CR-0c9fcfb03e76",
           "constraint_id": "CR-0c9fcfb03e76",
-          "source_type": "tool_rule",
+          "source_type": "query_result",
           "tool": "check_travel_compatibility",
-          "description_fragment": "Check whether"
+          "arguments": {
+            "left_option_id": "TR-dde6529a41ef",
+            "right_option_id": "TR-e6cd49837963"
+          },
+          "match": {
+            "kind": "relationship_rule",
+            "constraint_id": "CR-0c9fcfb03e76",
+            "type": "forbid_pair",
+            "option_ids": [
+              "TR-dde6529a41ef",
+              "TR-e6cd49837963"
+            ]
+          }
         },
         {
           "evidence_id": "E-CR-f3198dfcd9e4",
           "constraint_id": "CR-f3198dfcd9e4",
-          "source_type": "tool_rule",
-          "tool": "check_travel_compatibility",
-          "description_fragment": "Check whether"
+          "source_type": "query_result",
+          "tool": "get_travel_terms",
+          "arguments": {
+            "record_id": "TR-dde6529a41ef"
+          },
+          "match": {
+            "kind": "relationship_rule",
+            "constraint_id": "CR-f3198dfcd9e4",
+            "type": "requires_any",
+            "if_option_id": "TR-dde6529a41ef",
+            "any_option_ids": [
+              "TR-b4f395618f69"
+            ]
+          }
         },
         {
           "evidence_id": "E-FACT-T-9358641e5002",
@@ -21126,7 +22855,13 @@
           "arguments": {
             "record_id": "SV-0001"
           },
+          "equivalent_arguments": [
+            {
+              "record_id": "SV-0001"
+            }
+          ],
           "match": {
+            "kind": "economic_term_fact",
             "term_id": "TERM-2ec75b4d8ebb",
             "field": "charge_minor",
             "expected": 0
@@ -21137,7 +22872,21 @@
         "logical_fact": "support migration charge",
         "json_pointer": "/economic_terms/0/charge_minor",
         "reveal_tool": "get_travel_terms",
-        "record_id": "SV-0001"
+        "record_id": "SV-0001",
+        "reveal_paths": [
+          {
+            "tool": "get_travel_terms",
+            "arguments": {
+              "record_id": "SV-0001"
+            },
+            "match": {
+              "kind": "economic_term_fact",
+              "term_id": "TERM-2ec75b4d8ebb",
+              "field": "charge_minor",
+              "expected": 0
+            }
+          }
+        ]
       },
       "complexity_profile": {
         "existing_commitment_count": 4,
@@ -21914,16 +23663,39 @@
         {
           "evidence_id": "E-CR-0c9fcfb03e76",
           "constraint_id": "CR-0c9fcfb03e76",
-          "source_type": "tool_rule",
+          "source_type": "query_result",
           "tool": "check_travel_compatibility",
-          "description_fragment": "Check whether"
+          "arguments": {
+            "left_option_id": "TR-dde6529a41ef",
+            "right_option_id": "TR-e6cd49837963"
+          },
+          "match": {
+            "kind": "relationship_rule",
+            "constraint_id": "CR-0c9fcfb03e76",
+            "type": "forbid_pair",
+            "option_ids": [
+              "TR-dde6529a41ef",
+              "TR-e6cd49837963"
+            ]
+          }
         },
         {
           "evidence_id": "E-CR-f3198dfcd9e4",
           "constraint_id": "CR-f3198dfcd9e4",
-          "source_type": "tool_rule",
-          "tool": "check_travel_compatibility",
-          "description_fragment": "Check whether"
+          "source_type": "query_result",
+          "tool": "get_travel_terms",
+          "arguments": {
+            "record_id": "TR-dde6529a41ef"
+          },
+          "match": {
+            "kind": "relationship_rule",
+            "constraint_id": "CR-f3198dfcd9e4",
+            "type": "requires_any",
+            "if_option_id": "TR-dde6529a41ef",
+            "any_option_ids": [
+              "TR-b4f395618f69"
+            ]
+          }
         },
         {
           "evidence_id": "E-FACT-T-d2f3ba6b12ed",
@@ -21933,7 +23705,13 @@
           "arguments": {
             "record_id": "SV-0001"
           },
+          "equivalent_arguments": [
+            {
+              "record_id": "SV-0001"
+            }
+          ],
           "match": {
+            "kind": "economic_term_fact",
             "term_id": "TERM-2ec75b4d8ebb",
             "field": "charge_minor",
             "expected": 20000
@@ -21944,7 +23722,21 @@
         "logical_fact": "support migration charge",
         "json_pointer": "/economic_terms/0/charge_minor",
         "reveal_tool": "get_travel_terms",
-        "record_id": "SV-0001"
+        "record_id": "SV-0001",
+        "reveal_paths": [
+          {
+            "tool": "get_travel_terms",
+            "arguments": {
+              "record_id": "SV-0001"
+            },
+            "match": {
+              "kind": "economic_term_fact",
+              "term_id": "TERM-2ec75b4d8ebb",
+              "field": "charge_minor",
+              "expected": 20000
+            }
+          }
+        ]
       },
       "complexity_profile": {
         "existing_commitment_count": 4,
@@ -22697,7 +24489,13 @@
           "arguments": {
             "record_id": "ITEM-R0001"
           },
+          "equivalent_arguments": [
+            {
+              "record_id": "ITEM-R0001"
+            }
+          ],
           "match": {
+            "kind": "economic_term_fact",
             "term_id": "TERM-04a54104be0e",
             "field": "credit_minor",
             "expected": 0
@@ -22708,7 +24506,21 @@
         "logical_fact": "supplier refund credit",
         "json_pointer": "/economic_terms/0/credit_minor",
         "reveal_tool": "get_product_terms",
-        "record_id": "ITEM-R0001"
+        "record_id": "ITEM-R0001",
+        "reveal_paths": [
+          {
+            "tool": "get_product_terms",
+            "arguments": {
+              "record_id": "ITEM-R0001"
+            },
+            "match": {
+              "kind": "economic_term_fact",
+              "term_id": "TERM-04a54104be0e",
+              "field": "credit_minor",
+              "expected": 0
+            }
+          }
+        ]
       },
       "complexity_profile": {
         "existing_commitment_count": 4,
@@ -23141,7 +24953,13 @@
           "arguments": {
             "record_id": "ITEM-R0001"
           },
+          "equivalent_arguments": [
+            {
+              "record_id": "ITEM-R0001"
+            }
+          ],
           "match": {
+            "kind": "economic_term_fact",
             "term_id": "TERM-04a54104be0e",
             "field": "credit_minor",
             "expected": 30000
@@ -23152,7 +24970,21 @@
         "logical_fact": "supplier refund credit",
         "json_pointer": "/economic_terms/0/credit_minor",
         "reveal_tool": "get_product_terms",
-        "record_id": "ITEM-R0001"
+        "record_id": "ITEM-R0001",
+        "reveal_paths": [
+          {
+            "tool": "get_product_terms",
+            "arguments": {
+              "record_id": "ITEM-R0001"
+            },
+            "match": {
+              "kind": "economic_term_fact",
+              "term_id": "TERM-04a54104be0e",
+              "field": "credit_minor",
+              "expected": 30000
+            }
+          }
+        ]
       },
       "complexity_profile": {
         "existing_commitment_count": 4,
@@ -23625,7 +25457,13 @@
           "arguments": {
             "record_id": "ITEM-R0001"
           },
+          "equivalent_arguments": [
+            {
+              "record_id": "ITEM-R0001"
+            }
+          ],
           "match": {
+            "kind": "economic_term_fact",
             "term_id": "TERM-04a54104be0e",
             "field": "credit_minor",
             "expected": 0
@@ -23636,7 +25474,21 @@
         "logical_fact": "supplier refund credit",
         "json_pointer": "/economic_terms/0/credit_minor",
         "reveal_tool": "get_product_terms",
-        "record_id": "ITEM-R0001"
+        "record_id": "ITEM-R0001",
+        "reveal_paths": [
+          {
+            "tool": "get_product_terms",
+            "arguments": {
+              "record_id": "ITEM-R0001"
+            },
+            "match": {
+              "kind": "economic_term_fact",
+              "term_id": "TERM-04a54104be0e",
+              "field": "credit_minor",
+              "expected": 0
+            }
+          }
+        ]
       },
       "complexity_profile": {
         "existing_commitment_count": 4,
@@ -24069,7 +25921,13 @@
           "arguments": {
             "record_id": "ITEM-R0001"
           },
+          "equivalent_arguments": [
+            {
+              "record_id": "ITEM-R0001"
+            }
+          ],
           "match": {
+            "kind": "economic_term_fact",
             "term_id": "TERM-04a54104be0e",
             "field": "credit_minor",
             "expected": 30000
@@ -24080,7 +25938,21 @@
         "logical_fact": "supplier refund credit",
         "json_pointer": "/economic_terms/0/credit_minor",
         "reveal_tool": "get_product_terms",
-        "record_id": "ITEM-R0001"
+        "record_id": "ITEM-R0001",
+        "reveal_paths": [
+          {
+            "tool": "get_product_terms",
+            "arguments": {
+              "record_id": "ITEM-R0001"
+            },
+            "match": {
+              "kind": "economic_term_fact",
+              "term_id": "TERM-04a54104be0e",
+              "field": "credit_minor",
+              "expected": 30000
+            }
+          }
+        ]
       },
       "complexity_profile": {
         "existing_commitment_count": 4,
@@ -24548,16 +26420,39 @@
         {
           "evidence_id": "E-CR-925405926b34",
           "constraint_id": "CR-925405926b34",
-          "source_type": "tool_rule",
+          "source_type": "query_result",
           "tool": "check_product_compatibility",
-          "description_fragment": "Check whether"
+          "arguments": {
+            "left_product_id": "AF-019305bdd0b9",
+            "right_product_id": "AF-a9e71017c201"
+          },
+          "match": {
+            "kind": "relationship_rule",
+            "constraint_id": "CR-925405926b34",
+            "type": "forbid_pair",
+            "option_ids": [
+              "AF-019305bdd0b9",
+              "AF-a9e71017c201"
+            ]
+          }
         },
         {
           "evidence_id": "E-CR-1f5a2a61aa92",
           "constraint_id": "CR-1f5a2a61aa92",
-          "source_type": "tool_rule",
-          "tool": "check_product_compatibility",
-          "description_fragment": "Check whether"
+          "source_type": "query_result",
+          "tool": "get_product_terms",
+          "arguments": {
+            "record_id": "AF-019305bdd0b9"
+          },
+          "match": {
+            "kind": "relationship_rule",
+            "constraint_id": "CR-1f5a2a61aa92",
+            "type": "requires_any",
+            "if_option_id": "AF-019305bdd0b9",
+            "any_option_ids": [
+              "AF-429e351a3928"
+            ]
+          }
         },
         {
           "evidence_id": "E-FACT-T-96a86d6490f9",
@@ -24567,7 +26462,16 @@
           "arguments": {
             "record_id": "ITEM-R0001"
           },
+          "equivalent_arguments": [
+            {
+              "record_id": "ITEM-R0001"
+            },
+            {
+              "record_id": "ITEM-R0002"
+            }
+          ],
           "match": {
+            "kind": "economic_term_fact",
             "term_id": "TERM-e95b705c354d",
             "field": "charge_minor",
             "expected": 0
@@ -24578,7 +26482,33 @@
         "logical_fact": "downstream migration charge",
         "json_pointer": "/economic_terms/0/charge_minor",
         "reveal_tool": "get_product_terms",
-        "record_id": "ITEM-R0001"
+        "record_id": "ITEM-R0001",
+        "reveal_paths": [
+          {
+            "tool": "get_product_terms",
+            "arguments": {
+              "record_id": "ITEM-R0001"
+            },
+            "match": {
+              "kind": "economic_term_fact",
+              "term_id": "TERM-e95b705c354d",
+              "field": "charge_minor",
+              "expected": 0
+            }
+          },
+          {
+            "tool": "get_product_terms",
+            "arguments": {
+              "record_id": "ITEM-R0002"
+            },
+            "match": {
+              "kind": "economic_term_fact",
+              "term_id": "TERM-e95b705c354d",
+              "field": "charge_minor",
+              "expected": 0
+            }
+          }
+        ]
       },
       "complexity_profile": {
         "existing_commitment_count": 4,
@@ -25334,16 +27264,39 @@
         {
           "evidence_id": "E-CR-925405926b34",
           "constraint_id": "CR-925405926b34",
-          "source_type": "tool_rule",
+          "source_type": "query_result",
           "tool": "check_product_compatibility",
-          "description_fragment": "Check whether"
+          "arguments": {
+            "left_product_id": "AF-019305bdd0b9",
+            "right_product_id": "AF-a9e71017c201"
+          },
+          "match": {
+            "kind": "relationship_rule",
+            "constraint_id": "CR-925405926b34",
+            "type": "forbid_pair",
+            "option_ids": [
+              "AF-019305bdd0b9",
+              "AF-a9e71017c201"
+            ]
+          }
         },
         {
           "evidence_id": "E-CR-1f5a2a61aa92",
           "constraint_id": "CR-1f5a2a61aa92",
-          "source_type": "tool_rule",
-          "tool": "check_product_compatibility",
-          "description_fragment": "Check whether"
+          "source_type": "query_result",
+          "tool": "get_product_terms",
+          "arguments": {
+            "record_id": "AF-019305bdd0b9"
+          },
+          "match": {
+            "kind": "relationship_rule",
+            "constraint_id": "CR-1f5a2a61aa92",
+            "type": "requires_any",
+            "if_option_id": "AF-019305bdd0b9",
+            "any_option_ids": [
+              "AF-429e351a3928"
+            ]
+          }
         },
         {
           "evidence_id": "E-FACT-T-8fa2059ca69c",
@@ -25353,7 +27306,16 @@
           "arguments": {
             "record_id": "ITEM-R0001"
           },
+          "equivalent_arguments": [
+            {
+              "record_id": "ITEM-R0001"
+            },
+            {
+              "record_id": "ITEM-R0002"
+            }
+          ],
           "match": {
+            "kind": "economic_term_fact",
             "term_id": "TERM-e95b705c354d",
             "field": "charge_minor",
             "expected": 36000
@@ -25364,7 +27326,33 @@
         "logical_fact": "downstream migration charge",
         "json_pointer": "/economic_terms/0/charge_minor",
         "reveal_tool": "get_product_terms",
-        "record_id": "ITEM-R0001"
+        "record_id": "ITEM-R0001",
+        "reveal_paths": [
+          {
+            "tool": "get_product_terms",
+            "arguments": {
+              "record_id": "ITEM-R0001"
+            },
+            "match": {
+              "kind": "economic_term_fact",
+              "term_id": "TERM-e95b705c354d",
+              "field": "charge_minor",
+              "expected": 36000
+            }
+          },
+          {
+            "tool": "get_product_terms",
+            "arguments": {
+              "record_id": "ITEM-R0002"
+            },
+            "match": {
+              "kind": "economic_term_fact",
+              "term_id": "TERM-e95b705c354d",
+              "field": "charge_minor",
+              "expected": 36000
+            }
+          }
+        ]
       },
       "complexity_profile": {
         "existing_commitment_count": 4,
@@ -26032,16 +28020,39 @@
         {
           "evidence_id": "E-CR-d16184221efd",
           "constraint_id": "CR-d16184221efd",
-          "source_type": "tool_rule",
+          "source_type": "query_result",
           "tool": "check_product_compatibility",
-          "description_fragment": "Check whether"
+          "arguments": {
+            "left_product_id": "AF-f7bfd0b77659",
+            "right_product_id": "AF-5fe146f4dd62"
+          },
+          "match": {
+            "kind": "relationship_rule",
+            "constraint_id": "CR-d16184221efd",
+            "type": "forbid_pair",
+            "option_ids": [
+              "AF-5fe146f4dd62",
+              "AF-f7bfd0b77659"
+            ]
+          }
         },
         {
           "evidence_id": "E-CR-1aa2297e1d3f",
           "constraint_id": "CR-1aa2297e1d3f",
-          "source_type": "tool_rule",
-          "tool": "check_product_compatibility",
-          "description_fragment": "Check whether"
+          "source_type": "query_result",
+          "tool": "get_product_terms",
+          "arguments": {
+            "record_id": "AF-f7bfd0b77659"
+          },
+          "match": {
+            "kind": "relationship_rule",
+            "constraint_id": "CR-1aa2297e1d3f",
+            "type": "requires_any",
+            "if_option_id": "AF-f7bfd0b77659",
+            "any_option_ids": [
+              "AF-d01f424cb3e2"
+            ]
+          }
         },
         {
           "evidence_id": "E-FACT-T-14022b3cf5b5",
@@ -26051,7 +28062,16 @@
           "arguments": {
             "record_id": "ITEM-R0001"
           },
+          "equivalent_arguments": [
+            {
+              "record_id": "ITEM-R0001"
+            },
+            {
+              "record_id": "ITEM-R0002"
+            }
+          ],
           "match": {
+            "kind": "economic_term_fact",
             "term_id": "TERM-e95b705c354d",
             "field": "charge_minor",
             "expected": 0
@@ -26062,7 +28082,33 @@
         "logical_fact": "downstream migration charge",
         "json_pointer": "/economic_terms/0/charge_minor",
         "reveal_tool": "get_product_terms",
-        "record_id": "ITEM-R0001"
+        "record_id": "ITEM-R0001",
+        "reveal_paths": [
+          {
+            "tool": "get_product_terms",
+            "arguments": {
+              "record_id": "ITEM-R0001"
+            },
+            "match": {
+              "kind": "economic_term_fact",
+              "term_id": "TERM-e95b705c354d",
+              "field": "charge_minor",
+              "expected": 0
+            }
+          },
+          {
+            "tool": "get_product_terms",
+            "arguments": {
+              "record_id": "ITEM-R0002"
+            },
+            "match": {
+              "kind": "economic_term_fact",
+              "term_id": "TERM-e95b705c354d",
+              "field": "charge_minor",
+              "expected": 0
+            }
+          }
+        ]
       },
       "complexity_profile": {
         "existing_commitment_count": 4,
@@ -26818,16 +28864,39 @@
         {
           "evidence_id": "E-CR-d16184221efd",
           "constraint_id": "CR-d16184221efd",
-          "source_type": "tool_rule",
+          "source_type": "query_result",
           "tool": "check_product_compatibility",
-          "description_fragment": "Check whether"
+          "arguments": {
+            "left_product_id": "AF-f7bfd0b77659",
+            "right_product_id": "AF-5fe146f4dd62"
+          },
+          "match": {
+            "kind": "relationship_rule",
+            "constraint_id": "CR-d16184221efd",
+            "type": "forbid_pair",
+            "option_ids": [
+              "AF-5fe146f4dd62",
+              "AF-f7bfd0b77659"
+            ]
+          }
         },
         {
           "evidence_id": "E-CR-1aa2297e1d3f",
           "constraint_id": "CR-1aa2297e1d3f",
-          "source_type": "tool_rule",
-          "tool": "check_product_compatibility",
-          "description_fragment": "Check whether"
+          "source_type": "query_result",
+          "tool": "get_product_terms",
+          "arguments": {
+            "record_id": "AF-f7bfd0b77659"
+          },
+          "match": {
+            "kind": "relationship_rule",
+            "constraint_id": "CR-1aa2297e1d3f",
+            "type": "requires_any",
+            "if_option_id": "AF-f7bfd0b77659",
+            "any_option_ids": [
+              "AF-d01f424cb3e2"
+            ]
+          }
         },
         {
           "evidence_id": "E-FACT-T-0d8d13fc895a",
@@ -26837,7 +28906,16 @@
           "arguments": {
             "record_id": "ITEM-R0001"
           },
+          "equivalent_arguments": [
+            {
+              "record_id": "ITEM-R0001"
+            },
+            {
+              "record_id": "ITEM-R0002"
+            }
+          ],
           "match": {
+            "kind": "economic_term_fact",
             "term_id": "TERM-e95b705c354d",
             "field": "charge_minor",
             "expected": 36000
@@ -26848,7 +28926,33 @@
         "logical_fact": "downstream migration charge",
         "json_pointer": "/economic_terms/0/charge_minor",
         "reveal_tool": "get_product_terms",
-        "record_id": "ITEM-R0001"
+        "record_id": "ITEM-R0001",
+        "reveal_paths": [
+          {
+            "tool": "get_product_terms",
+            "arguments": {
+              "record_id": "ITEM-R0001"
+            },
+            "match": {
+              "kind": "economic_term_fact",
+              "term_id": "TERM-e95b705c354d",
+              "field": "charge_minor",
+              "expected": 36000
+            }
+          },
+          {
+            "tool": "get_product_terms",
+            "arguments": {
+              "record_id": "ITEM-R0002"
+            },
+            "match": {
+              "kind": "economic_term_fact",
+              "term_id": "TERM-e95b705c354d",
+              "field": "charge_minor",
+              "expected": 36000
+            }
+          }
+        ]
       },
       "complexity_profile": {
         "existing_commitment_count": 4,
@@ -27525,9 +29629,18 @@
           "source_type": "query_result",
           "tool": "get_product_terms",
           "arguments": {
-            "record_id": "ITEM-R0001"
+            "record_id": "AF-33fa82e0c9e0"
           },
+          "equivalent_arguments": [
+            {
+              "record_id": "AF-33fa82e0c9e0"
+            },
+            {
+              "record_id": "ITEM-R0001"
+            }
+          ],
           "match": {
+            "kind": "economic_term_fact",
             "term_id": "TERM-7ceb07c5e245",
             "field": "charge_minor",
             "expected": 0
@@ -27538,7 +29651,33 @@
         "logical_fact": "continuity settlement charge",
         "json_pointer": "/economic_terms/0/charge_minor",
         "reveal_tool": "get_product_terms",
-        "record_id": "ITEM-R0001"
+        "record_id": "AF-33fa82e0c9e0",
+        "reveal_paths": [
+          {
+            "tool": "get_product_terms",
+            "arguments": {
+              "record_id": "AF-33fa82e0c9e0"
+            },
+            "match": {
+              "kind": "economic_term_fact",
+              "term_id": "TERM-7ceb07c5e245",
+              "field": "charge_minor",
+              "expected": 0
+            }
+          },
+          {
+            "tool": "get_product_terms",
+            "arguments": {
+              "record_id": "ITEM-R0001"
+            },
+            "match": {
+              "kind": "economic_term_fact",
+              "term_id": "TERM-7ceb07c5e245",
+              "field": "charge_minor",
+              "expected": 0
+            }
+          }
+        ]
       },
       "complexity_profile": {
         "existing_commitment_count": 4,
@@ -28043,9 +30182,18 @@
           "source_type": "query_result",
           "tool": "get_product_terms",
           "arguments": {
-            "record_id": "ITEM-R0001"
+            "record_id": "AF-33fa82e0c9e0"
           },
+          "equivalent_arguments": [
+            {
+              "record_id": "AF-33fa82e0c9e0"
+            },
+            {
+              "record_id": "ITEM-R0001"
+            }
+          ],
           "match": {
+            "kind": "economic_term_fact",
             "term_id": "TERM-7ceb07c5e245",
             "field": "charge_minor",
             "expected": 30000
@@ -28056,7 +30204,33 @@
         "logical_fact": "continuity settlement charge",
         "json_pointer": "/economic_terms/0/charge_minor",
         "reveal_tool": "get_product_terms",
-        "record_id": "ITEM-R0001"
+        "record_id": "AF-33fa82e0c9e0",
+        "reveal_paths": [
+          {
+            "tool": "get_product_terms",
+            "arguments": {
+              "record_id": "AF-33fa82e0c9e0"
+            },
+            "match": {
+              "kind": "economic_term_fact",
+              "term_id": "TERM-7ceb07c5e245",
+              "field": "charge_minor",
+              "expected": 30000
+            }
+          },
+          {
+            "tool": "get_product_terms",
+            "arguments": {
+              "record_id": "ITEM-R0001"
+            },
+            "match": {
+              "kind": "economic_term_fact",
+              "term_id": "TERM-7ceb07c5e245",
+              "field": "charge_minor",
+              "expected": 30000
+            }
+          }
+        ]
       },
       "complexity_profile": {
         "existing_commitment_count": 4,
@@ -28502,9 +30676,18 @@
           "source_type": "query_result",
           "tool": "get_product_terms",
           "arguments": {
-            "record_id": "ITEM-R0001"
+            "record_id": "AF-0c1a81ad6c5a"
           },
+          "equivalent_arguments": [
+            {
+              "record_id": "AF-0c1a81ad6c5a"
+            },
+            {
+              "record_id": "ITEM-R0001"
+            }
+          ],
           "match": {
+            "kind": "economic_term_fact",
             "term_id": "TERM-7ceb07c5e245",
             "field": "charge_minor",
             "expected": 0
@@ -28515,7 +30698,33 @@
         "logical_fact": "continuity settlement charge",
         "json_pointer": "/economic_terms/0/charge_minor",
         "reveal_tool": "get_product_terms",
-        "record_id": "ITEM-R0001"
+        "record_id": "AF-0c1a81ad6c5a",
+        "reveal_paths": [
+          {
+            "tool": "get_product_terms",
+            "arguments": {
+              "record_id": "AF-0c1a81ad6c5a"
+            },
+            "match": {
+              "kind": "economic_term_fact",
+              "term_id": "TERM-7ceb07c5e245",
+              "field": "charge_minor",
+              "expected": 0
+            }
+          },
+          {
+            "tool": "get_product_terms",
+            "arguments": {
+              "record_id": "ITEM-R0001"
+            },
+            "match": {
+              "kind": "economic_term_fact",
+              "term_id": "TERM-7ceb07c5e245",
+              "field": "charge_minor",
+              "expected": 0
+            }
+          }
+        ]
       },
       "complexity_profile": {
         "existing_commitment_count": 4,
@@ -29020,9 +31229,18 @@
           "source_type": "query_result",
           "tool": "get_product_terms",
           "arguments": {
-            "record_id": "ITEM-R0001"
+            "record_id": "AF-0c1a81ad6c5a"
           },
+          "equivalent_arguments": [
+            {
+              "record_id": "AF-0c1a81ad6c5a"
+            },
+            {
+              "record_id": "ITEM-R0001"
+            }
+          ],
           "match": {
+            "kind": "economic_term_fact",
             "term_id": "TERM-7ceb07c5e245",
             "field": "charge_minor",
             "expected": 30000
@@ -29033,7 +31251,33 @@
         "logical_fact": "continuity settlement charge",
         "json_pointer": "/economic_terms/0/charge_minor",
         "reveal_tool": "get_product_terms",
-        "record_id": "ITEM-R0001"
+        "record_id": "AF-0c1a81ad6c5a",
+        "reveal_paths": [
+          {
+            "tool": "get_product_terms",
+            "arguments": {
+              "record_id": "AF-0c1a81ad6c5a"
+            },
+            "match": {
+              "kind": "economic_term_fact",
+              "term_id": "TERM-7ceb07c5e245",
+              "field": "charge_minor",
+              "expected": 30000
+            }
+          },
+          {
+            "tool": "get_product_terms",
+            "arguments": {
+              "record_id": "ITEM-R0001"
+            },
+            "match": {
+              "kind": "economic_term_fact",
+              "term_id": "TERM-7ceb07c5e245",
+              "field": "charge_minor",
+              "expected": 30000
+            }
+          }
+        ]
       },
       "complexity_profile": {
         "existing_commitment_count": 4,
@@ -29475,7 +31719,22 @@
           "arguments": {
             "record_id": "ITEM-R0001"
           },
+          "equivalent_arguments": [
+            {
+              "record_id": "ITEM-R0001"
+            },
+            {
+              "record_id": "ITEM-R0002"
+            },
+            {
+              "record_id": "ITEM-R0003"
+            },
+            {
+              "record_id": "ITEM-R0004"
+            }
+          ],
           "match": {
+            "kind": "economic_term_fact",
             "term_id": "TERM-dc27f44fd4cc",
             "field": "trigger/threshold_minor",
             "expected": 164000
@@ -29486,7 +31745,57 @@
         "logical_fact": "retained-value threshold",
         "json_pointer": "/economic_terms/0/trigger/threshold_minor",
         "reveal_tool": "get_product_terms",
-        "record_id": "ITEM-R0001"
+        "record_id": "ITEM-R0001",
+        "reveal_paths": [
+          {
+            "tool": "get_product_terms",
+            "arguments": {
+              "record_id": "ITEM-R0001"
+            },
+            "match": {
+              "kind": "economic_term_fact",
+              "term_id": "TERM-dc27f44fd4cc",
+              "field": "trigger/threshold_minor",
+              "expected": 164000
+            }
+          },
+          {
+            "tool": "get_product_terms",
+            "arguments": {
+              "record_id": "ITEM-R0002"
+            },
+            "match": {
+              "kind": "economic_term_fact",
+              "term_id": "TERM-dc27f44fd4cc",
+              "field": "trigger/threshold_minor",
+              "expected": 164000
+            }
+          },
+          {
+            "tool": "get_product_terms",
+            "arguments": {
+              "record_id": "ITEM-R0003"
+            },
+            "match": {
+              "kind": "economic_term_fact",
+              "term_id": "TERM-dc27f44fd4cc",
+              "field": "trigger/threshold_minor",
+              "expected": 164000
+            }
+          },
+          {
+            "tool": "get_product_terms",
+            "arguments": {
+              "record_id": "ITEM-R0004"
+            },
+            "match": {
+              "kind": "economic_term_fact",
+              "term_id": "TERM-dc27f44fd4cc",
+              "field": "trigger/threshold_minor",
+              "expected": 164000
+            }
+          }
+        ]
       },
       "complexity_profile": {
         "existing_commitment_count": 4,
@@ -29939,7 +32248,22 @@
           "arguments": {
             "record_id": "ITEM-R0001"
           },
+          "equivalent_arguments": [
+            {
+              "record_id": "ITEM-R0001"
+            },
+            {
+              "record_id": "ITEM-R0002"
+            },
+            {
+              "record_id": "ITEM-R0003"
+            },
+            {
+              "record_id": "ITEM-R0004"
+            }
+          ],
           "match": {
+            "kind": "economic_term_fact",
             "term_id": "TERM-dc27f44fd4cc",
             "field": "trigger/threshold_minor",
             "expected": 166000
@@ -29950,7 +32274,57 @@
         "logical_fact": "retained-value threshold",
         "json_pointer": "/economic_terms/0/trigger/threshold_minor",
         "reveal_tool": "get_product_terms",
-        "record_id": "ITEM-R0001"
+        "record_id": "ITEM-R0001",
+        "reveal_paths": [
+          {
+            "tool": "get_product_terms",
+            "arguments": {
+              "record_id": "ITEM-R0001"
+            },
+            "match": {
+              "kind": "economic_term_fact",
+              "term_id": "TERM-dc27f44fd4cc",
+              "field": "trigger/threshold_minor",
+              "expected": 166000
+            }
+          },
+          {
+            "tool": "get_product_terms",
+            "arguments": {
+              "record_id": "ITEM-R0002"
+            },
+            "match": {
+              "kind": "economic_term_fact",
+              "term_id": "TERM-dc27f44fd4cc",
+              "field": "trigger/threshold_minor",
+              "expected": 166000
+            }
+          },
+          {
+            "tool": "get_product_terms",
+            "arguments": {
+              "record_id": "ITEM-R0003"
+            },
+            "match": {
+              "kind": "economic_term_fact",
+              "term_id": "TERM-dc27f44fd4cc",
+              "field": "trigger/threshold_minor",
+              "expected": 166000
+            }
+          },
+          {
+            "tool": "get_product_terms",
+            "arguments": {
+              "record_id": "ITEM-R0004"
+            },
+            "match": {
+              "kind": "economic_term_fact",
+              "term_id": "TERM-dc27f44fd4cc",
+              "field": "trigger/threshold_minor",
+              "expected": 166000
+            }
+          }
+        ]
       },
       "complexity_profile": {
         "existing_commitment_count": 4,
@@ -30383,7 +32757,22 @@
           "arguments": {
             "record_id": "ITEM-R0001"
           },
+          "equivalent_arguments": [
+            {
+              "record_id": "ITEM-R0001"
+            },
+            {
+              "record_id": "ITEM-R0002"
+            },
+            {
+              "record_id": "ITEM-R0003"
+            },
+            {
+              "record_id": "ITEM-R0004"
+            }
+          ],
           "match": {
+            "kind": "economic_term_fact",
             "term_id": "TERM-dc27f44fd4cc",
             "field": "trigger/threshold_minor",
             "expected": 181000
@@ -30394,7 +32783,57 @@
         "logical_fact": "retained-value threshold",
         "json_pointer": "/economic_terms/0/trigger/threshold_minor",
         "reveal_tool": "get_product_terms",
-        "record_id": "ITEM-R0001"
+        "record_id": "ITEM-R0001",
+        "reveal_paths": [
+          {
+            "tool": "get_product_terms",
+            "arguments": {
+              "record_id": "ITEM-R0001"
+            },
+            "match": {
+              "kind": "economic_term_fact",
+              "term_id": "TERM-dc27f44fd4cc",
+              "field": "trigger/threshold_minor",
+              "expected": 181000
+            }
+          },
+          {
+            "tool": "get_product_terms",
+            "arguments": {
+              "record_id": "ITEM-R0002"
+            },
+            "match": {
+              "kind": "economic_term_fact",
+              "term_id": "TERM-dc27f44fd4cc",
+              "field": "trigger/threshold_minor",
+              "expected": 181000
+            }
+          },
+          {
+            "tool": "get_product_terms",
+            "arguments": {
+              "record_id": "ITEM-R0003"
+            },
+            "match": {
+              "kind": "economic_term_fact",
+              "term_id": "TERM-dc27f44fd4cc",
+              "field": "trigger/threshold_minor",
+              "expected": 181000
+            }
+          },
+          {
+            "tool": "get_product_terms",
+            "arguments": {
+              "record_id": "ITEM-R0004"
+            },
+            "match": {
+              "kind": "economic_term_fact",
+              "term_id": "TERM-dc27f44fd4cc",
+              "field": "trigger/threshold_minor",
+              "expected": 181000
+            }
+          }
+        ]
       },
       "complexity_profile": {
         "existing_commitment_count": 4,
@@ -30847,7 +33286,22 @@
           "arguments": {
             "record_id": "ITEM-R0001"
           },
+          "equivalent_arguments": [
+            {
+              "record_id": "ITEM-R0001"
+            },
+            {
+              "record_id": "ITEM-R0002"
+            },
+            {
+              "record_id": "ITEM-R0003"
+            },
+            {
+              "record_id": "ITEM-R0004"
+            }
+          ],
           "match": {
+            "kind": "economic_term_fact",
             "term_id": "TERM-dc27f44fd4cc",
             "field": "trigger/threshold_minor",
             "expected": 183000
@@ -30858,7 +33312,57 @@
         "logical_fact": "retained-value threshold",
         "json_pointer": "/economic_terms/0/trigger/threshold_minor",
         "reveal_tool": "get_product_terms",
-        "record_id": "ITEM-R0001"
+        "record_id": "ITEM-R0001",
+        "reveal_paths": [
+          {
+            "tool": "get_product_terms",
+            "arguments": {
+              "record_id": "ITEM-R0001"
+            },
+            "match": {
+              "kind": "economic_term_fact",
+              "term_id": "TERM-dc27f44fd4cc",
+              "field": "trigger/threshold_minor",
+              "expected": 183000
+            }
+          },
+          {
+            "tool": "get_product_terms",
+            "arguments": {
+              "record_id": "ITEM-R0002"
+            },
+            "match": {
+              "kind": "economic_term_fact",
+              "term_id": "TERM-dc27f44fd4cc",
+              "field": "trigger/threshold_minor",
+              "expected": 183000
+            }
+          },
+          {
+            "tool": "get_product_terms",
+            "arguments": {
+              "record_id": "ITEM-R0003"
+            },
+            "match": {
+              "kind": "economic_term_fact",
+              "term_id": "TERM-dc27f44fd4cc",
+              "field": "trigger/threshold_minor",
+              "expected": 183000
+            }
+          },
+          {
+            "tool": "get_product_terms",
+            "arguments": {
+              "record_id": "ITEM-R0004"
+            },
+            "match": {
+              "kind": "economic_term_fact",
+              "term_id": "TERM-dc27f44fd4cc",
+              "field": "trigger/threshold_minor",
+              "expected": 183000
+            }
+          }
+        ]
       },
       "complexity_profile": {
         "existing_commitment_count": 4,
@@ -31291,7 +33795,16 @@
           "arguments": {
             "record_id": "ITEM-R0001"
           },
+          "equivalent_arguments": [
+            {
+              "record_id": "ITEM-R0001"
+            },
+            {
+              "record_id": "ITEM-R0002"
+            }
+          ],
           "match": {
+            "kind": "economic_term_fact",
             "term_id": "TERM-3b0e09a3af51",
             "field": "trigger/type",
             "expected": "any_changed"
@@ -31302,7 +33815,33 @@
         "logical_fact": "Boolean trigger condition",
         "json_pointer": "/economic_terms/0/trigger/type",
         "reveal_tool": "get_product_terms",
-        "record_id": "ITEM-R0001"
+        "record_id": "ITEM-R0001",
+        "reveal_paths": [
+          {
+            "tool": "get_product_terms",
+            "arguments": {
+              "record_id": "ITEM-R0001"
+            },
+            "match": {
+              "kind": "economic_term_fact",
+              "term_id": "TERM-3b0e09a3af51",
+              "field": "trigger/type",
+              "expected": "any_changed"
+            }
+          },
+          {
+            "tool": "get_product_terms",
+            "arguments": {
+              "record_id": "ITEM-R0002"
+            },
+            "match": {
+              "kind": "economic_term_fact",
+              "term_id": "TERM-3b0e09a3af51",
+              "field": "trigger/type",
+              "expected": "any_changed"
+            }
+          }
+        ]
       },
       "complexity_profile": {
         "existing_commitment_count": 4,
@@ -31735,7 +34274,16 @@
           "arguments": {
             "record_id": "ITEM-R0001"
           },
+          "equivalent_arguments": [
+            {
+              "record_id": "ITEM-R0001"
+            },
+            {
+              "record_id": "ITEM-R0002"
+            }
+          ],
           "match": {
+            "kind": "economic_term_fact",
             "term_id": "TERM-3b0e09a3af51",
             "field": "trigger/type",
             "expected": "all_changed"
@@ -31746,7 +34294,33 @@
         "logical_fact": "Boolean trigger condition",
         "json_pointer": "/economic_terms/0/trigger/type",
         "reveal_tool": "get_product_terms",
-        "record_id": "ITEM-R0001"
+        "record_id": "ITEM-R0001",
+        "reveal_paths": [
+          {
+            "tool": "get_product_terms",
+            "arguments": {
+              "record_id": "ITEM-R0001"
+            },
+            "match": {
+              "kind": "economic_term_fact",
+              "term_id": "TERM-3b0e09a3af51",
+              "field": "trigger/type",
+              "expected": "all_changed"
+            }
+          },
+          {
+            "tool": "get_product_terms",
+            "arguments": {
+              "record_id": "ITEM-R0002"
+            },
+            "match": {
+              "kind": "economic_term_fact",
+              "term_id": "TERM-3b0e09a3af51",
+              "field": "trigger/type",
+              "expected": "all_changed"
+            }
+          }
+        ]
       },
       "complexity_profile": {
         "existing_commitment_count": 4,
@@ -32199,7 +34773,16 @@
           "arguments": {
             "record_id": "ITEM-R0001"
           },
+          "equivalent_arguments": [
+            {
+              "record_id": "ITEM-R0001"
+            },
+            {
+              "record_id": "ITEM-R0002"
+            }
+          ],
           "match": {
+            "kind": "economic_term_fact",
             "term_id": "TERM-3b0e09a3af51",
             "field": "trigger/type",
             "expected": "any_changed"
@@ -32210,7 +34793,33 @@
         "logical_fact": "Boolean trigger condition",
         "json_pointer": "/economic_terms/0/trigger/type",
         "reveal_tool": "get_product_terms",
-        "record_id": "ITEM-R0001"
+        "record_id": "ITEM-R0001",
+        "reveal_paths": [
+          {
+            "tool": "get_product_terms",
+            "arguments": {
+              "record_id": "ITEM-R0001"
+            },
+            "match": {
+              "kind": "economic_term_fact",
+              "term_id": "TERM-3b0e09a3af51",
+              "field": "trigger/type",
+              "expected": "any_changed"
+            }
+          },
+          {
+            "tool": "get_product_terms",
+            "arguments": {
+              "record_id": "ITEM-R0002"
+            },
+            "match": {
+              "kind": "economic_term_fact",
+              "term_id": "TERM-3b0e09a3af51",
+              "field": "trigger/type",
+              "expected": "any_changed"
+            }
+          }
+        ]
       },
       "complexity_profile": {
         "existing_commitment_count": 4,
@@ -32643,7 +35252,16 @@
           "arguments": {
             "record_id": "ITEM-R0001"
           },
+          "equivalent_arguments": [
+            {
+              "record_id": "ITEM-R0001"
+            },
+            {
+              "record_id": "ITEM-R0002"
+            }
+          ],
           "match": {
+            "kind": "economic_term_fact",
             "term_id": "TERM-3b0e09a3af51",
             "field": "trigger/type",
             "expected": "all_changed"
@@ -32654,7 +35272,33 @@
         "logical_fact": "Boolean trigger condition",
         "json_pointer": "/economic_terms/0/trigger/type",
         "reveal_tool": "get_product_terms",
-        "record_id": "ITEM-R0001"
+        "record_id": "ITEM-R0001",
+        "reveal_paths": [
+          {
+            "tool": "get_product_terms",
+            "arguments": {
+              "record_id": "ITEM-R0001"
+            },
+            "match": {
+              "kind": "economic_term_fact",
+              "term_id": "TERM-3b0e09a3af51",
+              "field": "trigger/type",
+              "expected": "all_changed"
+            }
+          },
+          {
+            "tool": "get_product_terms",
+            "arguments": {
+              "record_id": "ITEM-R0002"
+            },
+            "match": {
+              "kind": "economic_term_fact",
+              "term_id": "TERM-3b0e09a3af51",
+              "field": "trigger/type",
+              "expected": "all_changed"
+            }
+          }
+        ]
       },
       "complexity_profile": {
         "existing_commitment_count": 4,
@@ -33105,9 +35749,18 @@
           "source_type": "query_result",
           "tool": "get_product_terms",
           "arguments": {
-            "record_id": "ITEM-R0001"
+            "record_id": "AF-041a08c5a9f2"
           },
+          "equivalent_arguments": [
+            {
+              "record_id": "AF-041a08c5a9f2"
+            },
+            {
+              "record_id": "ITEM-R0001"
+            }
+          ],
           "match": {
+            "kind": "economic_term_fact",
             "term_id": "TERM-9dbae3ed0ea3",
             "field": "credit_minor",
             "expected": 0
@@ -33118,7 +35771,33 @@
         "logical_fact": "full-replacement supplier credit",
         "json_pointer": "/economic_terms/0/credit_minor",
         "reveal_tool": "get_product_terms",
-        "record_id": "ITEM-R0001"
+        "record_id": "AF-041a08c5a9f2",
+        "reveal_paths": [
+          {
+            "tool": "get_product_terms",
+            "arguments": {
+              "record_id": "AF-041a08c5a9f2"
+            },
+            "match": {
+              "kind": "economic_term_fact",
+              "term_id": "TERM-9dbae3ed0ea3",
+              "field": "credit_minor",
+              "expected": 0
+            }
+          },
+          {
+            "tool": "get_product_terms",
+            "arguments": {
+              "record_id": "ITEM-R0001"
+            },
+            "match": {
+              "kind": "economic_term_fact",
+              "term_id": "TERM-9dbae3ed0ea3",
+              "field": "credit_minor",
+              "expected": 0
+            }
+          }
+        ]
       },
       "complexity_profile": {
         "existing_commitment_count": 4,
@@ -33605,9 +36284,18 @@
           "source_type": "query_result",
           "tool": "get_product_terms",
           "arguments": {
-            "record_id": "ITEM-R0001"
+            "record_id": "AF-041a08c5a9f2"
           },
+          "equivalent_arguments": [
+            {
+              "record_id": "AF-041a08c5a9f2"
+            },
+            {
+              "record_id": "ITEM-R0001"
+            }
+          ],
           "match": {
+            "kind": "economic_term_fact",
             "term_id": "TERM-9dbae3ed0ea3",
             "field": "credit_minor",
             "expected": 30000
@@ -33618,7 +36306,33 @@
         "logical_fact": "full-replacement supplier credit",
         "json_pointer": "/economic_terms/0/credit_minor",
         "reveal_tool": "get_product_terms",
-        "record_id": "ITEM-R0001"
+        "record_id": "AF-041a08c5a9f2",
+        "reveal_paths": [
+          {
+            "tool": "get_product_terms",
+            "arguments": {
+              "record_id": "AF-041a08c5a9f2"
+            },
+            "match": {
+              "kind": "economic_term_fact",
+              "term_id": "TERM-9dbae3ed0ea3",
+              "field": "credit_minor",
+              "expected": 30000
+            }
+          },
+          {
+            "tool": "get_product_terms",
+            "arguments": {
+              "record_id": "ITEM-R0001"
+            },
+            "match": {
+              "kind": "economic_term_fact",
+              "term_id": "TERM-9dbae3ed0ea3",
+              "field": "credit_minor",
+              "expected": 30000
+            }
+          }
+        ]
       },
       "complexity_profile": {
         "existing_commitment_count": 4,
@@ -34145,9 +36859,18 @@
           "source_type": "query_result",
           "tool": "get_product_terms",
           "arguments": {
-            "record_id": "ITEM-R0001"
+            "record_id": "AF-7f73d70e01e5"
           },
+          "equivalent_arguments": [
+            {
+              "record_id": "AF-7f73d70e01e5"
+            },
+            {
+              "record_id": "ITEM-R0001"
+            }
+          ],
           "match": {
+            "kind": "economic_term_fact",
             "term_id": "TERM-9dbae3ed0ea3",
             "field": "credit_minor",
             "expected": 0
@@ -34158,7 +36881,33 @@
         "logical_fact": "full-replacement supplier credit",
         "json_pointer": "/economic_terms/0/credit_minor",
         "reveal_tool": "get_product_terms",
-        "record_id": "ITEM-R0001"
+        "record_id": "AF-7f73d70e01e5",
+        "reveal_paths": [
+          {
+            "tool": "get_product_terms",
+            "arguments": {
+              "record_id": "AF-7f73d70e01e5"
+            },
+            "match": {
+              "kind": "economic_term_fact",
+              "term_id": "TERM-9dbae3ed0ea3",
+              "field": "credit_minor",
+              "expected": 0
+            }
+          },
+          {
+            "tool": "get_product_terms",
+            "arguments": {
+              "record_id": "ITEM-R0001"
+            },
+            "match": {
+              "kind": "economic_term_fact",
+              "term_id": "TERM-9dbae3ed0ea3",
+              "field": "credit_minor",
+              "expected": 0
+            }
+          }
+        ]
       },
       "complexity_profile": {
         "existing_commitment_count": 4,
@@ -34645,9 +37394,18 @@
           "source_type": "query_result",
           "tool": "get_product_terms",
           "arguments": {
-            "record_id": "ITEM-R0001"
+            "record_id": "AF-7f73d70e01e5"
           },
+          "equivalent_arguments": [
+            {
+              "record_id": "AF-7f73d70e01e5"
+            },
+            {
+              "record_id": "ITEM-R0001"
+            }
+          ],
           "match": {
+            "kind": "economic_term_fact",
             "term_id": "TERM-9dbae3ed0ea3",
             "field": "credit_minor",
             "expected": 30000
@@ -34658,7 +37416,33 @@
         "logical_fact": "full-replacement supplier credit",
         "json_pointer": "/economic_terms/0/credit_minor",
         "reveal_tool": "get_product_terms",
-        "record_id": "ITEM-R0001"
+        "record_id": "AF-7f73d70e01e5",
+        "reveal_paths": [
+          {
+            "tool": "get_product_terms",
+            "arguments": {
+              "record_id": "AF-7f73d70e01e5"
+            },
+            "match": {
+              "kind": "economic_term_fact",
+              "term_id": "TERM-9dbae3ed0ea3",
+              "field": "credit_minor",
+              "expected": 30000
+            }
+          },
+          {
+            "tool": "get_product_terms",
+            "arguments": {
+              "record_id": "ITEM-R0001"
+            },
+            "match": {
+              "kind": "economic_term_fact",
+              "term_id": "TERM-9dbae3ed0ea3",
+              "field": "credit_minor",
+              "expected": 30000
+            }
+          }
+        ]
       },
       "complexity_profile": {
         "existing_commitment_count": 4,
@@ -35182,9 +37966,20 @@
         {
           "evidence_id": "E-CR-9bbc3e7f7bf4",
           "constraint_id": "CR-9bbc3e7f7bf4",
-          "source_type": "tool_rule",
-          "tool": "check_product_compatibility",
-          "description_fragment": "Check whether"
+          "source_type": "query_result",
+          "tool": "get_product_terms",
+          "arguments": {
+            "record_id": "AF-a82da95239fe"
+          },
+          "match": {
+            "kind": "relationship_rule",
+            "constraint_id": "CR-9bbc3e7f7bf4",
+            "type": "requires_any",
+            "if_option_id": "AF-a82da95239fe",
+            "any_option_ids": [
+              "AF-575a5d323364"
+            ]
+          }
         },
         {
           "evidence_id": "E-FACT-T-05ca2ad62864",
@@ -35192,9 +37987,21 @@
           "source_type": "query_result",
           "tool": "get_product_terms",
           "arguments": {
-            "record_id": "ITEM-R0001"
+            "record_id": "AF-575a5d323364"
           },
+          "equivalent_arguments": [
+            {
+              "record_id": "AF-575a5d323364"
+            },
+            {
+              "record_id": "AF-a82da95239fe"
+            },
+            {
+              "record_id": "ITEM-R0001"
+            }
+          ],
           "match": {
+            "kind": "economic_term_fact",
             "term_id": "TERM-7cd506239474",
             "field": "charge_minor",
             "expected": 0
@@ -35205,7 +38012,45 @@
         "logical_fact": "bridge certification charge",
         "json_pointer": "/economic_terms/0/charge_minor",
         "reveal_tool": "get_product_terms",
-        "record_id": "ITEM-R0001"
+        "record_id": "AF-575a5d323364",
+        "reveal_paths": [
+          {
+            "tool": "get_product_terms",
+            "arguments": {
+              "record_id": "AF-575a5d323364"
+            },
+            "match": {
+              "kind": "economic_term_fact",
+              "term_id": "TERM-7cd506239474",
+              "field": "charge_minor",
+              "expected": 0
+            }
+          },
+          {
+            "tool": "get_product_terms",
+            "arguments": {
+              "record_id": "AF-a82da95239fe"
+            },
+            "match": {
+              "kind": "economic_term_fact",
+              "term_id": "TERM-7cd506239474",
+              "field": "charge_minor",
+              "expected": 0
+            }
+          },
+          {
+            "tool": "get_product_terms",
+            "arguments": {
+              "record_id": "ITEM-R0001"
+            },
+            "match": {
+              "kind": "economic_term_fact",
+              "term_id": "TERM-7cd506239474",
+              "field": "charge_minor",
+              "expected": 0
+            }
+          }
+        ]
       },
       "complexity_profile": {
         "existing_commitment_count": 4,
@@ -35958,9 +38803,20 @@
         {
           "evidence_id": "E-CR-9bbc3e7f7bf4",
           "constraint_id": "CR-9bbc3e7f7bf4",
-          "source_type": "tool_rule",
-          "tool": "check_product_compatibility",
-          "description_fragment": "Check whether"
+          "source_type": "query_result",
+          "tool": "get_product_terms",
+          "arguments": {
+            "record_id": "AF-a82da95239fe"
+          },
+          "match": {
+            "kind": "relationship_rule",
+            "constraint_id": "CR-9bbc3e7f7bf4",
+            "type": "requires_any",
+            "if_option_id": "AF-a82da95239fe",
+            "any_option_ids": [
+              "AF-575a5d323364"
+            ]
+          }
         },
         {
           "evidence_id": "E-FACT-T-abecfb06b2f4",
@@ -35968,9 +38824,21 @@
           "source_type": "query_result",
           "tool": "get_product_terms",
           "arguments": {
-            "record_id": "ITEM-R0001"
+            "record_id": "AF-575a5d323364"
           },
+          "equivalent_arguments": [
+            {
+              "record_id": "AF-575a5d323364"
+            },
+            {
+              "record_id": "AF-a82da95239fe"
+            },
+            {
+              "record_id": "ITEM-R0001"
+            }
+          ],
           "match": {
+            "kind": "economic_term_fact",
             "term_id": "TERM-7cd506239474",
             "field": "charge_minor",
             "expected": 40000
@@ -35981,7 +38849,45 @@
         "logical_fact": "bridge certification charge",
         "json_pointer": "/economic_terms/0/charge_minor",
         "reveal_tool": "get_product_terms",
-        "record_id": "ITEM-R0001"
+        "record_id": "AF-575a5d323364",
+        "reveal_paths": [
+          {
+            "tool": "get_product_terms",
+            "arguments": {
+              "record_id": "AF-575a5d323364"
+            },
+            "match": {
+              "kind": "economic_term_fact",
+              "term_id": "TERM-7cd506239474",
+              "field": "charge_minor",
+              "expected": 40000
+            }
+          },
+          {
+            "tool": "get_product_terms",
+            "arguments": {
+              "record_id": "AF-a82da95239fe"
+            },
+            "match": {
+              "kind": "economic_term_fact",
+              "term_id": "TERM-7cd506239474",
+              "field": "charge_minor",
+              "expected": 40000
+            }
+          },
+          {
+            "tool": "get_product_terms",
+            "arguments": {
+              "record_id": "ITEM-R0001"
+            },
+            "match": {
+              "kind": "economic_term_fact",
+              "term_id": "TERM-7cd506239474",
+              "field": "charge_minor",
+              "expected": 40000
+            }
+          }
+        ]
       },
       "complexity_profile": {
         "existing_commitment_count": 4,
@@ -36735,9 +39641,20 @@
         {
           "evidence_id": "E-CR-eb3d7b02b1e4",
           "constraint_id": "CR-eb3d7b02b1e4",
-          "source_type": "tool_rule",
-          "tool": "check_product_compatibility",
-          "description_fragment": "Check whether"
+          "source_type": "query_result",
+          "tool": "get_product_terms",
+          "arguments": {
+            "record_id": "AF-1bfb90f490ee"
+          },
+          "match": {
+            "kind": "relationship_rule",
+            "constraint_id": "CR-eb3d7b02b1e4",
+            "type": "requires_any",
+            "if_option_id": "AF-1bfb90f490ee",
+            "any_option_ids": [
+              "AF-efe0461c0180"
+            ]
+          }
         },
         {
           "evidence_id": "E-FACT-T-12a22a3762a3",
@@ -36745,9 +39662,21 @@
           "source_type": "query_result",
           "tool": "get_product_terms",
           "arguments": {
-            "record_id": "ITEM-R0001"
+            "record_id": "AF-1bfb90f490ee"
           },
+          "equivalent_arguments": [
+            {
+              "record_id": "AF-1bfb90f490ee"
+            },
+            {
+              "record_id": "AF-efe0461c0180"
+            },
+            {
+              "record_id": "ITEM-R0001"
+            }
+          ],
           "match": {
+            "kind": "economic_term_fact",
             "term_id": "TERM-7cd506239474",
             "field": "charge_minor",
             "expected": 0
@@ -36758,7 +39687,45 @@
         "logical_fact": "bridge certification charge",
         "json_pointer": "/economic_terms/0/charge_minor",
         "reveal_tool": "get_product_terms",
-        "record_id": "ITEM-R0001"
+        "record_id": "AF-1bfb90f490ee",
+        "reveal_paths": [
+          {
+            "tool": "get_product_terms",
+            "arguments": {
+              "record_id": "AF-1bfb90f490ee"
+            },
+            "match": {
+              "kind": "economic_term_fact",
+              "term_id": "TERM-7cd506239474",
+              "field": "charge_minor",
+              "expected": 0
+            }
+          },
+          {
+            "tool": "get_product_terms",
+            "arguments": {
+              "record_id": "AF-efe0461c0180"
+            },
+            "match": {
+              "kind": "economic_term_fact",
+              "term_id": "TERM-7cd506239474",
+              "field": "charge_minor",
+              "expected": 0
+            }
+          },
+          {
+            "tool": "get_product_terms",
+            "arguments": {
+              "record_id": "ITEM-R0001"
+            },
+            "match": {
+              "kind": "economic_term_fact",
+              "term_id": "TERM-7cd506239474",
+              "field": "charge_minor",
+              "expected": 0
+            }
+          }
+        ]
       },
       "complexity_profile": {
         "existing_commitment_count": 4,
@@ -37511,9 +40478,20 @@
         {
           "evidence_id": "E-CR-eb3d7b02b1e4",
           "constraint_id": "CR-eb3d7b02b1e4",
-          "source_type": "tool_rule",
-          "tool": "check_product_compatibility",
-          "description_fragment": "Check whether"
+          "source_type": "query_result",
+          "tool": "get_product_terms",
+          "arguments": {
+            "record_id": "AF-1bfb90f490ee"
+          },
+          "match": {
+            "kind": "relationship_rule",
+            "constraint_id": "CR-eb3d7b02b1e4",
+            "type": "requires_any",
+            "if_option_id": "AF-1bfb90f490ee",
+            "any_option_ids": [
+              "AF-efe0461c0180"
+            ]
+          }
         },
         {
           "evidence_id": "E-FACT-T-42aecd470918",
@@ -37521,9 +40499,21 @@
           "source_type": "query_result",
           "tool": "get_product_terms",
           "arguments": {
-            "record_id": "ITEM-R0001"
+            "record_id": "AF-1bfb90f490ee"
           },
+          "equivalent_arguments": [
+            {
+              "record_id": "AF-1bfb90f490ee"
+            },
+            {
+              "record_id": "AF-efe0461c0180"
+            },
+            {
+              "record_id": "ITEM-R0001"
+            }
+          ],
           "match": {
+            "kind": "economic_term_fact",
             "term_id": "TERM-7cd506239474",
             "field": "charge_minor",
             "expected": 40000
@@ -37534,7 +40524,45 @@
         "logical_fact": "bridge certification charge",
         "json_pointer": "/economic_terms/0/charge_minor",
         "reveal_tool": "get_product_terms",
-        "record_id": "ITEM-R0001"
+        "record_id": "AF-1bfb90f490ee",
+        "reveal_paths": [
+          {
+            "tool": "get_product_terms",
+            "arguments": {
+              "record_id": "AF-1bfb90f490ee"
+            },
+            "match": {
+              "kind": "economic_term_fact",
+              "term_id": "TERM-7cd506239474",
+              "field": "charge_minor",
+              "expected": 40000
+            }
+          },
+          {
+            "tool": "get_product_terms",
+            "arguments": {
+              "record_id": "AF-efe0461c0180"
+            },
+            "match": {
+              "kind": "economic_term_fact",
+              "term_id": "TERM-7cd506239474",
+              "field": "charge_minor",
+              "expected": 40000
+            }
+          },
+          {
+            "tool": "get_product_terms",
+            "arguments": {
+              "record_id": "ITEM-R0001"
+            },
+            "match": {
+              "kind": "economic_term_fact",
+              "term_id": "TERM-7cd506239474",
+              "field": "charge_minor",
+              "expected": 40000
+            }
+          }
+        ]
       },
       "complexity_profile": {
         "existing_commitment_count": 4,
@@ -38294,9 +41322,20 @@
         {
           "evidence_id": "E-CR-51a9c49cf678",
           "constraint_id": "CR-51a9c49cf678",
-          "source_type": "tool_rule",
-          "tool": "check_product_compatibility",
-          "description_fragment": "Check whether"
+          "source_type": "query_result",
+          "tool": "get_product_terms",
+          "arguments": {
+            "record_id": "AF-f4a0157a8bad"
+          },
+          "match": {
+            "kind": "relationship_rule",
+            "constraint_id": "CR-51a9c49cf678",
+            "type": "requires_any",
+            "if_option_id": "AF-f4a0157a8bad",
+            "any_option_ids": [
+              "AF-1bc6a8ed4b42"
+            ]
+          }
         },
         {
           "evidence_id": "E-FACT-T-2b61879d7de8",
@@ -38304,9 +41343,21 @@
           "source_type": "query_result",
           "tool": "get_product_terms",
           "arguments": {
-            "record_id": "ITEM-R0001"
+            "record_id": "AF-1bc6a8ed4b42"
           },
+          "equivalent_arguments": [
+            {
+              "record_id": "AF-1bc6a8ed4b42"
+            },
+            {
+              "record_id": "AF-f4a0157a8bad"
+            },
+            {
+              "record_id": "ITEM-R0001"
+            }
+          ],
           "match": {
+            "kind": "economic_term_fact",
             "term_id": "TERM-2bff7ff59ad5",
             "field": "charge_minor",
             "expected": 0
@@ -38317,7 +41368,45 @@
         "logical_fact": "joint supplier coordination charge",
         "json_pointer": "/economic_terms/0/charge_minor",
         "reveal_tool": "get_product_terms",
-        "record_id": "ITEM-R0001"
+        "record_id": "AF-1bc6a8ed4b42",
+        "reveal_paths": [
+          {
+            "tool": "get_product_terms",
+            "arguments": {
+              "record_id": "AF-1bc6a8ed4b42"
+            },
+            "match": {
+              "kind": "economic_term_fact",
+              "term_id": "TERM-2bff7ff59ad5",
+              "field": "charge_minor",
+              "expected": 0
+            }
+          },
+          {
+            "tool": "get_product_terms",
+            "arguments": {
+              "record_id": "AF-f4a0157a8bad"
+            },
+            "match": {
+              "kind": "economic_term_fact",
+              "term_id": "TERM-2bff7ff59ad5",
+              "field": "charge_minor",
+              "expected": 0
+            }
+          },
+          {
+            "tool": "get_product_terms",
+            "arguments": {
+              "record_id": "ITEM-R0001"
+            },
+            "match": {
+              "kind": "economic_term_fact",
+              "term_id": "TERM-2bff7ff59ad5",
+              "field": "charge_minor",
+              "expected": 0
+            }
+          }
+        ]
       },
       "complexity_profile": {
         "existing_commitment_count": 4,
@@ -38808,9 +41897,20 @@
         {
           "evidence_id": "E-CR-51a9c49cf678",
           "constraint_id": "CR-51a9c49cf678",
-          "source_type": "tool_rule",
-          "tool": "check_product_compatibility",
-          "description_fragment": "Check whether"
+          "source_type": "query_result",
+          "tool": "get_product_terms",
+          "arguments": {
+            "record_id": "AF-f4a0157a8bad"
+          },
+          "match": {
+            "kind": "relationship_rule",
+            "constraint_id": "CR-51a9c49cf678",
+            "type": "requires_any",
+            "if_option_id": "AF-f4a0157a8bad",
+            "any_option_ids": [
+              "AF-1bc6a8ed4b42"
+            ]
+          }
         },
         {
           "evidence_id": "E-FACT-T-4dbb968a6b16",
@@ -38818,9 +41918,21 @@
           "source_type": "query_result",
           "tool": "get_product_terms",
           "arguments": {
-            "record_id": "ITEM-R0001"
+            "record_id": "AF-1bc6a8ed4b42"
           },
+          "equivalent_arguments": [
+            {
+              "record_id": "AF-1bc6a8ed4b42"
+            },
+            {
+              "record_id": "AF-f4a0157a8bad"
+            },
+            {
+              "record_id": "ITEM-R0001"
+            }
+          ],
           "match": {
+            "kind": "economic_term_fact",
             "term_id": "TERM-2bff7ff59ad5",
             "field": "charge_minor",
             "expected": 20000
@@ -38831,7 +41943,45 @@
         "logical_fact": "joint supplier coordination charge",
         "json_pointer": "/economic_terms/0/charge_minor",
         "reveal_tool": "get_product_terms",
-        "record_id": "ITEM-R0001"
+        "record_id": "AF-1bc6a8ed4b42",
+        "reveal_paths": [
+          {
+            "tool": "get_product_terms",
+            "arguments": {
+              "record_id": "AF-1bc6a8ed4b42"
+            },
+            "match": {
+              "kind": "economic_term_fact",
+              "term_id": "TERM-2bff7ff59ad5",
+              "field": "charge_minor",
+              "expected": 20000
+            }
+          },
+          {
+            "tool": "get_product_terms",
+            "arguments": {
+              "record_id": "AF-f4a0157a8bad"
+            },
+            "match": {
+              "kind": "economic_term_fact",
+              "term_id": "TERM-2bff7ff59ad5",
+              "field": "charge_minor",
+              "expected": 20000
+            }
+          },
+          {
+            "tool": "get_product_terms",
+            "arguments": {
+              "record_id": "ITEM-R0001"
+            },
+            "match": {
+              "kind": "economic_term_fact",
+              "term_id": "TERM-2bff7ff59ad5",
+              "field": "charge_minor",
+              "expected": 20000
+            }
+          }
+        ]
       },
       "complexity_profile": {
         "existing_commitment_count": 4,
@@ -39323,9 +42473,20 @@
         {
           "evidence_id": "E-CR-3696a886c8c6",
           "constraint_id": "CR-3696a886c8c6",
-          "source_type": "tool_rule",
-          "tool": "check_product_compatibility",
-          "description_fragment": "Check whether"
+          "source_type": "query_result",
+          "tool": "get_product_terms",
+          "arguments": {
+            "record_id": "AF-0e11f26aa876"
+          },
+          "match": {
+            "kind": "relationship_rule",
+            "constraint_id": "CR-3696a886c8c6",
+            "type": "requires_any",
+            "if_option_id": "AF-0e11f26aa876",
+            "any_option_ids": [
+              "AF-3a88f4fc480b"
+            ]
+          }
         },
         {
           "evidence_id": "E-FACT-T-532aa0b16081",
@@ -39333,9 +42494,21 @@
           "source_type": "query_result",
           "tool": "get_product_terms",
           "arguments": {
-            "record_id": "ITEM-R0001"
+            "record_id": "AF-0e11f26aa876"
           },
+          "equivalent_arguments": [
+            {
+              "record_id": "AF-0e11f26aa876"
+            },
+            {
+              "record_id": "AF-3a88f4fc480b"
+            },
+            {
+              "record_id": "ITEM-R0001"
+            }
+          ],
           "match": {
+            "kind": "economic_term_fact",
             "term_id": "TERM-2bff7ff59ad5",
             "field": "charge_minor",
             "expected": 0
@@ -39346,7 +42519,45 @@
         "logical_fact": "joint supplier coordination charge",
         "json_pointer": "/economic_terms/0/charge_minor",
         "reveal_tool": "get_product_terms",
-        "record_id": "ITEM-R0001"
+        "record_id": "AF-0e11f26aa876",
+        "reveal_paths": [
+          {
+            "tool": "get_product_terms",
+            "arguments": {
+              "record_id": "AF-0e11f26aa876"
+            },
+            "match": {
+              "kind": "economic_term_fact",
+              "term_id": "TERM-2bff7ff59ad5",
+              "field": "charge_minor",
+              "expected": 0
+            }
+          },
+          {
+            "tool": "get_product_terms",
+            "arguments": {
+              "record_id": "AF-3a88f4fc480b"
+            },
+            "match": {
+              "kind": "economic_term_fact",
+              "term_id": "TERM-2bff7ff59ad5",
+              "field": "charge_minor",
+              "expected": 0
+            }
+          },
+          {
+            "tool": "get_product_terms",
+            "arguments": {
+              "record_id": "ITEM-R0001"
+            },
+            "match": {
+              "kind": "economic_term_fact",
+              "term_id": "TERM-2bff7ff59ad5",
+              "field": "charge_minor",
+              "expected": 0
+            }
+          }
+        ]
       },
       "complexity_profile": {
         "existing_commitment_count": 4,
@@ -39837,9 +43048,20 @@
         {
           "evidence_id": "E-CR-3696a886c8c6",
           "constraint_id": "CR-3696a886c8c6",
-          "source_type": "tool_rule",
-          "tool": "check_product_compatibility",
-          "description_fragment": "Check whether"
+          "source_type": "query_result",
+          "tool": "get_product_terms",
+          "arguments": {
+            "record_id": "AF-0e11f26aa876"
+          },
+          "match": {
+            "kind": "relationship_rule",
+            "constraint_id": "CR-3696a886c8c6",
+            "type": "requires_any",
+            "if_option_id": "AF-0e11f26aa876",
+            "any_option_ids": [
+              "AF-3a88f4fc480b"
+            ]
+          }
         },
         {
           "evidence_id": "E-FACT-T-5bb56c171cb5",
@@ -39847,9 +43069,21 @@
           "source_type": "query_result",
           "tool": "get_product_terms",
           "arguments": {
-            "record_id": "ITEM-R0001"
+            "record_id": "AF-0e11f26aa876"
           },
+          "equivalent_arguments": [
+            {
+              "record_id": "AF-0e11f26aa876"
+            },
+            {
+              "record_id": "AF-3a88f4fc480b"
+            },
+            {
+              "record_id": "ITEM-R0001"
+            }
+          ],
           "match": {
+            "kind": "economic_term_fact",
             "term_id": "TERM-2bff7ff59ad5",
             "field": "charge_minor",
             "expected": 20000
@@ -39860,7 +43094,45 @@
         "logical_fact": "joint supplier coordination charge",
         "json_pointer": "/economic_terms/0/charge_minor",
         "reveal_tool": "get_product_terms",
-        "record_id": "ITEM-R0001"
+        "record_id": "AF-0e11f26aa876",
+        "reveal_paths": [
+          {
+            "tool": "get_product_terms",
+            "arguments": {
+              "record_id": "AF-0e11f26aa876"
+            },
+            "match": {
+              "kind": "economic_term_fact",
+              "term_id": "TERM-2bff7ff59ad5",
+              "field": "charge_minor",
+              "expected": 20000
+            }
+          },
+          {
+            "tool": "get_product_terms",
+            "arguments": {
+              "record_id": "AF-3a88f4fc480b"
+            },
+            "match": {
+              "kind": "economic_term_fact",
+              "term_id": "TERM-2bff7ff59ad5",
+              "field": "charge_minor",
+              "expected": 20000
+            }
+          },
+          {
+            "tool": "get_product_terms",
+            "arguments": {
+              "record_id": "ITEM-R0001"
+            },
+            "match": {
+              "kind": "economic_term_fact",
+              "term_id": "TERM-2bff7ff59ad5",
+              "field": "charge_minor",
+              "expected": 20000
+            }
+          }
+        ]
       },
       "complexity_profile": {
         "existing_commitment_count": 4,
@@ -40349,9 +43621,18 @@
           "source_type": "query_result",
           "tool": "get_product_terms",
           "arguments": {
-            "record_id": "ITEM-R0001"
+            "record_id": "AF-d021f4c8b91f"
           },
+          "equivalent_arguments": [
+            {
+              "record_id": "AF-d021f4c8b91f"
+            },
+            {
+              "record_id": "ITEM-R0001"
+            }
+          ],
           "match": {
+            "kind": "economic_term_fact",
             "term_id": "TERM-3d1c30b6f657",
             "field": "monthly_minor",
             "expected": 2000
@@ -40362,7 +43643,33 @@
         "logical_fact": "monthly service charge",
         "json_pointer": "/economic_terms/0/monthly_minor",
         "reveal_tool": "get_product_terms",
-        "record_id": "ITEM-R0001"
+        "record_id": "AF-d021f4c8b91f",
+        "reveal_paths": [
+          {
+            "tool": "get_product_terms",
+            "arguments": {
+              "record_id": "AF-d021f4c8b91f"
+            },
+            "match": {
+              "kind": "economic_term_fact",
+              "term_id": "TERM-3d1c30b6f657",
+              "field": "monthly_minor",
+              "expected": 2000
+            }
+          },
+          {
+            "tool": "get_product_terms",
+            "arguments": {
+              "record_id": "ITEM-R0001"
+            },
+            "match": {
+              "kind": "economic_term_fact",
+              "term_id": "TERM-3d1c30b6f657",
+              "field": "monthly_minor",
+              "expected": 2000
+            }
+          }
+        ]
       },
       "complexity_profile": {
         "existing_commitment_count": 4,
@@ -40793,9 +44100,18 @@
           "source_type": "query_result",
           "tool": "get_product_terms",
           "arguments": {
-            "record_id": "ITEM-R0001"
+            "record_id": "AF-d021f4c8b91f"
           },
+          "equivalent_arguments": [
+            {
+              "record_id": "AF-d021f4c8b91f"
+            },
+            {
+              "record_id": "ITEM-R0001"
+            }
+          ],
           "match": {
+            "kind": "economic_term_fact",
             "term_id": "TERM-3d1c30b6f657",
             "field": "monthly_minor",
             "expected": 3500
@@ -40806,7 +44122,33 @@
         "logical_fact": "monthly service charge",
         "json_pointer": "/economic_terms/0/monthly_minor",
         "reveal_tool": "get_product_terms",
-        "record_id": "ITEM-R0001"
+        "record_id": "AF-d021f4c8b91f",
+        "reveal_paths": [
+          {
+            "tool": "get_product_terms",
+            "arguments": {
+              "record_id": "AF-d021f4c8b91f"
+            },
+            "match": {
+              "kind": "economic_term_fact",
+              "term_id": "TERM-3d1c30b6f657",
+              "field": "monthly_minor",
+              "expected": 3500
+            }
+          },
+          {
+            "tool": "get_product_terms",
+            "arguments": {
+              "record_id": "ITEM-R0001"
+            },
+            "match": {
+              "kind": "economic_term_fact",
+              "term_id": "TERM-3d1c30b6f657",
+              "field": "monthly_minor",
+              "expected": 3500
+            }
+          }
+        ]
       },
       "complexity_profile": {
         "existing_commitment_count": 4,
@@ -41257,9 +44599,18 @@
           "source_type": "query_result",
           "tool": "get_product_terms",
           "arguments": {
-            "record_id": "ITEM-R0001"
+            "record_id": "AF-b6eaea64f7ea"
           },
+          "equivalent_arguments": [
+            {
+              "record_id": "AF-b6eaea64f7ea"
+            },
+            {
+              "record_id": "ITEM-R0001"
+            }
+          ],
           "match": {
+            "kind": "economic_term_fact",
             "term_id": "TERM-3d1c30b6f657",
             "field": "monthly_minor",
             "expected": 2000
@@ -41270,7 +44621,33 @@
         "logical_fact": "monthly service charge",
         "json_pointer": "/economic_terms/0/monthly_minor",
         "reveal_tool": "get_product_terms",
-        "record_id": "ITEM-R0001"
+        "record_id": "AF-b6eaea64f7ea",
+        "reveal_paths": [
+          {
+            "tool": "get_product_terms",
+            "arguments": {
+              "record_id": "AF-b6eaea64f7ea"
+            },
+            "match": {
+              "kind": "economic_term_fact",
+              "term_id": "TERM-3d1c30b6f657",
+              "field": "monthly_minor",
+              "expected": 2000
+            }
+          },
+          {
+            "tool": "get_product_terms",
+            "arguments": {
+              "record_id": "ITEM-R0001"
+            },
+            "match": {
+              "kind": "economic_term_fact",
+              "term_id": "TERM-3d1c30b6f657",
+              "field": "monthly_minor",
+              "expected": 2000
+            }
+          }
+        ]
       },
       "complexity_profile": {
         "existing_commitment_count": 4,
@@ -41701,9 +45078,18 @@
           "source_type": "query_result",
           "tool": "get_product_terms",
           "arguments": {
-            "record_id": "ITEM-R0001"
+            "record_id": "AF-b6eaea64f7ea"
           },
+          "equivalent_arguments": [
+            {
+              "record_id": "AF-b6eaea64f7ea"
+            },
+            {
+              "record_id": "ITEM-R0001"
+            }
+          ],
           "match": {
+            "kind": "economic_term_fact",
             "term_id": "TERM-3d1c30b6f657",
             "field": "monthly_minor",
             "expected": 3500
@@ -41714,7 +45100,33 @@
         "logical_fact": "monthly service charge",
         "json_pointer": "/economic_terms/0/monthly_minor",
         "reveal_tool": "get_product_terms",
-        "record_id": "ITEM-R0001"
+        "record_id": "AF-b6eaea64f7ea",
+        "reveal_paths": [
+          {
+            "tool": "get_product_terms",
+            "arguments": {
+              "record_id": "AF-b6eaea64f7ea"
+            },
+            "match": {
+              "kind": "economic_term_fact",
+              "term_id": "TERM-3d1c30b6f657",
+              "field": "monthly_minor",
+              "expected": 3500
+            }
+          },
+          {
+            "tool": "get_product_terms",
+            "arguments": {
+              "record_id": "ITEM-R0001"
+            },
+            "match": {
+              "kind": "economic_term_fact",
+              "term_id": "TERM-3d1c30b6f657",
+              "field": "monthly_minor",
+              "expected": 3500
+            }
+          }
+        ]
       },
       "complexity_profile": {
         "existing_commitment_count": 4,
@@ -42162,16 +45574,39 @@
         {
           "evidence_id": "E-CR-0a9b88ba594d",
           "constraint_id": "CR-0a9b88ba594d",
-          "source_type": "tool_rule",
+          "source_type": "query_result",
           "tool": "check_product_compatibility",
-          "description_fragment": "Check whether"
+          "arguments": {
+            "left_product_id": "AF-59342ae0c7d4",
+            "right_product_id": "AF-fed93cd4a4ee"
+          },
+          "match": {
+            "kind": "relationship_rule",
+            "constraint_id": "CR-0a9b88ba594d",
+            "type": "forbid_pair",
+            "option_ids": [
+              "AF-59342ae0c7d4",
+              "AF-fed93cd4a4ee"
+            ]
+          }
         },
         {
           "evidence_id": "E-CR-b16131135781",
           "constraint_id": "CR-b16131135781",
-          "source_type": "tool_rule",
-          "tool": "check_product_compatibility",
-          "description_fragment": "Check whether"
+          "source_type": "query_result",
+          "tool": "get_product_terms",
+          "arguments": {
+            "record_id": "AF-59342ae0c7d4"
+          },
+          "match": {
+            "kind": "relationship_rule",
+            "constraint_id": "CR-b16131135781",
+            "type": "requires_any",
+            "if_option_id": "AF-59342ae0c7d4",
+            "any_option_ids": [
+              "AF-06b96c5cf6bc"
+            ]
+          }
         },
         {
           "evidence_id": "E-FACT-T-c0ebbc1ddd99",
@@ -42181,7 +45616,13 @@
           "arguments": {
             "record_id": "ITEM-R0002"
           },
+          "equivalent_arguments": [
+            {
+              "record_id": "ITEM-R0002"
+            }
+          ],
           "match": {
+            "kind": "economic_term_fact",
             "term_id": "TERM-055767dca869",
             "field": "charge_minor",
             "expected": 0
@@ -42192,7 +45633,21 @@
         "logical_fact": "support migration charge",
         "json_pointer": "/economic_terms/0/charge_minor",
         "reveal_tool": "get_product_terms",
-        "record_id": "ITEM-R0002"
+        "record_id": "ITEM-R0002",
+        "reveal_paths": [
+          {
+            "tool": "get_product_terms",
+            "arguments": {
+              "record_id": "ITEM-R0002"
+            },
+            "match": {
+              "kind": "economic_term_fact",
+              "term_id": "TERM-055767dca869",
+              "field": "charge_minor",
+              "expected": 0
+            }
+          }
+        ]
       },
       "complexity_profile": {
         "existing_commitment_count": 4,
@@ -42969,16 +46424,39 @@
         {
           "evidence_id": "E-CR-0a9b88ba594d",
           "constraint_id": "CR-0a9b88ba594d",
-          "source_type": "tool_rule",
+          "source_type": "query_result",
           "tool": "check_product_compatibility",
-          "description_fragment": "Check whether"
+          "arguments": {
+            "left_product_id": "AF-59342ae0c7d4",
+            "right_product_id": "AF-fed93cd4a4ee"
+          },
+          "match": {
+            "kind": "relationship_rule",
+            "constraint_id": "CR-0a9b88ba594d",
+            "type": "forbid_pair",
+            "option_ids": [
+              "AF-59342ae0c7d4",
+              "AF-fed93cd4a4ee"
+            ]
+          }
         },
         {
           "evidence_id": "E-CR-b16131135781",
           "constraint_id": "CR-b16131135781",
-          "source_type": "tool_rule",
-          "tool": "check_product_compatibility",
-          "description_fragment": "Check whether"
+          "source_type": "query_result",
+          "tool": "get_product_terms",
+          "arguments": {
+            "record_id": "AF-59342ae0c7d4"
+          },
+          "match": {
+            "kind": "relationship_rule",
+            "constraint_id": "CR-b16131135781",
+            "type": "requires_any",
+            "if_option_id": "AF-59342ae0c7d4",
+            "any_option_ids": [
+              "AF-06b96c5cf6bc"
+            ]
+          }
         },
         {
           "evidence_id": "E-FACT-T-bae8cd67be66",
@@ -42988,7 +46466,13 @@
           "arguments": {
             "record_id": "ITEM-R0002"
           },
+          "equivalent_arguments": [
+            {
+              "record_id": "ITEM-R0002"
+            }
+          ],
           "match": {
+            "kind": "economic_term_fact",
             "term_id": "TERM-055767dca869",
             "field": "charge_minor",
             "expected": 40000
@@ -42999,7 +46483,21 @@
         "logical_fact": "support migration charge",
         "json_pointer": "/economic_terms/0/charge_minor",
         "reveal_tool": "get_product_terms",
-        "record_id": "ITEM-R0002"
+        "record_id": "ITEM-R0002",
+        "reveal_paths": [
+          {
+            "tool": "get_product_terms",
+            "arguments": {
+              "record_id": "ITEM-R0002"
+            },
+            "match": {
+              "kind": "economic_term_fact",
+              "term_id": "TERM-055767dca869",
+              "field": "charge_minor",
+              "expected": 40000
+            }
+          }
+        ]
       },
       "complexity_profile": {
         "existing_commitment_count": 4,
@@ -43747,16 +47245,39 @@
         {
           "evidence_id": "E-CR-252fde744dec",
           "constraint_id": "CR-252fde744dec",
-          "source_type": "tool_rule",
+          "source_type": "query_result",
           "tool": "check_product_compatibility",
-          "description_fragment": "Check whether"
+          "arguments": {
+            "left_product_id": "AF-ea7ea6d26e74",
+            "right_product_id": "AF-19cb67869f39"
+          },
+          "match": {
+            "kind": "relationship_rule",
+            "constraint_id": "CR-252fde744dec",
+            "type": "forbid_pair",
+            "option_ids": [
+              "AF-19cb67869f39",
+              "AF-ea7ea6d26e74"
+            ]
+          }
         },
         {
           "evidence_id": "E-CR-92872fb2c08c",
           "constraint_id": "CR-92872fb2c08c",
-          "source_type": "tool_rule",
-          "tool": "check_product_compatibility",
-          "description_fragment": "Check whether"
+          "source_type": "query_result",
+          "tool": "get_product_terms",
+          "arguments": {
+            "record_id": "AF-ea7ea6d26e74"
+          },
+          "match": {
+            "kind": "relationship_rule",
+            "constraint_id": "CR-92872fb2c08c",
+            "type": "requires_any",
+            "if_option_id": "AF-ea7ea6d26e74",
+            "any_option_ids": [
+              "AF-28a469bc4524"
+            ]
+          }
         },
         {
           "evidence_id": "E-FACT-T-b3b15ed864f6",
@@ -43766,7 +47287,13 @@
           "arguments": {
             "record_id": "ITEM-R0002"
           },
+          "equivalent_arguments": [
+            {
+              "record_id": "ITEM-R0002"
+            }
+          ],
           "match": {
+            "kind": "economic_term_fact",
             "term_id": "TERM-055767dca869",
             "field": "charge_minor",
             "expected": 0
@@ -43777,7 +47304,21 @@
         "logical_fact": "support migration charge",
         "json_pointer": "/economic_terms/0/charge_minor",
         "reveal_tool": "get_product_terms",
-        "record_id": "ITEM-R0002"
+        "record_id": "ITEM-R0002",
+        "reveal_paths": [
+          {
+            "tool": "get_product_terms",
+            "arguments": {
+              "record_id": "ITEM-R0002"
+            },
+            "match": {
+              "kind": "economic_term_fact",
+              "term_id": "TERM-055767dca869",
+              "field": "charge_minor",
+              "expected": 0
+            }
+          }
+        ]
       },
       "complexity_profile": {
         "existing_commitment_count": 4,
@@ -44554,16 +48095,39 @@
         {
           "evidence_id": "E-CR-252fde744dec",
           "constraint_id": "CR-252fde744dec",
-          "source_type": "tool_rule",
+          "source_type": "query_result",
           "tool": "check_product_compatibility",
-          "description_fragment": "Check whether"
+          "arguments": {
+            "left_product_id": "AF-ea7ea6d26e74",
+            "right_product_id": "AF-19cb67869f39"
+          },
+          "match": {
+            "kind": "relationship_rule",
+            "constraint_id": "CR-252fde744dec",
+            "type": "forbid_pair",
+            "option_ids": [
+              "AF-19cb67869f39",
+              "AF-ea7ea6d26e74"
+            ]
+          }
         },
         {
           "evidence_id": "E-CR-92872fb2c08c",
           "constraint_id": "CR-92872fb2c08c",
-          "source_type": "tool_rule",
-          "tool": "check_product_compatibility",
-          "description_fragment": "Check whether"
+          "source_type": "query_result",
+          "tool": "get_product_terms",
+          "arguments": {
+            "record_id": "AF-ea7ea6d26e74"
+          },
+          "match": {
+            "kind": "relationship_rule",
+            "constraint_id": "CR-92872fb2c08c",
+            "type": "requires_any",
+            "if_option_id": "AF-ea7ea6d26e74",
+            "any_option_ids": [
+              "AF-28a469bc4524"
+            ]
+          }
         },
         {
           "evidence_id": "E-FACT-T-2498041366ea",
@@ -44573,7 +48137,13 @@
           "arguments": {
             "record_id": "ITEM-R0002"
           },
+          "equivalent_arguments": [
+            {
+              "record_id": "ITEM-R0002"
+            }
+          ],
           "match": {
+            "kind": "economic_term_fact",
             "term_id": "TERM-055767dca869",
             "field": "charge_minor",
             "expected": 40000
@@ -44584,7 +48154,21 @@
         "logical_fact": "support migration charge",
         "json_pointer": "/economic_terms/0/charge_minor",
         "reveal_tool": "get_product_terms",
-        "record_id": "ITEM-R0002"
+        "record_id": "ITEM-R0002",
+        "reveal_paths": [
+          {
+            "tool": "get_product_terms",
+            "arguments": {
+              "record_id": "ITEM-R0002"
+            },
+            "match": {
+              "kind": "economic_term_fact",
+              "term_id": "TERM-055767dca869",
+              "field": "charge_minor",
+              "expected": 40000
+            }
+          }
+        ]
       },
       "complexity_profile": {
         "existing_commitment_count": 4,

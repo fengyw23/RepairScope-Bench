@@ -110,6 +110,11 @@ It must query the authoritative environment to discover the decisive fact.
 - `Execution Waste`: cost added by unnecessary intermediate actions;
 - `Over-Repair` and `Under-Repair`.
 
+The release validator also proves scorer–agent information symmetry: 624/624
+hard-constraint evidence references and 1,320/1,320 scored state atoms are
+replayable through model-visible instructions or structured public tools. See
+[Scorer–Agent Observability Audit](docs/OBSERVABILITY_AUDIT.md).
+
 Scope reasoning and tool execution are deliberately separated. An agent that
 buys the wrong option, pays a visible cancellation fee, and then reaches the
 correct final scope receives `Unique Scope Pass` but not `Clean Execution`.

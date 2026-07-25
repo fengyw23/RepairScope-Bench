@@ -459,6 +459,21 @@ def build_task(
     evidence_manifest = build_evidence_manifest(
         task, mechanism, changed_field, term
     )
+    reveal_tool = (
+        "get_travel_terms"
+        if domain == "travel"
+        else "get_product_terms"
+    )
+    reveal_record_ids = sorted(
+        set(term.get("linked_entity_ids", []))
+        | set(term.get("linked_option_ids", []))
+    )
+    fact_match = {
+        "kind": "economic_term_fact",
+        "term_id": term["term_id"],
+        "field": changed_field,
+        "expected": _get_nested(term, changed_field),
+    }
     metadata = {
         "pair_id": pair_id,
         "scenario_id": scenario_id,
@@ -469,14 +484,16 @@ def build_task(
         "changed_fact": {
             "logical_fact": MECHANISM_CARDS[mechanism]["changed_fact"],
             "json_pointer": f"/economic_terms/0/{changed_field}",
-            "reveal_tool": (
-                "get_travel_terms"
-                if domain == "travel"
-                else "get_product_terms"
-            ),
-            "record_id": term["linked_entity_ids"][0]
-            if term.get("linked_entity_ids")
-            else term["linked_option_ids"][0],
+            "reveal_tool": reveal_tool,
+            "record_id": reveal_record_ids[0],
+            "reveal_paths": [
+                {
+                    "tool": reveal_tool,
+                    "arguments": {"record_id": record_id},
+                    "match": deepcopy(fact_match),
+                }
+                for record_id in reveal_record_ids
+            ],
         },
     }
     return task, metadata
@@ -1063,8 +1080,9 @@ def instruction_for(
         f"reservations shown below are already active, but the attempted "
         f"{gap_label} ({gap_category}) has just failed. The final state must "
         f"contain {', '.join(phrases)}. {location_phrase} and be ready by day "
-        "4. Do not retain combinations that supplier records mark as "
-        "incompatible. Complete the remaining goal with the lowest actual net "
+        "4. Honor every supplier-recorded conflict and required companion; "
+        "pairwise coexistence alone does not waive a required companion. "
+        "Complete the remaining goal with the lowest actual net "
         "monetary cost from this failure point."
     )
 
@@ -1309,24 +1327,66 @@ def build_evidence_manifest(
     for rule in task["compatibility_rules"]:
         evidence_id = f"E-{rule['constraint_id']}"
         rule["evidence_refs"] = [evidence_id]
+        tool = (
+            "check_travel_compatibility"
+            if task["domain"] == "travel"
+            else "check_product_compatibility"
+        )
+        if rule["type"] == "forbid_pair":
+            arguments = {
+                "left_option_id"
+                if task["domain"] == "travel"
+                else "left_product_id": rule["option_ids"][0],
+                "right_option_id"
+                if task["domain"] == "travel"
+                else "right_product_id": rule["option_ids"][1],
+            }
+            match = {
+                "kind": "relationship_rule",
+                "constraint_id": rule["constraint_id"],
+                "type": "forbid_pair",
+                "option_ids": sorted(rule["option_ids"]),
+            }
+        else:
+            tool = (
+                "get_travel_terms"
+                if task["domain"] == "travel"
+                else "get_product_terms"
+            )
+            arguments = {"record_id": rule["if_option_id"]}
+            required_key = (
+                "any_option_ids"
+                if rule["type"] == "requires_any"
+                else "all_option_ids"
+            )
+            match = {
+                "kind": "relationship_rule",
+                "constraint_id": rule["constraint_id"],
+                "type": rule["type"],
+                "if_option_id": rule["if_option_id"],
+                required_key: sorted(rule[required_key]),
+            }
         manifest.append(
             {
                 "evidence_id": evidence_id,
                 "constraint_id": rule["constraint_id"],
-                "source_type": "tool_rule",
-                "tool": (
-                    "check_travel_compatibility"
-                    if task["domain"] == "travel"
-                    else "check_product_compatibility"
-                ),
-                "description_fragment": "Check whether",
+                "source_type": "query_result",
+                "tool": tool,
+                "arguments": arguments,
+                "match": match,
             }
         )
-    record_id = (
-        term["linked_entity_ids"][0]
-        if term.get("linked_entity_ids")
-        else term["linked_option_ids"][0]
+    reveal_record_ids = sorted(
+        set(term.get("linked_entity_ids", []))
+        | set(term.get("linked_option_ids", []))
     )
+    record_id = reveal_record_ids[0]
+    fact_match = {
+        "kind": "economic_term_fact",
+        "term_id": term["term_id"],
+        "field": changed_field,
+        "expected": _get_nested(term, changed_field),
+    }
     manifest.append(
         {
             "evidence_id": f"E-FACT-{task['task_id']}",
@@ -1338,11 +1398,10 @@ def build_evidence_manifest(
                 else "get_product_terms"
             ),
             "arguments": {"record_id": record_id},
-            "match": {
-                "term_id": term["term_id"],
-                "field": changed_field,
-                "expected": _get_nested(term, changed_field),
-            },
+            "equivalent_arguments": [
+                {"record_id": item} for item in reveal_record_ids
+            ],
+            "match": fact_match,
         }
     )
     return manifest

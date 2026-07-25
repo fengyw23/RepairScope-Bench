@@ -132,6 +132,16 @@ def _scope_diagnostics(
         if disposition != "KEEP"
         and observed_boundary.get(key) == "KEEP"
     )
+    observed_added = set(observed.get("added_option_ids", []))
+    gold_added = set(gold.get("added_option_ids", []))
+    over.extend(
+        f"added_option:{option_id}"
+        for option_id in sorted(observed_added - gold_added)
+    )
+    under.extend(
+        f"added_option:{option_id}"
+        for option_id in sorted(gold_added - observed_added)
+    )
     return over, under, mismatches / denominator if denominator else 0.0
 
 
@@ -150,19 +160,87 @@ def _changed_fact_acquisition(
         ),
         len(environment.event_log),
     )
-    required_tool = manifest["reveal_tool"]
-    record_id = manifest["record_id"]
-    observed = any(
-        event["tool"] == required_tool
-        and event["result"].get("ok", False)
-        and record_id in event.get("arguments", {}).values()
-        for event in environment.event_log[:first_mutation]
+    reveal_paths = manifest.get("reveal_paths") or [
+        {
+            "tool": manifest["reveal_tool"],
+            "arguments": {"record_id": manifest["record_id"]},
+            "match": manifest.get("match"),
+        }
+    ]
+    observed_event = next(
+        (
+            event
+            for event in environment.event_log[:first_mutation]
+            if event["result"].get("ok", False)
+            and any(
+                event["tool"] == path["tool"]
+                and _matches_changed_fact(
+                    event["result"].get("data") or {}, path.get("match")
+                )
+                for path in reveal_paths
+            )
+        ),
+        None,
     )
     return {
-        "queried_before_first_mutation": observed,
-        "reveal_tool": required_tool,
-        "record_id": record_id,
+        "queried_before_first_mutation": observed_event is not None,
+        "reveal_tool": manifest["reveal_tool"],
+        "record_id": manifest["record_id"],
+        "equivalent_reveal_path_count": len(reveal_paths),
+        "observed_tool": (
+            observed_event["tool"] if observed_event is not None else None
+        ),
+        "observed_record_id": (
+            observed_event.get("arguments", {}).get("record_id")
+            if observed_event is not None
+            else None
+        ),
     }
+
+
+def _matches_changed_fact(
+    data: dict[str, Any], match: dict[str, Any] | None
+) -> bool:
+    if not match:
+        return False
+    term = next(
+        (
+            item
+            for item in data.get("linked_terms", [])
+            if item.get("term_id") == match.get("term_id")
+        ),
+        None,
+    )
+    if term is None:
+        return False
+    field = str(match.get("field", ""))
+    if field == "charge_minor":
+        observed = _money_minor(term.get("one_time_charge"))
+    elif field == "credit_minor":
+        observed = _money_minor(term.get("credit"))
+    elif field == "monthly_minor":
+        observed = _money_minor(term.get("monthly_charge"))
+    elif field.startswith("trigger/"):
+        observed = term.get("trigger", {}).get(field.split("/", 1)[1])
+        if isinstance(observed, dict) and "amount" in observed:
+            observed = _money_minor(observed)
+    else:
+        return False
+    return observed == match.get("expected")
+
+
+def _money_minor(value: Any) -> int | None:
+    if not isinstance(value, dict) or value.get("currency") != "USD":
+        return None
+    amount = str(value.get("amount", ""))
+    sign = -1 if amount.startswith("-") else 1
+    amount = amount.lstrip("-")
+    if "." not in amount:
+        return None
+    dollars, cents = amount.split(".", 1)
+    if len(cents) != 2 or not dollars.isdigit() or not cents.isdigit():
+        return None
+    return sign * (int(dollars) * 100 + int(cents))
 
 
 __all__ = ["evaluate_v3_actions", "evaluate_v3_environment"]

@@ -95,7 +95,11 @@ Every hard-constraint atom must reference at least one evidence record:
 The builder and release validator reject constraints that use constants
 outside this evidence graph. This applies equally to quantity, date,
 location, compatibility, budget, and deadline constraints. The v3 release
-validates 624 of 624 evidence references.
+validates 624 of 624 evidence references. It additionally replays 1,320 of
+1,320 scored state atoms, including candidate coverage and price, boundary
+records and refunds, complete economic terms, and structured relationship
+rules. A tool-description match is not accepted as evidence for a scored
+rule. See [Scorer–Agent Observability Audit](OBSERVABILITY_AUDIT.md).
 
 ## Construction
 

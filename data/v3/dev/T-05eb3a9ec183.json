@@ -442,7 +442,7 @@
     "currency": "USD",
     "internal_money_unit": "minor"
   },
-  "instruction": "Continue the partially completed Chicago standards workshop. The earlier orders and reservations shown below are already active, but the attempted meeting workspace (workspace) has just failed. The final state must contain exactly one hotel stay, exactly one ground transfer, exactly one event admission, exactly one arrival flight, exactly one meeting workspace. Every option covering meeting workspace must be in Chicago and be ready by day 4. Do not retain combinations that supplier records mark as incompatible. Complete the remaining goal with the lowest actual net monetary cost from this failure point.",
+  "instruction": "Continue the partially completed Chicago standards workshop. The earlier orders and reservations shown below are already active, but the attempted meeting workspace (workspace) has just failed. The final state must contain exactly one hotel stay, exactly one ground transfer, exactly one event admission, exactly one arrival flight, exactly one meeting workspace. Every option covering meeting workspace must be in Chicago and be ready by day 4. Honor every supplier-recorded conflict and required companion; pairwise coexistence alone does not waive a required companion. Complete the remaining goal with the lowest actual net monetary cost from this failure point.",
   "initial_snapshot": {
     "state_bench": {
       "flights": [
