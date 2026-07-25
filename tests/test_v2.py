@@ -184,6 +184,113 @@ class V2PilotTests(unittest.TestCase):
             ]
         )
 
+    def test_scope_distance_counts_wrong_added_option(self) -> None:
+        selected = None
+        for task in self.tasks:
+            oracle = solve_task_v2(task)
+            accepted = oracle.accepted_scope_keys
+            accepted_boundaries = {
+                json.dumps(
+                    item["scope_signature"]["boundary"], sort_keys=True
+                )
+                for item in oracle.frontier
+            }
+            for terminal in oracle.feasible_terminals:
+                signature = terminal["scope_signature"]
+                if (
+                    terminal["scope_key"] not in accepted
+                    and json.dumps(signature["boundary"], sort_keys=True)
+                    in accepted_boundaries
+                ):
+                    selected = (task, terminal)
+                    break
+            if selected is not None:
+                break
+        self.assertIsNotNone(selected)
+        task, terminal = selected
+        environment = DomainRecoveryEnvironmentV2(task)
+        interface = DOMAIN_INTERFACES[task["domain"]]
+        for entity_id in terminal["changed_boundary_entities"]:
+            self.assertTrue(
+                environment.execute_tool(
+                    interface["cancel"],
+                    {interface["entity"]: entity_id, "confirm": True},
+                ).ok
+            )
+        for option_id in terminal["scope_signature"]["added_option_ids"]:
+            self.assertTrue(
+                environment.execute_tool(
+                    interface["book"], {interface["option"]: option_id}
+                ).ok
+            )
+        score = evaluate_v2_environment(task, environment)
+        self.assertTrue(score["goal_pass"])
+        self.assertFalse(score["scope_non_dominated_pass"])
+        self.assertGreater(score["scope_distance"], 0.0)
+
+    def test_changed_fact_acquisition_normalizes_search_alias(self) -> None:
+        task = next(
+            item
+            for item in self.tasks
+            if item["domain"] == "saas"
+            and self.gold[item["task_id"]]["metadata"][
+                "key_fact_manifest"
+            ]["reveal_tool"]
+            == DOMAIN_INTERFACES["saas"]["search"]
+        )
+        metadata = self.gold[task["task_id"]]["metadata"]
+        environment = DomainRecoveryEnvironmentV2(task)
+        manifest = metadata["key_fact_manifest"]
+        interface = DOMAIN_INTERFACES["saas"]
+        self.assertTrue(
+            environment.execute_tool(
+                interface["search"],
+                {interface["category"]: manifest["record_id"]},
+            ).ok
+        )
+        score = evaluate_v2_environment(task, environment)
+        self.assertTrue(
+            score["changed_fact_acquisition"][
+                "queried_before_first_mutation"
+            ]
+        )
+
+    def test_changed_fact_acquisition_accepts_equivalent_option_id(self) -> None:
+        selected = None
+        for task in self.tasks:
+            metadata = self.gold[task["task_id"]]["metadata"]
+            manifest = metadata["key_fact_manifest"]
+            interface = DOMAIN_INTERFACES[task["domain"]]
+            if manifest["reveal_tool"] != interface["policy"]:
+                continue
+            commitment = next(
+                (
+                    item
+                    for item in task["boundary_commitments"]
+                    if item["entity_id"] == manifest["record_id"]
+                ),
+                None,
+            )
+            if commitment is not None:
+                selected = (task, commitment["option_id"])
+                break
+        self.assertIsNotNone(selected)
+        task, equivalent_option_id = selected
+        interface = DOMAIN_INTERFACES[task["domain"]]
+        environment = DomainRecoveryEnvironmentV2(task)
+        self.assertTrue(
+            environment.execute_tool(
+                interface["policy"],
+                {"record_id": equivalent_option_id},
+            ).ok
+        )
+        score = evaluate_v2_environment(task, environment)
+        self.assertTrue(
+            score["changed_fact_acquisition"][
+                "queried_before_first_mutation"
+            ]
+        )
+
     def test_rasch_calibration_orders_easy_and_hard_items(self) -> None:
         records = []
         for model in ["small", "large"]:

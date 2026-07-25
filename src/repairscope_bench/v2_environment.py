@@ -209,6 +209,20 @@ class DomainRecoveryEnvironmentV2:
     def state_key(self) -> str:
         return self._runtime.state_key()
 
+    def public_tool_name(self, event_tool_name: str) -> str:
+        """Map a normalized runtime event name back to the model-visible API."""
+        internal = self._runtime.names
+        mapping = {
+            internal["list"]: self.interface["list"],
+            internal["details"]: self.interface["details"],
+            internal["search"]: self.interface["search"],
+            internal["preview"]: self.interface["preview"],
+            internal["compatibility"]: self.interface["compatibility"],
+            internal["cancel"]: self.interface["cancel"],
+            internal["book"]: self.interface["book"],
+        }
+        return mapping.get(event_tool_name, event_tool_name)
+
     def execute_tool(self, name: str, args: dict[str, Any]) -> ActionResult:
         interface = self.interface
         internal = self._runtime.names
