@@ -4,8 +4,8 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "repairscope-bench"
-version = "2.0.0a1"
-description = "A controlled benchmark for post-commit agent recovery from standardized failure states."
+version = "3.0.0"
+description = "A native-domain benchmark for cost-aware repair-scope selection after persistent agent commitments."
 readme = "README.md"
 requires-python = ">=3.12"
 license = { text = "MIT" }

@@ -63,9 +63,16 @@ class V2PilotTests(unittest.TestCase):
         cls.gold = json.loads(
             (ROOT / "data" / "gold" / "v2.json").read_text(encoding="utf-8")
         )
+        active_ids = {task["task_id"] for task in cls.tasks}
+        cls.gold = {
+            task_id: record
+            for task_id, record in cls.gold.items()
+            if task_id in active_ids
+        }
 
     def test_strict_pilot_shape_and_coverage(self) -> None:
-        self.assertEqual(len(self.tasks), 24)
+        # Four evidence-incomplete quantity tasks were invalidated before v3.
+        self.assertEqual(len(self.tasks), 20)
         self.assertEqual(
             {task["domain"] for task in self.tasks},
             {"travel", "after_sales", "saas", "event_logistics"},
@@ -73,13 +80,13 @@ class V2PilotTests(unittest.TestCase):
         pairs = {
             record["metadata"]["pair_id"] for record in self.gold.values()
         }
-        self.assertEqual(len(pairs), 12)
+        self.assertEqual(len(pairs), 10)
         mechanisms = {
             mechanism
             for record in self.gold.values()
             for mechanism in record["metadata"]["reasoning_signature"]
         }
-        self.assertEqual(len(mechanisms), 10)
+        self.assertEqual(len(mechanisms), 9)
         self.assertTrue(coverage_matrix(self.gold))
 
     def test_dual_oracles_agree_on_every_frontier(self) -> None:
@@ -324,10 +331,12 @@ class V2PilotTests(unittest.TestCase):
         )
         self.assertEqual(result["calibration_version"], "unit-test")
 
-    def test_repository_validator_accepts_pilot(self) -> None:
+    def test_repository_validator_rejects_incomplete_legacy_pilot(self) -> None:
         result = validate_dataset(ROOT / "data" / "v2" / "pilot")
-        self.assertTrue(result["valid"], result["errors"])
-        self.assertLess(result["baselines"]["sticker_price"]["scope_rate"], 0.60)
+        self.assertFalse(result["valid"])
+        self.assertIn(
+            "v2 pilot requires 24 tasks in 12 pairs", result["errors"]
+        )
 
     def test_evaluation_reads_frozen_gold_without_searching(self) -> None:
         task = self.tasks[0]

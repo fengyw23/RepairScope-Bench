@@ -7,6 +7,8 @@ from .oracle import solve_task
 
 
 def make_actions(task: dict[str, Any], strategy: str) -> list[dict[str, Any]]:
+    if task.get("schema_version") == "3.0":
+        return _make_v3_calls(task, strategy)
     if task.get("schema_version") == "2.0":
         return _make_v2_calls(task, strategy)
     if task.get("schema_version") in {"1.0", "1.1"}:
@@ -49,6 +51,79 @@ def make_actions(task: dict[str, Any], strategy: str) -> list[dict[str, Any]]:
             ]
         return oracle.optimal_plans[0] + _completion_actions(task)
     raise ValueError(f"Unknown baseline strategy: {strategy}")
+
+
+def _make_v3_calls(
+    task: dict[str, Any], strategy: str
+) -> list[dict[str, Any]]:
+    from .v3_oracle import solve_task_v3
+
+    oracle = solve_task_v3(task)
+    if strategy == "no_repair":
+        return []
+    if not oracle.feasible_terminals:
+        return []
+    if strategy in {"oracle", "cost_oracle"}:
+        return deepcopy(oracle.gold["tool_calls"]) if oracle.gold else []
+    candidates = deepcopy(oracle.feasible_terminals)
+    if strategy in {"local_repair", "min_changes"}:
+        selected = min(
+            candidates,
+            key=lambda item: (
+                item["minimum_mutations"],
+                len(item["changed_boundary_entities"]),
+                item["incremental_cost_minor"],
+            ),
+        )
+    elif strategy == "dependency_repair":
+        selected = min(
+            candidates,
+            key=lambda item: (
+                abs(len(item["changed_boundary_entities"]) - 1),
+                item["minimum_mutations"],
+                item["incremental_cost_minor"],
+            ),
+        )
+    elif strategy == "full_rollback":
+        selected = max(
+            candidates,
+            key=lambda item: (
+                len(item["changed_boundary_entities"]),
+                item["minimum_mutations"],
+            ),
+        )
+    elif strategy == "sticker_price":
+        metadata = task["option_metadata"]
+        selected = min(
+            candidates,
+            key=lambda item: (
+                sum(
+                    int(metadata[option_id]["upfront_minor"])
+                    for option_id in item["scope_signature"][
+                        "added_option_ids"
+                    ]
+                ),
+                item["minimum_mutations"],
+            ),
+        )
+    elif strategy == "max_refund":
+        boundary = {
+            item["entity_id"]: item
+            for item in task["boundary_commitments"]
+        }
+        selected = max(
+            candidates,
+            key=lambda item: (
+                sum(
+                    int(boundary[entity_id]["refund_minor"])
+                    for entity_id in item["changed_boundary_entities"]
+                ),
+                -item["minimum_mutations"],
+            ),
+        )
+    else:
+        raise ValueError(f"Unknown v3 baseline strategy: {strategy}")
+    return deepcopy(selected["tool_calls"])
 
 
 def _make_v2_calls(

@@ -1,0 +1,52 @@
+{
+  "sunk_vs_incremental": {
+    "name": "Sunk cost versus incremental recovery cost",
+    "reasoning": "Ignore payments that cannot be changed now and compare only post-failure cash events.",
+    "changed_fact": "supplier refund credit"
+  },
+  "multi_hop_propagation": {
+    "name": "Multi-hop economic propagation",
+    "reasoning": "Changing the anchor also forces a support replacement and can trigger a downstream migration charge.",
+    "changed_fact": "downstream migration charge"
+  },
+  "shared_commitment": {
+    "name": "Shared commitment protection",
+    "reasoning": "The anchor satisfies two live goals, so replacing it needs a continuity component as well as the failed component.",
+    "changed_fact": "continuity settlement charge"
+  },
+  "nonlinear_threshold": {
+    "name": "Non-linear threshold",
+    "reasoning": "Changing a commitment can push retained paid value below a discontinuous benefit threshold.",
+    "changed_fact": "retained-value threshold"
+  },
+  "conditional_contract": {
+    "name": "Conditional contract logic",
+    "reasoning": "The same linked contract applies to any changed item in one variant and only when all linked items change in the other.",
+    "changed_fact": "Boolean trigger condition"
+  },
+  "partial_quantity": {
+    "name": "Evidence-backed partial quantity repair",
+    "reasoning": "An existing quantity remains useful; the agent must compare topping up the shortfall with replacing the whole quantity.",
+    "changed_fact": "full-replacement supplier credit"
+  },
+  "bridge_vs_replacement": {
+    "name": "Bridge repair versus upstream replacement",
+    "reasoning": "A low-price component requires a separate compatibility bridge whose certification cost can reverse the decision.",
+    "changed_fact": "bridge certification charge"
+  },
+  "joint_bundle_selection": {
+    "name": "Joint combination selection",
+    "reasoning": "Two required components must be compared as a compatible pair rather than by individual sticker price.",
+    "changed_fact": "joint supplier coordination charge"
+  },
+  "explicit_horizon": {
+    "name": "Explicit-horizon recurring cost",
+    "reasoning": "A recurring charge must be aggregated over the user-stated 12-month horizon.",
+    "changed_fact": "monthly service charge"
+  },
+  "selective_dependency_cut": {
+    "name": "Selective dependency cut",
+    "reasoning": "The failed component requires changing one affected support item while preserving independent commitments.",
+    "changed_fact": "support migration charge"
+  }
+}

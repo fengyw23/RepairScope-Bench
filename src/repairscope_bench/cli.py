@@ -20,7 +20,7 @@ def main(argv: list[str] | None = None) -> int:
     subparsers = parser.add_subparsers(dest="command", required=True)
 
     validate_parser = subparsers.add_parser("validate")
-    validate_parser.add_argument("data", nargs="?", default="data/v11")
+    validate_parser.add_argument("data", nargs="?", default="data/v3")
     validate_parser.add_argument("--gold")
 
     oracle_parser = subparsers.add_parser("oracle")
@@ -34,14 +34,14 @@ def main(argv: list[str] | None = None) -> int:
     evaluate_parser.add_argument("actions")
 
     baselines_parser = subparsers.add_parser("run-baselines")
-    baselines_parser.add_argument("data", nargs="?", default="data/v11")
+    baselines_parser.add_argument("data", nargs="?", default="data/v3")
 
     calibration_parser = subparsers.add_parser("calibrate-difficulty")
     calibration_parser.add_argument("runs")
     calibration_parser.add_argument("--version", required=True)
     calibration_parser.add_argument(
         "--response-field",
-        default="scope_non_dominated_pass",
+        default="unique_scope_pass",
     )
     calibration_parser.add_argument("--output")
 
@@ -52,7 +52,7 @@ def main(argv: list[str] | None = None) -> int:
     model_parser.add_argument("--overwrite", action="store_true")
 
     suite_parser = subparsers.add_parser("run-suite")
-    suite_parser.add_argument("data", nargs="?", default="data/v11")
+    suite_parser.add_argument("data", nargs="?", default="data/v3")
     _add_provider_arguments(suite_parser)
     suite_parser.add_argument("--output-dir", required=True)
     suite_parser.add_argument(
@@ -73,7 +73,13 @@ def main(argv: list[str] | None = None) -> int:
         return _print_result(solve_task(load_task(args.task)).as_dict())
     if args.command == "inspect":
         task = load_task(args.task)
-        if task["schema_version"] in {"0.6", "1.0", "1.1", "2.0"}:
+        if task["schema_version"] in {
+            "0.6",
+            "1.0",
+            "1.1",
+            "2.0",
+            "3.0",
+        }:
             return _print_result(
                 {
                     "task_id": task["task_id"],
@@ -134,6 +140,18 @@ def main(argv: list[str] | None = None) -> int:
                 "dependency_repair",
                 "full_rollback",
                 "sticker_price",
+                "max_refund",
+                "min_changes",
+                "cost_oracle",
+            ]
+            if tasks and tasks[0]["schema_version"] == "3.0"
+            else
+            [
+                "no_repair",
+                "local_repair",
+                "dependency_repair",
+                "full_rollback",
+                "sticker_price",
                 "refund_only",
                 "min_changes",
                 "loss_only",
@@ -165,6 +183,38 @@ def main(argv: list[str] | None = None) -> int:
             scores = [
                 evaluate_actions(task, make_actions(task, strategy)) for task in tasks
             ]
+            if tasks and tasks[0]["schema_version"] == "3.0":
+                results[strategy] = {
+                    "goal_pass_rate": sum(
+                        score["goal_pass"] for score in scores
+                    )
+                    / len(scores),
+                    "unique_scope_pass_rate": sum(
+                        score["unique_scope_pass"] for score in scores
+                    )
+                    / len(scores),
+                    "clean_execution_rate": sum(
+                        score["clean_execution"] for score in scores
+                    )
+                    / len(scores),
+                    "mean_cost_regret_minor": (
+                        sum(
+                            score["cost_regret_minor"]
+                            for score in scores
+                            if score["cost_regret_minor"] is not None
+                        )
+                        / sum(
+                            score["cost_regret_minor"] is not None
+                            for score in scores
+                        )
+                        if any(
+                            score["cost_regret_minor"] is not None
+                            for score in scores
+                        )
+                        else None
+                    ),
+                }
+                continue
             results[strategy] = {
                 "success_rate": sum(score["success"] for score in scores)
                 / len(scores),

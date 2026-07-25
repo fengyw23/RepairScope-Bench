@@ -1,106 +1,113 @@
-# Research Story: Repair Scope After Commitments Exist
+# RepairScope-Bench v3.0 Research Story
 
-## Motivation
+## Problem
 
-A tool agent may already have booked a flight and hotel, purchased equipment,
-activated a licence, or contracted a vendor before a later action fails.
-Recovery is therefore not only “find another way to complete the missing
-step.” It also changes real commitments, refunds, fees, compatibility, and
-future payments.
+Tool-using agents do not merely produce text. They book, pay, cancel, return,
+and create persistent external commitments. When a later step fails, restoring
+technical consistency is not enough: some successful commitments still serve
+the user's goal, while changing them can trigger refunds, fees, contract
+effects, and replacement purchases.
 
-Consider a trip to a Shanghai conference. The flight, hotel, transfer, and
-conference admission are active; the restaurant booking fails. Replacing the
-restaurant may be enough. A different hotel-and-restaurant combination may
-be cheaper after refunds. But cancelling the flight usually destroys a
-commitment that still serves the central goal. The failed step identifies
-what needs attention; it does not determine how far recovery should roll
-back.
+Consider a conference trip. The flight, hotel, transfer, and admission are
+already confirmed when dinner booking fails. Booking another restaurant may
+be cheapest. If a refundable hotel package plus a different dinner and
+transfer costs less, a wider repair can instead be correct. Cancelling the
+arrival flight is usually harmful because it still serves the conference
+goal. The failure location does not determine the repair boundary.
 
-## Research question
+The same structure appears after a workstation purchase. A missing dock may
+be repaired locally, bridged with a certified adapter, or handled by replacing
+the computer and affected warranty or licence. The display may remain useful
+under every valid repair.
 
-> From a reachable post-failure state with persistent commitments, can an
-> agent investigate distributed facts, satisfy the remaining hard goals, and
-> avoid a repair scope that another feasible outcome objectively dominates?
+## Gap
 
-This is narrower and more testable than “value-aware recovery.” Objective
-dominance uses two auditable quantities—irreversible loss and net recovery
-outlay—and accepts every Pareto non-dominated result. It does not ask
-annotators to assign subjective utility weights.
+Existing benchmarks primarily test whether an agent:
 
-## Gap relative to adjacent benchmarks
+- reaches a valid final state;
+- notices a dynamic change and replans;
+- rolls back side effects safely;
+- edits an existing order according to an explicit user request.
 
-Existing work may test whether an agent can undo side effects, recover from a
-dynamic event, re-execute affected steps, or reach a prescribed database
-state. Those capabilities are necessary, but they do not isolate whether the
-agent chose the right set of already-successful commitments to keep, modify,
-or cancel.
+Those capabilities are necessary, but they do not isolate the decision studied
+here: among several valid post-failure repairs, which already executed
+commitments should be kept, changed, or cancelled after all observable
+incremental monetary consequences are combined?
 
-RepairScope-Bench fixes the failure boundary across models and makes the
-prior effects executable and persistent. Unlike text-only replanning, every
-decision changes state and a transaction ledger. Unlike a prescribed target
-state, all Pareto non-dominated terminal states are accepted.
+The contribution is not the general idea of partial rollback. Classical
+planning and workflow research already considered partial recovery. The gap
+is deterministic, tool-executable evaluation of repair-scope selection for
+modern language-model agents over persistent commitments.
 
-The novelty claim is benchmark formulation and deterministic measurement,
-not the invention of partial rollback.
+## Benchmark question
 
-## Why organize by reasoning structure
+> When real travel reservations or product orders are already active and a
+> later operation fails, can an agent infer and execute the unique
+> lowest-incremental-cost repair scope from observable records, policies,
+> contracts, inventory, and compatibility?
 
-Refunds, licences, discounts, and deposits are surface carriers. v1.1 instead
-organizes tasks by ten reusable reasoning structures:
+The benchmark fixes the failure boundary to control state while preserving
+real side effects: every prior commitment was created by a public write tool
+in the same native environment. v3.0 does not claim to evaluate the model's
+pre-failure planning.
 
-- separating sunk from recoverable value;
-- propagating economic effects through multiple records;
-- protecting commitments shared by several goals;
-- computing non-linear thresholds;
-- evaluating Boolean contract conditions;
-- selecting a partial quantity;
-- comparing a bridge repair with upstream replacement;
-- choosing a compatible bundle jointly;
-- aggregating recurring cost over an explicit horizon;
-- recognizing genuine multi-point Pareto trade-offs.
+## Design
 
-Every structure appears in every domain, and the same carrier appears under
-different structures. A single-fact counterfactual pair changes one hidden,
-queryable fact and changes the accepted scope. Pair success therefore tests
-whether the model adapts its reasoning, rather than repeating “always repair
-locally” or “always choose the cheapest listed option.”
+The dataset crosses ten reusable reasoning structures with two native domains.
+Economic mechanisms are carriers, not labels. A threshold may be a travel
+package minimum or a purchasing quantity discount; a bridge may be a transfer
+service or a certified adapter.
 
-## Intended empirical claim
+Each base scenario has two versions that differ in one tool-queryable fact.
+The unique optimal scope must flip. This paired design tests whether a model
+uses the decisive fact rather than applying a fixed “repair locally” or
+“rollback everything” rule.
 
-The central result should separate execution success from scope quality:
+The benchmark uses one scalar objective—post-boundary Incremental Recovery
+Cost—because every included consequence is a deterministic cash event.
+Subjective convenience, risk attitude, or unpriced preference is excluded
+from gold.
 
-```text
-Goal Pass is materially higher than Non-Dominated Repair Pass
-+ Counterfactual Pair Success is lower than per-task success
-= agents often complete the task but fail to reason reliably about
-  which prior commitments should survive.
-```
+## Contributions
 
-Error analysis can then attribute failures to missing investigation,
-multi-hop propagation, threshold or horizon arithmetic, combination search,
-scope choice, or wasteful execution.
+1. A formalization of recovery-scope selection over persistent commitments
+   with deterministic hard constraints and auditable incremental cost.
+2. A two-domain executable benchmark built on native STATE-Bench travel and
+   customer-support state rather than a shared generic slot ledger.
+3. Ten cross-domain reasoning structures, including multi-hop effects,
+   thresholds, Boolean contracts, partial quantities, bridges, combinations,
+   recurring cost, and selective dependency cutting.
+4. Forty single-fact counterfactual pairs whose unique gold scope changes.
+5. Evidence-complete hard goals: every evaluated atom has a reproducible
+   model-visible source.
+6. Separate measurement of final scope reasoning and execution waste without
+   an LLM judge.
 
-## Evidence required for a top-conference claim
+## Evidence sought
 
-The repository provides deterministic data and release gates, but a paper
-still needs:
+The main empirical claim should not be merely that models fail. Experiments
+should show:
 
-- multi-model, five-run experiments;
-- clustered confidence intervals over base scenarios;
-- paired counterfactual analysis;
-- independent human audit of goals, terms, and naturalness;
-- prompt paraphrase and entity/option-order perturbation tests;
-- execution controls showing that failures are not primarily API confusion;
-- preferably additional scenarios authored outside the generator team.
+- Goal Pass is substantially higher than Unique Scope Pass, demonstrating
+  that completion and repair quality differ;
+- fixed heuristics remain below 65%;
+- models often fail matched counterfactual pairs despite solving one variant;
+- errors decompose into missing investigation, economic reasoning, scope
+  selection, and tool execution;
+- providing the gold scope produces much higher execution success, isolating
+  reasoning from interface difficulty;
+- entity renaming, option permutation, and request paraphrases do not change
+  Oracle outcomes and do not dominate model results.
 
-## Claim boundary
+## Claim boundary and risks
 
-v1.1 evaluates recovery after a fixed failure boundary. It does not measure
-the quality of pre-failure planning, subjective preference elicitation,
-stochastic risk, or production-account safety.
+The current release has 80 tasks from ten generator families and two native
+domains. A top-conference paper still requires broad multi-model experiments,
+independent human review of scenario realism, prompt and identifier
+robustness, hidden-test discipline, and statistical analysis at the paired
+scenario level.
 
-The four domains expose different operations, attributes, and vocabulary but
-share a deterministic commitment-and-ledger core. This improves controlled
-comparison and exact Oracle coverage, while limiting claims about external
-environment diversity. The older v0.6 release retains direct STATE-Bench
-runtime integration as a complementary engineering reference.
+The benchmark should not claim to cover all agent recovery, subjective value,
+uncertain future outcomes, or end-to-end planning. Its narrow claim is
+stronger and testable: agents can complete a task yet choose an objectively
+more expensive repair scope over already executed commitments.

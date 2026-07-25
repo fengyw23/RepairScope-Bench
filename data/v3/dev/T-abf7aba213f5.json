@@ -1,0 +1,955 @@
+{
+  "schema_version": "3.0",
+  "task_id": "T-abf7aba213f5",
+  "domain": "travel",
+  "environment_type": "state_bench.travel+native_recovery_v3",
+  "split": "dev",
+  "now": "2026-08-01T10:00:00",
+  "actor_id": "traveler_001",
+  "max_turns": 15,
+  "source": {
+    "benchmark": "STATE-Bench",
+    "repository": "https://github.com/microsoft/STATE-Bench",
+    "commit": "4efcbf2d4fe60df04878859b692d9391f3d5b33a",
+    "reuse": "Native domain schemas, persistent state, and write semantics."
+  },
+  "price_profile": {
+    "profile_id": "travel-usd-2026q3",
+    "source_date": "2026-07-25",
+    "sources": [
+      "https://www.gsa.gov/travel/plan-a-trip/per-diem-rates/per-diem-files"
+    ],
+    "ranges_minor": {
+      "flight": [
+        18000,
+        65000
+      ],
+      "hotel_total": [
+        30000,
+        150000
+      ],
+      "ground_service": [
+        3500,
+        45000
+      ],
+      "event_admission": [
+        30000,
+        120000
+      ]
+    }
+  },
+  "option_metadata": {
+    "TR-7e4e04d1f28b": {
+      "name": "Harbor Conference Hotel",
+      "slot": "hotel",
+      "native_kind": "hotel",
+      "available": true,
+      "candidate": false,
+      "upfront_minor": 60000,
+      "monthly_minor": 0,
+      "horizon_months": 0,
+      "total_charge_minor": 60000,
+      "post_purchase_cancel_fee_minor": 0,
+      "provides": {
+        "hotel_stay": 1
+      },
+      "attributes": {
+        "location": "New York",
+        "ready_day": 2
+      }
+    },
+    "TR-774d6e618ac1": {
+      "name": "MetroLink Ground Transfer",
+      "slot": "transfer",
+      "native_kind": "local_service",
+      "available": true,
+      "candidate": false,
+      "upfront_minor": 12000,
+      "monthly_minor": 0,
+      "horizon_months": 0,
+      "total_charge_minor": 12000,
+      "post_purchase_cancel_fee_minor": 0,
+      "provides": {
+        "ground_transfer": 1
+      },
+      "attributes": {
+        "location": "New York",
+        "ready_day": 2
+      }
+    },
+    "TR-b9292e698146": {
+      "name": "Professional Event Admission",
+      "slot": "admission",
+      "native_kind": "local_service",
+      "available": true,
+      "candidate": false,
+      "upfront_minor": 45000,
+      "monthly_minor": 0,
+      "horizon_months": 0,
+      "total_charge_minor": 45000,
+      "post_purchase_cancel_fee_minor": 0,
+      "provides": {
+        "event_admission": 1
+      },
+      "attributes": {
+        "location": "New York",
+        "ready_day": 2
+      }
+    },
+    "TR-78ffd0835a52": {
+      "name": "Confirmed Arrival Flight",
+      "slot": "flight",
+      "native_kind": "flight",
+      "available": true,
+      "candidate": false,
+      "upfront_minor": 42000,
+      "monthly_minor": 0,
+      "horizon_months": 0,
+      "total_charge_minor": 42000,
+      "post_purchase_cancel_fee_minor": 0,
+      "provides": {
+        "arrival_flight": 1
+      },
+      "attributes": {
+        "location": "New York",
+        "ready_day": 2
+      }
+    },
+    "TR-e12be0f34ac4": {
+      "name": "Original secure meeting access",
+      "slot": "workspace",
+      "native_kind": "local_service",
+      "available": false,
+      "candidate": false,
+      "upfront_minor": 18000,
+      "monthly_minor": 0,
+      "horizon_months": 0,
+      "total_charge_minor": 18000,
+      "post_purchase_cancel_fee_minor": 0,
+      "provides": {
+        "workspace_capacity": 1
+      },
+      "attributes": {
+        "location": "New York",
+        "ready_day": 2
+      },
+      "failure_message": "No inventory remains for the requested secure meeting access."
+    },
+    "TR-884239ac837b": {
+      "name": "Independent secure meeting access",
+      "slot": "workspace",
+      "native_kind": "local_service",
+      "available": true,
+      "candidate": true,
+      "upfront_minor": 8000,
+      "monthly_minor": 0,
+      "horizon_months": 0,
+      "total_charge_minor": 8000,
+      "post_purchase_cancel_fee_minor": 800,
+      "provides": {
+        "workspace_capacity": 1
+      },
+      "attributes": {
+        "location": "New York",
+        "ready_day": 2
+      }
+    },
+    "TR-dd59411ac18d": {
+      "name": "Premium independent secure meeting access",
+      "slot": "workspace",
+      "native_kind": "local_service",
+      "available": true,
+      "candidate": true,
+      "upfront_minor": 39000,
+      "monthly_minor": 0,
+      "horizon_months": 0,
+      "total_charge_minor": 39000,
+      "post_purchase_cancel_fee_minor": 1000,
+      "provides": {
+        "workspace_capacity": 1
+      },
+      "attributes": {
+        "location": "New York",
+        "ready_day": 2
+      }
+    },
+    "TR-b0183c6a3d3f": {
+      "name": "Integrated secure meeting access lodging package",
+      "slot": "workspace",
+      "native_kind": "hotel",
+      "available": true,
+      "candidate": true,
+      "upfront_minor": 85000,
+      "monthly_minor": 0,
+      "horizon_months": 0,
+      "total_charge_minor": 85000,
+      "post_purchase_cancel_fee_minor": 1000,
+      "provides": {
+        "hotel_stay": 1,
+        "workspace_capacity": 1
+      },
+      "attributes": {
+        "location": "New York",
+        "ready_day": 2
+      }
+    },
+    "TR-cd48b724f72d": {
+      "name": "Comprehensive secure meeting access travel package",
+      "slot": "workspace",
+      "native_kind": "hotel",
+      "available": true,
+      "candidate": true,
+      "upfront_minor": 128000,
+      "monthly_minor": 0,
+      "horizon_months": 0,
+      "total_charge_minor": 128000,
+      "post_purchase_cancel_fee_minor": 1000,
+      "provides": {
+        "hotel_stay": 1,
+        "ground_transfer": 1,
+        "workspace_capacity": 1
+      },
+      "attributes": {
+        "location": "New York",
+        "ready_day": 2
+      }
+    },
+    "TR-176cfdcda066": {
+      "name": "Certified access bridge",
+      "slot": "workspace",
+      "native_kind": "local_service",
+      "available": true,
+      "candidate": true,
+      "upfront_minor": 10000,
+      "monthly_minor": 0,
+      "horizon_months": 0,
+      "total_charge_minor": 10000,
+      "post_purchase_cancel_fee_minor": 1000,
+      "provides": {},
+      "attributes": {
+        "location": "New York",
+        "ready_day": 2
+      }
+    },
+    "TR-395dafa29660": {
+      "name": "Unavailable-location secure meeting access",
+      "slot": "workspace",
+      "native_kind": "local_service",
+      "available": true,
+      "candidate": true,
+      "upfront_minor": 4000,
+      "monthly_minor": 0,
+      "horizon_months": 0,
+      "total_charge_minor": 4000,
+      "post_purchase_cancel_fee_minor": 400,
+      "provides": {
+        "workspace_capacity": 1
+      },
+      "attributes": {
+        "location": "Different City",
+        "ready_day": 7
+      }
+    }
+  },
+  "boundary_commitments": [
+    {
+      "entity_id": "BK-0001",
+      "option_id": "TR-78ffd0835a52",
+      "slot": "flight",
+      "paid_minor": 42000,
+      "refund_minor": 42000,
+      "quantity": 1,
+      "provides": {
+        "arrival_flight": 1
+      },
+      "attributes": {
+        "location": "New York",
+        "ready_day": 2
+      }
+    },
+    {
+      "entity_id": "HR-0001",
+      "option_id": "TR-7e4e04d1f28b",
+      "slot": "hotel",
+      "paid_minor": 60000,
+      "refund_minor": 60000,
+      "quantity": 1,
+      "provides": {
+        "hotel_stay": 1
+      },
+      "attributes": {
+        "location": "New York",
+        "ready_day": 2
+      }
+    },
+    {
+      "entity_id": "SV-0001",
+      "option_id": "TR-774d6e618ac1",
+      "slot": "transfer",
+      "paid_minor": 12000,
+      "refund_minor": 12000,
+      "quantity": 1,
+      "provides": {
+        "ground_transfer": 1
+      },
+      "attributes": {
+        "location": "New York",
+        "ready_day": 2
+      }
+    },
+    {
+      "entity_id": "SV-0002",
+      "option_id": "TR-b9292e698146",
+      "slot": "admission",
+      "paid_minor": 45000,
+      "refund_minor": 45000,
+      "quantity": 1,
+      "provides": {
+        "event_admission": 1
+      },
+      "attributes": {
+        "location": "New York",
+        "ready_day": 2
+      }
+    }
+  ],
+  "compatibility_rules": [
+    {
+      "constraint_id": "CR-d902188137a3",
+      "type": "requires_any",
+      "if_option_id": "TR-884239ac837b",
+      "any_option_ids": [
+        "TR-176cfdcda066"
+      ],
+      "evidence_refs": [
+        "E-CR-d902188137a3"
+      ]
+    }
+  ],
+  "economic_terms": [
+    {
+      "term_id": "TERM-bf3bfef09f1f",
+      "description": "A low-price component requires a separate compatibility bridge whose certification cost can reverse the decision.",
+      "linked_entity_ids": [
+        "HR-0001"
+      ],
+      "linked_option_ids": [
+        "TR-884239ac837b",
+        "TR-176cfdcda066"
+      ],
+      "trigger": {
+        "type": "active_all",
+        "option_ids": [
+          "TR-884239ac837b",
+          "TR-176cfdcda066"
+        ]
+      },
+      "charge_minor": 20000,
+      "credit_minor": 0
+    }
+  ],
+  "hard_goals": {
+    "capabilities": [
+      {
+        "constraint_id": "HC-415276abdc56",
+        "capability": "hotel_stay",
+        "label": "hotel stay",
+        "min": 1,
+        "max": 1,
+        "evidence_refs": [
+          "E-HC-415276abdc56"
+        ]
+      },
+      {
+        "constraint_id": "HC-90692e7dfbfe",
+        "capability": "ground_transfer",
+        "label": "ground transfer",
+        "min": 1,
+        "max": 1,
+        "evidence_refs": [
+          "E-HC-90692e7dfbfe"
+        ]
+      },
+      {
+        "constraint_id": "HC-108881a0949a",
+        "capability": "event_admission",
+        "label": "event admission",
+        "min": 1,
+        "max": 1,
+        "evidence_refs": [
+          "E-HC-108881a0949a"
+        ]
+      },
+      {
+        "constraint_id": "HC-9b3fe9da3819",
+        "capability": "arrival_flight",
+        "label": "arrival flight",
+        "min": 1,
+        "max": 1,
+        "evidence_refs": [
+          "E-HC-9b3fe9da3819"
+        ]
+      },
+      {
+        "constraint_id": "HC-86ebbf08468e",
+        "capability": "workspace_capacity",
+        "label": "secure meeting access",
+        "min": 1,
+        "max": 1,
+        "evidence_refs": [
+          "E-HC-86ebbf08468e"
+        ]
+      }
+    ],
+    "attributes": [
+      {
+        "constraint_id": "HA-c3bc60e07903",
+        "capability": "workspace_capacity",
+        "attribute": "location",
+        "op": "eq",
+        "value": "New York",
+        "evidence_refs": [
+          "E-HA-c3bc60e07903"
+        ]
+      },
+      {
+        "constraint_id": "HA-bb0c00126124",
+        "capability": "workspace_capacity",
+        "attribute": "ready_day",
+        "op": "le",
+        "value": 4,
+        "evidence_refs": [
+          "E-HA-bb0c00126124"
+        ]
+      }
+    ]
+  },
+  "construction": {
+    "prefix_generated_by_public_tools": true,
+    "failure_generated_by_public_tool": true,
+    "necessary_action_order_invariant": true,
+    "currency": "USD",
+    "internal_money_unit": "minor"
+  },
+  "instruction": "Continue the partially completed New York investor forum. The earlier orders and reservations shown below are already active, but the attempted secure meeting access (workspace) has just failed. The final state must contain exactly one hotel stay, exactly one ground transfer, exactly one event admission, exactly one arrival flight, exactly one secure meeting access. Every option covering secure meeting access must be in New York and be ready by day 4. Do not retain combinations that supplier records mark as incompatible. Complete the remaining goal with the lowest actual net monetary cost from this failure point.",
+  "initial_snapshot": {
+    "state_bench": {
+      "flights": [
+        {
+          "flight_id": "TR-78ffd0835a52",
+          "airline_code": "UA",
+          "origin": "ORD",
+          "destination": "SEA",
+          "departure_time": "2026-09-14T08:00:00",
+          "arrival_time": "2026-09-14T10:30:00",
+          "duration_minutes": 150,
+          "stops": 0,
+          "cabin_prices": {
+            "economy": 420
+          },
+          "status": "scheduled",
+          "delay_minutes": 0,
+          "route_type": "domestic"
+        }
+      ],
+      "bookings": [],
+      "users": [
+        {
+          "user_id": "traveler_001",
+          "name": "Repair Scope Traveler",
+          "email": "traveler@example.com",
+          "loyalty_tier": "basic",
+          "loyalty_points": 0,
+          "budget": 10000,
+          "preferences": {
+            "meal_preference": "standard",
+            "seat_type": "aisle",
+            "add_wifi": false,
+            "add_extra_legroom": false,
+            "add_insurance": false
+          }
+        }
+      ],
+      "hotel_inventory": [
+        {
+          "hotel_id": "TR-7e4e04d1f28b",
+          "hotel_name": "Harbor Conference Hotel",
+          "city": "New York",
+          "check_in": "2026-09-14",
+          "check_out": "2026-09-16",
+          "room_type": "standard",
+          "nightly_rate": 300,
+          "total_price": 600
+        },
+        {
+          "hotel_id": "TR-b0183c6a3d3f",
+          "hotel_name": "Integrated secure meeting access lodging package",
+          "city": "New York",
+          "check_in": "2026-09-14",
+          "check_out": "2026-09-16",
+          "room_type": "standard",
+          "nightly_rate": 425,
+          "total_price": 850
+        },
+        {
+          "hotel_id": "TR-cd48b724f72d",
+          "hotel_name": "Comprehensive secure meeting access travel package",
+          "city": "New York",
+          "check_in": "2026-09-14",
+          "check_out": "2026-09-16",
+          "room_type": "standard",
+          "nightly_rate": 640,
+          "total_price": 1280
+        }
+      ],
+      "hotels": [],
+      "car_inventory": [],
+      "car_rentals": []
+    },
+    "extensions": {
+      "services": [],
+      "service_inventory": [
+        {
+          "option_id": "TR-774d6e618ac1",
+          "slot": "transfer",
+          "price": 120,
+          "available": true,
+          "attributes": {
+            "location": "New York",
+            "ready_day": 2
+          }
+        },
+        {
+          "option_id": "TR-b9292e698146",
+          "slot": "admission",
+          "price": 450,
+          "available": true,
+          "attributes": {
+            "location": "New York",
+            "ready_day": 2
+          }
+        },
+        {
+          "option_id": "TR-e12be0f34ac4",
+          "slot": "workspace",
+          "price": 180,
+          "available": false,
+          "attributes": {
+            "location": "New York",
+            "ready_day": 2
+          },
+          "failure_message": "No inventory remains for the requested secure meeting access."
+        },
+        {
+          "option_id": "TR-884239ac837b",
+          "slot": "workspace",
+          "price": 80,
+          "available": true,
+          "attributes": {
+            "location": "New York",
+            "ready_day": 2
+          }
+        },
+        {
+          "option_id": "TR-dd59411ac18d",
+          "slot": "workspace",
+          "price": 390,
+          "available": true,
+          "attributes": {
+            "location": "New York",
+            "ready_day": 2
+          }
+        },
+        {
+          "option_id": "TR-176cfdcda066",
+          "slot": "workspace",
+          "price": 100,
+          "available": true,
+          "attributes": {
+            "location": "New York",
+            "ready_day": 2
+          }
+        },
+        {
+          "option_id": "TR-395dafa29660",
+          "slot": "workspace",
+          "price": 40,
+          "available": true,
+          "attributes": {
+            "location": "Different City",
+            "ready_day": 7
+          }
+        }
+      ]
+    }
+  },
+  "initial_snapshot_sha256": "d853193ef7040340e9bb2c64b3d61aa0a50a626fd3cf6ce6e4527218351610f1",
+  "failure_snapshot": {
+    "state_bench": {
+      "flights": [
+        {
+          "flight_id": "TR-78ffd0835a52",
+          "airline_code": "UA",
+          "origin": "ORD",
+          "destination": "SEA",
+          "departure_time": "2026-09-14T08:00:00",
+          "arrival_time": "2026-09-14T10:30:00",
+          "duration_minutes": 150,
+          "stops": 0,
+          "cabin_prices": {
+            "economy": 420
+          },
+          "status": "scheduled",
+          "delay_minutes": 0,
+          "route_type": "domestic"
+        }
+      ],
+      "bookings": [
+        {
+          "booking_id": "BK-0001",
+          "user_id": "traveler_001",
+          "flight_id": "TR-78ffd0835a52",
+          "status": "confirmed",
+          "cabin_class": "economy",
+          "seat_type": "aisle",
+          "meal_preference": "standard",
+          "add_wifi": false,
+          "add_extra_legroom": false,
+          "add_insurance": false,
+          "price_paid": 420,
+          "payment_method": "credit_card",
+          "points_used": 0,
+          "cash_amount": 420,
+          "booked_at": "2026-08-01T10:00:00",
+          "cancellation_fee": null,
+          "refund_amount": null,
+          "change_fee": null,
+          "fare_difference": null,
+          "delay_compensation": null,
+          "paid_checked_bags": 0
+        }
+      ],
+      "users": [
+        {
+          "user_id": "traveler_001",
+          "name": "Repair Scope Traveler",
+          "email": "traveler@example.com",
+          "loyalty_tier": "basic",
+          "loyalty_points": 0,
+          "budget": 10000,
+          "preferences": {
+            "meal_preference": "standard",
+            "seat_type": "aisle",
+            "add_wifi": false,
+            "add_extra_legroom": false,
+            "add_insurance": false
+          }
+        }
+      ],
+      "hotel_inventory": [
+        {
+          "hotel_id": "TR-7e4e04d1f28b",
+          "hotel_name": "Harbor Conference Hotel",
+          "city": "New York",
+          "check_in": "2026-09-14",
+          "check_out": "2026-09-16",
+          "room_type": "standard",
+          "nightly_rate": 300,
+          "total_price": 600
+        },
+        {
+          "hotel_id": "TR-b0183c6a3d3f",
+          "hotel_name": "Integrated secure meeting access lodging package",
+          "city": "New York",
+          "check_in": "2026-09-14",
+          "check_out": "2026-09-16",
+          "room_type": "standard",
+          "nightly_rate": 425,
+          "total_price": 850
+        },
+        {
+          "hotel_id": "TR-cd48b724f72d",
+          "hotel_name": "Comprehensive secure meeting access travel package",
+          "city": "New York",
+          "check_in": "2026-09-14",
+          "check_out": "2026-09-16",
+          "room_type": "standard",
+          "nightly_rate": 640,
+          "total_price": 1280
+        }
+      ],
+      "hotels": [
+        {
+          "reservation_id": "HR-0001",
+          "user_id": "traveler_001",
+          "hotel_name": "Harbor Conference Hotel",
+          "city": "New York",
+          "check_in": "2026-09-14",
+          "check_out": "2026-09-16",
+          "room_type": "standard",
+          "nightly_rate": 300,
+          "total_price": 600,
+          "hotel_id": "TR-7e4e04d1f28b",
+          "status": "confirmed",
+          "booked_at": "2026-08-01T10:00:00",
+          "cancellation_fee": null,
+          "refund_amount": null
+        }
+      ],
+      "car_inventory": [],
+      "car_rentals": []
+    },
+    "extensions": {
+      "services": [
+        {
+          "service_id": "SV-0001",
+          "user_id": "traveler_001",
+          "option_id": "TR-774d6e618ac1",
+          "slot": "transfer",
+          "status": "confirmed",
+          "price_paid": 120,
+          "refund_amount": null,
+          "cancellation_fee": null,
+          "attributes": {
+            "location": "New York",
+            "ready_day": 2
+          }
+        },
+        {
+          "service_id": "SV-0002",
+          "user_id": "traveler_001",
+          "option_id": "TR-b9292e698146",
+          "slot": "admission",
+          "status": "confirmed",
+          "price_paid": 450,
+          "refund_amount": null,
+          "cancellation_fee": null,
+          "attributes": {
+            "location": "New York",
+            "ready_day": 2
+          }
+        }
+      ],
+      "service_inventory": [
+        {
+          "option_id": "TR-176cfdcda066",
+          "slot": "workspace",
+          "price": 100,
+          "available": true,
+          "attributes": {
+            "location": "New York",
+            "ready_day": 2
+          }
+        },
+        {
+          "option_id": "TR-395dafa29660",
+          "slot": "workspace",
+          "price": 40,
+          "available": true,
+          "attributes": {
+            "location": "Different City",
+            "ready_day": 7
+          }
+        },
+        {
+          "option_id": "TR-774d6e618ac1",
+          "slot": "transfer",
+          "price": 120,
+          "available": true,
+          "attributes": {
+            "location": "New York",
+            "ready_day": 2
+          }
+        },
+        {
+          "option_id": "TR-884239ac837b",
+          "slot": "workspace",
+          "price": 80,
+          "available": true,
+          "attributes": {
+            "location": "New York",
+            "ready_day": 2
+          }
+        },
+        {
+          "option_id": "TR-b9292e698146",
+          "slot": "admission",
+          "price": 450,
+          "available": true,
+          "attributes": {
+            "location": "New York",
+            "ready_day": 2
+          }
+        },
+        {
+          "option_id": "TR-dd59411ac18d",
+          "slot": "workspace",
+          "price": 390,
+          "available": true,
+          "attributes": {
+            "location": "New York",
+            "ready_day": 2
+          }
+        },
+        {
+          "option_id": "TR-e12be0f34ac4",
+          "slot": "workspace",
+          "price": 180,
+          "available": false,
+          "attributes": {
+            "location": "New York",
+            "ready_day": 2
+          },
+          "failure_message": "No inventory remains for the requested secure meeting access."
+        }
+      ]
+    }
+  },
+  "snapshot_sha256": "addbc40b2717a0ed5daa24845b63390eb9867d88e3f1eb4fac3028397a95d597",
+  "pre_failure_trace": [
+    {
+      "step": 1,
+      "tool": "book_travel_option",
+      "arguments": {
+        "option_id": "TR-78ffd0835a52",
+        "user_id": "traveler_001"
+      },
+      "result": {
+        "ok": true,
+        "message": "confirmed",
+        "data": {
+          "status": "confirmed",
+          "booking_id": "BK-0001",
+          "flight_id": "TR-78ffd0835a52",
+          "cabin_class": "economy",
+          "price": {
+            "amount": "420.00",
+            "currency": "USD"
+          },
+          "payment_method": "credit_card"
+        }
+      }
+    },
+    {
+      "step": 2,
+      "tool": "book_travel_option",
+      "arguments": {
+        "option_id": "TR-7e4e04d1f28b",
+        "user_id": "traveler_001"
+      },
+      "result": {
+        "ok": true,
+        "message": "confirmed",
+        "data": {
+          "status": "confirmed",
+          "reservation_id": "HR-0001",
+          "hotel_id": "TR-7e4e04d1f28b",
+          "hotel_name": "Harbor Conference Hotel",
+          "total_price": {
+            "amount": "600.00",
+            "currency": "USD"
+          },
+          "room_type": "standard"
+        }
+      }
+    },
+    {
+      "step": 3,
+      "tool": "book_travel_option",
+      "arguments": {
+        "option_id": "TR-774d6e618ac1",
+        "user_id": "traveler_001"
+      },
+      "result": {
+        "ok": true,
+        "message": "confirmed",
+        "data": {
+          "status": "confirmed",
+          "service_id": "SV-0001",
+          "option_id": "TR-774d6e618ac1",
+          "charge": {
+            "amount": "120.00",
+            "currency": "USD"
+          }
+        }
+      }
+    },
+    {
+      "step": 4,
+      "tool": "book_travel_option",
+      "arguments": {
+        "option_id": "TR-b9292e698146",
+        "user_id": "traveler_001"
+      },
+      "result": {
+        "ok": true,
+        "message": "confirmed",
+        "data": {
+          "status": "confirmed",
+          "service_id": "SV-0002",
+          "option_id": "TR-b9292e698146",
+          "charge": {
+            "amount": "450.00",
+            "currency": "USD"
+          }
+        }
+      }
+    }
+  ],
+  "prefix_ledger": [
+    {
+      "event_index": 1,
+      "category": "direct_transaction",
+      "debit_minor": 42000,
+      "credit_minor": 0,
+      "net_minor": 42000,
+      "currency": "USD",
+      "source": "create_booking",
+      "source_record_id": null
+    },
+    {
+      "event_index": 2,
+      "category": "direct_transaction",
+      "debit_minor": 60000,
+      "credit_minor": 0,
+      "net_minor": 60000,
+      "currency": "USD",
+      "source": "book_hotel",
+      "source_record_id": null
+    },
+    {
+      "event_index": 3,
+      "category": "direct_transaction",
+      "debit_minor": 12000,
+      "credit_minor": 0,
+      "net_minor": 12000,
+      "currency": "USD",
+      "source": "book_local_service",
+      "source_record_id": null
+    },
+    {
+      "event_index": 4,
+      "category": "direct_transaction",
+      "debit_minor": 45000,
+      "credit_minor": 0,
+      "net_minor": 45000,
+      "currency": "USD",
+      "source": "book_local_service",
+      "source_record_id": null
+    }
+  ],
+  "latest_failure": {
+    "tool": "book_travel_option",
+    "arguments": {
+      "option_id": "TR-e12be0f34ac4",
+      "user_id": "traveler_001"
+    },
+    "result": {
+      "ok": false,
+      "message": "No inventory remains for the requested secure meeting access.",
+      "data": {
+        "error": "No inventory remains for the requested secure meeting access."
+      }
+    }
+  }
+}

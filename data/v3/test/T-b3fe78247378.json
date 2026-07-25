@@ -1,0 +1,1163 @@
+{
+  "schema_version": "3.0",
+  "task_id": "T-b3fe78247378",
+  "domain": "after_sales",
+  "environment_type": "state_bench.customer_support+native_recovery_v3",
+  "split": "test",
+  "now": "2026-08-01T10:00:00",
+  "actor_id": "customer_001",
+  "max_turns": 15,
+  "source": {
+    "benchmark": "STATE-Bench",
+    "repository": "https://github.com/microsoft/STATE-Bench",
+    "commit": "4efcbf2d4fe60df04878859b692d9391f3d5b33a",
+    "reuse": "Native domain schemas, persistent state, and write semantics."
+  },
+  "price_profile": {
+    "profile_id": "after-sales-usd-2026q3",
+    "source_date": "2026-07-25",
+    "sources": [
+      "https://www.dell.com/en-us/shop/scc/sc/workstations?dtredir=1",
+      "https://www.dell.com/en-us/shop/monitor-accessories/ar/5390/docking-stations?appliedRefinements=35071"
+    ],
+    "ranges_minor": {
+      "core_device": [
+        90000,
+        450000
+      ],
+      "display": [
+        20000,
+        250000
+      ],
+      "accessory": [
+        5000,
+        90000
+      ],
+      "software_or_service": [
+        8000,
+        250000
+      ]
+    }
+  },
+  "option_metadata": {
+    "AF-c0b859b64f96": {
+      "name": "Aster Professional Workstation",
+      "slot": "core_device",
+      "native_kind": "product",
+      "available": true,
+      "candidate": false,
+      "upfront_minor": 200000,
+      "monthly_minor": 0,
+      "horizon_months": 0,
+      "total_charge_minor": 200000,
+      "post_purchase_cancel_fee_minor": 0,
+      "provides": {
+        "core_device": 1,
+        "scanner_capacity": 4
+      },
+      "attributes": {
+        "delivery_site": "Warehouse North",
+        "ready_day": 3,
+        "approved": true
+      }
+    },
+    "AF-368d5ebbde39": {
+      "name": "Northstar Service Coverage",
+      "slot": "warranty",
+      "native_kind": "product",
+      "available": true,
+      "candidate": false,
+      "upfront_minor": 34000,
+      "monthly_minor": 0,
+      "horizon_months": 0,
+      "total_charge_minor": 34000,
+      "post_purchase_cancel_fee_minor": 0,
+      "provides": {
+        "service_coverage": 1
+      },
+      "attributes": {
+        "delivery_site": "Warehouse North",
+        "ready_day": 3,
+        "approved": true
+      }
+    },
+    "AF-11799bbbd49a": {
+      "name": "Meridian Workflow Licence",
+      "slot": "software",
+      "native_kind": "product",
+      "available": true,
+      "candidate": false,
+      "upfront_minor": 65000,
+      "monthly_minor": 0,
+      "horizon_months": 0,
+      "total_charge_minor": 65000,
+      "post_purchase_cancel_fee_minor": 0,
+      "provides": {
+        "licensed_software": 1
+      },
+      "attributes": {
+        "delivery_site": "Warehouse North",
+        "ready_day": 3,
+        "approved": true
+      }
+    },
+    "AF-46b3034651c4": {
+      "name": "Helios Reference Display",
+      "slot": "display",
+      "native_kind": "product",
+      "available": true,
+      "candidate": false,
+      "upfront_minor": 83000,
+      "monthly_minor": 0,
+      "horizon_months": 0,
+      "total_charge_minor": 83000,
+      "post_purchase_cancel_fee_minor": 0,
+      "provides": {
+        "reference_display": 1
+      },
+      "attributes": {
+        "delivery_site": "Warehouse North",
+        "ready_day": 3,
+        "approved": true
+      }
+    },
+    "AF-0ce003b48da4": {
+      "name": "Original wireless scanners",
+      "slot": "scanner",
+      "native_kind": "product",
+      "available": false,
+      "candidate": false,
+      "upfront_minor": 28000,
+      "monthly_minor": 0,
+      "horizon_months": 0,
+      "total_charge_minor": 28000,
+      "post_purchase_cancel_fee_minor": 0,
+      "provides": {
+        "scanner_capacity": 2
+      },
+      "attributes": {
+        "delivery_site": "Warehouse North",
+        "ready_day": 3,
+        "approved": true
+      },
+      "failure_message": "No inventory remains for the requested wireless scanners."
+    },
+    "AF-510428d9aa6f": {
+      "name": "Independent wireless scanners",
+      "slot": "scanner",
+      "native_kind": "product",
+      "available": true,
+      "candidate": true,
+      "upfront_minor": 44000,
+      "monthly_minor": 0,
+      "horizon_months": 0,
+      "total_charge_minor": 44000,
+      "post_purchase_cancel_fee_minor": 2500,
+      "provides": {
+        "scanner_capacity": 2
+      },
+      "attributes": {
+        "delivery_site": "Warehouse North",
+        "ready_day": 3,
+        "approved": true
+      }
+    },
+    "AF-2358bbc7014c": {
+      "name": "Premium independent wireless scanners",
+      "slot": "scanner",
+      "native_kind": "product",
+      "available": true,
+      "candidate": true,
+      "upfront_minor": 56000,
+      "monthly_minor": 0,
+      "horizon_months": 0,
+      "total_charge_minor": 56000,
+      "post_purchase_cancel_fee_minor": 2500,
+      "provides": {
+        "scanner_capacity": 2
+      },
+      "attributes": {
+        "delivery_site": "Warehouse North",
+        "ready_day": 3,
+        "approved": true
+      }
+    },
+    "AF-7f73d70e01e5": {
+      "name": "Integrated wireless scanners device bundle",
+      "slot": "scanner",
+      "native_kind": "product",
+      "available": true,
+      "candidate": true,
+      "upfront_minor": 250000,
+      "monthly_minor": 0,
+      "horizon_months": 0,
+      "total_charge_minor": 250000,
+      "post_purchase_cancel_fee_minor": 2500,
+      "provides": {
+        "core_device": 1,
+        "scanner_capacity": 6
+      },
+      "attributes": {
+        "delivery_site": "Warehouse North",
+        "ready_day": 3,
+        "approved": true
+      }
+    },
+    "AF-7064829e9dec": {
+      "name": "Comprehensive wireless scanners workstation package",
+      "slot": "scanner",
+      "native_kind": "product",
+      "available": true,
+      "candidate": true,
+      "upfront_minor": 317000,
+      "monthly_minor": 0,
+      "horizon_months": 0,
+      "total_charge_minor": 317000,
+      "post_purchase_cancel_fee_minor": 2500,
+      "provides": {
+        "core_device": 1,
+        "service_coverage": 1,
+        "scanner_capacity": 6
+      },
+      "attributes": {
+        "delivery_site": "Warehouse North",
+        "ready_day": 3,
+        "approved": true
+      }
+    },
+    "AF-8c6ce1750ece": {
+      "name": "One-unit wireless scanners option A",
+      "slot": "scanner",
+      "native_kind": "product",
+      "available": true,
+      "candidate": true,
+      "upfront_minor": 27000,
+      "monthly_minor": 0,
+      "horizon_months": 0,
+      "total_charge_minor": 27000,
+      "post_purchase_cancel_fee_minor": 2500,
+      "provides": {
+        "scanner_capacity": 1
+      },
+      "attributes": {
+        "delivery_site": "Warehouse North",
+        "ready_day": 3,
+        "approved": true
+      }
+    },
+    "AF-5467981bae15": {
+      "name": "One-unit wireless scanners option B",
+      "slot": "scanner",
+      "native_kind": "product",
+      "available": true,
+      "candidate": true,
+      "upfront_minor": 28000,
+      "monthly_minor": 0,
+      "horizon_months": 0,
+      "total_charge_minor": 28000,
+      "post_purchase_cancel_fee_minor": 2500,
+      "provides": {
+        "scanner_capacity": 1
+      },
+      "attributes": {
+        "delivery_site": "Warehouse North",
+        "ready_day": 3,
+        "approved": true
+      }
+    },
+    "AF-1412d80b1961": {
+      "name": "Unavailable-location wireless scanners",
+      "slot": "scanner",
+      "native_kind": "product",
+      "available": true,
+      "candidate": true,
+      "upfront_minor": 7000,
+      "monthly_minor": 0,
+      "horizon_months": 0,
+      "total_charge_minor": 7000,
+      "post_purchase_cancel_fee_minor": 700,
+      "provides": {
+        "scanner_capacity": 6
+      },
+      "attributes": {
+        "delivery_site": "Different Facility",
+        "ready_day": 9,
+        "approved": false
+      }
+    }
+  },
+  "boundary_commitments": [
+    {
+      "entity_id": "ITEM-R0001",
+      "option_id": "AF-c0b859b64f96",
+      "slot": "core_device",
+      "paid_minor": 200000,
+      "refund_minor": 200000,
+      "quantity": 4,
+      "provides": {
+        "core_device": 1,
+        "scanner_capacity": 4
+      },
+      "attributes": {
+        "delivery_site": "Warehouse North",
+        "ready_day": 3,
+        "approved": true
+      }
+    },
+    {
+      "entity_id": "ITEM-R0002",
+      "option_id": "AF-368d5ebbde39",
+      "slot": "warranty",
+      "paid_minor": 34000,
+      "refund_minor": 34000,
+      "quantity": 1,
+      "provides": {
+        "service_coverage": 1
+      },
+      "attributes": {
+        "delivery_site": "Warehouse North",
+        "ready_day": 3,
+        "approved": true
+      }
+    },
+    {
+      "entity_id": "ITEM-R0003",
+      "option_id": "AF-11799bbbd49a",
+      "slot": "software",
+      "paid_minor": 65000,
+      "refund_minor": 65000,
+      "quantity": 1,
+      "provides": {
+        "licensed_software": 1
+      },
+      "attributes": {
+        "delivery_site": "Warehouse North",
+        "ready_day": 3,
+        "approved": true
+      }
+    },
+    {
+      "entity_id": "ITEM-R0004",
+      "option_id": "AF-46b3034651c4",
+      "slot": "display",
+      "paid_minor": 83000,
+      "refund_minor": 83000,
+      "quantity": 1,
+      "provides": {
+        "reference_display": 1
+      },
+      "attributes": {
+        "delivery_site": "Warehouse North",
+        "ready_day": 3,
+        "approved": true
+      }
+    }
+  ],
+  "compatibility_rules": [],
+  "economic_terms": [
+    {
+      "term_id": "TERM-9dbae3ed0ea3",
+      "description": "An existing quantity remains useful; the agent must compare topping up the shortfall with replacing the whole quantity.",
+      "linked_entity_ids": [
+        "ITEM-R0001"
+      ],
+      "linked_option_ids": [
+        "AF-7f73d70e01e5"
+      ],
+      "trigger": {
+        "type": "active_any",
+        "option_ids": [
+          "AF-7f73d70e01e5"
+        ]
+      },
+      "charge_minor": 0,
+      "credit_minor": 30000
+    }
+  ],
+  "hard_goals": {
+    "capabilities": [
+      {
+        "constraint_id": "HC-a939509c536a",
+        "capability": "core_device",
+        "label": "core device",
+        "min": 1,
+        "max": 1,
+        "evidence_refs": [
+          "E-HC-a939509c536a"
+        ]
+      },
+      {
+        "constraint_id": "HC-f3b9ea804aa3",
+        "capability": "service_coverage",
+        "label": "service coverage",
+        "min": 1,
+        "max": 1,
+        "evidence_refs": [
+          "E-HC-f3b9ea804aa3"
+        ]
+      },
+      {
+        "constraint_id": "HC-fb1536b6b3c7",
+        "capability": "licensed_software",
+        "label": "licensed software",
+        "min": 1,
+        "max": 1,
+        "evidence_refs": [
+          "E-HC-fb1536b6b3c7"
+        ]
+      },
+      {
+        "constraint_id": "HC-99deedba2ffc",
+        "capability": "reference_display",
+        "label": "reference display",
+        "min": 1,
+        "max": 1,
+        "evidence_refs": [
+          "E-HC-99deedba2ffc"
+        ]
+      },
+      {
+        "constraint_id": "HC-45d8f86a6586",
+        "capability": "scanner_capacity",
+        "label": "wireless scanners",
+        "min": 6,
+        "max": 6,
+        "evidence_refs": [
+          "E-HC-45d8f86a6586"
+        ]
+      }
+    ],
+    "attributes": [
+      {
+        "constraint_id": "HA-fcbcabb5d4ef",
+        "capability": "scanner_capacity",
+        "attribute": "delivery_site",
+        "op": "eq",
+        "value": "Warehouse North",
+        "evidence_refs": [
+          "E-HA-fcbcabb5d4ef"
+        ]
+      },
+      {
+        "constraint_id": "HA-7202bf9bb93d",
+        "capability": "scanner_capacity",
+        "attribute": "ready_day",
+        "op": "le",
+        "value": 4,
+        "evidence_refs": [
+          "E-HA-7202bf9bb93d"
+        ]
+      }
+    ]
+  },
+  "construction": {
+    "prefix_generated_by_public_tools": true,
+    "failure_generated_by_public_tool": true,
+    "necessary_action_order_invariant": true,
+    "currency": "USD",
+    "internal_money_unit": "minor"
+  },
+  "instruction": "Continue the partially completed warehouse scanning kit. The earlier orders and reservations shown below are already active, but the attempted wireless scanners (scanner) has just failed. The final state must contain exactly one core device, exactly one service coverage, exactly one licensed software, exactly one reference display, exactly 6 units of wireless scanners. Every option covering wireless scanners must be delivered to Warehouse North and be ready by day 4. Do not retain combinations that supplier records mark as incompatible. Complete the remaining goal with the lowest actual net monetary cost from this failure point.",
+  "initial_snapshot": {
+    "state_bench": {
+      "products": [
+        {
+          "product_id": "AF-c0b859b64f96",
+          "name": "Aster Professional Workstation",
+          "category": "electronics",
+          "subcategory": "core_device",
+          "price": 2000,
+          "warranty_months": 12,
+          "return_window_days": 30,
+          "restocking_fee_pct": 0,
+          "weight_lbs": 2.0,
+          "is_fragile": false,
+          "in_stock": true,
+          "current_price": null
+        },
+        {
+          "product_id": "AF-368d5ebbde39",
+          "name": "Northstar Service Coverage",
+          "category": "electronics",
+          "subcategory": "warranty",
+          "price": 340,
+          "warranty_months": 12,
+          "return_window_days": 30,
+          "restocking_fee_pct": 0,
+          "weight_lbs": 2.0,
+          "is_fragile": false,
+          "in_stock": true,
+          "current_price": null
+        },
+        {
+          "product_id": "AF-11799bbbd49a",
+          "name": "Meridian Workflow Licence",
+          "category": "electronics",
+          "subcategory": "software",
+          "price": 650,
+          "warranty_months": 12,
+          "return_window_days": 30,
+          "restocking_fee_pct": 0,
+          "weight_lbs": 2.0,
+          "is_fragile": false,
+          "in_stock": true,
+          "current_price": null
+        },
+        {
+          "product_id": "AF-46b3034651c4",
+          "name": "Helios Reference Display",
+          "category": "electronics",
+          "subcategory": "display",
+          "price": 830,
+          "warranty_months": 12,
+          "return_window_days": 30,
+          "restocking_fee_pct": 0,
+          "weight_lbs": 2.0,
+          "is_fragile": false,
+          "in_stock": true,
+          "current_price": null
+        },
+        {
+          "product_id": "AF-0ce003b48da4",
+          "name": "Original wireless scanners",
+          "category": "electronics",
+          "subcategory": "scanner",
+          "price": 280,
+          "warranty_months": 12,
+          "return_window_days": 30,
+          "restocking_fee_pct": 0,
+          "weight_lbs": 2.0,
+          "is_fragile": false,
+          "in_stock": false,
+          "current_price": null
+        },
+        {
+          "product_id": "AF-510428d9aa6f",
+          "name": "Independent wireless scanners",
+          "category": "electronics",
+          "subcategory": "scanner",
+          "price": 440,
+          "warranty_months": 12,
+          "return_window_days": 30,
+          "restocking_fee_pct": 0,
+          "weight_lbs": 2.0,
+          "is_fragile": false,
+          "in_stock": true,
+          "current_price": null
+        },
+        {
+          "product_id": "AF-2358bbc7014c",
+          "name": "Premium independent wireless scanners",
+          "category": "electronics",
+          "subcategory": "scanner",
+          "price": 560,
+          "warranty_months": 12,
+          "return_window_days": 30,
+          "restocking_fee_pct": 0,
+          "weight_lbs": 2.0,
+          "is_fragile": false,
+          "in_stock": true,
+          "current_price": null
+        },
+        {
+          "product_id": "AF-7f73d70e01e5",
+          "name": "Integrated wireless scanners device bundle",
+          "category": "electronics",
+          "subcategory": "scanner",
+          "price": 2500,
+          "warranty_months": 12,
+          "return_window_days": 30,
+          "restocking_fee_pct": 0,
+          "weight_lbs": 2.0,
+          "is_fragile": false,
+          "in_stock": true,
+          "current_price": null
+        },
+        {
+          "product_id": "AF-7064829e9dec",
+          "name": "Comprehensive wireless scanners workstation package",
+          "category": "electronics",
+          "subcategory": "scanner",
+          "price": 3170,
+          "warranty_months": 12,
+          "return_window_days": 30,
+          "restocking_fee_pct": 0,
+          "weight_lbs": 2.0,
+          "is_fragile": false,
+          "in_stock": true,
+          "current_price": null
+        },
+        {
+          "product_id": "AF-8c6ce1750ece",
+          "name": "One-unit wireless scanners option A",
+          "category": "electronics",
+          "subcategory": "scanner",
+          "price": 270,
+          "warranty_months": 12,
+          "return_window_days": 30,
+          "restocking_fee_pct": 0,
+          "weight_lbs": 2.0,
+          "is_fragile": false,
+          "in_stock": true,
+          "current_price": null
+        },
+        {
+          "product_id": "AF-5467981bae15",
+          "name": "One-unit wireless scanners option B",
+          "category": "electronics",
+          "subcategory": "scanner",
+          "price": 280,
+          "warranty_months": 12,
+          "return_window_days": 30,
+          "restocking_fee_pct": 0,
+          "weight_lbs": 2.0,
+          "is_fragile": false,
+          "in_stock": true,
+          "current_price": null
+        },
+        {
+          "product_id": "AF-1412d80b1961",
+          "name": "Unavailable-location wireless scanners",
+          "category": "electronics",
+          "subcategory": "scanner",
+          "price": 70,
+          "warranty_months": 12,
+          "return_window_days": 30,
+          "restocking_fee_pct": 0,
+          "weight_lbs": 2.0,
+          "is_fragile": false,
+          "in_stock": true,
+          "current_price": null
+        }
+      ],
+      "orders": [],
+      "order_items": [],
+      "customers": [
+        {
+          "customer_id": "customer_001",
+          "name": "Repair Scope Customer",
+          "email": "customer@example.com",
+          "membership_tier": "standard",
+          "account_created": "2025-01-01",
+          "total_orders": 0,
+          "preferred_refund_method": "original_payment",
+          "store_credit_balance": 0,
+          "has_prime_shipping": false
+        }
+      ],
+      "warranties": []
+    },
+    "extensions": {
+      "services": [],
+      "service_inventory": []
+    }
+  },
+  "initial_snapshot_sha256": "361f75c2ee22ca40893f6662bec0f81494139c5ebbfbe5af658f3f711a73e9a7",
+  "failure_snapshot": {
+    "state_bench": {
+      "products": [
+        {
+          "product_id": "AF-0ce003b48da4",
+          "name": "Original wireless scanners",
+          "category": "electronics",
+          "subcategory": "scanner",
+          "price": 280,
+          "warranty_months": 12,
+          "return_window_days": 30,
+          "restocking_fee_pct": 0,
+          "weight_lbs": 2.0,
+          "is_fragile": false,
+          "in_stock": false,
+          "current_price": null
+        },
+        {
+          "product_id": "AF-11799bbbd49a",
+          "name": "Meridian Workflow Licence",
+          "category": "electronics",
+          "subcategory": "software",
+          "price": 650,
+          "warranty_months": 12,
+          "return_window_days": 30,
+          "restocking_fee_pct": 0,
+          "weight_lbs": 2.0,
+          "is_fragile": false,
+          "in_stock": true,
+          "current_price": null
+        },
+        {
+          "product_id": "AF-1412d80b1961",
+          "name": "Unavailable-location wireless scanners",
+          "category": "electronics",
+          "subcategory": "scanner",
+          "price": 70,
+          "warranty_months": 12,
+          "return_window_days": 30,
+          "restocking_fee_pct": 0,
+          "weight_lbs": 2.0,
+          "is_fragile": false,
+          "in_stock": true,
+          "current_price": null
+        },
+        {
+          "product_id": "AF-2358bbc7014c",
+          "name": "Premium independent wireless scanners",
+          "category": "electronics",
+          "subcategory": "scanner",
+          "price": 560,
+          "warranty_months": 12,
+          "return_window_days": 30,
+          "restocking_fee_pct": 0,
+          "weight_lbs": 2.0,
+          "is_fragile": false,
+          "in_stock": true,
+          "current_price": null
+        },
+        {
+          "product_id": "AF-368d5ebbde39",
+          "name": "Northstar Service Coverage",
+          "category": "electronics",
+          "subcategory": "warranty",
+          "price": 340,
+          "warranty_months": 12,
+          "return_window_days": 30,
+          "restocking_fee_pct": 0,
+          "weight_lbs": 2.0,
+          "is_fragile": false,
+          "in_stock": true,
+          "current_price": null
+        },
+        {
+          "product_id": "AF-46b3034651c4",
+          "name": "Helios Reference Display",
+          "category": "electronics",
+          "subcategory": "display",
+          "price": 830,
+          "warranty_months": 12,
+          "return_window_days": 30,
+          "restocking_fee_pct": 0,
+          "weight_lbs": 2.0,
+          "is_fragile": false,
+          "in_stock": true,
+          "current_price": null
+        },
+        {
+          "product_id": "AF-510428d9aa6f",
+          "name": "Independent wireless scanners",
+          "category": "electronics",
+          "subcategory": "scanner",
+          "price": 440,
+          "warranty_months": 12,
+          "return_window_days": 30,
+          "restocking_fee_pct": 0,
+          "weight_lbs": 2.0,
+          "is_fragile": false,
+          "in_stock": true,
+          "current_price": null
+        },
+        {
+          "product_id": "AF-5467981bae15",
+          "name": "One-unit wireless scanners option B",
+          "category": "electronics",
+          "subcategory": "scanner",
+          "price": 280,
+          "warranty_months": 12,
+          "return_window_days": 30,
+          "restocking_fee_pct": 0,
+          "weight_lbs": 2.0,
+          "is_fragile": false,
+          "in_stock": true,
+          "current_price": null
+        },
+        {
+          "product_id": "AF-7064829e9dec",
+          "name": "Comprehensive wireless scanners workstation package",
+          "category": "electronics",
+          "subcategory": "scanner",
+          "price": 3170,
+          "warranty_months": 12,
+          "return_window_days": 30,
+          "restocking_fee_pct": 0,
+          "weight_lbs": 2.0,
+          "is_fragile": false,
+          "in_stock": true,
+          "current_price": null
+        },
+        {
+          "product_id": "AF-7f73d70e01e5",
+          "name": "Integrated wireless scanners device bundle",
+          "category": "electronics",
+          "subcategory": "scanner",
+          "price": 2500,
+          "warranty_months": 12,
+          "return_window_days": 30,
+          "restocking_fee_pct": 0,
+          "weight_lbs": 2.0,
+          "is_fragile": false,
+          "in_stock": true,
+          "current_price": null
+        },
+        {
+          "product_id": "AF-8c6ce1750ece",
+          "name": "One-unit wireless scanners option A",
+          "category": "electronics",
+          "subcategory": "scanner",
+          "price": 270,
+          "warranty_months": 12,
+          "return_window_days": 30,
+          "restocking_fee_pct": 0,
+          "weight_lbs": 2.0,
+          "is_fragile": false,
+          "in_stock": true,
+          "current_price": null
+        },
+        {
+          "product_id": "AF-c0b859b64f96",
+          "name": "Aster Professional Workstation",
+          "category": "electronics",
+          "subcategory": "core_device",
+          "price": 2000,
+          "warranty_months": 12,
+          "return_window_days": 30,
+          "restocking_fee_pct": 0,
+          "weight_lbs": 2.0,
+          "is_fragile": false,
+          "in_stock": true,
+          "current_price": null
+        }
+      ],
+      "orders": [
+        {
+          "order_id": "ORD-R0001",
+          "customer_id": "customer_001",
+          "order_date": "2026-08-01T10:00:00",
+          "status": "processing",
+          "shipping_status": "pending",
+          "shipping_method": "standard",
+          "shipping_cost": 0,
+          "tracking_number": "",
+          "delivery_date": null,
+          "delivery_promised_date": "",
+          "signature_required": false,
+          "signature_on_file": null,
+          "payment_method": "credit_card",
+          "payment_details": {
+            "credit_card": 2000
+          },
+          "subtotal": 2000,
+          "discount_code": null,
+          "discount_amount": 0,
+          "total_paid": 2000,
+          "is_gift": false,
+          "gift_sender": null
+        },
+        {
+          "order_id": "ORD-R0002",
+          "customer_id": "customer_001",
+          "order_date": "2026-08-01T10:00:00",
+          "status": "processing",
+          "shipping_status": "pending",
+          "shipping_method": "standard",
+          "shipping_cost": 0,
+          "tracking_number": "",
+          "delivery_date": null,
+          "delivery_promised_date": "",
+          "signature_required": false,
+          "signature_on_file": null,
+          "payment_method": "credit_card",
+          "payment_details": {
+            "credit_card": 340
+          },
+          "subtotal": 340,
+          "discount_code": null,
+          "discount_amount": 0,
+          "total_paid": 340,
+          "is_gift": false,
+          "gift_sender": null
+        },
+        {
+          "order_id": "ORD-R0003",
+          "customer_id": "customer_001",
+          "order_date": "2026-08-01T10:00:00",
+          "status": "processing",
+          "shipping_status": "pending",
+          "shipping_method": "standard",
+          "shipping_cost": 0,
+          "tracking_number": "",
+          "delivery_date": null,
+          "delivery_promised_date": "",
+          "signature_required": false,
+          "signature_on_file": null,
+          "payment_method": "credit_card",
+          "payment_details": {
+            "credit_card": 650
+          },
+          "subtotal": 650,
+          "discount_code": null,
+          "discount_amount": 0,
+          "total_paid": 650,
+          "is_gift": false,
+          "gift_sender": null
+        },
+        {
+          "order_id": "ORD-R0004",
+          "customer_id": "customer_001",
+          "order_date": "2026-08-01T10:00:00",
+          "status": "processing",
+          "shipping_status": "pending",
+          "shipping_method": "standard",
+          "shipping_cost": 0,
+          "tracking_number": "",
+          "delivery_date": null,
+          "delivery_promised_date": "",
+          "signature_required": false,
+          "signature_on_file": null,
+          "payment_method": "credit_card",
+          "payment_details": {
+            "credit_card": 830
+          },
+          "subtotal": 830,
+          "discount_code": null,
+          "discount_amount": 0,
+          "total_paid": 830,
+          "is_gift": false,
+          "gift_sender": null
+        }
+      ],
+      "order_items": [
+        {
+          "item_id": "ITEM-R0001",
+          "order_id": "ORD-R0001",
+          "product_id": "AF-c0b859b64f96",
+          "quantity": 1,
+          "unit_price": 2000,
+          "item_status": "processing",
+          "return_reason": null,
+          "refund_amount": null,
+          "refund_method": null,
+          "restocking_fee": null,
+          "return_label_issued": false,
+          "replacement_item_id": null,
+          "goodwill_credit": 0,
+          "goodwill_credit_method": null,
+          "store_credit_only": false
+        },
+        {
+          "item_id": "ITEM-R0002",
+          "order_id": "ORD-R0002",
+          "product_id": "AF-368d5ebbde39",
+          "quantity": 1,
+          "unit_price": 340,
+          "item_status": "processing",
+          "return_reason": null,
+          "refund_amount": null,
+          "refund_method": null,
+          "restocking_fee": null,
+          "return_label_issued": false,
+          "replacement_item_id": null,
+          "goodwill_credit": 0,
+          "goodwill_credit_method": null,
+          "store_credit_only": false
+        },
+        {
+          "item_id": "ITEM-R0003",
+          "order_id": "ORD-R0003",
+          "product_id": "AF-11799bbbd49a",
+          "quantity": 1,
+          "unit_price": 650,
+          "item_status": "processing",
+          "return_reason": null,
+          "refund_amount": null,
+          "refund_method": null,
+          "restocking_fee": null,
+          "return_label_issued": false,
+          "replacement_item_id": null,
+          "goodwill_credit": 0,
+          "goodwill_credit_method": null,
+          "store_credit_only": false
+        },
+        {
+          "item_id": "ITEM-R0004",
+          "order_id": "ORD-R0004",
+          "product_id": "AF-46b3034651c4",
+          "quantity": 1,
+          "unit_price": 830,
+          "item_status": "processing",
+          "return_reason": null,
+          "refund_amount": null,
+          "refund_method": null,
+          "restocking_fee": null,
+          "return_label_issued": false,
+          "replacement_item_id": null,
+          "goodwill_credit": 0,
+          "goodwill_credit_method": null,
+          "store_credit_only": false
+        }
+      ],
+      "customers": [
+        {
+          "customer_id": "customer_001",
+          "name": "Repair Scope Customer",
+          "email": "customer@example.com",
+          "membership_tier": "standard",
+          "account_created": "2025-01-01",
+          "total_orders": 0,
+          "preferred_refund_method": "original_payment",
+          "store_credit_balance": 0,
+          "has_prime_shipping": false
+        }
+      ],
+      "warranties": []
+    },
+    "extensions": {
+      "services": [],
+      "service_inventory": []
+    }
+  },
+  "snapshot_sha256": "b357e701d78381dd3ab3a88cf5ccb806ab55f65949e7071c9b01c9d7fc03f084",
+  "pre_failure_trace": [
+    {
+      "step": 1,
+      "tool": "purchase_product_option",
+      "arguments": {
+        "product_id": "AF-c0b859b64f96",
+        "customer_id": "customer_001"
+      },
+      "result": {
+        "ok": true,
+        "message": "confirmed",
+        "data": {
+          "status": "confirmed",
+          "order_id": "ORD-R0001",
+          "item_id": "ITEM-R0001",
+          "product_id": "AF-c0b859b64f96",
+          "charge": {
+            "amount": "2000.00",
+            "currency": "USD"
+          }
+        }
+      }
+    },
+    {
+      "step": 2,
+      "tool": "purchase_product_option",
+      "arguments": {
+        "product_id": "AF-368d5ebbde39",
+        "customer_id": "customer_001"
+      },
+      "result": {
+        "ok": true,
+        "message": "confirmed",
+        "data": {
+          "status": "confirmed",
+          "order_id": "ORD-R0002",
+          "item_id": "ITEM-R0002",
+          "product_id": "AF-368d5ebbde39",
+          "charge": {
+            "amount": "340.00",
+            "currency": "USD"
+          }
+        }
+      }
+    },
+    {
+      "step": 3,
+      "tool": "purchase_product_option",
+      "arguments": {
+        "product_id": "AF-11799bbbd49a",
+        "customer_id": "customer_001"
+      },
+      "result": {
+        "ok": true,
+        "message": "confirmed",
+        "data": {
+          "status": "confirmed",
+          "order_id": "ORD-R0003",
+          "item_id": "ITEM-R0003",
+          "product_id": "AF-11799bbbd49a",
+          "charge": {
+            "amount": "650.00",
+            "currency": "USD"
+          }
+        }
+      }
+    },
+    {
+      "step": 4,
+      "tool": "purchase_product_option",
+      "arguments": {
+        "product_id": "AF-46b3034651c4",
+        "customer_id": "customer_001"
+      },
+      "result": {
+        "ok": true,
+        "message": "confirmed",
+        "data": {
+          "status": "confirmed",
+          "order_id": "ORD-R0004",
+          "item_id": "ITEM-R0004",
+          "product_id": "AF-46b3034651c4",
+          "charge": {
+            "amount": "830.00",
+            "currency": "USD"
+          }
+        }
+      }
+    }
+  ],
+  "prefix_ledger": [
+    {
+      "event_index": 1,
+      "category": "direct_transaction",
+      "debit_minor": 200000,
+      "credit_minor": 0,
+      "net_minor": 200000,
+      "currency": "USD",
+      "source": "purchase_product",
+      "source_record_id": null
+    },
+    {
+      "event_index": 2,
+      "category": "direct_transaction",
+      "debit_minor": 34000,
+      "credit_minor": 0,
+      "net_minor": 34000,
+      "currency": "USD",
+      "source": "purchase_product",
+      "source_record_id": null
+    },
+    {
+      "event_index": 3,
+      "category": "direct_transaction",
+      "debit_minor": 65000,
+      "credit_minor": 0,
+      "net_minor": 65000,
+      "currency": "USD",
+      "source": "purchase_product",
+      "source_record_id": null
+    },
+    {
+      "event_index": 4,
+      "category": "direct_transaction",
+      "debit_minor": 83000,
+      "credit_minor": 0,
+      "net_minor": 83000,
+      "currency": "USD",
+      "source": "purchase_product",
+      "source_record_id": null
+    }
+  ],
+  "latest_failure": {
+    "tool": "purchase_product_option",
+    "arguments": {
+      "product_id": "AF-0ce003b48da4",
+      "customer_id": "customer_001"
+    },
+    "result": {
+      "ok": false,
+      "message": "No inventory remains for the requested wireless scanners.",
+      "data": {
+        "error": "No inventory remains for the requested wireless scanners."
+      }
+    }
+  }
+}

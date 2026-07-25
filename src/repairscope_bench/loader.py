@@ -130,12 +130,42 @@ V2_REQUIRED_FIELDS = {
     "max_turns",
 }
 
+V3_REQUIRED_FIELDS = {
+    "schema_version",
+    "task_id",
+    "domain",
+    "environment_type",
+    "split",
+    "now",
+    "actor_id",
+    "instruction",
+    "initial_snapshot",
+    "initial_snapshot_sha256",
+    "failure_snapshot",
+    "snapshot_sha256",
+    "pre_failure_trace",
+    "prefix_ledger",
+    "latest_failure",
+    "boundary_commitments",
+    "option_metadata",
+    "economic_terms",
+    "compatibility_rules",
+    "hard_goals",
+    "price_profile",
+    "source",
+    "construction",
+    "max_turns",
+}
+
 
 class TaskValidationError(ValueError):
     """Raised when a benchmark task violates the public schema."""
 
 
 def validate_task(task: dict[str, Any]) -> None:
+    if task.get("schema_version") == "3.0":
+        _validate_v3_task(task)
+        return
     if task.get("schema_version") == "2.0":
         _validate_v2_task(task)
         return
@@ -743,7 +773,9 @@ def load_task(path: str | Path) -> dict[str, Any]:
         task = json.load(handle)
     validate_task(task)
     task["_path"] = str(task_path.resolve())
-    if task.get("schema_version") == "2.0":
+    if task.get("schema_version") == "3.0":
+        _attach_versioned_metadata(task, task_path, "v3")
+    elif task.get("schema_version") == "2.0":
         _attach_versioned_metadata(task, task_path, "v2")
     elif task.get("schema_version") == "1.1":
         _attach_v11_metadata(task, task_path)
@@ -752,7 +784,14 @@ def load_task(path: str | Path) -> dict[str, Any]:
 
 def load_tasks(path: str | Path) -> list[dict[str, Any]]:
     root = Path(path)
-    paths = [root] if root.is_file() else sorted(root.glob("*.json"))
+    if root.is_file():
+        paths = [root]
+    elif (root / "dev").is_dir() and (root / "test").is_dir():
+        paths = sorted((root / "dev").glob("*.json")) + sorted(
+            (root / "test").glob("*.json")
+        )
+    else:
+        paths = sorted(root.glob("*.json"))
     return [load_task(item) for item in paths]
 
 
@@ -783,6 +822,7 @@ def _attach_versioned_metadata(
     candidates = [
         task_path.parent.parent / "gold" / f"{version}.json",
         task_path.parent.parent.parent / "gold" / f"{version}.json",
+        task_path.parent.parent.parent.parent / "gold" / f"{version}.json",
         task_path.parent / f"{version}.gold.json",
     ]
     for candidate in candidates:
@@ -795,9 +835,172 @@ def _attach_versioned_metadata(
         record = _V11_GOLD_CACHE[resolved].get(task["task_id"])
         if record is not None:
             task["_benchmark_metadata"] = record.get("metadata", {})
-            if version == "v2":
+            if version in {"v2", "v3"}:
                 task["_benchmark_gold"] = record
         return
+
+
+def _validate_v3_task(task: dict[str, Any]) -> None:
+    from .v3_environment import snapshot_hash, term_charge_minor, term_credit_minor
+
+    missing = V3_REQUIRED_FIELDS - task.keys()
+    if missing:
+        raise TaskValidationError(
+            f"{task.get('task_id', '<unknown>')}: missing v3 fields "
+            f"{sorted(missing)}"
+        )
+    if task["domain"] not in {"travel", "after_sales"}:
+        raise TaskValidationError(
+            f"{task['task_id']}: unsupported v3 domain {task['domain']!r}"
+        )
+    if task["split"] not in {"dev", "test"}:
+        raise TaskValidationError(
+            f"{task['task_id']}: unsupported v3 split {task['split']!r}"
+        )
+    if task["max_turns"] != 15:
+        raise TaskValidationError(
+            f"{task['task_id']}: v3 requires exactly 15 turns"
+        )
+    if snapshot_hash(task["initial_snapshot"]) != task["initial_snapshot_sha256"]:
+        raise TaskValidationError(
+            f"{task['task_id']}: initial snapshot hash mismatch"
+        )
+    if snapshot_hash(task["failure_snapshot"]) != task["snapshot_sha256"]:
+        raise TaskValidationError(
+            f"{task['task_id']}: failure snapshot hash mismatch"
+        )
+    if task["source"].get("commit") != (
+        "4efcbf2d4fe60df04878859b692d9391f3d5b33a"
+    ):
+        raise TaskValidationError(
+            f"{task['task_id']}: STATE-Bench dependency is not pinned"
+        )
+    if len(task["boundary_commitments"]) != 4:
+        raise TaskValidationError(
+            f"{task['task_id']}: v3 requires four persistent commitments"
+        )
+    if len(task["pre_failure_trace"]) != 4 or any(
+        not item.get("result", {}).get("ok", False)
+        for item in task["pre_failure_trace"]
+    ):
+        raise TaskValidationError(
+            f"{task['task_id']}: prefix must contain four successful writes"
+        )
+    if task["latest_failure"].get("result", {}).get("ok", True):
+        raise TaskValidationError(
+            f"{task['task_id']}: latest operation must be a real failure"
+        )
+    if not task["prefix_ledger"]:
+        raise TaskValidationError(
+            f"{task['task_id']}: missing auditable prefix ledger"
+        )
+    if not task["construction"].get("necessary_action_order_invariant", False):
+        raise TaskValidationError(
+            f"{task['task_id']}: order-dependent gold is forbidden"
+        )
+    if task["construction"].get("currency") != "USD":
+        raise TaskValidationError(
+            f"{task['task_id']}: v3 uses a single USD currency"
+        )
+    forbidden = {"irreversible_loss", "net_recovery_outlay", "gap_min"}
+    serialized = json.dumps(task, ensure_ascii=False)
+    if any(token in serialized for token in forbidden):
+        raise TaskValidationError(
+            f"{task['task_id']}: deprecated or hidden economic field present"
+        )
+
+    entity_ids = [
+        item["entity_id"] for item in task["boundary_commitments"]
+    ]
+    if len(entity_ids) != len(set(entity_ids)):
+        raise TaskValidationError(
+            f"{task['task_id']}: duplicate boundary entity"
+        )
+    option_ids = set(task["option_metadata"])
+    if not option_ids:
+        raise TaskValidationError(f"{task['task_id']}: empty option metadata")
+    for option_id, item in task["option_metadata"].items():
+        required = {
+            "name",
+            "slot",
+            "native_kind",
+            "available",
+            "candidate",
+            "upfront_minor",
+            "monthly_minor",
+            "horizon_months",
+            "total_charge_minor",
+            "post_purchase_cancel_fee_minor",
+            "provides",
+            "attributes",
+        }
+        if required - item.keys():
+            raise TaskValidationError(
+                f"{task['task_id']}: incomplete option {option_id}"
+            )
+        money_fields = [
+            item["upfront_minor"],
+            item["monthly_minor"],
+            item["total_charge_minor"],
+        ]
+        if any(
+            not isinstance(value, int) or value < 0
+            for value in money_fields
+        ):
+            raise TaskValidationError(
+                f"{task['task_id']}: prices must be integer minor units"
+            )
+    for item in task["boundary_commitments"]:
+        if item["option_id"] not in option_ids:
+            raise TaskValidationError(
+                f"{task['task_id']}: unknown boundary option"
+            )
+        if any(
+            not isinstance(item[key], int) or item[key] < 0
+            for key in ("paid_minor", "refund_minor")
+        ):
+            raise TaskValidationError(
+                f"{task['task_id']}: invalid boundary money"
+            )
+        if item["refund_minor"] > item["paid_minor"]:
+            raise TaskValidationError(
+                f"{task['task_id']}: refund exceeds amount paid"
+            )
+    term_ids: set[str] = set()
+    for term in task["economic_terms"]:
+        if term["term_id"] in term_ids:
+            raise TaskValidationError(
+                f"{task['task_id']}: duplicate economic term"
+            )
+        term_ids.add(term["term_id"])
+        if term_charge_minor(term) < 0 or term_credit_minor(term) < 0:
+            raise TaskValidationError(
+                f"{task['task_id']}: negative term amount"
+            )
+        if not set(term.get("linked_entity_ids", [])).issubset(
+            set(entity_ids)
+        ):
+            raise TaskValidationError(
+                f"{task['task_id']}: term references unknown entity"
+            )
+        if not set(term.get("linked_option_ids", [])).issubset(option_ids):
+            raise TaskValidationError(
+                f"{task['task_id']}: term references unknown option"
+            )
+    constraint_ids: set[str] = set()
+    for item in task["hard_goals"]["capabilities"] + task["hard_goals"].get(
+        "attributes", []
+    ) + task["compatibility_rules"]:
+        constraint_id = item.get("constraint_id")
+        if not constraint_id or constraint_id in constraint_ids:
+            raise TaskValidationError(
+                f"{task['task_id']}: missing or duplicate constraint ID"
+            )
+        constraint_ids.add(constraint_id)
+        if not item.get("evidence_refs"):
+            raise TaskValidationError(
+                f"{task['task_id']}: constraint {constraint_id} has no evidence reference"
+            )
 
 
 def _validate_v2_task(task: dict[str, Any]) -> None:

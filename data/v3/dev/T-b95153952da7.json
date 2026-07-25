@@ -1,0 +1,909 @@
+{
+  "schema_version": "3.0",
+  "task_id": "T-b95153952da7",
+  "domain": "travel",
+  "environment_type": "state_bench.travel+native_recovery_v3",
+  "split": "dev",
+  "now": "2026-08-01T10:00:00",
+  "actor_id": "traveler_001",
+  "max_turns": 15,
+  "source": {
+    "benchmark": "STATE-Bench",
+    "repository": "https://github.com/microsoft/STATE-Bench",
+    "commit": "4efcbf2d4fe60df04878859b692d9391f3d5b33a",
+    "reuse": "Native domain schemas, persistent state, and write semantics."
+  },
+  "price_profile": {
+    "profile_id": "travel-usd-2026q3",
+    "source_date": "2026-07-25",
+    "sources": [
+      "https://www.gsa.gov/travel/plan-a-trip/per-diem-rates/per-diem-files"
+    ],
+    "ranges_minor": {
+      "flight": [
+        18000,
+        65000
+      ],
+      "hotel_total": [
+        30000,
+        150000
+      ],
+      "ground_service": [
+        3500,
+        45000
+      ],
+      "event_admission": [
+        30000,
+        120000
+      ]
+    }
+  },
+  "option_metadata": {
+    "TR-3a083be4bbb1": {
+      "name": "Harbor Conference Hotel",
+      "slot": "hotel",
+      "native_kind": "hotel",
+      "available": true,
+      "candidate": false,
+      "upfront_minor": 60000,
+      "monthly_minor": 0,
+      "horizon_months": 0,
+      "total_charge_minor": 60000,
+      "post_purchase_cancel_fee_minor": 0,
+      "provides": {
+        "hotel_stay": 1
+      },
+      "attributes": {
+        "location": "Atlanta",
+        "ready_day": 2
+      }
+    },
+    "TR-2187a1a225d7": {
+      "name": "MetroLink Ground Transfer",
+      "slot": "transfer",
+      "native_kind": "local_service",
+      "available": true,
+      "candidate": false,
+      "upfront_minor": 12000,
+      "monthly_minor": 0,
+      "horizon_months": 0,
+      "total_charge_minor": 12000,
+      "post_purchase_cancel_fee_minor": 0,
+      "provides": {
+        "ground_transfer": 1
+      },
+      "attributes": {
+        "location": "Atlanta",
+        "ready_day": 2
+      }
+    },
+    "TR-6d07ff7638eb": {
+      "name": "Professional Event Admission",
+      "slot": "admission",
+      "native_kind": "local_service",
+      "available": true,
+      "candidate": false,
+      "upfront_minor": 45000,
+      "monthly_minor": 0,
+      "horizon_months": 0,
+      "total_charge_minor": 45000,
+      "post_purchase_cancel_fee_minor": 0,
+      "provides": {
+        "event_admission": 1
+      },
+      "attributes": {
+        "location": "Atlanta",
+        "ready_day": 2
+      }
+    },
+    "TR-6ccb24d1b7ef": {
+      "name": "Confirmed Arrival Flight",
+      "slot": "flight",
+      "native_kind": "flight",
+      "available": true,
+      "candidate": false,
+      "upfront_minor": 42000,
+      "monthly_minor": 0,
+      "horizon_months": 0,
+      "total_charge_minor": 42000,
+      "post_purchase_cancel_fee_minor": 0,
+      "provides": {
+        "arrival_flight": 1
+      },
+      "attributes": {
+        "location": "Atlanta",
+        "ready_day": 2
+      }
+    },
+    "TR-827789faa978": {
+      "name": "Original delegate dinner",
+      "slot": "dining",
+      "native_kind": "local_service",
+      "available": false,
+      "candidate": false,
+      "upfront_minor": 18000,
+      "monthly_minor": 0,
+      "horizon_months": 0,
+      "total_charge_minor": 18000,
+      "post_purchase_cancel_fee_minor": 0,
+      "provides": {
+        "dining_capacity": 1
+      },
+      "attributes": {
+        "location": "Atlanta",
+        "ready_day": 2
+      },
+      "failure_message": "No inventory remains for the requested delegate dinner."
+    },
+    "TR-5b2d8b55c2be": {
+      "name": "Independent delegate dinner",
+      "slot": "dining",
+      "native_kind": "local_service",
+      "available": true,
+      "candidate": true,
+      "upfront_minor": 30000,
+      "monthly_minor": 0,
+      "horizon_months": 0,
+      "total_charge_minor": 30000,
+      "post_purchase_cancel_fee_minor": 1000,
+      "provides": {
+        "dining_capacity": 1
+      },
+      "attributes": {
+        "location": "Atlanta",
+        "ready_day": 2
+      }
+    },
+    "TR-490dbf56de90": {
+      "name": "Premium independent delegate dinner",
+      "slot": "dining",
+      "native_kind": "local_service",
+      "available": true,
+      "candidate": true,
+      "upfront_minor": 39000,
+      "monthly_minor": 0,
+      "horizon_months": 0,
+      "total_charge_minor": 39000,
+      "post_purchase_cancel_fee_minor": 1000,
+      "provides": {
+        "dining_capacity": 1
+      },
+      "attributes": {
+        "location": "Atlanta",
+        "ready_day": 2
+      }
+    },
+    "TR-83d0d3684db9": {
+      "name": "Integrated delegate dinner lodging package",
+      "slot": "dining",
+      "native_kind": "hotel",
+      "available": true,
+      "candidate": true,
+      "upfront_minor": 80000,
+      "monthly_minor": 0,
+      "horizon_months": 0,
+      "total_charge_minor": 80000,
+      "post_purchase_cancel_fee_minor": 1000,
+      "provides": {
+        "hotel_stay": 1,
+        "dining_capacity": 1
+      },
+      "attributes": {
+        "location": "Atlanta",
+        "ready_day": 2
+      }
+    },
+    "TR-b86a03ea53cf": {
+      "name": "Comprehensive delegate dinner travel package",
+      "slot": "dining",
+      "native_kind": "hotel",
+      "available": true,
+      "candidate": true,
+      "upfront_minor": 128000,
+      "monthly_minor": 0,
+      "horizon_months": 0,
+      "total_charge_minor": 128000,
+      "post_purchase_cancel_fee_minor": 1000,
+      "provides": {
+        "hotel_stay": 1,
+        "ground_transfer": 1,
+        "dining_capacity": 1
+      },
+      "attributes": {
+        "location": "Atlanta",
+        "ready_day": 2
+      }
+    },
+    "TR-c641a1ac218d": {
+      "name": "Unavailable-location delegate dinner",
+      "slot": "dining",
+      "native_kind": "local_service",
+      "available": true,
+      "candidate": true,
+      "upfront_minor": 4000,
+      "monthly_minor": 0,
+      "horizon_months": 0,
+      "total_charge_minor": 4000,
+      "post_purchase_cancel_fee_minor": 400,
+      "provides": {
+        "dining_capacity": 1
+      },
+      "attributes": {
+        "location": "Different City",
+        "ready_day": 7
+      }
+    }
+  },
+  "boundary_commitments": [
+    {
+      "entity_id": "BK-0001",
+      "option_id": "TR-6ccb24d1b7ef",
+      "slot": "flight",
+      "paid_minor": 42000,
+      "refund_minor": 42000,
+      "quantity": 1,
+      "provides": {
+        "arrival_flight": 1
+      },
+      "attributes": {
+        "location": "Atlanta",
+        "ready_day": 2
+      }
+    },
+    {
+      "entity_id": "HR-0001",
+      "option_id": "TR-3a083be4bbb1",
+      "slot": "hotel",
+      "paid_minor": 60000,
+      "refund_minor": 60000,
+      "quantity": 1,
+      "provides": {
+        "hotel_stay": 1
+      },
+      "attributes": {
+        "location": "Atlanta",
+        "ready_day": 2
+      }
+    },
+    {
+      "entity_id": "SV-0001",
+      "option_id": "TR-2187a1a225d7",
+      "slot": "transfer",
+      "paid_minor": 12000,
+      "refund_minor": 12000,
+      "quantity": 1,
+      "provides": {
+        "ground_transfer": 1
+      },
+      "attributes": {
+        "location": "Atlanta",
+        "ready_day": 2
+      }
+    },
+    {
+      "entity_id": "SV-0002",
+      "option_id": "TR-6d07ff7638eb",
+      "slot": "admission",
+      "paid_minor": 45000,
+      "refund_minor": 45000,
+      "quantity": 1,
+      "provides": {
+        "event_admission": 1
+      },
+      "attributes": {
+        "location": "Atlanta",
+        "ready_day": 2
+      }
+    }
+  ],
+  "compatibility_rules": [],
+  "economic_terms": [
+    {
+      "term_id": "TERM-6314c7d6d3be",
+      "description": "Changing a commitment can push retained paid value below a discontinuous benefit threshold.",
+      "linked_entity_ids": [
+        "BK-0001",
+        "HR-0001",
+        "SV-0001",
+        "SV-0002"
+      ],
+      "linked_option_ids": [],
+      "trigger": {
+        "type": "retained_paid_below",
+        "entity_ids": [
+          "BK-0001",
+          "HR-0001",
+          "SV-0001",
+          "SV-0002"
+        ],
+        "threshold_minor": 98000
+      },
+      "charge_minor": 25000,
+      "credit_minor": 0
+    }
+  ],
+  "hard_goals": {
+    "capabilities": [
+      {
+        "constraint_id": "HC-2695c87055f0",
+        "capability": "hotel_stay",
+        "label": "hotel stay",
+        "min": 1,
+        "max": 1,
+        "evidence_refs": [
+          "E-HC-2695c87055f0"
+        ]
+      },
+      {
+        "constraint_id": "HC-d8b710f2fa8c",
+        "capability": "ground_transfer",
+        "label": "ground transfer",
+        "min": 1,
+        "max": 1,
+        "evidence_refs": [
+          "E-HC-d8b710f2fa8c"
+        ]
+      },
+      {
+        "constraint_id": "HC-bdf8039a3647",
+        "capability": "event_admission",
+        "label": "event admission",
+        "min": 1,
+        "max": 1,
+        "evidence_refs": [
+          "E-HC-bdf8039a3647"
+        ]
+      },
+      {
+        "constraint_id": "HC-50b21939ec09",
+        "capability": "arrival_flight",
+        "label": "arrival flight",
+        "min": 1,
+        "max": 1,
+        "evidence_refs": [
+          "E-HC-50b21939ec09"
+        ]
+      },
+      {
+        "constraint_id": "HC-d7333c0a42bd",
+        "capability": "dining_capacity",
+        "label": "delegate dinner",
+        "min": 1,
+        "max": 1,
+        "evidence_refs": [
+          "E-HC-d7333c0a42bd"
+        ]
+      }
+    ],
+    "attributes": [
+      {
+        "constraint_id": "HA-04beccc68e77",
+        "capability": "dining_capacity",
+        "attribute": "location",
+        "op": "eq",
+        "value": "Atlanta",
+        "evidence_refs": [
+          "E-HA-04beccc68e77"
+        ]
+      },
+      {
+        "constraint_id": "HA-a60ee8194dde",
+        "capability": "dining_capacity",
+        "attribute": "ready_day",
+        "op": "le",
+        "value": 4,
+        "evidence_refs": [
+          "E-HA-a60ee8194dde"
+        ]
+      }
+    ]
+  },
+  "construction": {
+    "prefix_generated_by_public_tools": true,
+    "failure_generated_by_public_tool": true,
+    "necessary_action_order_invariant": true,
+    "currency": "USD",
+    "internal_money_unit": "minor"
+  },
+  "instruction": "Continue the partially completed Atlanta association meeting. The earlier orders and reservations shown below are already active, but the attempted delegate dinner (dining) has just failed. The final state must contain exactly one hotel stay, exactly one ground transfer, exactly one event admission, exactly one arrival flight, exactly one delegate dinner. Every option covering delegate dinner must be in Atlanta and be ready by day 4. Do not retain combinations that supplier records mark as incompatible. Complete the remaining goal with the lowest actual net monetary cost from this failure point.",
+  "initial_snapshot": {
+    "state_bench": {
+      "flights": [
+        {
+          "flight_id": "TR-6ccb24d1b7ef",
+          "airline_code": "UA",
+          "origin": "ORD",
+          "destination": "SEA",
+          "departure_time": "2026-09-14T08:00:00",
+          "arrival_time": "2026-09-14T10:30:00",
+          "duration_minutes": 150,
+          "stops": 0,
+          "cabin_prices": {
+            "economy": 420
+          },
+          "status": "scheduled",
+          "delay_minutes": 0,
+          "route_type": "domestic"
+        }
+      ],
+      "bookings": [],
+      "users": [
+        {
+          "user_id": "traveler_001",
+          "name": "Repair Scope Traveler",
+          "email": "traveler@example.com",
+          "loyalty_tier": "basic",
+          "loyalty_points": 0,
+          "budget": 10000,
+          "preferences": {
+            "meal_preference": "standard",
+            "seat_type": "aisle",
+            "add_wifi": false,
+            "add_extra_legroom": false,
+            "add_insurance": false
+          }
+        }
+      ],
+      "hotel_inventory": [
+        {
+          "hotel_id": "TR-3a083be4bbb1",
+          "hotel_name": "Harbor Conference Hotel",
+          "city": "Atlanta",
+          "check_in": "2026-09-14",
+          "check_out": "2026-09-16",
+          "room_type": "standard",
+          "nightly_rate": 300,
+          "total_price": 600
+        },
+        {
+          "hotel_id": "TR-83d0d3684db9",
+          "hotel_name": "Integrated delegate dinner lodging package",
+          "city": "Atlanta",
+          "check_in": "2026-09-14",
+          "check_out": "2026-09-16",
+          "room_type": "standard",
+          "nightly_rate": 400,
+          "total_price": 800
+        },
+        {
+          "hotel_id": "TR-b86a03ea53cf",
+          "hotel_name": "Comprehensive delegate dinner travel package",
+          "city": "Atlanta",
+          "check_in": "2026-09-14",
+          "check_out": "2026-09-16",
+          "room_type": "standard",
+          "nightly_rate": 640,
+          "total_price": 1280
+        }
+      ],
+      "hotels": [],
+      "car_inventory": [],
+      "car_rentals": []
+    },
+    "extensions": {
+      "services": [],
+      "service_inventory": [
+        {
+          "option_id": "TR-2187a1a225d7",
+          "slot": "transfer",
+          "price": 120,
+          "available": true,
+          "attributes": {
+            "location": "Atlanta",
+            "ready_day": 2
+          }
+        },
+        {
+          "option_id": "TR-6d07ff7638eb",
+          "slot": "admission",
+          "price": 450,
+          "available": true,
+          "attributes": {
+            "location": "Atlanta",
+            "ready_day": 2
+          }
+        },
+        {
+          "option_id": "TR-827789faa978",
+          "slot": "dining",
+          "price": 180,
+          "available": false,
+          "attributes": {
+            "location": "Atlanta",
+            "ready_day": 2
+          },
+          "failure_message": "No inventory remains for the requested delegate dinner."
+        },
+        {
+          "option_id": "TR-5b2d8b55c2be",
+          "slot": "dining",
+          "price": 300,
+          "available": true,
+          "attributes": {
+            "location": "Atlanta",
+            "ready_day": 2
+          }
+        },
+        {
+          "option_id": "TR-490dbf56de90",
+          "slot": "dining",
+          "price": 390,
+          "available": true,
+          "attributes": {
+            "location": "Atlanta",
+            "ready_day": 2
+          }
+        },
+        {
+          "option_id": "TR-c641a1ac218d",
+          "slot": "dining",
+          "price": 40,
+          "available": true,
+          "attributes": {
+            "location": "Different City",
+            "ready_day": 7
+          }
+        }
+      ]
+    }
+  },
+  "initial_snapshot_sha256": "622219fe8f1ff643bd151c96a99f132e78953e47da4582fa7f05b14a6d3bfac5",
+  "failure_snapshot": {
+    "state_bench": {
+      "flights": [
+        {
+          "flight_id": "TR-6ccb24d1b7ef",
+          "airline_code": "UA",
+          "origin": "ORD",
+          "destination": "SEA",
+          "departure_time": "2026-09-14T08:00:00",
+          "arrival_time": "2026-09-14T10:30:00",
+          "duration_minutes": 150,
+          "stops": 0,
+          "cabin_prices": {
+            "economy": 420
+          },
+          "status": "scheduled",
+          "delay_minutes": 0,
+          "route_type": "domestic"
+        }
+      ],
+      "bookings": [
+        {
+          "booking_id": "BK-0001",
+          "user_id": "traveler_001",
+          "flight_id": "TR-6ccb24d1b7ef",
+          "status": "confirmed",
+          "cabin_class": "economy",
+          "seat_type": "aisle",
+          "meal_preference": "standard",
+          "add_wifi": false,
+          "add_extra_legroom": false,
+          "add_insurance": false,
+          "price_paid": 420,
+          "payment_method": "credit_card",
+          "points_used": 0,
+          "cash_amount": 420,
+          "booked_at": "2026-08-01T10:00:00",
+          "cancellation_fee": null,
+          "refund_amount": null,
+          "change_fee": null,
+          "fare_difference": null,
+          "delay_compensation": null,
+          "paid_checked_bags": 0
+        }
+      ],
+      "users": [
+        {
+          "user_id": "traveler_001",
+          "name": "Repair Scope Traveler",
+          "email": "traveler@example.com",
+          "loyalty_tier": "basic",
+          "loyalty_points": 0,
+          "budget": 10000,
+          "preferences": {
+            "meal_preference": "standard",
+            "seat_type": "aisle",
+            "add_wifi": false,
+            "add_extra_legroom": false,
+            "add_insurance": false
+          }
+        }
+      ],
+      "hotel_inventory": [
+        {
+          "hotel_id": "TR-3a083be4bbb1",
+          "hotel_name": "Harbor Conference Hotel",
+          "city": "Atlanta",
+          "check_in": "2026-09-14",
+          "check_out": "2026-09-16",
+          "room_type": "standard",
+          "nightly_rate": 300,
+          "total_price": 600
+        },
+        {
+          "hotel_id": "TR-83d0d3684db9",
+          "hotel_name": "Integrated delegate dinner lodging package",
+          "city": "Atlanta",
+          "check_in": "2026-09-14",
+          "check_out": "2026-09-16",
+          "room_type": "standard",
+          "nightly_rate": 400,
+          "total_price": 800
+        },
+        {
+          "hotel_id": "TR-b86a03ea53cf",
+          "hotel_name": "Comprehensive delegate dinner travel package",
+          "city": "Atlanta",
+          "check_in": "2026-09-14",
+          "check_out": "2026-09-16",
+          "room_type": "standard",
+          "nightly_rate": 640,
+          "total_price": 1280
+        }
+      ],
+      "hotels": [
+        {
+          "reservation_id": "HR-0001",
+          "user_id": "traveler_001",
+          "hotel_name": "Harbor Conference Hotel",
+          "city": "Atlanta",
+          "check_in": "2026-09-14",
+          "check_out": "2026-09-16",
+          "room_type": "standard",
+          "nightly_rate": 300,
+          "total_price": 600,
+          "hotel_id": "TR-3a083be4bbb1",
+          "status": "confirmed",
+          "booked_at": "2026-08-01T10:00:00",
+          "cancellation_fee": null,
+          "refund_amount": null
+        }
+      ],
+      "car_inventory": [],
+      "car_rentals": []
+    },
+    "extensions": {
+      "services": [
+        {
+          "service_id": "SV-0001",
+          "user_id": "traveler_001",
+          "option_id": "TR-2187a1a225d7",
+          "slot": "transfer",
+          "status": "confirmed",
+          "price_paid": 120,
+          "refund_amount": null,
+          "cancellation_fee": null,
+          "attributes": {
+            "location": "Atlanta",
+            "ready_day": 2
+          }
+        },
+        {
+          "service_id": "SV-0002",
+          "user_id": "traveler_001",
+          "option_id": "TR-6d07ff7638eb",
+          "slot": "admission",
+          "status": "confirmed",
+          "price_paid": 450,
+          "refund_amount": null,
+          "cancellation_fee": null,
+          "attributes": {
+            "location": "Atlanta",
+            "ready_day": 2
+          }
+        }
+      ],
+      "service_inventory": [
+        {
+          "option_id": "TR-2187a1a225d7",
+          "slot": "transfer",
+          "price": 120,
+          "available": true,
+          "attributes": {
+            "location": "Atlanta",
+            "ready_day": 2
+          }
+        },
+        {
+          "option_id": "TR-490dbf56de90",
+          "slot": "dining",
+          "price": 390,
+          "available": true,
+          "attributes": {
+            "location": "Atlanta",
+            "ready_day": 2
+          }
+        },
+        {
+          "option_id": "TR-5b2d8b55c2be",
+          "slot": "dining",
+          "price": 300,
+          "available": true,
+          "attributes": {
+            "location": "Atlanta",
+            "ready_day": 2
+          }
+        },
+        {
+          "option_id": "TR-6d07ff7638eb",
+          "slot": "admission",
+          "price": 450,
+          "available": true,
+          "attributes": {
+            "location": "Atlanta",
+            "ready_day": 2
+          }
+        },
+        {
+          "option_id": "TR-827789faa978",
+          "slot": "dining",
+          "price": 180,
+          "available": false,
+          "attributes": {
+            "location": "Atlanta",
+            "ready_day": 2
+          },
+          "failure_message": "No inventory remains for the requested delegate dinner."
+        },
+        {
+          "option_id": "TR-c641a1ac218d",
+          "slot": "dining",
+          "price": 40,
+          "available": true,
+          "attributes": {
+            "location": "Different City",
+            "ready_day": 7
+          }
+        }
+      ]
+    }
+  },
+  "snapshot_sha256": "a036c161f92ce830bce3a4214a0ceecdeb981f6f0551eb639c3feb325277aaf3",
+  "pre_failure_trace": [
+    {
+      "step": 1,
+      "tool": "book_travel_option",
+      "arguments": {
+        "option_id": "TR-6ccb24d1b7ef",
+        "user_id": "traveler_001"
+      },
+      "result": {
+        "ok": true,
+        "message": "confirmed",
+        "data": {
+          "status": "confirmed",
+          "booking_id": "BK-0001",
+          "flight_id": "TR-6ccb24d1b7ef",
+          "cabin_class": "economy",
+          "price": {
+            "amount": "420.00",
+            "currency": "USD"
+          },
+          "payment_method": "credit_card"
+        }
+      }
+    },
+    {
+      "step": 2,
+      "tool": "book_travel_option",
+      "arguments": {
+        "option_id": "TR-3a083be4bbb1",
+        "user_id": "traveler_001"
+      },
+      "result": {
+        "ok": true,
+        "message": "confirmed",
+        "data": {
+          "status": "confirmed",
+          "reservation_id": "HR-0001",
+          "hotel_id": "TR-3a083be4bbb1",
+          "hotel_name": "Harbor Conference Hotel",
+          "total_price": {
+            "amount": "600.00",
+            "currency": "USD"
+          },
+          "room_type": "standard"
+        }
+      }
+    },
+    {
+      "step": 3,
+      "tool": "book_travel_option",
+      "arguments": {
+        "option_id": "TR-2187a1a225d7",
+        "user_id": "traveler_001"
+      },
+      "result": {
+        "ok": true,
+        "message": "confirmed",
+        "data": {
+          "status": "confirmed",
+          "service_id": "SV-0001",
+          "option_id": "TR-2187a1a225d7",
+          "charge": {
+            "amount": "120.00",
+            "currency": "USD"
+          }
+        }
+      }
+    },
+    {
+      "step": 4,
+      "tool": "book_travel_option",
+      "arguments": {
+        "option_id": "TR-6d07ff7638eb",
+        "user_id": "traveler_001"
+      },
+      "result": {
+        "ok": true,
+        "message": "confirmed",
+        "data": {
+          "status": "confirmed",
+          "service_id": "SV-0002",
+          "option_id": "TR-6d07ff7638eb",
+          "charge": {
+            "amount": "450.00",
+            "currency": "USD"
+          }
+        }
+      }
+    }
+  ],
+  "prefix_ledger": [
+    {
+      "event_index": 1,
+      "category": "direct_transaction",
+      "debit_minor": 42000,
+      "credit_minor": 0,
+      "net_minor": 42000,
+      "currency": "USD",
+      "source": "create_booking",
+      "source_record_id": null
+    },
+    {
+      "event_index": 2,
+      "category": "direct_transaction",
+      "debit_minor": 60000,
+      "credit_minor": 0,
+      "net_minor": 60000,
+      "currency": "USD",
+      "source": "book_hotel",
+      "source_record_id": null
+    },
+    {
+      "event_index": 3,
+      "category": "direct_transaction",
+      "debit_minor": 12000,
+      "credit_minor": 0,
+      "net_minor": 12000,
+      "currency": "USD",
+      "source": "book_local_service",
+      "source_record_id": null
+    },
+    {
+      "event_index": 4,
+      "category": "direct_transaction",
+      "debit_minor": 45000,
+      "credit_minor": 0,
+      "net_minor": 45000,
+      "currency": "USD",
+      "source": "book_local_service",
+      "source_record_id": null
+    }
+  ],
+  "latest_failure": {
+    "tool": "book_travel_option",
+    "arguments": {
+      "option_id": "TR-827789faa978",
+      "user_id": "traveler_001"
+    },
+    "result": {
+      "ok": false,
+      "message": "No inventory remains for the requested delegate dinner.",
+      "data": {
+        "error": "No inventory remains for the requested delegate dinner."
+      }
+    }
+  }
+}

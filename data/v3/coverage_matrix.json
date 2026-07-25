@@ -1,0 +1,26 @@
+{
+  "travel": {
+    "sunk_vs_incremental": 4,
+    "multi_hop_propagation": 4,
+    "shared_commitment": 4,
+    "nonlinear_threshold": 4,
+    "conditional_contract": 4,
+    "partial_quantity": 4,
+    "bridge_vs_replacement": 4,
+    "joint_bundle_selection": 4,
+    "explicit_horizon": 4,
+    "selective_dependency_cut": 4
+  },
+  "after_sales": {
+    "sunk_vs_incremental": 4,
+    "multi_hop_propagation": 4,
+    "shared_commitment": 4,
+    "nonlinear_threshold": 4,
+    "conditional_contract": 4,
+    "partial_quantity": 4,
+    "bridge_vs_replacement": 4,
+    "joint_bundle_selection": 4,
+    "explicit_horizon": 4,
+    "selective_dependency_cut": 4
+  }
+}

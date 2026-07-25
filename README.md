@@ -1,164 +1,176 @@
 # RepairScope-Bench
 
-> **v2.0 strict pilot:** the repository now includes 24 tasks in 12
-> single-fact pairs with separate scope/trajectory economics, declarative and
-> public-tool replay Oracles, and reusable complexity calibration. See
-> [docs/V2_PILOT.md](docs/V2_PILOT.md). v1.1 remains frozen for reproduction.
+**Can a tool-using agent recover from a failed operation without needlessly
+discarding already executed commitments?**
 
-**Can a tool-using agent repair a failed multi-step task without discarding
-valuable commitments or choosing a recovery that another feasible recovery
-objectively dominates?**
+RepairScope-Bench v3.0 evaluates recovery from a fixed, executable failure
+boundary. Flights, hotels, products, licences, and services have already been
+created through real write tools and persist in a native STATE-Bench domain.
+The agent must investigate orders, policies, inventory, contracts, and
+compatibility, then execute the unique lowest-cost valid repair within 15
+model turns.
 
-RepairScope-Bench v1.1 starts every model from the same executable,
-post-failure state. Earlier tool calls have already created paid, persistent
-commitments. The model must inspect records, alternatives, cancellation
-previews, compatibility facts, and contracts, then complete the recovery
-through domain tools within 15 turns.
+v3.0 uses two native domains:
 
-The public leaderboard has one task format: **full recovery**. It reports:
+- travel, backed by STATE-Bench `TravelEnvironment`;
+- after-sales purchasing, backed by STATE-Bench
+  `CustomerSupportEnvironment`.
 
-- `Goal Pass`: all hard requirements and business rules hold;
-- `Non-Dominated Repair Pass`: Goal Pass, and no feasible recovery is no worse
-  in both irreversible loss and net recovery outlay and strictly better in at
-  least one.
+There is no LLM judge, answer-revealing cost-summary tool, authored repair
+macro, subjective utility weight, or benchmark-specific `finish()` action.
 
-There is no LLM judge, subjective utility weight, answer-revealing cost tool,
-authored repair macro, or benchmark-specific `finish()` action.
+[中文说明](README.zh-CN.md) · [Data Card](docs/DATA_CARD.md) ·
+[Evaluation](docs/EVALUATION.md) ·
+[Research Story](docs/RESEARCH_STORY.md) ·
+[Provider Setup](docs/PROVIDERS.md)
 
-[中文说明](README.zh-CN.md) · [Data card](docs/DATA_CARD.md) ·
-[Evaluation](docs/EVALUATION.md) · [Research story](docs/RESEARCH_STORY.md) ·
-[Provider setup](docs/PROVIDERS.md)
+## Dataset
 
-## v1.1 dataset
-
-The release has 160 tasks from 80 single-fact counterfactual pairs:
+The release contains 80 tasks from 40 single-fact counterfactual pairs:
 
 | Dimension | Coverage |
 |---|---:|
-| Domains | travel, after-sales, SaaS, event logistics |
-| Base scenarios | 80 |
-| Counterfactual tasks | 160 |
-| Primary reasoning structures | 10 |
+| Native domains | travel and after-sales |
+| Reasoning structures | 10 |
 | Tasks per structure-domain cell | 4 |
-| Model turns | 15 |
+| Development split | 40 |
+| Test split | 40 |
+| Counterfactual pairs | 40 |
+| Existing persistent commitments per task | 4 |
+| Model-turn limit | 15 |
 
-The ten structures are:
+The ten reasoning structures are:
 
-1. sunk cost versus marginal recovery cost;
+1. sunk cost versus incremental recovery cost;
 2. multi-hop economic impact propagation;
-3. shared-commitment preservation;
-4. non-linear threshold effects;
+3. shared-commitment protection;
+4. non-linear pricing thresholds;
 5. conditional contract logic;
-6. partial-quantity rollback;
+6. evidence-backed partial-quantity repair;
 7. bridge repair versus upstream replacement;
-8. joint compatible-bundle selection;
+8. joint compatible-combination selection;
 9. explicit-horizon recurring cost;
-10. genuine Pareto trade-offs.
+10. selective dependency cutting.
 
-Each structure appears in every domain through two base scenarios and their
-paired variants. Refunds, penalties, credits, warranties, licences,
-subscriptions, deposits, delivery charges, and adapters are economic
-carriers, not capability labels.
+Every structure appears in both domains through two independently named base
+scenarios and their paired variants. A pair has the same request, prefix,
+failure snapshot, and inventory; one queryable policy fact changes, and the
+unique optimal repair scope must change with it.
 
-## What a task contains
+## Objective
 
-The builder starts from an empty database, creates the prior commitments with
-the same public write tools exposed to the model, executes an unavailable
-option, and hashes the resulting failure snapshot. Models receive only:
+All amounts are exact integer cents internally and model-visible USD strings.
+Historical payments before the failure boundary are not counted again.
 
-- a normal domain-agent system prompt;
-- the customer request;
-- a compact successful pre-failure tool trace;
-- the latest failed call and result;
-- eight domain tools.
+```text
+Incremental Recovery Cost
+  = post-failure payments
+  + modification, cancellation, return, migration, and activation fees
+  + discount or rebate clawbacks
+  - refunds
+  - immediately usable credits and compensation
+```
 
-The reasoning label, pair identity, changed fact, hard-goal DSL, feasible
-terminal set, and Pareto frontier remain private. A model must query the
-environment to discover the intervention.
+The Oracle enumerates all hard-goal-feasible native commitment sets, computes
+the minimum reachable cost of each scope, and replays every candidate through
+the public domain tools. A task is released only when exactly one scope is
+cheapest and its lead over the runner-up is at least:
 
-Necessary operations are economically order-invariant. Extra purchases,
-cancellations, and repeated changes remain in the ledger and may make an
-otherwise correct scope dominated.
+```text
+max($10, 1% of active paid commitments at the failure boundary)
+```
 
-## Validity-first construction
+Tool-call order is not part of gold. Different legal traces are accepted if
+they end in the same scope. Unnecessary intermediate actions remain in the
+ledger and can make an otherwise correct scope wasteful.
 
-`scripts/build_v11.py` rejects a task unless:
+## What the model sees
 
-- the failure boundary replays exactly from public tools and matches its hash;
-- at least three semantic recovery scopes are feasible;
-- at least one feasible recovery is economically dominated;
-- a terminal-state enumerator and an independent public-tool state search
-  produce the same Pareto frontier;
-- the paired variant changes one logical fact and changes the accepted scope;
-- a gold witness is executable within the 15-turn limit.
+The model receives only:
 
-Across the release, 50% of tasks have multi-point Pareto frontiers, 50% have
-an accepted solution with positive irreversible loss, 90% require changing
-at least one prior commitment, and 30% cannot be solved by one added option.
+- a normal travel or after-sales system prompt;
+- the natural-language customer request;
+- four successful pre-failure write calls and their real results;
+- the latest failed write call and result;
+- eight domain-specific tools.
 
-## Install and validate
+The model does not receive the hard-goal DSL, pair identity, reasoning label,
+changed-fact pointer, candidate scopes, aggregate recovery costs, or gold.
+It must query the authoritative environment to discover the decisive fact.
 
-Python 3.12+ and Git are required.
+## Metrics
+
+- `Goal Pass`: all evidenced hard requirements and business rules hold;
+- `Unique Scope Pass`: Goal Pass and the final native scope equals the unique
+  lowest-cost scope;
+- `Counterfactual Pair Success`: both variants are solved and the repair
+  changes with the queried fact;
+- `Incremental Recovery Cost` and `Cost Regret`;
+- `Clean Execution`: the scope is correct and no avoidable cost was incurred;
+- `Execution Waste`: cost added by unnecessary intermediate actions;
+- `Over-Repair` and `Under-Repair`.
+
+Scope reasoning and tool execution are deliberately separated. An agent that
+buys the wrong option, pays a visible cancellation fee, and then reaches the
+correct final scope receives `Unique Scope Pass` but not `Clean Execution`.
+
+## Install, build, and validate
+
+Python 3.12+ and Git are required. STATE-Bench is pinned to commit
+`4efcbf2d4fe60df04878859b692d9391f3d5b33a`.
 
 ```bash
 python -m pip install -e .
-python scripts/build_v11.py
-repairscope validate data/v11
-repairscope run-baselines data/v11
+python scripts/build_v3.py
+repairscope validate data/v3
+repairscope run-baselines data/v3
 python -m unittest discover -s tests -v
 ```
 
-The checked-in v1.1 data gives:
+The checked-in v3.0 data gives:
 
-| Baseline | Goal Pass | Non-Dominated Pass |
+| Baseline | Goal Pass | Unique Scope Pass |
 |---|---:|---:|
-| No repair | 0 / 160 | 0 / 160 |
-| Local repair | 160 / 160 | 72 / 160 |
-| Dependency repair | 160 / 160 | 72 / 160 |
-| Full rollback | 160 / 160 | 0 / 160 |
-| Lowest new sticker price | 160 / 160 | 96 / 160 |
-| Largest gross refund | 160 / 160 | 0 / 160 |
-| Minimum changes | 160 / 160 | 72 / 160 |
-| Pareto Oracle | 160 / 160 | 160 / 160 |
-
-Exact minimization of either Pareto dimension is an analytical Oracle, not a
-realistic weak baseline: a correctly tie-broken global minimum of one
-dimension must be non-dominated.
+| No repair | 0 / 80 | 0 / 80 |
+| Local repair | 80 / 80 | 32 / 80 |
+| Dependency repair | 80 / 80 | 36 / 80 |
+| Full rollback | 80 / 80 | 4 / 80 |
+| Lowest new sticker price | 80 / 80 | 38 / 80 |
+| Largest gross refund | 80 / 80 | 0 / 80 |
+| Minimum changes | 80 / 80 | 32 / 80 |
+| Exact cost Oracle | 80 / 80 | 80 / 80 |
 
 ## Run a model
 
 ```bash
-repairscope run-suite data/v11 \
+repairscope run-suite data/v3 \
   --provider openai-compatible \
   --model YOUR_MODEL_ID \
   --base-url https://gateway.example/v1 \
   --repeats 5 \
-  --output-dir results/your-model-v11
+  --output-dir results/your-model-v3
 ```
 
-Official reporting uses five independent episodes per task and includes
-Goal Pass@1/Pass^5, Non-Dominated Repair Pass@1/Pass^5, dominated-repair
-rate, both regret components, counterfactual-pair success, and breakdowns by
-domain, reasoning structure, and difficulty.
+Official reporting uses five independent episodes per task and reports
+Pass@1, strict Pass^5, paired success, cost regret, investigation behavior,
+scope errors, execution waste, tool errors, and turn exhaustion. Provider
+failures remain in the denominator.
 
 ## Layout and claim boundary
 
 ```text
-data/v11/                    160 public v1.1 task states
-data/gold/v11.json           private metadata, terminals, frontiers, certificates
-scripts/build_v11.py         deterministic validity-first builder
-src/repairscope_bench/       runtime, solvers, evaluator, providers, CLI
-tests/test_v11.py            v1.1 release and regression tests
-data/v1/, data/v06/          retained earlier releases
-data/legacy/v0.5/            prototypes
+data/v3/dev/                 40 public development tasks
+data/v3/test/                40 public test tasks
+data/gold/v3.json            private metadata, terminals, gold, and witnesses
+scripts/build_v3.py          deterministic native-domain builder
+src/repairscope_bench/v3_*   runtime, constraints, Oracle, and evaluator
+tests/test_v3.py             v3 release and regression tests
 ```
 
-v1.1 uses four domain-specific tool surfaces over a common audited
-commitment-and-ledger core, which enables exact cross-domain comparison.
-v0.6 is retained as the earlier direct STATE-Bench-backed implementation.
-
-The novelty claim is not that partial rollback is new. The benchmark measures
-whether an agent can reason over already executed commitments and avoid a
-hard-goal-feasible repair scope that another feasible outcome strictly
-economically dominates. It does not evaluate pre-failure planning,
-subjective preference elicitation, or production safety.
+v3.0 evaluates only post-failure recovery from standardized snapshots. The
+prior commitments were produced by executable tools, but not freely chosen
+by the tested model in the same episode. It does not evaluate pre-failure
+planning, subjective preferences, stochastic risk, or production safety.
+The novelty claim is not that partial rollback is new; it is deterministic
+evaluation of whether an agent selects the correct repair scope over real
+persistent commitments and auditable incremental costs.

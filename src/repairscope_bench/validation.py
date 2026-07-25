@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from collections import Counter, defaultdict
+from copy import deepcopy
 import json
 from pathlib import Path
 from typing import Any
@@ -15,6 +16,8 @@ def validate_dataset(
     path: str | Path, gold_path: str | Path | None = None
 ) -> dict[str, Any]:
     tasks = load_tasks(path)
+    if tasks and tasks[0]["schema_version"] == "3.0":
+        return _validate_v3_dataset(tasks, path, gold_path)
     if tasks and tasks[0]["schema_version"] == "2.0":
         return _validate_v2_dataset(tasks, path, gold_path)
     if tasks and tasks[0]["schema_version"] == "1.1":
@@ -176,6 +179,469 @@ def _infer_gold_path(path: str | Path) -> Path:
     else:
         data_root = parent
     return data_root / "gold" / f"{dataset_name}.json"
+
+
+def _validate_v3_dataset(
+    tasks: list[dict[str, Any]],
+    path: str | Path,
+    gold_path: str | Path | None,
+) -> dict[str, Any]:
+    from .v3_environment import NativeRecoveryEnvironmentV3
+    from .v3_oracle import solve_task_v3
+
+    source = Path(path)
+    gold_file = (
+        Path(gold_path)
+        if gold_path is not None
+        else (
+            source.parent / "gold" / "v3.json"
+            if source.is_dir() and source.name == "v3"
+            else source.parents[1] / "gold" / "v3.json"
+            if source.is_dir() and source.parent.name == "v3"
+            else _infer_gold_path(path)
+        )
+    )
+    with gold_file.open("r", encoding="utf-8") as handle:
+        gold: dict[str, dict[str, Any]] = json.load(handle)
+    errors: list[str] = []
+    pairs: dict[str, list[dict[str, Any]]] = defaultdict(list)
+    mechanism_counts: Counter[str] = Counter()
+    runtime_counts: Counter[str] = Counter()
+    unique_count = 0
+    evidence_count = 0
+    evidence_total = 0
+    price_valid_count = 0
+
+    for task in tasks:
+        expected = gold.get(task["task_id"])
+        if expected is None:
+            errors.append(f"{task['task_id']}: missing v3 gold")
+            continue
+        metadata = expected["metadata"]
+        pairs[metadata["pair_id"]].append(task)
+        mechanism_counts[metadata["reasoning_structure"]] += 1
+        oracle = solve_task_v3(task)
+        if not oracle.feasible or oracle.feasible_scope_count < 3:
+            errors.append(
+                f"{task['task_id']}: insufficient feasible recovery space"
+            )
+        if not oracle.unique or oracle.gold is None:
+            errors.append(f"{task['task_id']}: gold scope is not unique")
+        else:
+            unique_count += 1
+        frozen = expected["oracle"]
+        if oracle.as_dict() != frozen:
+            errors.append(f"{task['task_id']}: frozen v3 oracle is stale")
+        if (
+            oracle.cost_margin_minor is None
+            or oracle.cost_margin_minor < oracle.required_margin_minor
+        ):
+            errors.append(
+                f"{task['task_id']}: unique optimum lacks a material margin"
+            )
+        if oracle.gold is not None and len(oracle.gold["tool_calls"]) > 12:
+            errors.append(
+                f"{task['task_id']}: reference execution exceeds 12 tool calls"
+            )
+        if not _replay_v3_prefix(task):
+            errors.append(
+                f"{task['task_id']}: public writes do not reproduce the failure boundary"
+            )
+        environment = NativeRecoveryEnvironmentV3(task)
+        runtime_counts[environment.native_runtime_name()] += 1
+        evidence_ok, observed, total, evidence_errors = _validate_v3_evidence(
+            task, metadata["evidence_manifest"]
+        )
+        evidence_count += observed
+        evidence_total += total
+        if not evidence_ok:
+            errors.extend(
+                f"{task['task_id']}: {message}"
+                for message in evidence_errors
+            )
+        if _v3_prices_plausible(task):
+            price_valid_count += 1
+        else:
+            errors.append(f"{task['task_id']}: price profile violation")
+        if _v3_public_money_is_normalized(task):
+            pass
+        else:
+            errors.append(
+                f"{task['task_id']}: model-visible money is not normalized USD"
+            )
+
+    for pair_id, members in pairs.items():
+        if len(members) != 2:
+            errors.append(f"{pair_id}: expected exactly two variants")
+            continue
+        left, right = sorted(
+            members,
+            key=lambda item: gold[item["task_id"]]["metadata"][
+                "variant_role"
+            ],
+        )
+        left_meta = gold[left["task_id"]]["metadata"]
+        right_meta = gold[right["task_id"]]["metadata"]
+        if (
+            left_meta["changed_fact"]["json_pointer"]
+            != right_meta["changed_fact"]["json_pointer"]
+        ):
+            errors.append(f"{pair_id}: variants change different facts")
+        if left["failure_snapshot"] != right["failure_snapshot"]:
+            errors.append(f"{pair_id}: failure snapshots differ")
+        if left["instruction"] != right["instruction"]:
+            errors.append(f"{pair_id}: user instruction differs")
+        left_scope = gold[left["task_id"]]["oracle"]["gold"][
+            "scope_signature"
+        ]
+        right_scope = gold[right["task_id"]]["oracle"]["gold"][
+            "scope_signature"
+        ]
+        if left_scope == right_scope:
+            errors.append(f"{pair_id}: unique gold scope did not flip")
+        normalized_left = deepcopy(
+            {key: value for key, value in left.items() if not key.startswith("_")}
+        )
+        normalized_right = deepcopy(
+            {key: value for key, value in right.items() if not key.startswith("_")}
+        )
+        normalized_left["task_id"] = normalized_right["task_id"] = "<opaque>"
+        differences: list[str] = []
+        _v2_diff(normalized_left, normalized_right, "", differences)
+        expected_pointer = left_meta["changed_fact"]["json_pointer"]
+        if differences != [expected_pointer]:
+            errors.append(
+                f"{pair_id}: expected one public fact, found {differences}"
+            )
+
+    domain_counts = Counter(task["domain"] for task in tasks)
+    split_counts = Counter(task["split"] for task in tasks)
+    if len(tasks) != 80 or len(pairs) != 40:
+        errors.append(
+            f"v3 requires 80 tasks in 40 pairs, found {len(tasks)}/{len(pairs)}"
+        )
+    if domain_counts != {"travel": 40, "after_sales": 40}:
+        errors.append(f"v3 domains are unbalanced: {domain_counts}")
+    if split_counts != {"dev": 40, "test": 40}:
+        errors.append(f"v3 splits are unbalanced: {split_counts}")
+    if set(mechanism_counts.values()) != {8} or len(mechanism_counts) != 10:
+        errors.append(
+            f"v3 reasoning structures are unbalanced: {mechanism_counts}"
+        )
+    if unique_count != len(tasks):
+        errors.append("not every v3 task has a unique optimum")
+    if evidence_count != evidence_total:
+        errors.append(
+            f"only {evidence_count}/{evidence_total} evidence references validated"
+        )
+    if price_valid_count != len(tasks):
+        errors.append("not every v3 task passes price plausibility checks")
+
+    strategies = [
+        "no_repair",
+        "local_repair",
+        "dependency_repair",
+        "full_rollback",
+        "sticker_price",
+        "max_refund",
+        "min_changes",
+        "cost_oracle",
+    ]
+    baselines: dict[str, dict[str, int | float]] = {}
+    for strategy in strategies:
+        scores = [
+            evaluate_actions(task, make_actions(task, strategy))
+            for task in tasks
+        ]
+        baselines[strategy] = {
+            "goal_pass": sum(item["goal_pass"] for item in scores),
+            "unique_scope_pass": sum(
+                item["unique_scope_pass"] for item in scores
+            ),
+            "clean_execution": sum(
+                item["clean_execution"] for item in scores
+            ),
+            "scope_rate": sum(
+                item["unique_scope_pass"] for item in scores
+            )
+            / len(scores),
+        }
+    if baselines["cost_oracle"]["clean_execution"] != len(tasks):
+        errors.append("v3 cost Oracle does not pass every task")
+    for strategy in [
+        "local_repair",
+        "dependency_repair",
+        "full_rollback",
+        "sticker_price",
+        "max_refund",
+        "min_changes",
+    ]:
+        if baselines[strategy]["scope_rate"] >= 0.65:
+            errors.append(
+                f"{strategy}: exceeds the preregistered 65% ceiling"
+            )
+
+    return {
+        "valid": not errors,
+        "schema_version": "3.0",
+        "track": "native-two-domain",
+        "task_count": len(tasks),
+        "counterfactual_pair_count": len(pairs),
+        "domain_counts": dict(domain_counts),
+        "split_counts": dict(split_counts),
+        "mechanism_counts": dict(mechanism_counts),
+        "native_runtime_counts": dict(runtime_counts),
+        "unique_gold_count": unique_count,
+        "validated_evidence_count": evidence_count,
+        "evidence_reference_count": evidence_total,
+        "price_valid_task_count": price_valid_count,
+        "errors": errors,
+        "gold_path": str(gold_file.resolve()),
+        "baselines": baselines,
+    }
+
+
+def _replay_v3_prefix(task: dict[str, Any]) -> bool:
+    from copy import deepcopy
+
+    from .v3_environment import NativeRecoveryEnvironmentV3, snapshot_hash
+
+    replay_task = deepcopy(task)
+    replay_task["failure_snapshot"] = deepcopy(task["initial_snapshot"])
+    replay_task["snapshot_sha256"] = task["initial_snapshot_sha256"]
+    replay_task["boundary_commitments"] = []
+    replay_task["economic_terms"] = []
+    environment = NativeRecoveryEnvironmentV3(replay_task)
+    for step in task["pre_failure_trace"]:
+        if not environment.execute_tool(
+            step["tool"], deepcopy(step["arguments"])
+        ).ok:
+            return False
+    failure = task["latest_failure"]
+    result = environment.execute_tool(
+        failure["tool"], deepcopy(failure["arguments"])
+    )
+    return bool(
+        not result.ok
+        and snapshot_hash(environment.normalized_state())
+        == task["snapshot_sha256"]
+    )
+
+
+def _validate_v3_evidence(
+    task: dict[str, Any],
+    manifest: list[dict[str, Any]],
+) -> tuple[bool, int, int, list[str]]:
+    from .domain_tools import tool_definitions_for_task
+    from .v3_environment import NativeRecoveryEnvironmentV3
+
+    by_id = {item["evidence_id"]: item for item in manifest}
+    referenced: list[str] = []
+    for constraint in (
+        task["hard_goals"]["capabilities"]
+        + task["hard_goals"].get("attributes", [])
+        + task["compatibility_rules"]
+    ):
+        referenced.extend(constraint.get("evidence_refs", []))
+    errors: list[str] = []
+    observed = 0
+    definitions = {
+        item["name"]: item for item in tool_definitions_for_task(task)
+    }
+    environment = NativeRecoveryEnvironmentV3(task)
+    for evidence_id in referenced:
+        evidence = by_id.get(evidence_id)
+        if evidence is None:
+            errors.append(f"missing evidence record {evidence_id}")
+            continue
+        source_type = evidence["source_type"]
+        valid = False
+        if source_type == "instruction_span":
+            valid = evidence["text"] in task["instruction"]
+        elif source_type == "tool_rule":
+            tool = definitions.get(evidence["tool"])
+            valid = bool(
+                tool
+                and evidence["description_fragment"].lower()
+                in tool["description"].lower()
+            )
+        elif source_type == "prefix_trace":
+            step = int(evidence["step"])
+            valid = 1 <= step <= len(task["pre_failure_trace"])
+        elif source_type == "query_result":
+            result = environment.execute_tool(
+                evidence["tool"], deepcopy(evidence["arguments"])
+            )
+            valid = result.ok and _v3_query_match(
+                result.data or {}, evidence["match"]
+            )
+        if valid:
+            observed += 1
+        else:
+            errors.append(f"unverifiable evidence {evidence_id}")
+
+    # The changed economic fact is not itself a hard constraint, but it must
+    # still be discoverable before any mutation.
+    fact_records = [
+        item for item in manifest if item["source_type"] == "query_result"
+    ]
+    for evidence in fact_records:
+        result = environment.execute_tool(
+            evidence["tool"], deepcopy(evidence["arguments"])
+        )
+        if not result.ok or not _v3_query_match(
+            result.data or {}, evidence["match"]
+        ):
+            errors.append(
+                f"changed fact {evidence['evidence_id']} is not queryable"
+            )
+    return not errors, observed, len(referenced), errors
+
+
+def _v3_query_match(
+    data: dict[str, Any], match: dict[str, Any]
+) -> bool:
+    term = next(
+        (
+            item
+            for item in data.get("linked_terms", [])
+            if item.get("term_id") == match["term_id"]
+        ),
+        None,
+    )
+    if term is None:
+        return False
+    field = match["field"]
+    if field == "charge_minor":
+        observed = _money_minor(term.get("one_time_charge"))
+    elif field == "credit_minor":
+        observed = _money_minor(term.get("credit"))
+    elif field == "monthly_minor":
+        observed = _money_minor(term.get("monthly_charge"))
+    elif field.startswith("trigger/"):
+        observed = term.get("trigger", {}).get(field.split("/", 1)[1])
+        if isinstance(observed, dict) and "amount" in observed:
+            observed = _money_minor(observed)
+    else:
+        return False
+    return observed == match["expected"]
+
+
+def _money_minor(value: Any) -> int | None:
+    if not isinstance(value, dict) or value.get("currency") != "USD":
+        return None
+    amount = str(value.get("amount", ""))
+    sign = -1 if amount.startswith("-") else 1
+    amount = amount.lstrip("-")
+    if "." not in amount:
+        return None
+    dollars, cents = amount.split(".", 1)
+    if len(cents) != 2 or not dollars.isdigit() or not cents.isdigit():
+        return None
+    return sign * (int(dollars) * 100 + int(cents))
+
+
+def _v3_prices_plausible(task: dict[str, Any]) -> bool:
+    ranges = task["price_profile"]["ranges_minor"]
+    for item in task["option_metadata"].values():
+        price = int(item["total_charge_minor"])
+        post_purchase_fee = int(
+            item.get("post_purchase_cancel_fee_minor", 0)
+        )
+        if not 0 <= post_purchase_fee <= min(5000, price // 10):
+            return False
+        if not item.get("available", False):
+            continue
+        provides = item.get("provides", {})
+        if task["domain"] == "travel":
+            if item["native_kind"] == "flight":
+                low, high = ranges["flight"]
+            elif item["native_kind"] == "hotel":
+                low, high = ranges["hotel_total"]
+            elif "event_admission" in provides:
+                low, high = ranges["event_admission"]
+            else:
+                low, high = ranges["ground_service"]
+        else:
+            if "core_device" in provides:
+                low, high = ranges["core_device"]
+            elif "reference_display" in provides:
+                low, high = ranges["display"]
+            elif (
+                "service_coverage" in provides
+                or "licensed_software" in provides
+            ):
+                low, high = ranges["software_or_service"]
+            else:
+                low, high = ranges["accessory"]
+        if not low <= price <= high:
+            return False
+    boundary_value = sum(
+        int(item["paid_minor"]) for item in task["boundary_commitments"]
+    )
+    for term in task.get("economic_terms", []):
+        one_time = int(term.get("charge_minor", 0))
+        credit = int(term.get("credit_minor", 0))
+        monthly = int(term.get("monthly_minor", 0))
+        if not (
+            0 <= one_time <= boundary_value // 5
+            and 0 <= credit <= boundary_value // 5
+            and 0 <= monthly <= 5000
+        ):
+            return False
+    return True
+
+
+def _v3_public_money_is_normalized(task: dict[str, Any]) -> bool:
+    from .v3_environment import NativeRecoveryEnvironmentV3
+
+    environment = NativeRecoveryEnvironmentV3(task)
+    category = next(
+        item["slot"]
+        for item in task["option_metadata"].values()
+        if item.get("candidate", False)
+    )
+    tool = (
+        "search_travel_options"
+        if task["domain"] == "travel"
+        else "search_product_options"
+    )
+    result = environment.execute_tool(tool, {"category": category})
+    if not result.ok:
+        return False
+    return _money_fields_are_objects(result.data)
+
+
+def _money_fields_are_objects(value: Any, key: str | None = None) -> bool:
+    money_keys = {
+        "upfront_price",
+        "monthly_price",
+        "total_charge",
+        "price",
+        "charge",
+        "refund",
+        "refund_amount",
+        "direct_refund",
+        "one_time_charge",
+        "monthly_charge",
+        "credit",
+        "post_purchase_cancellation_fee",
+        "post_purchase_refund",
+    }
+    if key in money_keys:
+        return bool(
+            isinstance(value, dict)
+            and value.get("currency") == "USD"
+            and isinstance(value.get("amount"), str)
+        )
+    if isinstance(value, dict):
+        return all(
+            _money_fields_are_objects(item, item_key)
+            for item_key, item in value.items()
+        )
+    if isinstance(value, list):
+        return all(_money_fields_are_objects(item) for item in value)
+    return True
 
 
 def _validate_v2_dataset(

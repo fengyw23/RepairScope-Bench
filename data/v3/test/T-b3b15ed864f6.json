@@ -1,0 +1,1134 @@
+{
+  "schema_version": "3.0",
+  "task_id": "T-b3b15ed864f6",
+  "domain": "after_sales",
+  "environment_type": "state_bench.customer_support+native_recovery_v3",
+  "split": "test",
+  "now": "2026-08-01T10:00:00",
+  "actor_id": "customer_001",
+  "max_turns": 15,
+  "source": {
+    "benchmark": "STATE-Bench",
+    "repository": "https://github.com/microsoft/STATE-Bench",
+    "commit": "4efcbf2d4fe60df04878859b692d9391f3d5b33a",
+    "reuse": "Native domain schemas, persistent state, and write semantics."
+  },
+  "price_profile": {
+    "profile_id": "after-sales-usd-2026q3",
+    "source_date": "2026-07-25",
+    "sources": [
+      "https://www.dell.com/en-us/shop/scc/sc/workstations?dtredir=1",
+      "https://www.dell.com/en-us/shop/monitor-accessories/ar/5390/docking-stations?appliedRefinements=35071"
+    ],
+    "ranges_minor": {
+      "core_device": [
+        90000,
+        450000
+      ],
+      "display": [
+        20000,
+        250000
+      ],
+      "accessory": [
+        5000,
+        90000
+      ],
+      "software_or_service": [
+        8000,
+        250000
+      ]
+    }
+  },
+  "option_metadata": {
+    "AF-e667fe0353d6": {
+      "name": "Aster Professional Workstation",
+      "slot": "core_device",
+      "native_kind": "product",
+      "available": true,
+      "candidate": false,
+      "upfront_minor": 200000,
+      "monthly_minor": 0,
+      "horizon_months": 0,
+      "total_charge_minor": 200000,
+      "post_purchase_cancel_fee_minor": 0,
+      "provides": {
+        "core_device": 1
+      },
+      "attributes": {
+        "delivery_site": "Inspection Bay",
+        "ready_day": 3,
+        "approved": true
+      }
+    },
+    "AF-19cb67869f39": {
+      "name": "Northstar Service Coverage",
+      "slot": "warranty",
+      "native_kind": "product",
+      "available": true,
+      "candidate": false,
+      "upfront_minor": 34000,
+      "monthly_minor": 0,
+      "horizon_months": 0,
+      "total_charge_minor": 34000,
+      "post_purchase_cancel_fee_minor": 0,
+      "provides": {
+        "service_coverage": 1
+      },
+      "attributes": {
+        "delivery_site": "Inspection Bay",
+        "ready_day": 3,
+        "approved": true
+      }
+    },
+    "AF-66f426f58275": {
+      "name": "Meridian Workflow Licence",
+      "slot": "software",
+      "native_kind": "product",
+      "available": true,
+      "candidate": false,
+      "upfront_minor": 65000,
+      "monthly_minor": 0,
+      "horizon_months": 0,
+      "total_charge_minor": 65000,
+      "post_purchase_cancel_fee_minor": 0,
+      "provides": {
+        "licensed_software": 1
+      },
+      "attributes": {
+        "delivery_site": "Inspection Bay",
+        "ready_day": 3,
+        "approved": true
+      }
+    },
+    "AF-35602c7b6e57": {
+      "name": "Helios Reference Display",
+      "slot": "display",
+      "native_kind": "product",
+      "available": true,
+      "candidate": false,
+      "upfront_minor": 83000,
+      "monthly_minor": 0,
+      "horizon_months": 0,
+      "total_charge_minor": 83000,
+      "post_purchase_cancel_fee_minor": 0,
+      "provides": {
+        "reference_display": 1
+      },
+      "attributes": {
+        "delivery_site": "Inspection Bay",
+        "ready_day": 3,
+        "approved": true
+      }
+    },
+    "AF-28413aa31ad8": {
+      "name": "Original inspection interface",
+      "slot": "interface",
+      "native_kind": "product",
+      "available": false,
+      "candidate": false,
+      "upfront_minor": 28000,
+      "monthly_minor": 0,
+      "horizon_months": 0,
+      "total_charge_minor": 28000,
+      "post_purchase_cancel_fee_minor": 0,
+      "provides": {
+        "interface_capacity": 1
+      },
+      "attributes": {
+        "delivery_site": "Inspection Bay",
+        "ready_day": 3,
+        "approved": true
+      },
+      "failure_message": "No inventory remains for the requested inspection interface."
+    },
+    "AF-ea7ea6d26e74": {
+      "name": "Independent inspection interface",
+      "slot": "interface",
+      "native_kind": "product",
+      "available": true,
+      "candidate": true,
+      "upfront_minor": 25000,
+      "monthly_minor": 0,
+      "horizon_months": 0,
+      "total_charge_minor": 25000,
+      "post_purchase_cancel_fee_minor": 2500,
+      "provides": {
+        "interface_capacity": 1
+      },
+      "attributes": {
+        "delivery_site": "Inspection Bay",
+        "ready_day": 3,
+        "approved": true
+      }
+    },
+    "AF-18c7205703f9": {
+      "name": "Premium independent inspection interface",
+      "slot": "interface",
+      "native_kind": "product",
+      "available": true,
+      "candidate": true,
+      "upfront_minor": 56000,
+      "monthly_minor": 0,
+      "horizon_months": 0,
+      "total_charge_minor": 56000,
+      "post_purchase_cancel_fee_minor": 2500,
+      "provides": {
+        "interface_capacity": 1
+      },
+      "attributes": {
+        "delivery_site": "Inspection Bay",
+        "ready_day": 3,
+        "approved": true
+      }
+    },
+    "AF-a13a98212881": {
+      "name": "Integrated inspection interface device bundle",
+      "slot": "interface",
+      "native_kind": "product",
+      "available": true,
+      "candidate": true,
+      "upfront_minor": 245000,
+      "monthly_minor": 0,
+      "horizon_months": 0,
+      "total_charge_minor": 245000,
+      "post_purchase_cancel_fee_minor": 2500,
+      "provides": {
+        "core_device": 1,
+        "interface_capacity": 1
+      },
+      "attributes": {
+        "delivery_site": "Inspection Bay",
+        "ready_day": 3,
+        "approved": true
+      }
+    },
+    "AF-d604211e82da": {
+      "name": "Comprehensive inspection interface workstation package",
+      "slot": "interface",
+      "native_kind": "product",
+      "available": true,
+      "candidate": true,
+      "upfront_minor": 317000,
+      "monthly_minor": 0,
+      "horizon_months": 0,
+      "total_charge_minor": 317000,
+      "post_purchase_cancel_fee_minor": 2500,
+      "provides": {
+        "core_device": 1,
+        "service_coverage": 1,
+        "interface_capacity": 1
+      },
+      "attributes": {
+        "delivery_site": "Inspection Bay",
+        "ready_day": 3,
+        "approved": true
+      }
+    },
+    "AF-28a469bc4524": {
+      "name": "Compatible replacement service cover",
+      "slot": "interface",
+      "native_kind": "product",
+      "available": true,
+      "candidate": true,
+      "upfront_minor": 49000,
+      "monthly_minor": 0,
+      "horizon_months": 0,
+      "total_charge_minor": 49000,
+      "post_purchase_cancel_fee_minor": 2500,
+      "provides": {
+        "service_coverage": 1
+      },
+      "attributes": {
+        "delivery_site": "Inspection Bay",
+        "ready_day": 3,
+        "approved": true
+      }
+    },
+    "AF-baf6b3e2290b": {
+      "name": "Unavailable-location inspection interface",
+      "slot": "interface",
+      "native_kind": "product",
+      "available": true,
+      "candidate": true,
+      "upfront_minor": 7000,
+      "monthly_minor": 0,
+      "horizon_months": 0,
+      "total_charge_minor": 7000,
+      "post_purchase_cancel_fee_minor": 700,
+      "provides": {
+        "interface_capacity": 1
+      },
+      "attributes": {
+        "delivery_site": "Different Facility",
+        "ready_day": 9,
+        "approved": false
+      }
+    }
+  },
+  "boundary_commitments": [
+    {
+      "entity_id": "ITEM-R0001",
+      "option_id": "AF-e667fe0353d6",
+      "slot": "core_device",
+      "paid_minor": 200000,
+      "refund_minor": 200000,
+      "quantity": 1,
+      "provides": {
+        "core_device": 1
+      },
+      "attributes": {
+        "delivery_site": "Inspection Bay",
+        "ready_day": 3,
+        "approved": true
+      }
+    },
+    {
+      "entity_id": "ITEM-R0002",
+      "option_id": "AF-19cb67869f39",
+      "slot": "warranty",
+      "paid_minor": 34000,
+      "refund_minor": 34000,
+      "quantity": 1,
+      "provides": {
+        "service_coverage": 1
+      },
+      "attributes": {
+        "delivery_site": "Inspection Bay",
+        "ready_day": 3,
+        "approved": true
+      }
+    },
+    {
+      "entity_id": "ITEM-R0003",
+      "option_id": "AF-66f426f58275",
+      "slot": "software",
+      "paid_minor": 65000,
+      "refund_minor": 65000,
+      "quantity": 1,
+      "provides": {
+        "licensed_software": 1
+      },
+      "attributes": {
+        "delivery_site": "Inspection Bay",
+        "ready_day": 3,
+        "approved": true
+      }
+    },
+    {
+      "entity_id": "ITEM-R0004",
+      "option_id": "AF-35602c7b6e57",
+      "slot": "display",
+      "paid_minor": 83000,
+      "refund_minor": 83000,
+      "quantity": 1,
+      "provides": {
+        "reference_display": 1
+      },
+      "attributes": {
+        "delivery_site": "Inspection Bay",
+        "ready_day": 3,
+        "approved": true
+      }
+    }
+  ],
+  "compatibility_rules": [
+    {
+      "constraint_id": "CR-252fde744dec",
+      "type": "forbid_pair",
+      "option_ids": [
+        "AF-ea7ea6d26e74",
+        "AF-19cb67869f39"
+      ],
+      "evidence_refs": [
+        "E-CR-252fde744dec"
+      ]
+    },
+    {
+      "constraint_id": "CR-92872fb2c08c",
+      "type": "requires_any",
+      "if_option_id": "AF-ea7ea6d26e74",
+      "any_option_ids": [
+        "AF-28a469bc4524"
+      ],
+      "evidence_refs": [
+        "E-CR-92872fb2c08c"
+      ]
+    }
+  ],
+  "economic_terms": [
+    {
+      "term_id": "TERM-055767dca869",
+      "description": "The failed component requires changing one affected support item while preserving independent commitments.",
+      "linked_entity_ids": [
+        "ITEM-R0002"
+      ],
+      "linked_option_ids": [],
+      "trigger": {
+        "type": "any_changed",
+        "entity_ids": [
+          "ITEM-R0002"
+        ]
+      },
+      "charge_minor": 0,
+      "credit_minor": 0
+    }
+  ],
+  "hard_goals": {
+    "capabilities": [
+      {
+        "constraint_id": "HC-0b44fd3fe33b",
+        "capability": "core_device",
+        "label": "core device",
+        "min": 1,
+        "max": 1,
+        "evidence_refs": [
+          "E-HC-0b44fd3fe33b"
+        ]
+      },
+      {
+        "constraint_id": "HC-68114f5046a1",
+        "capability": "service_coverage",
+        "label": "service coverage",
+        "min": 1,
+        "max": 1,
+        "evidence_refs": [
+          "E-HC-68114f5046a1"
+        ]
+      },
+      {
+        "constraint_id": "HC-e5591311657c",
+        "capability": "licensed_software",
+        "label": "licensed software",
+        "min": 1,
+        "max": 1,
+        "evidence_refs": [
+          "E-HC-e5591311657c"
+        ]
+      },
+      {
+        "constraint_id": "HC-abf34d3de4a7",
+        "capability": "reference_display",
+        "label": "reference display",
+        "min": 1,
+        "max": 1,
+        "evidence_refs": [
+          "E-HC-abf34d3de4a7"
+        ]
+      },
+      {
+        "constraint_id": "HC-f85da7dc3a79",
+        "capability": "interface_capacity",
+        "label": "inspection interface",
+        "min": 1,
+        "max": 1,
+        "evidence_refs": [
+          "E-HC-f85da7dc3a79"
+        ]
+      }
+    ],
+    "attributes": [
+      {
+        "constraint_id": "HA-f2b98d5e2dc1",
+        "capability": "interface_capacity",
+        "attribute": "delivery_site",
+        "op": "eq",
+        "value": "Inspection Bay",
+        "evidence_refs": [
+          "E-HA-f2b98d5e2dc1"
+        ]
+      },
+      {
+        "constraint_id": "HA-038cc4846e50",
+        "capability": "interface_capacity",
+        "attribute": "ready_day",
+        "op": "le",
+        "value": 4,
+        "evidence_refs": [
+          "E-HA-038cc4846e50"
+        ]
+      }
+    ]
+  },
+  "construction": {
+    "prefix_generated_by_public_tools": true,
+    "failure_generated_by_public_tool": true,
+    "necessary_action_order_invariant": true,
+    "currency": "USD",
+    "internal_money_unit": "minor"
+  },
+  "instruction": "Continue the partially completed industrial inspection console. The earlier orders and reservations shown below are already active, but the attempted inspection interface (interface) has just failed. The final state must contain exactly one core device, exactly one service coverage, exactly one licensed software, exactly one reference display, exactly one inspection interface. Every option covering inspection interface must be delivered to Inspection Bay and be ready by day 4. Do not retain combinations that supplier records mark as incompatible. Complete the remaining goal with the lowest actual net monetary cost from this failure point.",
+  "initial_snapshot": {
+    "state_bench": {
+      "products": [
+        {
+          "product_id": "AF-e667fe0353d6",
+          "name": "Aster Professional Workstation",
+          "category": "electronics",
+          "subcategory": "core_device",
+          "price": 2000,
+          "warranty_months": 12,
+          "return_window_days": 30,
+          "restocking_fee_pct": 0,
+          "weight_lbs": 2.0,
+          "is_fragile": false,
+          "in_stock": true,
+          "current_price": null
+        },
+        {
+          "product_id": "AF-19cb67869f39",
+          "name": "Northstar Service Coverage",
+          "category": "electronics",
+          "subcategory": "warranty",
+          "price": 340,
+          "warranty_months": 12,
+          "return_window_days": 30,
+          "restocking_fee_pct": 0,
+          "weight_lbs": 2.0,
+          "is_fragile": false,
+          "in_stock": true,
+          "current_price": null
+        },
+        {
+          "product_id": "AF-66f426f58275",
+          "name": "Meridian Workflow Licence",
+          "category": "electronics",
+          "subcategory": "software",
+          "price": 650,
+          "warranty_months": 12,
+          "return_window_days": 30,
+          "restocking_fee_pct": 0,
+          "weight_lbs": 2.0,
+          "is_fragile": false,
+          "in_stock": true,
+          "current_price": null
+        },
+        {
+          "product_id": "AF-35602c7b6e57",
+          "name": "Helios Reference Display",
+          "category": "electronics",
+          "subcategory": "display",
+          "price": 830,
+          "warranty_months": 12,
+          "return_window_days": 30,
+          "restocking_fee_pct": 0,
+          "weight_lbs": 2.0,
+          "is_fragile": false,
+          "in_stock": true,
+          "current_price": null
+        },
+        {
+          "product_id": "AF-28413aa31ad8",
+          "name": "Original inspection interface",
+          "category": "electronics",
+          "subcategory": "interface",
+          "price": 280,
+          "warranty_months": 12,
+          "return_window_days": 30,
+          "restocking_fee_pct": 0,
+          "weight_lbs": 2.0,
+          "is_fragile": false,
+          "in_stock": false,
+          "current_price": null
+        },
+        {
+          "product_id": "AF-ea7ea6d26e74",
+          "name": "Independent inspection interface",
+          "category": "electronics",
+          "subcategory": "interface",
+          "price": 250,
+          "warranty_months": 12,
+          "return_window_days": 30,
+          "restocking_fee_pct": 0,
+          "weight_lbs": 2.0,
+          "is_fragile": false,
+          "in_stock": true,
+          "current_price": null
+        },
+        {
+          "product_id": "AF-18c7205703f9",
+          "name": "Premium independent inspection interface",
+          "category": "electronics",
+          "subcategory": "interface",
+          "price": 560,
+          "warranty_months": 12,
+          "return_window_days": 30,
+          "restocking_fee_pct": 0,
+          "weight_lbs": 2.0,
+          "is_fragile": false,
+          "in_stock": true,
+          "current_price": null
+        },
+        {
+          "product_id": "AF-a13a98212881",
+          "name": "Integrated inspection interface device bundle",
+          "category": "electronics",
+          "subcategory": "interface",
+          "price": 2450,
+          "warranty_months": 12,
+          "return_window_days": 30,
+          "restocking_fee_pct": 0,
+          "weight_lbs": 2.0,
+          "is_fragile": false,
+          "in_stock": true,
+          "current_price": null
+        },
+        {
+          "product_id": "AF-d604211e82da",
+          "name": "Comprehensive inspection interface workstation package",
+          "category": "electronics",
+          "subcategory": "interface",
+          "price": 3170,
+          "warranty_months": 12,
+          "return_window_days": 30,
+          "restocking_fee_pct": 0,
+          "weight_lbs": 2.0,
+          "is_fragile": false,
+          "in_stock": true,
+          "current_price": null
+        },
+        {
+          "product_id": "AF-28a469bc4524",
+          "name": "Compatible replacement service cover",
+          "category": "electronics",
+          "subcategory": "interface",
+          "price": 490,
+          "warranty_months": 12,
+          "return_window_days": 30,
+          "restocking_fee_pct": 0,
+          "weight_lbs": 2.0,
+          "is_fragile": false,
+          "in_stock": true,
+          "current_price": null
+        },
+        {
+          "product_id": "AF-baf6b3e2290b",
+          "name": "Unavailable-location inspection interface",
+          "category": "electronics",
+          "subcategory": "interface",
+          "price": 70,
+          "warranty_months": 12,
+          "return_window_days": 30,
+          "restocking_fee_pct": 0,
+          "weight_lbs": 2.0,
+          "is_fragile": false,
+          "in_stock": true,
+          "current_price": null
+        }
+      ],
+      "orders": [],
+      "order_items": [],
+      "customers": [
+        {
+          "customer_id": "customer_001",
+          "name": "Repair Scope Customer",
+          "email": "customer@example.com",
+          "membership_tier": "standard",
+          "account_created": "2025-01-01",
+          "total_orders": 0,
+          "preferred_refund_method": "original_payment",
+          "store_credit_balance": 0,
+          "has_prime_shipping": false
+        }
+      ],
+      "warranties": []
+    },
+    "extensions": {
+      "services": [],
+      "service_inventory": []
+    }
+  },
+  "initial_snapshot_sha256": "23345641f51ad4da1381326bb9054d8278268687c6b0eea25a28fe19a979d6fb",
+  "failure_snapshot": {
+    "state_bench": {
+      "products": [
+        {
+          "product_id": "AF-18c7205703f9",
+          "name": "Premium independent inspection interface",
+          "category": "electronics",
+          "subcategory": "interface",
+          "price": 560,
+          "warranty_months": 12,
+          "return_window_days": 30,
+          "restocking_fee_pct": 0,
+          "weight_lbs": 2.0,
+          "is_fragile": false,
+          "in_stock": true,
+          "current_price": null
+        },
+        {
+          "product_id": "AF-19cb67869f39",
+          "name": "Northstar Service Coverage",
+          "category": "electronics",
+          "subcategory": "warranty",
+          "price": 340,
+          "warranty_months": 12,
+          "return_window_days": 30,
+          "restocking_fee_pct": 0,
+          "weight_lbs": 2.0,
+          "is_fragile": false,
+          "in_stock": true,
+          "current_price": null
+        },
+        {
+          "product_id": "AF-28413aa31ad8",
+          "name": "Original inspection interface",
+          "category": "electronics",
+          "subcategory": "interface",
+          "price": 280,
+          "warranty_months": 12,
+          "return_window_days": 30,
+          "restocking_fee_pct": 0,
+          "weight_lbs": 2.0,
+          "is_fragile": false,
+          "in_stock": false,
+          "current_price": null
+        },
+        {
+          "product_id": "AF-28a469bc4524",
+          "name": "Compatible replacement service cover",
+          "category": "electronics",
+          "subcategory": "interface",
+          "price": 490,
+          "warranty_months": 12,
+          "return_window_days": 30,
+          "restocking_fee_pct": 0,
+          "weight_lbs": 2.0,
+          "is_fragile": false,
+          "in_stock": true,
+          "current_price": null
+        },
+        {
+          "product_id": "AF-35602c7b6e57",
+          "name": "Helios Reference Display",
+          "category": "electronics",
+          "subcategory": "display",
+          "price": 830,
+          "warranty_months": 12,
+          "return_window_days": 30,
+          "restocking_fee_pct": 0,
+          "weight_lbs": 2.0,
+          "is_fragile": false,
+          "in_stock": true,
+          "current_price": null
+        },
+        {
+          "product_id": "AF-66f426f58275",
+          "name": "Meridian Workflow Licence",
+          "category": "electronics",
+          "subcategory": "software",
+          "price": 650,
+          "warranty_months": 12,
+          "return_window_days": 30,
+          "restocking_fee_pct": 0,
+          "weight_lbs": 2.0,
+          "is_fragile": false,
+          "in_stock": true,
+          "current_price": null
+        },
+        {
+          "product_id": "AF-a13a98212881",
+          "name": "Integrated inspection interface device bundle",
+          "category": "electronics",
+          "subcategory": "interface",
+          "price": 2450,
+          "warranty_months": 12,
+          "return_window_days": 30,
+          "restocking_fee_pct": 0,
+          "weight_lbs": 2.0,
+          "is_fragile": false,
+          "in_stock": true,
+          "current_price": null
+        },
+        {
+          "product_id": "AF-baf6b3e2290b",
+          "name": "Unavailable-location inspection interface",
+          "category": "electronics",
+          "subcategory": "interface",
+          "price": 70,
+          "warranty_months": 12,
+          "return_window_days": 30,
+          "restocking_fee_pct": 0,
+          "weight_lbs": 2.0,
+          "is_fragile": false,
+          "in_stock": true,
+          "current_price": null
+        },
+        {
+          "product_id": "AF-d604211e82da",
+          "name": "Comprehensive inspection interface workstation package",
+          "category": "electronics",
+          "subcategory": "interface",
+          "price": 3170,
+          "warranty_months": 12,
+          "return_window_days": 30,
+          "restocking_fee_pct": 0,
+          "weight_lbs": 2.0,
+          "is_fragile": false,
+          "in_stock": true,
+          "current_price": null
+        },
+        {
+          "product_id": "AF-e667fe0353d6",
+          "name": "Aster Professional Workstation",
+          "category": "electronics",
+          "subcategory": "core_device",
+          "price": 2000,
+          "warranty_months": 12,
+          "return_window_days": 30,
+          "restocking_fee_pct": 0,
+          "weight_lbs": 2.0,
+          "is_fragile": false,
+          "in_stock": true,
+          "current_price": null
+        },
+        {
+          "product_id": "AF-ea7ea6d26e74",
+          "name": "Independent inspection interface",
+          "category": "electronics",
+          "subcategory": "interface",
+          "price": 250,
+          "warranty_months": 12,
+          "return_window_days": 30,
+          "restocking_fee_pct": 0,
+          "weight_lbs": 2.0,
+          "is_fragile": false,
+          "in_stock": true,
+          "current_price": null
+        }
+      ],
+      "orders": [
+        {
+          "order_id": "ORD-R0001",
+          "customer_id": "customer_001",
+          "order_date": "2026-08-01T10:00:00",
+          "status": "processing",
+          "shipping_status": "pending",
+          "shipping_method": "standard",
+          "shipping_cost": 0,
+          "tracking_number": "",
+          "delivery_date": null,
+          "delivery_promised_date": "",
+          "signature_required": false,
+          "signature_on_file": null,
+          "payment_method": "credit_card",
+          "payment_details": {
+            "credit_card": 2000
+          },
+          "subtotal": 2000,
+          "discount_code": null,
+          "discount_amount": 0,
+          "total_paid": 2000,
+          "is_gift": false,
+          "gift_sender": null
+        },
+        {
+          "order_id": "ORD-R0002",
+          "customer_id": "customer_001",
+          "order_date": "2026-08-01T10:00:00",
+          "status": "processing",
+          "shipping_status": "pending",
+          "shipping_method": "standard",
+          "shipping_cost": 0,
+          "tracking_number": "",
+          "delivery_date": null,
+          "delivery_promised_date": "",
+          "signature_required": false,
+          "signature_on_file": null,
+          "payment_method": "credit_card",
+          "payment_details": {
+            "credit_card": 340
+          },
+          "subtotal": 340,
+          "discount_code": null,
+          "discount_amount": 0,
+          "total_paid": 340,
+          "is_gift": false,
+          "gift_sender": null
+        },
+        {
+          "order_id": "ORD-R0003",
+          "customer_id": "customer_001",
+          "order_date": "2026-08-01T10:00:00",
+          "status": "processing",
+          "shipping_status": "pending",
+          "shipping_method": "standard",
+          "shipping_cost": 0,
+          "tracking_number": "",
+          "delivery_date": null,
+          "delivery_promised_date": "",
+          "signature_required": false,
+          "signature_on_file": null,
+          "payment_method": "credit_card",
+          "payment_details": {
+            "credit_card": 650
+          },
+          "subtotal": 650,
+          "discount_code": null,
+          "discount_amount": 0,
+          "total_paid": 650,
+          "is_gift": false,
+          "gift_sender": null
+        },
+        {
+          "order_id": "ORD-R0004",
+          "customer_id": "customer_001",
+          "order_date": "2026-08-01T10:00:00",
+          "status": "processing",
+          "shipping_status": "pending",
+          "shipping_method": "standard",
+          "shipping_cost": 0,
+          "tracking_number": "",
+          "delivery_date": null,
+          "delivery_promised_date": "",
+          "signature_required": false,
+          "signature_on_file": null,
+          "payment_method": "credit_card",
+          "payment_details": {
+            "credit_card": 830
+          },
+          "subtotal": 830,
+          "discount_code": null,
+          "discount_amount": 0,
+          "total_paid": 830,
+          "is_gift": false,
+          "gift_sender": null
+        }
+      ],
+      "order_items": [
+        {
+          "item_id": "ITEM-R0001",
+          "order_id": "ORD-R0001",
+          "product_id": "AF-e667fe0353d6",
+          "quantity": 1,
+          "unit_price": 2000,
+          "item_status": "processing",
+          "return_reason": null,
+          "refund_amount": null,
+          "refund_method": null,
+          "restocking_fee": null,
+          "return_label_issued": false,
+          "replacement_item_id": null,
+          "goodwill_credit": 0,
+          "goodwill_credit_method": null,
+          "store_credit_only": false
+        },
+        {
+          "item_id": "ITEM-R0002",
+          "order_id": "ORD-R0002",
+          "product_id": "AF-19cb67869f39",
+          "quantity": 1,
+          "unit_price": 340,
+          "item_status": "processing",
+          "return_reason": null,
+          "refund_amount": null,
+          "refund_method": null,
+          "restocking_fee": null,
+          "return_label_issued": false,
+          "replacement_item_id": null,
+          "goodwill_credit": 0,
+          "goodwill_credit_method": null,
+          "store_credit_only": false
+        },
+        {
+          "item_id": "ITEM-R0003",
+          "order_id": "ORD-R0003",
+          "product_id": "AF-66f426f58275",
+          "quantity": 1,
+          "unit_price": 650,
+          "item_status": "processing",
+          "return_reason": null,
+          "refund_amount": null,
+          "refund_method": null,
+          "restocking_fee": null,
+          "return_label_issued": false,
+          "replacement_item_id": null,
+          "goodwill_credit": 0,
+          "goodwill_credit_method": null,
+          "store_credit_only": false
+        },
+        {
+          "item_id": "ITEM-R0004",
+          "order_id": "ORD-R0004",
+          "product_id": "AF-35602c7b6e57",
+          "quantity": 1,
+          "unit_price": 830,
+          "item_status": "processing",
+          "return_reason": null,
+          "refund_amount": null,
+          "refund_method": null,
+          "restocking_fee": null,
+          "return_label_issued": false,
+          "replacement_item_id": null,
+          "goodwill_credit": 0,
+          "goodwill_credit_method": null,
+          "store_credit_only": false
+        }
+      ],
+      "customers": [
+        {
+          "customer_id": "customer_001",
+          "name": "Repair Scope Customer",
+          "email": "customer@example.com",
+          "membership_tier": "standard",
+          "account_created": "2025-01-01",
+          "total_orders": 0,
+          "preferred_refund_method": "original_payment",
+          "store_credit_balance": 0,
+          "has_prime_shipping": false
+        }
+      ],
+      "warranties": []
+    },
+    "extensions": {
+      "services": [],
+      "service_inventory": []
+    }
+  },
+  "snapshot_sha256": "0879f127212df64ea60f5c4678a05d82d954d4eaa19582ba386c19d0695eb330",
+  "pre_failure_trace": [
+    {
+      "step": 1,
+      "tool": "purchase_product_option",
+      "arguments": {
+        "product_id": "AF-e667fe0353d6",
+        "customer_id": "customer_001"
+      },
+      "result": {
+        "ok": true,
+        "message": "confirmed",
+        "data": {
+          "status": "confirmed",
+          "order_id": "ORD-R0001",
+          "item_id": "ITEM-R0001",
+          "product_id": "AF-e667fe0353d6",
+          "charge": {
+            "amount": "2000.00",
+            "currency": "USD"
+          }
+        }
+      }
+    },
+    {
+      "step": 2,
+      "tool": "purchase_product_option",
+      "arguments": {
+        "product_id": "AF-19cb67869f39",
+        "customer_id": "customer_001"
+      },
+      "result": {
+        "ok": true,
+        "message": "confirmed",
+        "data": {
+          "status": "confirmed",
+          "order_id": "ORD-R0002",
+          "item_id": "ITEM-R0002",
+          "product_id": "AF-19cb67869f39",
+          "charge": {
+            "amount": "340.00",
+            "currency": "USD"
+          }
+        }
+      }
+    },
+    {
+      "step": 3,
+      "tool": "purchase_product_option",
+      "arguments": {
+        "product_id": "AF-66f426f58275",
+        "customer_id": "customer_001"
+      },
+      "result": {
+        "ok": true,
+        "message": "confirmed",
+        "data": {
+          "status": "confirmed",
+          "order_id": "ORD-R0003",
+          "item_id": "ITEM-R0003",
+          "product_id": "AF-66f426f58275",
+          "charge": {
+            "amount": "650.00",
+            "currency": "USD"
+          }
+        }
+      }
+    },
+    {
+      "step": 4,
+      "tool": "purchase_product_option",
+      "arguments": {
+        "product_id": "AF-35602c7b6e57",
+        "customer_id": "customer_001"
+      },
+      "result": {
+        "ok": true,
+        "message": "confirmed",
+        "data": {
+          "status": "confirmed",
+          "order_id": "ORD-R0004",
+          "item_id": "ITEM-R0004",
+          "product_id": "AF-35602c7b6e57",
+          "charge": {
+            "amount": "830.00",
+            "currency": "USD"
+          }
+        }
+      }
+    }
+  ],
+  "prefix_ledger": [
+    {
+      "event_index": 1,
+      "category": "direct_transaction",
+      "debit_minor": 200000,
+      "credit_minor": 0,
+      "net_minor": 200000,
+      "currency": "USD",
+      "source": "purchase_product",
+      "source_record_id": null
+    },
+    {
+      "event_index": 2,
+      "category": "direct_transaction",
+      "debit_minor": 34000,
+      "credit_minor": 0,
+      "net_minor": 34000,
+      "currency": "USD",
+      "source": "purchase_product",
+      "source_record_id": null
+    },
+    {
+      "event_index": 3,
+      "category": "direct_transaction",
+      "debit_minor": 65000,
+      "credit_minor": 0,
+      "net_minor": 65000,
+      "currency": "USD",
+      "source": "purchase_product",
+      "source_record_id": null
+    },
+    {
+      "event_index": 4,
+      "category": "direct_transaction",
+      "debit_minor": 83000,
+      "credit_minor": 0,
+      "net_minor": 83000,
+      "currency": "USD",
+      "source": "purchase_product",
+      "source_record_id": null
+    }
+  ],
+  "latest_failure": {
+    "tool": "purchase_product_option",
+    "arguments": {
+      "product_id": "AF-28413aa31ad8",
+      "customer_id": "customer_001"
+    },
+    "result": {
+      "ok": false,
+      "message": "No inventory remains for the requested inspection interface.",
+      "data": {
+        "error": "No inventory remains for the requested inspection interface."
+      }
+    }
+  }
+}
